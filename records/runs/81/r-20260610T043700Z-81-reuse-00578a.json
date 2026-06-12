@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.261012,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 135424,
+    "input_tokens": 185634,
+    "output_tokens": 2897,
+    "reasoning_output_tokens": 584
+   }
+  }
+ ],
+ "base_ref_oid": "da5504bc53145726284ff579ea713a3b8e603ba0",
+ "cost_estimated": true,
+ "cost_usd": 0.261012,
+ "dedupe_key": "FormalFrontier/TauCeti|81|55660e05679a3fe8ce50559cc7b70120a07248b2|reuse|gpt-5.5|68ec685af806ec41|production|12",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`PointwiseEnergy.lean:50-57` proves the equality to `matrixBilinearForm`; `UniformEllipticity.lean:130-132` already has `lemma matrixBilinearForm_self ... : matrixBilinearForm A \u03be \u03be = A.toQuadraticForm' \u03be`.",
+   "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
+   "fix": "Use `rw [toSesqForm_toEuclideanCLM_eq_matrixBilinearForm]; exact matrixBilinearForm_self A \u03be` at call sites, or keep only the bridge equality if this spelling is needed.",
+   "issue": "`toSesqForm_toEuclideanCLM_self` is parallel API for the existing quadratic-form lemma on `matrixBilinearForm`, differing only by rewriting through `toSesqForm_toEuclideanCLM_eq_matrixBilinearForm`.",
+   "line": 61
+  },
+  {
+   "evidence": "`PointwiseEnergy.lean:73-74` is exactly `rw [toSesqForm_toEuclideanCLM_eq_matrixBilinearForm]` then `matrixBilinearForm_opNorm_le_of_upper_bound`; existing declaration is `UniformEllipticity.lean:147-150`.",
+   "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
+   "fix": "Remove the wrapper and reuse `matrixBilinearForm_opNorm_le_of_upper_bound` after rewriting by `toSesqForm_toEuclideanCLM_eq_matrixBilinearForm`, or migrate users to the existing `matrixBilinearForm` API.",
+   "issue": "`norm_toSesqForm_toEuclideanCLM_le` duplicates the existing operator-norm bound for `matrixBilinearForm` modulo the new bridge equality.",
+   "line": 69
+  },
+  {
+   "evidence": "`PointwiseEnergy.lean:92-104` proves both results by the bridge rewrite and existing lemmas; existing declarations are `UniformEllipticity.lean:320-323` and `UniformEllipticity.lean:338-341`.",
+   "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
+   "fix": "Remove these wrappers and rewrite the target form with `toSesqForm_toEuclideanCLM_eq_matrixBilinearForm` before applying the existing `UniformlyEllipticOn` lemmas.",
+   "issue": "The uniformly elliptic coercivity and norm lemmas are parallel wrappers around `UniformlyEllipticOn.isCoercive_matrixBilinearForm` and `UniformlyEllipticOn.opNorm_matrixBilinearForm_le`.",
+   "line": 87
+  }
+ ],
+ "head_sha": "55660e05679a3fe8ce50559cc7b70120a07248b2",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 81,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 12,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T043700Z-81-reuse-00578a",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T04:37:00Z",
+ "summary": "The bridge equality to `matrixBilinearForm` may be useful, but most of the new API is parallel to TauCeti's existing matrix-bilinear-form API after a single rewrite. Keep the bridge or use existing names directly instead of adding duplicate pointwise coercivity/norm/identity wrappers.",
+ "transcript_blob": "201081e752acd38f2975fb5188b6768e0ad28ae73723354d53ca584b6b36e896",
+ "usage": {
+  "cached_input_tokens": 135424,
+  "input_tokens": 185634,
+  "output_tokens": 2897,
+  "reasoning_output_tokens": 584
+ },
+ "verdict": "request_changes"
+}

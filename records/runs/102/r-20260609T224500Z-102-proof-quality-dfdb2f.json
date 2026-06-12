@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.142905,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 60928,
+    "input_tokens": 94644,
+    "output_tokens": 2460,
+    "reasoning_output_tokens": 1172
+   }
+  }
+ ],
+ "base_ref_oid": "1c3cef564b6afa5d3f27e23c86ae5e6a555d9f24",
+ "cost_estimated": true,
+ "cost_usd": 0.142905,
+ "dedupe_key": "FormalFrontier/TauCeti|102|f7b0981033f51922795384a6758e4fbc0a1c3855|proof-quality|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`rg` shows `change` at lines 101 and 112; nearby `FiberTransport.lean:72` provides `[simp] lemma fiberMap_symm`, so the proof need not depend on the unfolded inverse fibre map.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/FiberOrbit.lean",
+   "fix": "Avoid the `change` by proving through public lemmas, e.g. after quotient induction use `simpa [\u2190 fiberMap_symm]` with `congrArg Quotient.mk'' ((fiberMap h hpq b).left_inv e)` and the analogous `right_inv`, or add a comment explaining why this defeq exposure is necessary.",
+   "issue": "`fiberOrbitQuotientEquiv.left_inv` and `right_inv` use undocumented `change` steps to expose `Quotient.map'` internals before proving inverse laws.",
+   "line": 101
+  },
+  {
+   "evidence": "Line 136 is `rfl`; `FiberTransport.lean:72-74` states the intended equality as `[simp] lemma fiberMap_symm`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/FiberOrbit.lean",
+   "fix": "Rewrite using the explicit API (`fiberMap_symm`) instead of `rfl`, for example a `simpa [fiberOrbitQuotientEquiv, fiberMap_symm]`-style proof.",
+   "issue": "`fiberOrbitQuotientEquiv_symm_apply` is proved by bare `rfl`, relying on definitional equality between `fiberMap h.symm ...` and `(fiberMap h hpq b).symm` across the `Homeomorph.subtype` wrapper.",
+   "line": 136
+  }
+ ],
+ "head_sha": "f7b0981033f51922795384a6758e4fbc0a1c3855",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 102,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T224500Z-102-proof-quality-dfdb2f",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T22:45:00Z",
+ "summary": "The new quotient transport API compiles, but several proofs rely on undocumented definitional unfolding of quotient and fibre-map wrappers. Replace those with the existing public fibre-map lemmas or document why the `change` steps are unavoidable.",
+ "transcript_blob": "c01571d9c99c8765f93c568a76e200af9acb44dbfa8ab27e2a231664774015cf",
+ "usage": {
+  "cached_input_tokens": 60928,
+  "input_tokens": 94644,
+  "output_tokens": 2460,
+  "reasoning_output_tokens": 1172
+ },
+ "verdict": "request_changes"
+}

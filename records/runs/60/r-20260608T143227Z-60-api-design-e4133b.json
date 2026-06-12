@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.252401,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 91008,
+    "input_tokens": 168457,
+    "output_tokens": 4183,
+    "reasoning_output_tokens": 2029
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.252401,
+ "dedupe_key": "FormalFrontier/TauCeti|60|df19b6de4ab79484e3d37eea0e7a2c0d0e5f68e3|api-design|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`PointsFunctor.lean:43` defines `abbrev points ... := WithConv (H \u2192\u2090[R] A)`, while `FunctorOfPoints.lean:140` already has `noncomputable instance instGroup : Group (WithConv (H \u2192\u2090[R] A))`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Delete `instGroupPoints` and rely on the existing `TauCeti.AlgHom.instGroup`, or keep any needed use local/non-instance.",
+   "issue": "`instGroupPoints` publicly adds a second `Group` instance for the same type, because `points` is only an abbrev for `WithConv (H \u2192\u2090[R] A)`.",
+   "line": 47
+  },
+  {
+   "evidence": "`PointsFunctor.lean:115` has `points_one_apply` and `PointsFunctor.lean:121` has `points_inv_apply`; `rg \"points_mul\" code/TauCeti` has no hit, while the only pointwise product lemma is `Mathlib/RingTheory/Bialgebra/Convolution.lean:58: lemma convMul_apply`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Add a public `points_mul_apply` lemma restating the convolution product formula for `f g : points H A`, and annotate it consistently with the intended normal-form policy if it should simplify evaluations.",
+   "issue": "The `points` API characterizes `1` and `\u207b\u00b9` pointwise but not multiplication, leaving the roadmap\u2019s convolution formula unavailable under the new name without falling back to the underlying `WithConv`/`AlgHom` API.",
+   "line": 113
+  },
+  {
+   "evidence": "`Mathlib/Algebra/Category/CommAlgCat/Basic.lean:18` declares `universe w v u` and `CommAlgCat` uses `carrier : Type v`, but `PointsFunctor.lean:36` fixes `{R H : Type u}` and `PointsFunctor.lean:55` fixes `CommAlgCat.{u} R \u2964 GrpCat.{u}`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Generalize the declaration to separate universes for `R`, `H`, and the value algebras, with the codomain `GrpCat` universe large enough for `H \u2192\u2090[R] A`.",
+   "issue": "`pointsFunctor` is restricted to `CommAlgCat.{u} R \u2964 GrpCat.{u}` with `R`, `H`, and value algebras all in the same universe, although `CommAlgCat` is universe-polymorphic in the carrier universe.",
+   "line": 54
+  }
+ ],
+ "head_sha": "df19b6de4ab79484e3d37eea0e7a2c0d0e5f68e3",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 60,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T143227Z-60-api-design-e4133b",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T14:32:27Z",
+ "summary": "The bundled functor is close, but the public surface both exposes a duplicate instance and omits a characteristic pointwise multiplication lemma for the new `points` API. Its universe signature is also narrower than `CommAlgCat` supports, which makes the functor unusable for larger value algebras.",
+ "transcript_blob": "31120528282bc85520f7e2ddcdb1bf97a199c8d79b083186acaccef7c60b479a",
+ "usage": {
+  "cached_input_tokens": 91008,
+  "input_tokens": 168457,
+  "output_tokens": 4183,
+  "reasoning_output_tokens": 2029
+ },
+ "verdict": "request_changes"
+}

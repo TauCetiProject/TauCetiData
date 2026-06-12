@@ -1,0 +1,75 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.237044,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 115840,
+    "input_tokens": 160267,
+    "output_tokens": 3671,
+    "reasoning_output_tokens": 2527
+   }
+  }
+ ],
+ "base_ref_oid": "8b99891c1057ffca76cefca75c4ff6f889c30116",
+ "cost_estimated": true,
+ "cost_usd": 0.237044,
+ "dedupe_key": "FormalFrontier/TauCeti|42|056cad4c5d74ac45323c1e7111fd9100eb246a04|generality|gpt-5.5|dccacfb6e0bf58e2|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "The declaration reads `public theorem exists_uniquePath_neighborhood [SemilocallySimplyConnectedSpace X] (x : X)`, while `semilocallySimplyConnectedAt_iff_paths` immediately provides the needed local characterization.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean",
+   "fix": "State the local theorem as `SemilocallySimplyConnectedAt x \u2192 \u2203 U, IsOpen U \u2227 x \u2208 U \u2227 IsPathHomotopyTrivial U`, and derive the current typeclass version as a corollary if needed.",
+   "issue": "`exists_uniquePath_neighborhood` is stated with the global typeclass `[SemilocallySimplyConnectedSpace X]`, even though the file has already defined the local predicate `SemilocallySimplyConnectedAt x` and the proof only needs the property at this point.",
+   "line": 230
+  },
+  {
+   "evidence": "The proof obtains `V` via `exists_uniquePath_neighborhood x` and then takes `pathComponentIn V x`; no point other than `x` requires the global class.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean",
+   "fix": "State it from `SemilocallySimplyConnectedAt x` and `[LocPathConnectedSpace X]`; keep a typeclass wrapper only as a convenience theorem.",
+   "issue": "`exists_pathConnected_slsc_neighborhood` repeats the same under-generalization: it assumes global SLSC, but its natural input is the local assumption at `x` plus local path-connectedness.",
+   "line": 242
+  },
+  {
+   "evidence": "The structure header is `public structure TubeData (X : Type*) [TopologicalSpace X] (x y : X) (n : \u2115) where`, but every field mentions only `X`, `n`, `U`, and `V`, not `x` or `y`.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean",
+   "fix": "Define `TubeData X n` and put the path endpoints only on `PathInTube`, `TubeData.toSet`, and the theorems that quantify over paths.",
+   "issue": "`TubeData (X) (x y) (n)` is over-parameterized: the fields `U`, `V`, and their openness/path/SLSC/subset properties never mention `x` or `y`. This forces identical tube data to be indexed by irrelevant endpoints.",
+   "line": 295
+  },
+  {
+   "evidence": "The proof forms `W := V_last \u2229 U` and returns `pathComponentIn W (endpoint \u03b1)` using `hW_open.pathComponentIn` and `isPathConnected_pathComponentIn`; it never invokes the SLSC class or `T.U_slsc`.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
+   "fix": "Remove the `[SemilocallySimplyConnectedSpace X]` hypothesis from this theorem; callers that need SLSC can keep it at the call site.",
+   "issue": "`exists_refined_terminal_vertex` assumes `[SemilocallySimplyConnectedSpace X]`, but the statement and proof only use local path-connectedness and the already bundled tube data.",
+   "line": 580
+  }
+ ],
+ "head_sha": "056cad4c5d74ac45323c1e7111fd9100eb246a04",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 42,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260604T033423Z-42-generality-02b2a3",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-reviews-branch",
+ "started_at": "2026-06-04T03:34:23Z",
+ "summary": "The PR introduces useful local notions but several exported declarations are not at their natural level: some global hypotheses should be local, one structure carries unused endpoint parameters, and one theorem has an unused SLSC assumption.",
+ "transcript_blob": "afabe51de01a6eecbbe86f026396c668d5a9b266ec7e77a1f83f43882fa440e6",
+ "usage": {
+  "cached_input_tokens": 115840,
+  "input_tokens": 160267,
+  "output_tokens": 3671,
+  "reasoning_output_tokens": 2527
+ },
+ "verdict": "request_changes"
+}

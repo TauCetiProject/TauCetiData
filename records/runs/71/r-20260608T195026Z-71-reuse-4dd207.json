@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.170154,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 82944,
+    "input_tokens": 118971,
+    "output_tokens": 2144,
+    "reasoning_output_tokens": 613
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.170154,
+ "dedupe_key": "FormalFrontier/TauCeti|71|a43dfb4a898d7b6bfcc53cc1491545826d58bf2e|reuse|gpt-5.5|68ec685af806ec41|production|3",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "PR lines 24-77 define `toFinsupp`, `order := Finsupp.degree \u03b1.toFinsupp`, and `unit := Finsupp.single i 1`; Mathlib has `Finsupp.degree` at `mathlib/Mathlib/Data/Finsupp/Weight.lean:208` and `Finsupp.single` at `mathlib/Mathlib/Data/Finsupp/Single.lean:47`.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "Use `\u03b9 \u2192\u2080 \u2115` directly for multiindices, or at most a local abbrev/notation that does not create a parallel theorem namespace.",
+   "issue": "`MultiIndex` duplicates the existing representation `\u03b9 \u2192\u2080 \u2115`; the exported `order`/`unit` surface restates `Finsupp.degree` and `Finsupp.single _ 1` under new names.",
+   "line": 24
+  },
+  {
+   "evidence": "Mathlib has `Finsupp.degree_single` at `Weight.lean:226`, `degree` as an additive monoid hom with `map_zero`/`map_add` at `Weight.lean:208-211`, `Finsupp.single_eq_same`/`single_eq_of_ne` at `Single.lean:76-80`, and `Finsupp.single_le_iff` at `Order.lean:253`.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "Delete these declarations and use the existing lemmas after unfolding any minimal alias.",
+   "issue": "`order_unit`, `order_zero`, `order_add`, `unit_apply_self`, `unit_apply_ne`, and `unit_le_iff` are wrapper copies of existing `Finsupp` lemmas.",
+   "line": 84
+  },
+  {
+   "evidence": "PR lines 117-133 define `DegreeLE` and prove finiteness by preimage of `{f : \u03b9 \u2192\u2080 \u2115 | Finsupp.degree f \u2264 k}`; Mathlib's direct theorem is `Finsupp.finite_of_degree_le` at `mathlib/Mathlib/Data/Finsupp/Weight.lean:250`.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "Index Sobolev derivative families by `{\u03b1 : \u03b9 \u2192\u2080 \u2115 // Finsupp.degree \u03b1 \u2264 k}` and use `Finsupp.finite_of_degree_le` directly.",
+   "issue": "`finite_setOf_order_le` and `DegreeLE` duplicate Mathlib's bounded-degree indexing set for finsupps.",
+   "line": 125
+  }
+ ],
+ "head_sha": "a43dfb4a898d7b6bfcc53cc1491545826d58bf2e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 71,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T195026Z-71-reuse-4dd207",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T19:50:26Z",
+ "summary": "The PR adds a parallel multiindex API that is just a one-field wrapper around Mathlib's `\u03b9 \u2192\u2080 \u2115`, while the needed order, coordinate unit, coordinate bound, and bounded-degree finiteness facts already exist for `Finsupp`.",
+ "transcript_blob": "00554f824836b1421871126e90ab00edd889c0c50d6cb8682d61d5dd4c79dbe6",
+ "usage": {
+  "cached_input_tokens": 82944,
+  "input_tokens": 118971,
+  "output_tokens": 2144,
+  "reasoning_output_tokens": 613
+ },
+ "verdict": "block"
+}

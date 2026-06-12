@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.119829,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 42112,
+    "input_tokens": 81311,
+    "output_tokens": 1819,
+    "reasoning_output_tokens": 626
+   }
+  }
+ ],
+ "base_ref_oid": "1c3cef564b6afa5d3f27e23c86ae5e6a555d9f24",
+ "cost_estimated": true,
+ "cost_usd": 0.119829,
+ "dedupe_key": "FormalFrontier/TauCeti|100|30d65adda0f66a98e573b559a22ba685a35d2aba|proof-quality|gpt-5.5|68ec685af806ec41|production|7",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`rg -n \"\\bchange\\b\" code/TauCeti/LinearAlgebra/Matrix/SymmetricPart.lean` hits line 59: `change \u215f(2 : R) * (A i j + A j i) = A i j`.",
+   "file": "TauCeti/LinearAlgebra/Matrix/SymmetricPart.lean",
+   "fix": "Avoid the `change` by rewriting with the definition through `simp`/`ext`, or add a short comment explaining why this definitional conversion is required.",
+   "issue": "`symmetricPart_of_isSymm` uses an undocumented `change` to expose the entrywise scalar expression.",
+   "line": 59
+  },
+  {
+   "evidence": "Lines 71-77 rewrite through `symmetricPart_def`, `Matrix.toQuadraticForm'`, `QuadraticMap.associated_toQuadraticMap`, `Matrix.toBilin'_apply'`, `smul_mulVec`, `add_mulVec`, two `toLinearMap\u2082'_apply'` calls, then `rfl`.",
+   "file": "TauCeti/LinearAlgebra/Matrix/SymmetricPart.lean",
+   "fix": "Replace the long rewrite chain with a more stable pointwise helper/simp-normal proof, or document the unavoidable wrapper definitional equality and keep the fragile unfolding isolated.",
+   "issue": "`toBilin'_symmetricPart` proves a public bridge lemma by unfolding several wrapper definitions and then closing by `rfl`, making it fragile to Mathlib API changes.",
+   "line": 71
+  }
+ ],
+ "head_sha": "30d65adda0f66a98e573b559a22ba685a35d2aba",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 100,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 7,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T004041Z-100-proof-quality-92862f",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T00:40:41Z",
+ "summary": "The new symmetric-part matrix API has proof-quality issues: one proof uses undocumented definitional conversion, and another depends on a long brittle unfold/rewrite chain through Mathlib wrapper definitions.",
+ "transcript_blob": "e89487597cbc27ecedd74723d546f9bac932f90820dbe7911ff81fb58afff4e2",
+ "usage": {
+  "cached_input_tokens": 42112,
+  "input_tokens": 81311,
+  "output_tokens": 1819,
+  "reasoning_output_tokens": 626
+ },
+ "verdict": "request_changes"
+}

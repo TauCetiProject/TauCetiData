@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.249583,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 78336,
+    "input_tokens": 180426,
+    "output_tokens": 2405,
+    "reasoning_output_tokens": 790
+   }
+  }
+ ],
+ "base_ref_oid": "99bd43b8652a384440ba68181a399491182c71c5",
+ "cost_estimated": true,
+ "cost_usd": 0.249583,
+ "dedupe_key": "FormalFrontier/TauCeti|85|59b197142219f24124fcecefabf33c9d5261de2f|reuse|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "PR lines 59-65 prove `IsCancelSMul (Deck p) E` then restate `MulAction.stabilizer (Deck p) e = \u22a5`; Mathlib has `mathlib/Mathlib/GroupTheory/GroupAction/Basic.lean:241: lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G \u03b1] (a : \u03b1) : stabilizer G a = \u22a5` and `:246: lemma _root_.isCancelSMul_iff_stabilizer_eq_bot`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/Connected.lean",
+   "fix": "Keep `isCancelSMul hp` as the deck-specific theorem and use `IsCancelSMul.stabilizer_eq_bot`/rewriting at call sites instead of adding parallel deck-specific stabilizer wrappers.",
+   "issue": "`stabilizer_eq_bot`, `le_bot_of_le_stabilizer`, and `le_stabilizer_iff` restate the generic free-action stabilizer API for the total-space action.",
+   "line": 64
+  },
+  {
+   "evidence": "PR lines 117-124 prove `IsCancelSMul (Deck p) (p \u207b\u00b9' {b})` then restate the stabilizer as `\u22a5`; Mathlib's existing `IsCancelSMul.stabilizer_eq_bot` at `mathlib/Mathlib/GroupTheory/GroupAction/Basic.lean:241` applies to this action directly.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/Connected.lean",
+   "fix": "Use `fiber_isCancelSMul hp` to supply the `IsCancelSMul` instance locally, then apply `IsCancelSMul.stabilizer_eq_bot` or rewrite with it instead of maintaining fibre-specific duplicates.",
+   "issue": "`fiber_stabilizer_eq_bot`, `le_bot_of_le_fiber_stabilizer`, and `le_fiber_stabilizer_iff` repeat the same generic `IsCancelSMul` stabilizer API for the fibre action.",
+   "line": 123
+  }
+ ],
+ "head_sha": "59b197142219f24124fcecefabf33c9d5261de2f",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 85,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T084831Z-85-reuse-1b1727",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T08:48:31Z",
+ "summary": "The connected-cover determination lemmas appear genuinely new, but the stabilizer/subgroup API duplicates generic `IsCancelSMul` infrastructure once the PR's cancellative-action theorem is available.",
+ "transcript_blob": "3838823d9b6e623d3823a5addbeb6a8f304c133b4b8b2ad2c06056483742f2ca",
+ "usage": {
+  "cached_input_tokens": 78336,
+  "input_tokens": 180426,
+  "output_tokens": 2405,
+  "reasoning_output_tokens": 790
+ },
+ "verdict": "request_changes"
+}

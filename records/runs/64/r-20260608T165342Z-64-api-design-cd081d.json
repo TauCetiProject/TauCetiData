@@ -1,0 +1,107 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.761146,
+   "returncode": 0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 35147,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 35147,
+    "cache_read_input_tokens": 296507,
+    "inference_geo": "not_available",
+    "input_tokens": 1366,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4692,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4692,
+      "cache_read_input_tokens": 47216,
+      "input_tokens": 131,
+      "output_tokens": 6229,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15243,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_usd": 0.761146,
+ "dedupe_key": "FormalFrontier/TauCeti|64|ac2dbc85c632e1e8177100a448a38b484767b81c|api-design|claude-opus-4-8|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "FunctorOfPoints.lean:165-167 marks only mapValue_apply @[simp] with no pointwise simp twin; WithConv.lean:42 shows ofConv_toconv is not @[simp]; WithConv.lean:60 CoeFun has no reduction simp lemma.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/HopfMap.lean",
+   "fix": "Mirror the mapValue convention: keep only the WithConv-level mapDomain_apply as @[simp] and demote mapDomain_apply_apply (and mapDomain_inv_apply) to plain lemmas; or, if a pointwise normal form is wanted, drop @[simp] from mapDomain_apply instead so the pointwise lemmas become the normal form.",
+   "issue": "mapDomain_apply (line 62) and mapDomain_apply_apply (line 67) are both @[simp]. simp rewrites the subterm `mapDomain \u03c6 f` via mapDomain_apply first, producing `\u21d1(toConv (f.ofConv.comp \u03c6)) h`; since ofConv_toConv is not @[simp] (WithConv.lean:42) and no coe-of-toConv simp lemma exists, the term is stuck there and mapDomain_apply_apply can never match. The intended pointwise normal form `f.ofConv (\u03c6 h)` is not reached, and mapDomain_apply_apply is a dead simp lemma.",
+   "line": "67"
+  },
+  {
+   "evidence": "Lemma LHS `mapDomain (...) \u03c6 (f\u207b\u00b9) h` (line 121-123) is headed by `mapDomain`, which mapDomain_apply (line 62, @[simp]) rewrites away in post-order subterm simplification.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/HopfMap.lean",
+   "fix": "Drop @[simp] (keep it as the explicit pointwise formula), or resolve the mapDomain_apply/mapDomain_apply_apply simp conflict above so the inverse form can be reached.",
+   "issue": "mapDomain_inv_apply is @[simp] but is shadowed by the same mechanism: on `mapDomain \u03c6 f\u207b\u00b9 h`, mapDomain_apply rewrites the `mapDomain \u03c6 f\u207b\u00b9` subterm first, so this lemma's LHS never matches and the antipode form it records is never produced by simp.",
+   "line": "120"
+  }
+ ],
+ "head_sha": "ac2dbc85c632e1e8177100a448a38b484767b81c",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 64,
+ "prompt_policy": "fresh",
+ "provider": "claude",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T165342Z-64-api-design-cd081d",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T16:53:42Z",
+ "summary": "Surface is minimal, bodies hidden, and the characteristic API is complete and well-parallel to mapValue. But the pointwise @[simp] lemmas are shadowed by the WithConv-level mapDomain_apply @[simp], so they never fire and pointwise terms are left un-normalized.",
+ "transcript_blob": "838891b2a2862130f1b3cd83d73868e3dea236c8813116f6ee4a74db74aa5fd8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 35147,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 35147,
+  "cache_read_input_tokens": 296507,
+  "inference_geo": "not_available",
+  "input_tokens": 1366,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4692,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4692,
+    "cache_read_input_tokens": 47216,
+    "input_tokens": 131,
+    "output_tokens": 6229,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15243,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.269035,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 142208,
+    "input_tokens": 187244,
+    "output_tokens": 3498,
+    "reasoning_output_tokens": 1654
+   }
+  }
+ ],
+ "base_ref_oid": "2d9e8a18029339e84394e302bfc6f5d6792aa13b",
+ "cost_estimated": true,
+ "cost_usd": 0.269035,
+ "dedupe_key": "FormalFrontier/TauCeti|95|e0fb87462f870498bbb000c42a47523ce6c4fc03|generality|gpt-5.5|68ec685af806ec41|production|3",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`code/TauCeti/AlgebraicGeometry/WeilDivisor.lean:37` defines `WeilDivisor X = X \u2192\u2080 \u2124`; `mathlib/Mathlib/Order/Preorder/Finsupp.lean:85-99` gives `Finsupp` pointwise `SemilatticeSup`/`Lattice`, and the PR proofs at lines 40-83 just unfold pointwise `max` and support filtering.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Decomposition.lean",
+   "fix": "Prove Mathlib-level/TauCeti-generic lemmas for `f : \u03b9 \u2192\u2080 \u03b1` with a linear ordered additive group codomain, e.g. pointwise `posPart`/`negPart` application and support-filter lemmas, and specialize them for Weil divisors only if needed for namespacing.",
+   "issue": "`coeff_posPart`, `coeff_negPart`, `support_posPart`, and `support_negPart` are proved only for `WeilDivisor X = X \u2192\u2080 \u2124`, but the statements are generic finite-support facts about pointwise positive/negative parts.",
+   "line": 40
+  },
+  {
+   "evidence": "`mathlib/Mathlib/Algebra/Order/Group/PosPart.lean:23` documents generic `posPart_sub_negPart`; the PR lemmas at lines 161-169 are proved only by `rw [_root_.posPart_sub_negPart]` / `exact _root_.posPart_sub_negPart D`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Decomposition.lean",
+   "fix": "Remove these wrappers or replace them with a single appropriately general ordered-group/Finsupp lemma; downstream divisor proofs can rewrite with `_root_.posPart_sub_negPart` directly.",
+   "issue": "`coeff_posPart_sub_negPart` and `posPart_eq_self_add_negPart` are narrow Weil-divisor restatements of the generic ordered-group decomposition.",
+   "line": 161
+  }
+ ],
+ "head_sha": "e0fb87462f870498bbb000c42a47523ce6c4fc03",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 95,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T180246Z-95-generality-7ebd5b",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T18:02:46Z",
+ "summary": "The decomposition facts are at the wrong API level: several new Weil-divisor lemmas are specializations of generic `Finsupp` or ordered-group positive/negative-part facts. Generalize the finite-support and ordered-group statements first, then keep only divisor-specific wrappers that add effective/degree vocabulary.",
+ "transcript_blob": "4e5557116f155f2c921c7834ee43681845bff21955f8494dbe8a463f84a1a689",
+ "usage": {
+  "cached_input_tokens": 142208,
+  "input_tokens": 187244,
+  "output_tokens": 3498,
+  "reasoning_output_tokens": 1654
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.274746,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 76416,
+    "input_tokens": 197237,
+    "output_tokens": 2820,
+    "reasoning_output_tokens": 1432
+   }
+  }
+ ],
+ "base_ref_oid": "8b99891c1057ffca76cefca75c4ff6f889c30116",
+ "cost_estimated": true,
+ "cost_usd": 0.274746,
+ "dedupe_key": "FormalFrontier/TauCeti|42|0d60044d61ba0bfca82b5f9ef21e6985f7ce1450|api-design|gpt-5.5|dccacfb6e0bf58e2|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`rg` shows `@[expose] public noncomputable def append` at line 136 and only `public theorem endpoint_append` at line 140 for its behavior.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
+   "fix": "Remove `@[expose]` from `append` and add a characteristic lemma such as `@[simp] theorem toPath_append ... : (append \u03b3 \u03b4).toPath = (\u03b3.toPath.trans \u03b4).cast ...`, plus any needed `ofPath` restatement, so consumers can use append without unfolding.",
+   "issue": "`BasedPath.append` is `@[expose]` but the public API only gives `endpoint_append`; there is no theorem characterizing `(append \u03b3 \u03b4).toPath`, so users must unfold `append` to relate it to `\u03b3.toPath.trans \u03b4`.",
+   "line": 136
+  },
+  {
+   "evidence": "`endpoint_refl` is `@[simp]` at line 121, but `endpoint_ofPath` at line 107 and `endpoint_append` at line 140 are plain `public theorem`s.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
+   "fix": "Mark `endpoint_ofPath` and `endpoint_append` as `@[simp]` unless a concrete loop is demonstrated; these rewrite constructor endpoints to their normal forms and should drive downstream endpoint goals.",
+   "issue": "Endpoint normal-form lemmas for the constructors are not marked `@[simp]`: `endpoint_ofPath` and `endpoint_append` are the characteristic endpoint API for `ofPath`/`append`, but simplification will not use them automatically.",
+   "line": 107
+  },
+  {
+   "evidence": "Line 22 applies `@[expose] public section`; subsequent declarations include `def codRestrict` at line 70 and `def subpathOn` at line 148 with public restatement lemmas following them.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/UniversalCoverPrelude.lean",
+   "fix": "Drop the section-wide `@[expose]`; keep declarations public as needed and expose only definitions that genuinely must reduce across module boundaries, adding missing API lemmas instead of relying on transparency.",
+   "issue": "The whole prelude is under `@[expose] public section`, exposing bodies for vendored helpers such as `Path.codRestrict`, `Path.subpathOn`, and the partition lemmas even though the file supplies named API (`codRestrict_coe`, `map_codRestrict`, `subpathOn_apply`, `subpathOn_trans`, `subpathOn_zero_one`).",
+   "line": 22
+  }
+ ],
+ "head_sha": "0d60044d61ba0bfca82b5f9ef21e6985f7ce1450",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 42,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260605T003210Z-42-api-design-e6759c",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-05T00:32:10Z",
+ "summary": "The based-path surface exposes bodies where characteristic API should suffice, and key endpoint normal forms are not available to `simp`. Downstream universal-cover code will be forced to unfold definitions instead of using the intended public lemmas.",
+ "transcript_blob": "e09cde980a6b1469b2cc13e85b5940c4ca167a201ebd895f688c15e07be87684",
+ "usage": {
+  "cached_input_tokens": 76416,
+  "input_tokens": 197237,
+  "output_tokens": 2820,
+  "reasoning_output_tokens": 1432
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.123201,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 47232,
+    "input_tokens": 85921,
+    "output_tokens": 1580,
+    "reasoning_output_tokens": 281
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.123201,
+ "dedupe_key": "FormalFrontier/TauCeti|71|dac2fe0d195c4c2215e17f17be44a684ec7bbb6e|reuse|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`mathlib/Mathlib/Data/Finsupp/Weight.lean:213` defines `def degree : (\u03c3 \u2192\u2080 R) \u2192+ R`, `:220` has `degree_eq_sum`, `:225` has `degree_single`, `:230` has `degree_eq_zero_iff`, `:238` has `le_degree`, and `:259` has `range_single_one`; PR line 33 defines `order \u03b1 := \u03b1.sum fun _ n => n`.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "Import `Mathlib.Data.Finsupp.Weight` and use `Finsupp.degree`; replace `order_single`, `order_add`, `order_eq_sum`, `apply_le_order`, `order_eq_zero_iff`, and first-order characterization with `Finsupp.degree_single`, `map_add`, `Finsupp.degree_eq_sum`, `Finsupp.le_degree`, `Finsupp.degree_eq_zero_iff`, and `Finsupp.range_single_one` as appropriate.",
+   "issue": "`MultiIndex.order` is definitionally the same total-coordinate sum as Mathlib\u2019s `Finsupp.degree`, and most following lemmas restate existing API under parallel names.",
+   "line": 33
+  },
+  {
+   "evidence": "`mathlib/Mathlib/Data/Finsupp/Weight.lean:249` proves `theorem finite_of_degree_le [Finite \u03c3] (n : \u2115) : {f : \u03c3 \u2192\u2080 \u2115 | degree f \u2264 n}.Finite`; PR line 149 proves the same set finiteness for `order`.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "State downstream facts using `Finsupp.finite_of_degree_le` after rewriting `order` to `Finsupp.degree`, rather than adding a new `DegreeLE` injection proof.",
+   "issue": "`finite_setOf_order_le` duplicates Mathlib\u2019s bounded-degree finiteness theorem for finitely supported natural-valued functions.",
+   "line": 149
+  }
+ ],
+ "head_sha": "dac2fe0d195c4c2215e17f17be44a684ec7bbb6e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 71,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T192258Z-71-reuse-d9c731",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T19:22:58Z",
+ "summary": "The PR duplicates Mathlib\u2019s existing `Finsupp.degree` API for `\u03b9 \u2192\u2080 \u2115`; the bounded-order finiteness theorem is also already present. Replace the parallel `MultiIndex.order` layer with the existing `Finsupp.degree` declarations or make only local aliases/notational shims where PDE-facing names are essential.",
+ "transcript_blob": "5af58c411a6e6fe83a5e367f4eb5c2deb73b58cf54f81ffbaf9f4bacb0e8df12",
+ "usage": {
+  "cached_input_tokens": 47232,
+  "input_tokens": 85921,
+  "output_tokens": 1580,
+  "reasoning_output_tokens": 281
+ },
+ "verdict": "block"
+}

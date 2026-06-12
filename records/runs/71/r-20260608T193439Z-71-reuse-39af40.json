@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.113559,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 54400,
+    "input_tokens": 79847,
+    "output_tokens": 1375,
+    "reasoning_output_tokens": 206
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.113559,
+ "dedupe_key": "FormalFrontier/TauCeti|71|a315ddfe94bf4ea62215079fff83412147fa60f0|reuse|gpt-5.5|68ec685af806ec41|production|2",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "PR lines 29-30 define `order \u03b1 := Finsupp.degree \u03b1`; Mathlib has `def degree` at `mathlib/Mathlib/Data/Finsupp/Weight.lean:208`, `degree_eq_sum` at :222, `degree_single` at :226, `degree_eq_zero_iff` at :229, `le_degree` at :236, `range_single_one` at :260, and `degree_mono` at :284.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "Use `Finsupp.degree` directly, or make only local notation/aliases without re-exporting duplicate lemmas.",
+   "issue": "`MultiIndex.order` is just `Finsupp.degree`, and lines 37-89 restate existing degree API under parallel names.",
+   "line": 29
+  },
+  {
+   "evidence": "PR lines 135-136 prove the theorem by `simpa [MultiIndex, order] using Finsupp.finite_of_degree_le`; Mathlib theorem is `mathlib/Mathlib/Data/Finsupp/Weight.lean:250`.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "Use `Finsupp.finite_of_degree_le` directly for `{f : \u03b9 \u2192\u2080 \u2115 | Finsupp.degree f \u2264 k}`; derive subtype `Fintype` locally where needed.",
+   "issue": "`finite_setOf_order_le` duplicates Mathlib's bounded-degree finiteness theorem for the same underlying set after unfolding `MultiIndex.order`.",
+   "line": 135
+  }
+ ],
+ "head_sha": "a315ddfe94bf4ea62215079fff83412147fa60f0",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 71,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T193439Z-71-reuse-39af40",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T19:34:39Z",
+ "summary": "The PR introduces a parallel `MultiIndex.order`/`unit` API over `\u03b9 \u2192\u2080 \u2115` that Mathlib already provides as `Finsupp.degree` and `Finsupp.single _ 1`, including the bounded-degree finiteness theorem. Replace the exported duplicate layer with the existing `Finsupp` API, or keep only minimal local notation where downstream PDE definitions require it.",
+ "transcript_blob": "f5990a5dfb3edf46b03d7e104e702118f0711fef1e74bb1894d64dd1b38ed91f",
+ "usage": {
+  "cached_input_tokens": 54400,
+  "input_tokens": 79847,
+  "output_tokens": 1375,
+  "reasoning_output_tokens": 206
+ },
+ "verdict": "block"
+}

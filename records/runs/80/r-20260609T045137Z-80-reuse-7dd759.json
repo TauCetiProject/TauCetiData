@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.229346,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 90624,
+    "input_tokens": 158245,
+    "output_tokens": 3154,
+    "reasoning_output_tokens": 1320
+   }
+  }
+ ],
+ "base_ref_oid": "876857b36af89fd42fd0ef505d5bfd33b17e2378",
+ "cost_estimated": true,
+ "cost_usd": 0.229346,
+ "dedupe_key": "FormalFrontier/TauCeti|80|4d215bef31fd479681f34ed2c6e9c6271eb16a42|reuse|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`mathlib/Mathlib/Algebra/Category/HopfAlgCat/Basic.lean:31` defines `structure HopfAlgCat`, `:69` defines `structure Hom ... toBialgHom' : V \u2192\u2090c[R] W`, `:73` the category instance, `:78` the concrete category, and `:83`/`:87` `toBialgHom`/`ofHom`; the new file repeats these at lines 50, 72, 76, 82, 87, and 91.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat.lean",
+   "fix": "Reuse `HopfAlgCat` for the categorical API, or make any commutative-only wrapper explicitly bridge to it instead of duplicating the morphism/category surface.",
+   "issue": "`CommHopfAlgCat` reimplements the same bundled-category layer already present as Mathlib's `HopfAlgCat`: object carrier plus HopfAlgebra, bialgebra-hom morphisms, category instance, concrete category, `ofHom`, `toBialgHom`, and simp lemmas.",
+   "line": 50
+  },
+  {
+   "evidence": "`code/TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean:39` has variables `[Semiring H] [HopfAlgebra R H]`, and `:97` defines `HopfAlgebra.pointsFunctor`; `code/TauCeti/Algebra/AlgebraicGroup/HopfMap.lean:51` defines `AlgHom.mapDomain` for bialgebra morphisms. Mathlib's `HopfAlgCat` morphisms are exactly bialgebra morphisms at `mathlib/Mathlib/Algebra/Category/HopfAlgCat/Basic.lean:69`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat.lean",
+   "fix": "Define the contravariant points functor on `(HopfAlgCat R)\u1d52\u1d56`; downstream commutative Hopf algebras can use it through `HopfAlgCat.of R H` or an explicit restriction/bridge.",
+   "issue": "`pointsFunctorFunctor` is a commutative-category special case of a functor that can be defined on Mathlib's existing `HopfAlgCat`, since `HopfAlgebra.pointsFunctor` and `AlgHom.mapDomain` only require a Hopf/bialgebra source, not a commutative source.",
+   "line": 200
+  }
+ ],
+ "head_sha": "4d215bef31fd479681f34ed2c6e9c6271eb16a42",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 80,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T045137Z-80-reuse-7dd759",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T04:51:37Z",
+ "summary": "The PR adds useful functoriality, but it introduces a parallel bundled Hopf-algebra category instead of reusing Mathlib's existing `HopfAlgCat` API. The points construction itself does not need commutativity, so tying it to a new duplicate category creates avoidable incompatible API.",
+ "transcript_blob": "8855903bb5f208e9ba6c7861b2861688ec3dfe4d58e35494f6005d79b9c7a20a",
+ "usage": {
+  "cached_input_tokens": 90624,
+  "input_tokens": 158245,
+  "output_tokens": 3154,
+  "reasoning_output_tokens": 1320
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.145369,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 59008,
+    "input_tokens": 98367,
+    "output_tokens": 2241,
+    "reasoning_output_tokens": 957
+   }
+  }
+ ],
+ "base_ref_oid": "ecbb68804f47965ec971c6f7189d5ff738abe02c",
+ "cost_estimated": true,
+ "cost_usd": 0.145369,
+ "dedupe_key": "FormalFrontier/TauCeti|140|b51df1bb45266fba6d4762f2eecd743c337b0897|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "roadmap/TauCetiRoadmap/Multiquadratic/Targets.lean:42-45 states the degree target for arbitrary `K`, `L`; roadmap/TauCetiRoadmap/Multiquadratic/README.md:47-49 says not to bake in `K = \u211a`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/SquareClass.lean",
+   "fix": "Generalize the public API to `d : \u03b9 \u2192 K`, chosen roots `r : \u03b9 \u2192 L`, and hypotheses `r i ^ 2 = algebraMap K L (d i)`, then derive the rational-real version as a corollary if needed.",
+   "issue": "`sqrtTower`, `mem_sup_adjoin_sq`, and `squareClass_of_sqrt_mem` expose a `\u211a`/`\u211d`-only API, but the named Layer-0 target is field-generic over `K` and `L`.",
+   "line": 41
+  },
+  {
+   "evidence": "grep hit: `theorem mem_sup_adjoin_sq ... : \u2203 a b : \u211d, a \u2208 K \u2227 b \u2208 K \u2227 y = a + b * x` at lines 61-63; no matching reverse or `_iff` theorem appears in `rg \"mem_sup_adjoin_sq|_iff\"`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/SquareClass.lean",
+   "fix": "Expose an iff, e.g. `mem_sup_adjoin_sq_iff : y \u2208 K \u2294 adjoin \u211a {x} \u2194 \u2203 a b, a \u2208 K \u2227 b \u2208 K \u2227 y = a + b * x`, or add the reverse introduction theorem with the iff as the main API.",
+   "issue": "`mem_sup_adjoin_sq` gives only the elimination direction from membership to `a + b*x`, so the normal form lacks its characteristic introduction/iff lemma.",
+   "line": 61
+  },
+  {
+   "evidence": "grep hits show only `sqrtTower_zero` and `sqrtTower_succ` at lines 44 and 47; there is no `mem_sqrtTower`, generator-introduction, or monotonicity lemma for `sqrtTower` in `code/TauCeti/NumberTheory/Multiquadratic/SquareClass.lean`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/SquareClass.lean",
+   "fix": "Mark `sqrtTower_zero` as `@[simp]` and add public generator/monotonicity lemmas such as `Real.sqrt (c j) \u2208 sqrtTower c n` for `j < n` and `sqrtTower c m \u2264 sqrtTower c n` for `m \u2264 n`, so users need not unfold `sqrtTower`.",
+   "issue": "The tower definition has recursion lemmas but no basic characteristic membership API or simp normal form for the base case.",
+   "line": 44
+  }
+ ],
+ "head_sha": "b51df1bb45266fba6d4762f2eecd743c337b0897",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 140,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260612T090431Z-140-api-design-d8867f",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-12T09:04:31Z",
+ "summary": "The exposed API is too specialized for the roadmap target and the new normal-form theorem is only half of the characteristic API. Add the missing generic/iff-facing surface before downstream degree work depends on this file.",
+ "transcript_blob": "d3307f8c41670f7a3ab154b58cd545f1a46c744a6ee7e109b5926fa07e46565a",
+ "usage": {
+  "cached_input_tokens": 59008,
+  "input_tokens": 98367,
+  "output_tokens": 2241,
+  "reasoning_output_tokens": 957
+ },
+ "verdict": "request_changes"
+}

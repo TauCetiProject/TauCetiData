@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.776062,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 398848,
+    "input_tokens": 590106,
+    "output_tokens": 3843,
+    "reasoning_output_tokens": 944
+   }
+  }
+ ],
+ "base_ref_oid": "5bdf187961308247fef6831f1c8b500c06f81f7f",
+ "cost_estimated": true,
+ "cost_usd": 0.776062,
+ "dedupe_key": "FormalFrontier/TauCeti|83|95cc54b1a5a9ca3cdb9170cd8701c67b42ea0912|reuse|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "PR line 278 proves `(0 : WeilDivisor X) \u2208 degreeZeroSubgroup X`; Mathlib exports `zero_mem` for all zero-closed subobjects at `mathlib/Mathlib/Algebra/Group/Submonoid/Defs.lean:71-77`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor.lean",
+   "fix": "Remove this declaration; users can write `zero_mem (degreeZeroSubgroup X)` or let simp use the existing `[simp]` `zero_mem`.",
+   "issue": "`zero_mem_degreeZeroSubgroup` duplicates the generic `zero_mem` API for every `AddSubgroup`.",
+   "line": 278
+  },
+  {
+   "evidence": "PR lines 281-291 define each lemma by immediately calling the same generic method; Mathlib provides additive subgroup closure via `AddSubmonoidClass`/`AddSubgroupClass` at `mathlib/Mathlib/Algebra/Group/Submonoid/Defs.lean:117-121` and `mathlib/Mathlib/Algebra/Group/Subgroup/Defs.lean:76-78,112-116`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor.lean",
+   "fix": "Delete these wrappers and use `(degreeZeroSubgroup X).add_mem`, `(degreeZeroSubgroup X).neg_mem`, and the existing subgroup `sub_mem` API at call sites.",
+   "issue": "`degreeZeroSubgroup.add_mem`, `degreeZeroSubgroup.neg_mem`, and `degreeZeroSubgroup.sub_mem` are only renamed wrappers around the existing AddSubgroup closure methods.",
+   "line": 281
+  }
+ ],
+ "head_sha": "95cc54b1a5a9ca3cdb9170cd8701c67b42ea0912",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 83,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T071959Z-83-reuse-17dfe4",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T07:19:59Z",
+ "summary": "The PR mostly reuses the existing Finsupp and kernel API, but it adds direct wrappers for generic AddSubgroup closure lemmas that should not become parallel TauCeti API.",
+ "transcript_blob": "f190dce73252e049d49122f6ff8c7012a0c0dcd3c77b0273fcdef1c604951af8",
+ "usage": {
+  "cached_input_tokens": 398848,
+  "input_tokens": 590106,
+  "output_tokens": 3843,
+  "reasoning_output_tokens": 944
+ },
+ "verdict": "block"
+}

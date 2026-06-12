@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.16213,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 69632,
+    "input_tokens": 104192,
+    "output_tokens": 3189,
+    "reasoning_output_tokens": 1755
+   }
+  }
+ ],
+ "base_ref_oid": "329da1a2ff06489aa50967e7acf0e0500bd6383a",
+ "cost_estimated": true,
+ "cost_usd": 0.16213,
+ "dedupe_key": "FormalFrontier/TauCeti|114|73005bc43a0f952f14e29cad82b744fc3130bb9a|api-design|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Lines 43-51 define `submoduleCoactionRange` as `LinearMap.range ...` and make `IsSubcomodule` depend on it; `rg -n \"mem_.*submoduleCoactionRange|submoduleCoactionRange_.*iff|IsSubcomodule.*iff\" code/TauCeti` has no hits.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Subcomodule.lean",
+   "fix": "Add a characteristic iff, preferably simp-normal, e.g. `x \u2208 submoduleCoactionRange P \u2194 \u2203 y : P \u2297[R] C, TensorProduct.map P.subtype LinearMap.id y = x`, and use it in the exposed stability API.",
+   "issue": "`submoduleCoactionRange` is public and used in `IsSubcomodule`, but there is no `mem_submoduleCoactionRange`/`*_def` theorem characterizing membership in the image of `P \u2297 C`; consumers must unfold the definition and use `LinearMap.mem_range`.",
+   "line": 43
+  },
+  {
+   "evidence": "Lines 13-17 advertise top and bottom; lines 59-104 expose only `mk`, `toSubmodule`, `isSubcomodule`, `map_coact`, and inherited submodule membership lemmas.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Subcomodule.lean",
+   "fix": "Either add the advertised public API with `@[simp]` lemmas such as `toSubmodule_top`, `toSubmodule_bot`, `mem_top`, and `mem_bot`, or remove the claim until that API is introduced.",
+   "issue": "The module doc says this file supplies `the top and bottom subcomodules`, but the namespace exposes no `Top`/`Bot` instances or `Subcomodule.top`/`Subcomodule.bot` constructors and no simp lemmas for their underlying submodules.",
+   "line": 13
+  }
+ ],
+ "head_sha": "73005bc43a0f952f14e29cad82b744fc3130bb9a",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 114,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T144901Z-114-api-design-c1aa31",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T14:49:01Z",
+ "summary": "The new public type exposes the intended predicate, but the characteristic API is too thin for downstream use without unfolding implementation details. It also advertises top/bottom subcomodules without providing that public interface.",
+ "transcript_blob": "3fef4abca2c10a7700ffe5b414478e10d46048885d266f21cbbb1660650c5932",
+ "usage": {
+  "cached_input_tokens": 69632,
+  "input_tokens": 104192,
+  "output_tokens": 3189,
+  "reasoning_output_tokens": 1755
+ },
+ "verdict": "request_changes"
+}

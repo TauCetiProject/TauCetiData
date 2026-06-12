@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.153499,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 49792,
+    "input_tokens": 105223,
+    "output_tokens": 2197,
+    "reasoning_output_tokens": 999
+   }
+  }
+ ],
+ "base_ref_oid": "ffd8c182274adf8cdddef36549a74b10eaa7debc",
+ "cost_estimated": true,
+ "cost_usd": 0.153499,
+ "dedupe_key": "FormalFrontier/TauCeti|132|aad03b778ab4afc232869b6575f9c27dd75888a0|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "grep hit: `theorem assoc_rTensor_rTensor_apply ...`, used only in the private coassociativity proofs at lines 105 and 117.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
+   "fix": "Make it `private` or move a genuinely reusable tensor naturality lemma to an appropriate tensor API file with a non-product-specific name.",
+   "issue": "`assoc_rTensor_rTensor_apply` is a public proof-calculation helper unrelated to the named product API.",
+   "line": 62
+  },
+  {
+   "evidence": "grep hits: public `noncomputable def prodCoact` at line 79 and public `theorem prodCoact_comp_inl`/`prodCoact_comp_inr` at lines 84 and 89 duplicate the public `prod_coact_*` lemmas at lines 160-176.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
+   "fix": "Make `prodCoact` and `prodCoact_comp_inl`/`prodCoact_comp_inr` private, keeping public `prod_coact_apply`, `prod_coact_inl`, and `prod_coact_inr` as the characteristic API.",
+   "issue": "`prodCoact` and its `prodCoact_*` lemmas expose the construction body in addition to the intended `coact` restatements.",
+   "line": 79
+  },
+  {
+   "evidence": "grep hits show only `fst_comp_prod`, `snd_comp_prod`, `coprod_comp_inl`, and `coprod_comp_inr` at lines 260-270; no `unique`/`ext`/`hom_ext` lemma appears in `TauCeti/Algebra/Coalgebra/Comodule/Prod.lean`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
+   "fix": "Add characteristic uniqueness lemmas, e.g. `prod_unique`/`prod_ext` for maps into `M \u00d7 N` and `coprod_unique`/`coprod_ext` for maps out of `M \u00d7 N`, with suitable `@[ext]` or `@[simp]` annotations where they match normal form.",
+   "issue": "`prod` and `coprod` have projection/inclusion equations but no uniqueness/extensionality lemmas, so the API does not actually expose the universal properties without re-proving them by unfolding/ext.",
+   "line": 260
+  }
+ ],
+ "head_sha": "aad03b778ab4afc232869b6575f9c27dd75888a0",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 132,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260611T032054Z-132-api-design-3b0e1c",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-11T03:20:54Z",
+ "summary": "The product/comodule surface exposes proof and implementation helpers, and the claimed product/coproduct API is missing the uniqueness half of the universal properties.",
+ "transcript_blob": "1268e5881ab70f0c35a5f07cf0e022b231b8b5748aa51d48e371f317be1be47b",
+ "usage": {
+  "cached_input_tokens": 49792,
+  "input_tokens": 105223,
+  "output_tokens": 2197,
+  "reasoning_output_tokens": 999
+ },
+ "verdict": "request_changes"
+}

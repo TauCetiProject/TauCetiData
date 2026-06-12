@@ -1,0 +1,114 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.278035,
+   "returncode": 0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 17434,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 17434,
+    "cache_read_input_tokens": 72634,
+    "inference_geo": "not_available",
+    "input_tokens": 1230,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3189,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3189,
+      "cache_read_input_tokens": 31006,
+      "input_tokens": 223,
+      "output_tokens": 3827,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4842,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_usd": 0.278035,
+ "dedupe_key": "FormalFrontier/TauCeti|65|bb57396a3c355a3f460ab4910a9018f68e295703|api-design|claude-opus-4-8|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Lines 67-69 vs 82-85 \u2014 same signature, `solution_unique := eq_solution_of_forall_apply_eq hB \u2113 hu`.",
+   "file": "TauCeti/Analysis/PDE/Variational.lean",
+   "fix": "Remove `solution_unique` and keep `eq_solution_of_forall_apply_eq` (or vice versa); do not expose both.",
+   "issue": "`solution_unique` has the identical statement and hypotheses as `eq_solution_of_forall_apply_eq` (both: `(hB) (\u2113) {u} (hu : \u2200 v, B u v = \u2113 v) : u = solution hB \u2113`); its body is just `eq_solution_of_forall_apply_eq hB \u2113 hu`. This is a redundant public name.",
+   "line": "82"
+  },
+  {
+   "evidence": "Line 61-64; analogous Mathlib lemma `continuousLinearEquivOfBilin_apply` is `@[simp]` (LaxMilgram.lean:108).",
+   "file": "TauCeti/Analysis/PDE/Variational.lean",
+   "fix": "Annotate `solution_spec` `@[simp]` (and/or `@[grind]`); LHS `B (solution hB \u2113) v` is a clean normal form that rewrites to `\u2113 v` without looping.",
+   "issue": "`solution_spec : B (solution hB \u2113) v = \u2113 v` is the defining elimination lemma of `solution`, but carries no `@[simp]`/`@[grind]`, so consumers must invoke it by hand to discharge `B (solution \u2026) v = \u2113 v` goals.",
+   "line": "61"
+  },
+  {
+   "evidence": "Lines 36-37 define it as `(toDual \u211d V).symm \u2113`; used only at lines 51, 56-58, 111.",
+   "file": "TauCeti/Analysis/PDE/Variational.lean",
+   "fix": "Make `rieszRepresentative` (and its lemma) `private`, or drop it and inline `(toDual \u211d V).symm`, to keep the surface minimal.",
+   "issue": "`rieszRepresentative` is a public rename of the existing `(toDual \u211d V).symm` and is only used internally by `solution`/`solutionCLM`; the named downstream target (Lane D weak solution) consumes `solution`/`existsUnique_forall_apply_eq`, not this helper.",
+   "line": "36"
+  }
+ ],
+ "head_sha": "bb57396a3c355a3f460ab4910a9018f68e295703",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 65,
+ "prompt_policy": "fresh",
+ "provider": "claude",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T172409Z-65-api-design-2978b0",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T17:24:09Z",
+ "summary": "Bodies are correctly unexposed and the existence/uniqueness characterization is present, but the surface carries an exact duplicate lemma and the central characteristic lemma lacks an automation annotation.",
+ "transcript_blob": "7a32869996aad7354ad4f9e8bbaeabf88267b021d7e5de94ed180f850f2f21e8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 17434,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 17434,
+  "cache_read_input_tokens": 72634,
+  "inference_geo": "not_available",
+  "input_tokens": 1230,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3189,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3189,
+    "cache_read_input_tokens": 31006,
+    "input_tokens": 223,
+    "output_tokens": 3827,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4842,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

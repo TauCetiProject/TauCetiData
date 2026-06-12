@@ -1,0 +1,107 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.672036,
+   "returncode": 0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 27696,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 27696,
+    "cache_read_input_tokens": 199889,
+    "inference_geo": "not_available",
+    "input_tokens": 1234,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2376,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2376,
+      "cache_read_input_tokens": 42081,
+      "input_tokens": 2,
+      "output_tokens": 8879,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15486,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_usd": 0.672036,
+ "dedupe_key": "FormalFrontier/TauCeti|54|16d516e84d317aec05d9f529b93e4162127ee0bf|api-design|claude-opus-4-8|68ec685af806ec41|production|2",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "mapPoints_apply RHS `toConv (\u03c6.hom.comp f.ofConv)` (line 64) matches f:=1; mathlib/Mathlib/Algebra/WithConv.lean:42 shows `ofConv_toConv` is not @[simp] and Bialgebra/Convolution.lean:48 shows `convOne_def` is not @[simp], so the two normal forms don't reconverge.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Drop `@[simp]` from `mapPoints_one` (keep the lemma), matching `mapPoints_mul`/`mapPoints_inv` which correctly omit it.",
+   "issue": "`mapPoints_one` (@[simp]) and `mapPoints_apply` (@[simp], line 61) both rewrite `mapPoints \u03c6 1`: to `1` vs `toConv (\u03c6.hom.comp (1).ofConv)`. Non-confluent \u2014 the toConv form doesn't reduce to 1 since `convOne_def`/`ofConv_toConv` aren't simp.",
+   "line": "68"
+  },
+  {
+   "evidence": "Lean simp simplifies subterms bottom-up, so `pointsFunctor.map \u03c6`\u2192`mapPoints \u03c6` fires before the outer LHS at line 120 can match; `ofConv_toConv` (WithConv.lean:42) is not @[simp], so `(toConv \u2026).ofConv` does not reduce.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Remove `@[simp]` from `pointsFunctor_map` so the pointwise lemma can fire, or drop `pointsFunctor_map_apply_apply` and rely on `pointsFunctor_map` + `mapPoints_apply`.",
+   "issue": "`pointsFunctor_map_apply_apply` (@[simp]) is ineffective: simp rewrites the `pointsFunctor.map \u03c6` subterm via `pointsFunctor_map` (@[simp], line 111) then `mapPoints_apply`, destroying this lemma's LHS and leaving the pointwise value stuck at `(toConv (\u03c6.hom.comp f.ofConv)).ofConv h` (ofConv_toConv not simp), never reaching `\u03c6.hom (f.ofConv h)`.",
+   "line": "117"
+  }
+ ],
+ "head_sha": "16d516e84d317aec05d9f529b93e4162127ee0bf",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 54,
+ "prompt_policy": "reactivation",
+ "provider": "claude",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T120552Z-54-api-design-31b39f",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T12:05:52Z",
+ "summary": "The bodies stay hidden and the obj/map/pointwise characteristic API is present, but two automation annotations conflict: mapPoints_one's @[simp] overlaps mapPoints_apply's @[simp] on `mapPoints \u03c6 1` with divergent, non-reconverging RHSs, and pointsFunctor_map @[simp] pre-empts pointsFunctor_map_apply_apply so the pointwise functor value gets stuck mid-rewrite.",
+ "transcript_blob": "a40c0f4380acf408e8e5aaa1fb8e01de85d3491533d1c33dc395b3e43f538bc1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 27696,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 27696,
+  "cache_read_input_tokens": 199889,
+  "inference_geo": "not_available",
+  "input_tokens": 1234,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2376,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2376,
+    "cache_read_input_tokens": 42081,
+    "input_tokens": 2,
+    "output_tokens": 8879,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15486,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

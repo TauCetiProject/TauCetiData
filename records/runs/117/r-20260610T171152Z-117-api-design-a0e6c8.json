@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.275204,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 134016,
+    "input_tokens": 192083,
+    "output_tokens": 3510,
+    "reasoning_output_tokens": 1481
+   }
+  }
+ ],
+ "base_ref_oid": "2d010f358dd60ce2d071becb589d5f0ee1c25787",
+ "cost_estimated": true,
+ "cost_usd": 0.275204,
+ "dedupe_key": "FormalFrontier/TauCeti|117|370150a164ee645de93e97028963d8d8e0f5557b|api-design|gpt-5.5|68ec685af806ec41|production|3",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`rg -n \"PUnit|punit_coact|instPUnit\" TauCeti` only finds these new public declarations and the bodies of `ComoduleCat.zero`/`FGComoduleCat.zero`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Zero.lean",
+   "fix": "Make the `PUnit` comodule instance/proof private implementation detail and remove or privatize `punit_coact`; keep public access through `isZero_zero`, `hasZeroObject`, and the morphism lemmas.",
+   "issue": "The public declarations `Comodule.instPUnit` and `Comodule.punit_coact` expose the concrete `PUnit` implementation of the zero comodule, even though downstream code should use `ComoduleCat.zero`/`FGComoduleCat.zero` through their `IsZero` API.",
+   "line": 53
+  },
+  {
+   "evidence": "Lines 109, 115, 177, and 183 mark only the canonical `IsZero.to_`/`from_` maps as simp, while lines 101, 105, 168, and 172 define the arbitrary-morphism normal forms without `@[simp]`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Zero.lean",
+   "fix": "Add `@[simp]` to the four named morphism-to-zero/morphism-from-zero lemmas; these rewrite only morphisms whose source or target is the named zero object and should not loop.",
+   "issue": "The characteristic normal forms `zero_hom_eq_zero`/`hom_zero_eq_zero` for `ComoduleCat.zero`, and the parallel `FGComoduleCat` lemmas at lines 168 and 172, are not marked `@[simp]`, so users cannot normalize maps to or from the named zero object without invoking the lemmas manually.",
+   "line": 101
+  }
+ ],
+ "head_sha": "370150a164ee645de93e97028963d8d8e0f5557b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 117,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T171152Z-117-api-design-a0e6c8",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T17:11:52Z",
+ "summary": "The zero-object API for both bundled categories is now present, but the PR still exposes implementation details and leaves the main morphism normal forms out of `simp`. These are public-interface issues for the roadmap-facing zero object.",
+ "transcript_blob": "a5e34a4b11eeff2040526a25af4b59892bd512094918a49048a2140f0b8fc07e",
+ "usage": {
+  "cached_input_tokens": 134016,
+  "input_tokens": 192083,
+  "output_tokens": 3510,
+  "reasoning_output_tokens": 1481
+ },
+ "verdict": "request_changes"
+}

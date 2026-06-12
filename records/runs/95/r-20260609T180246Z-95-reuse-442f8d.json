@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.331807,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 177408,
+    "input_tokens": 244878,
+    "output_tokens": 2571,
+    "reasoning_output_tokens": 641
+   }
+  }
+ ],
+ "base_ref_oid": "2d9e8a18029339e84394e302bfc6f5d6792aa13b",
+ "cost_estimated": true,
+ "cost_usd": 0.331807,
+ "dedupe_key": "FormalFrontier/TauCeti|95|e0fb87462f870498bbb000c42a47523ce6c4fc03|reuse|gpt-5.5|68ec685af806ec41|production|3",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`WeilDivisor.lean:37-38` abbreviates `WeilDivisor X := X \u2192\u2080 \u2124`; `WeilDivisor.lean:89-92` defines `IsEffective D` as pointwise `0 \u2264 coeff D x`; `Mathlib/Data/Finsupp/Order.lean:17-24` records pointwise order on finsupps; `Mathlib/Algebra/Order/Group/PosPart.lean:77-90` provides `posPart_nonneg`, `negPart_nonneg`, and `posPart_eq_self`; lines `120-126` provide `negPart_eq_zero` via `to_additive`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Decomposition.lean",
+   "fix": "Remove these wrappers and use `posPart_nonneg`, `negPart_nonneg`, `posPart_eq_self`, and `negPart_eq_zero` directly; `WeilDivisor X` is the pointwise ordered finsupp `X \u2192\u2080 \u2124`.",
+   "issue": "`isEffective_posPart`, `isEffective_negPart`, `posPart_eq_self_of_isEffective`, `negPart_eq_zero_of_isEffective`, and `isEffective_iff_negPart_eq_zero` duplicate Mathlib's ordered-group lemmas for the same `D\u207a`/`D\u207b` operations.",
+   "line": 109
+  },
+  {
+   "evidence": "`Decomposition.lean:161-163` proves the lemma solely by `rw [_root_.posPart_sub_negPart]`; `Mathlib/Algebra/Order/Group/PosPart.lean:23-24` lists `posPart_sub_negPart` as the existing decomposition theorem, and `Decomposition.lean:215-217` already uses that root theorem directly.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Decomposition.lean",
+   "fix": "Remove the coefficient wrapper and rewrite with `_root_.posPart_sub_negPart D` followed by `rfl`/`simp [coeff]` at use sites.",
+   "issue": "`coeff_posPart_sub_negPart` is only the coefficientwise restatement of Mathlib's existing decomposition theorem `posPart_sub_negPart`.",
+   "line": 161
+  }
+ ],
+ "head_sha": "e0fb87462f870498bbb000c42a47523ce6c4fc03",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 95,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T180246Z-95-reuse-442f8d",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T18:02:46Z",
+ "summary": "The PR still adds direct namespace wrappers for Mathlib's existing positive/negative-part API on the ordered group `X \u2192\u2080 \u2124`. These declarations should be removed and downstream code should use the existing root lemmas.",
+ "transcript_blob": "55e040cc68cb4f96e5d104fb0a0536addfc98dccb3424f4608ce2ff8bfc77426",
+ "usage": {
+  "cached_input_tokens": 177408,
+  "input_tokens": 244878,
+  "output_tokens": 2571,
+  "reasoning_output_tokens": 641
+ },
+ "verdict": "block"
+}

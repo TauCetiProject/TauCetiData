@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.120054,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 29312,
+    "input_tokens": 77923,
+    "output_tokens": 2265,
+    "reasoning_output_tokens": 1122
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.120054,
+ "dedupe_key": "FormalFrontier/TauCeti|71|dac2fe0d195c4c2215e17f17be44a684ec7bbb6e|api-design|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Lines 136-146 define `toBoundedFun`, `toBoundedFun_injective`, then use them immediately in `Fintype.ofInjective`; grep finds no other use.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "Make both declarations `private` or move them into a private section, leaving the `Fintype (DegreeLE \u03b9 k)` instance and `finite_setOf_order_le` as the public finiteness API.",
+   "issue": "`toBoundedFun` and `toBoundedFun_injective` are public, but they are only the encoding used to construct `degreeLEFintype`, not part of the Sobolev-facing multiindex API.",
+   "line": 136
+  },
+  {
+   "evidence": "Lines 52-54 prove `order (\u03b1 + \u03b2) = order \u03b1 + order \u03b2`; lines 110-112 prove `unit i j = 0` under `j \u2260 i`; nearby `order_zero`, `order_single`, `order_unit`, and `unit_apply_self` are already `[simp]`.",
+   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+   "fix": "Add `@[simp]` to `order_add` and `unit_apply_ne` if they remain public; both rewrite to smaller normal forms and should not loop.",
+   "issue": "The characteristic normal forms `order_add` and `unit_apply_ne` are not tagged `[simp]`, so users cannot normalize `order (\u03b1 + \u03b2)` or off-coordinate `unit i j` without naming these lemmas.",
+   "line": 52
+  }
+ ],
+ "head_sha": "dac2fe0d195c4c2215e17f17be44a684ec7bbb6e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 71,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T192258Z-71-api-design-a69606",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T19:22:58Z",
+ "summary": "The API exposes an implementation encoding for the finiteness proof and leaves basic normal forms out of `simp`, so downstream Sobolev code will either depend on internals or need avoidable manual rewrites.",
+ "transcript_blob": "f516e78924e6ee1bd8691436c036b42c3b1bf02a7d34bcbd3377836a0d591cbc",
+ "usage": {
+  "cached_input_tokens": 29312,
+  "input_tokens": 77923,
+  "output_tokens": 2265,
+  "reasoning_output_tokens": 1122
+ },
+ "verdict": "request_changes"
+}

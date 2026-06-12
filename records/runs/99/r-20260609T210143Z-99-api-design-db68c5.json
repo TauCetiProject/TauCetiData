@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.145839,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 51328,
+    "input_tokens": 97535,
+    "output_tokens": 2392,
+    "reasoning_output_tokens": 960
+   }
+  }
+ ],
+ "base_ref_oid": "96e15164758476bb26b3d1e75d3cc3a74b963947",
+ "cost_estimated": true,
+ "cost_usd": 0.145839,
+ "dedupe_key": "FormalFrontier/TauCeti|99|9f5a5305588d49c4d70f0df60694d03e4759652c|api-design|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Lines 82-98 define public `baseToSelfLinearMap` only to use it as the `toLinearMap` field of `baseToSelf` and in `baseToSelf_toLinearMap`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean",
+   "fix": "Make `baseToSelfLinearMap` private or inline it, and restate `baseToSelf_toLinearMap` directly as `(baseToSelf R C).toLinearMap = Algebra.linearMap R C`.",
+   "issue": "`baseToSelfLinearMap` publicly exposes a redundant implementation helper for `Algebra.linearMap R C`; downstream users need the comodule morphism and its underlying-map theorem, not a second public name for the algebra unit.",
+   "line": 83
+  },
+  {
+   "evidence": "Lines 119-126 define `IsCoinvariant` and its iff restatement; later proofs still use `simp [IsCoinvariant]` at line 130 instead of relying on the API.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean",
+   "fix": "Add `@[simp]` to `isCoinvariant_iff` if that equality is the intended normal form, or provide a separately tagged `isCoinvariant_def`/simp lemma with the same statement.",
+   "issue": "`isCoinvariant_iff` is the characteristic restatement of `IsCoinvariant` but is not tagged for simplification, so users must unfold the predicate manually for the normal coaction equality.",
+   "line": 123
+  },
+  {
+   "evidence": "Lines 147-175 provide `apply_one_isCoinvariant` and `ofCoinvariant_apply_one`; line 179 has only extensionality, not the named inverse lemma needed to use the correspondence without rebuilding the proof.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean",
+   "fix": "Add a lemma such as `ofCoinvariant_apply_one_isCoinvariant (f : Hom R C R M) : ofCoinvariant (f 1) (apply_one_isCoinvariant f) = f` (proved by `hom_ext_one`), or package the correspondence as an equivalence with its simp lemmas.",
+   "issue": "The API says morphisms from the trivial comodule are controlled by coinvariant vectors, but it lacks the inverse/universal-property lemma recovering a morphism from its value at `1`.",
+   "line": 153
+  }
+ ],
+ "head_sha": "9f5a5305588d49c4d70f0df60694d03e4759652c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 99,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T210143Z-99-api-design-db68c5",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T21:01:43Z",
+ "summary": "The new trivial-comodule surface exposes an implementation helper and stops short of the characteristic API promised for morphisms out of the trivial comodule. A coinvariant normal-form lemma is also missing the automation annotation expected for this API.",
+ "transcript_blob": "84bbb28993d3e532bbbad27f8a77ceb948def3812b3842b63b4f71f738df261d",
+ "usage": {
+  "cached_input_tokens": 51328,
+  "input_tokens": 97535,
+  "output_tokens": 2392,
+  "reasoning_output_tokens": 960
+ },
+ "verdict": "request_changes"
+}

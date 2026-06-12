@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.13553,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 69632,
+    "input_tokens": 87120,
+    "output_tokens": 2663,
+    "reasoning_output_tokens": 1450
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.13553,
+ "dedupe_key": "FormalFrontier/TauCeti|71|93dc04af3e4da6d96ba131b638465c048ceea68a|api-design|gpt-5.5|68ec685af806ec41|production|5",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`nl -ba TauCeti/Data/MultiIndex.lean` shows the public field at lines 23-25 and representation-facing lemmas at lines 42-67.",
+   "file": "TauCeti/Data/MultiIndex.lean",
+   "fix": "Hide the representation field/constructor as much as Lean permits and expose only the needed multiindex operations and characteristic lemmas; remove public representation lemmas unless a downstream target actually needs them.",
+   "issue": "`MultiIndex.toFinsupp` is a public field, and the file exports `toFinsupp_*`/`order_def` lemmas, so downstream Sobolev code can depend directly on the `Finsupp` representation instead of the TauCeti multiindex API.",
+   "line": "25"
+  },
+  {
+   "evidence": "`rg -n \"coordinate_le_of_mem_degreeLE|@\\[grind\\]\" TauCeti/Data/MultiIndex.lean` shows the lemma at line 99 and no `@[grind]` annotations in the file.",
+   "file": "TauCeti/Data/MultiIndex.lean",
+   "fix": "Add `@[grind]` to `coordinate_le_of_mem_degreeLE` so bounded derivative-family arithmetic can use the coordinate bound without unfolding `degreeLE`/`order`.",
+   "issue": "`coordinate_le_of_mem_degreeLE` is the characteristic bound for indices in `DegreeLE`, but it is not annotated for automation.",
+   "line": "99"
+  }
+ ],
+ "head_sha": "93dc04af3e4da6d96ba131b638465c048ceea68a",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 71,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 5,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T220909Z-71-api-design-33aafd",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T22:09:09Z",
+ "summary": "The wrapper now provides the main bounded-order API, but it still exposes the raw `Finsupp` representation as part of the public interface. One characteristic bounded-coordinate lemma also lacks the automation annotation expected for this bookkeeping layer.",
+ "transcript_blob": "39aab95ceeead0de23c90e6b313494c7ccbd3be29b22ccc628848d337ad725bc",
+ "usage": {
+  "cached_input_tokens": 69632,
+  "input_tokens": 87120,
+  "output_tokens": 2663,
+  "reasoning_output_tokens": 1450
+ },
+ "verdict": "request_changes"
+}

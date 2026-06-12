@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.094012,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 34944,
+    "input_tokens": 45002,
+    "output_tokens": 3776,
+    "reasoning_output_tokens": 2576
+   }
+  }
+ ],
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": true,
+ "cost_usd": 0.094012,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|generality|gpt-5.5|dccacfb6e0bf58e2|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "The added signature is `def AlgPoints (k A : Type*) ... := A \u2192\u2090[k] k`, while the PR description explicitly needs base change to the algebraic closure.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Define the general form first, e.g. `def AlgPoints (k A R) ... [Algebra k A] [Algebra k R] := A \u2192\u2090[k] R`, and make `k`-points an abbreviation/special case.",
+   "issue": "`AlgPoints` hard-codes only `k`-valued points, but the natural affine-group API is points over an arbitrary `k`-algebra `R`; base change to the algebraic closure is then just a specialization.",
+   "line": 42
+  },
+  {
+   "evidence": "Lines 46-50 introduce `[IsAlgClosed k] [AffineAlgGroup k A]` before `def IsUnipotent (g : GroupLike k A) : Prop := IsNilpotent ((g : A) - 1)`; line 52 immediately omits those hypotheses for `isUnipotent_one`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "State the predicate at the assumptions it actually needs, or separate a general `GroupLike` nilpotence predicate from any later algebraic-group unipotence API.",
+   "issue": "The unipotence section assumes `[IsAlgClosed k] [AffineAlgGroup k A]`, but `IsUnipotent` only uses nilpotence of `((g : A) - 1)`, and the following theorem has to `omit` those assumptions.",
+   "line": 46
+  },
+  {
+   "evidence": "Lines 62-69 define `unipotent_radical_trivial : True` and `radical_trivial : True`, and line 72 merely re-exposes the `True` field.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Do not add these classes until the actual radical/unipotent-radical predicates exist, or make the fields state those predicates over the algebraic closure; then derive trivial special lemmas from that real statement.",
+   "issue": "`ReductiveGroup` and `SemisimpleGroup` are vacuous subclasses: their only new fields are `True`, so the classes do not encode reductivity or semisimplicity at any useful generality level.",
+   "line": 62
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260604T021123Z-40-generality-5d1c16",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-reviews-branch",
+ "started_at": "2026-06-04T02:11:23Z",
+ "summary": "The new APIs are not at the natural Mathlib level: key definitions are either special cases where the general functor-of-points form is immediate, or vacuous subclasses that add no mathematical condition.",
+ "transcript_blob": "13848d6cdee11725dfbf5ad20e722140f7d6d3ff858b3558f48499340ff63d4e",
+ "usage": {
+  "cached_input_tokens": 34944,
+  "input_tokens": 45002,
+  "output_tokens": 3776,
+  "reasoning_output_tokens": 2576
+ },
+ "verdict": "request_changes"
+}

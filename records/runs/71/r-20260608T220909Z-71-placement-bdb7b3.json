@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.12149,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 47104,
+    "input_tokens": 78968,
+    "output_tokens": 2278,
+    "reasoning_output_tokens": 983
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.12149,
+ "dedupe_key": "FormalFrontier/TauCeti|71|93dc04af3e4da6d96ba131b638465c048ceea68a|placement|gpt-5.5|68ec685af806ec41|production|5",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`code/TauCeti.lean:6` imports only `TauCeti.Basic`; `code/TauCeti/Data.lean:1` and `code/TauCeti/Analysis/Sobolev.lean:1` are new aggregators not reached from the root.",
+   "file": "TauCeti.lean",
+   "fix": "Add imports for the new top-level modules, e.g. `import TauCeti.Data` and `import TauCeti.Analysis.Sobolev`, or otherwise wire the new API into the root import graph.",
+   "issue": "The root module does not import the new `TauCeti.Data` or `TauCeti.Analysis.Sobolev` aggregators, so downstream `import TauCeti` will not expose this PR's API.",
+   "line": 6
+  },
+  {
+   "evidence": "`code/TauCeti/Analysis/Sobolev.lean:1` imports `TauCeti.Data.MultiIndex`, while `code/TauCeti/Analysis/Sobolev/MultiIndex.lean:5` is the Sobolev re-export of that API.",
+   "file": "TauCeti/Analysis/Sobolev.lean",
+   "fix": "Change this import to `import TauCeti.Analysis.Sobolev.MultiIndex` so the Sobolev namespace aggregator imports its Sobolev-facing re-export module.",
+   "issue": "The Sobolev aggregator bypasses its own child module by importing `TauCeti.Data.MultiIndex` directly, leaving `TauCeti.Analysis.Sobolev.MultiIndex` outside the Sobolev import hierarchy.",
+   "line": 1
+  }
+ ],
+ "head_sha": "93dc04af3e4da6d96ba131b638465c048ceea68a",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 71,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 5,
+ "rubric": "placement",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T220909Z-71-placement-bdb7b3",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T22:09:09Z",
+ "summary": "The generic multiindex API is now in a natural `Data` home, but the import graph still leaves the new modules orphaned from the intended public entry points.",
+ "transcript_blob": "336ac2ca9bc77b11fe2ec5687872f5a830b9498976e9efe7f4115d796361076c",
+ "usage": {
+  "cached_input_tokens": 47104,
+  "input_tokens": 78968,
+  "output_tokens": 2278,
+  "reasoning_output_tokens": 983
+ },
+ "verdict": "request_changes"
+}

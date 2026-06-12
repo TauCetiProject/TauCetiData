@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.178099,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 82944,
+    "input_tokens": 123487,
+    "output_tokens": 2374,
+    "reasoning_output_tokens": 1154
+   }
+  }
+ ],
+ "base_ref_oid": "1c3cef564b6afa5d3f27e23c86ae5e6a555d9f24",
+ "cost_estimated": true,
+ "cost_usd": 0.178099,
+ "dedupe_key": "FormalFrontier/TauCeti|100|4cf15824411971078f2ecbfb7deb375789a57c18|api-design|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Lines 181-184: `lemma matrixBilinearForm_symmetricPart_apply ... matrixBilinearForm (symmetricPart A) \u03b7 \u03be = ...`; analogous normal forms nearby are tagged `@[simp]`, e.g. lines 148 and 171.",
+   "file": "TauCeti/Analysis/PDE/UniformEllipticity.lean",
+   "fix": "Add `@[simp]` to this lemma; it rewrites away `matrixBilinearForm (symmetricPart A)` and should not loop because the RHS contains no `symmetricPart`.",
+   "issue": "`matrixBilinearForm_symmetricPart_apply` is the characteristic normal form for using `symmetricPart` in weak-form boundedness, but it is not marked `@[simp]`.",
+   "line": 181
+  },
+  {
+   "evidence": "Lines 159-160 already expose `lemma symmetricPart_isSymm (A : Matrix n n \u211d)`; lines 435-437 add `lemma symmetricPart_isSymm (a : X \u2192 Matrix n n \u211d) (x : X)` as just `PDE.symmetricPart_isSymm (a x)`.",
+   "file": "TauCeti/Analysis/PDE/UniformEllipticity.lean",
+   "fix": "Remove the namespace wrapper and use `PDE.symmetricPart_isSymm (a x)` directly, or replace it with a field-level lemma only if it carries a genuinely useful hypothesis/signature.",
+   "issue": "`UniformlyEllipticOn.symmetricPart_isSymm` duplicates the global `PDE.symmetricPart_isSymm` without using a `UniformlyEllipticOn` hypothesis, adding misleading namespace surface.",
+   "line": 435
+  }
+ ],
+ "head_sha": "4cf15824411971078f2ecbfb7deb375789a57c18",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 100,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T221442Z-100-api-design-428b5f",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T22:14:42Z",
+ "summary": "The exposed adjoint/symmetric-part API is mostly in scope, but the new public surface is missing one normal-form automation annotation and includes a redundant exported wrapper.",
+ "transcript_blob": "60c09878bfff9959087c5a4a58e4e4e4758b007234b843931d8c3643bb68330f",
+ "usage": {
+  "cached_input_tokens": 82944,
+  "input_tokens": 123487,
+  "output_tokens": 2374,
+  "reasoning_output_tokens": 1154
+ },
+ "verdict": "request_changes"
+}

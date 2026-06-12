@@ -1,0 +1,57 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.023691,
+   "returncode": 0,
+   "usage": {
+    "input_tokens": 37056,
+    "output_tokens": 8531
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": false,
+ "cost_usd": 0.023691,
+ "dedupe_key": "FormalFrontier/TauCeti|52|da13604df5e7223d273af87fd0d98bdd607c7bba|generality|deepseek/deepseek-v4-pro|dccacfb6e0bf58e2|production|2",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Mathlib/RingTheory/Bialgebra/TensorProduct.lean:73-75 defines map under [Bialgebra S C] [Bialgebra R D]; Mathlib/RingTheory/Coalgebra/TensorProduct.lean:69 proves counit_tmul under [Coalgebra R B] [Coalgebra S A]. No lemma in this file uses the antipode or Hopf-specific structure.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/BaseChange.lean",
+   "fix": "Relax the variable block to [Bialgebra k A] [Bialgebra k B] [Bialgebra k C] (which covers all lemmas here), or split into coalgebra-only and bialgebra blocks for the respective declarations.",
+   "issue": "Shared variable block requires [HopfAlgebra k A] [HopfAlgebra k B] [HopfAlgebra k C], but baseChangeMap and its functoriality lemmas use only bialgebra structure, and baseChange_counit_tmul uses only coalgebra structure. Mathlib's Bialgebra.TensorProduct.map uses [Bialgebra S C] [Bialgebra R D] and Coalgebra.TensorProduct.counit_tmul uses [Coalgebra R B] [Coalgebra S A].",
+   "line": 37
+  },
+  {
+   "evidence": "Line 60: baseChangeMap f (x \u2297\u209c a) = x \u2297\u209c f a. Substitute x := (1 : K) gives exactly baseChangeMap_one_tmul's conclusion on line 95.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/BaseChange.lean",
+   "fix": "Remove baseChangeMap_one_tmul (lines 91-96). The consumer can use baseChangeMap_tmul with x := 1.",
+   "issue": "baseChangeMap_one_tmul is the special case x=1 of baseChangeMap_tmul (line 60) and is fully redundant \u2014 it re-proves nothing new and adds a duplicate @[simp] lemma.",
+   "line": 95
+  }
+ ],
+ "head_sha": "da13604df5e7223d273af87fd0d98bdd607c7bba",
+ "mode": "commit",
+ "model": "deepseek/deepseek-v4-pro",
+ "pr": 52,
+ "prompt_policy": "reactivation",
+ "provider": "deepseek",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260605T054630Z-52-generality-797134",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-05T05:46:30Z",
+ "summary": "The variable block over-assumes HopfAlgebra for all declarations when baseChangeMap and its lemmas need only Bialgebra, and baseChange_counit_tmul needs only Coalgebra. Additionally, baseChangeMap_one_tmul is a redundant special case of baseChangeMap_tmul.",
+ "transcript_blob": "13fa7525c860c0f747d9a463c2cddd50371b815ab5599f6ca6669e8b924a0fc9",
+ "usage": {
+  "input_tokens": 37056,
+  "output_tokens": 8531
+ },
+ "verdict": "request_changes"
+}

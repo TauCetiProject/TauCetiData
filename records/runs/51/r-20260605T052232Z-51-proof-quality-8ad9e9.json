@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.132596,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 49280,
+    "input_tokens": 93309,
+    "output_tokens": 1596,
+    "reasoning_output_tokens": 651
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.132596,
+ "dedupe_key": "FormalFrontier/TauCeti|51|4284df3a644fb2885e56bd7f9fb7f5218d075999|proof-quality|gpt-5.5|dccacfb6e0bf58e2|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Lines 32-39 are `apply Homeomorph.ext; intro e; rfl`; `Deck.fiberHomeomorph_apply` is already available at `Deck.lean:78`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Prove these by extensionality using explicit pointwise API such as `Deck.fiberHomeomorph_apply` and `Homeomorph.mul_apply`/simp, or add dedicated pointwise composition lemmas and use them here.",
+   "issue": "`fiberHomeomorphMonoidHom.map_one'`/`map_mul'` close with `rfl` after `Homeomorph.ext`, relying on the current definitional shape of `Deck.fiberHomeomorph` as `Homeomorph.subtype` and of homeomorphism multiplication.",
+   "line": 32
+  },
+  {
+   "evidence": "Lines 89-92 are `one_smul e := by exact Subtype.ext rfl` and `mul_smul \u03c6 \u03c8 e := by exact Subtype.ext rfl`, while the same laws were just packaged in `fiberHomeomorphMonoidHom` at lines 29-39.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Construct the action from `fiberHomeomorphMonoidHom p b` where possible, or prove `one_smul`/`mul_smul` via `(fiberHomeomorphMonoidHom p b).map_one` and `.map_mul` plus extensionality.",
+   "issue": "The `MulAction` laws are reproved by `Subtype.ext rfl`, duplicating the monoid-hom laws and again depending on definitional equality of the restricted homeomorphisms.",
+   "line": 89
+  }
+ ],
+ "head_sha": "4284df3a644fb2885e56bd7f9fb7f5218d075999",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 51,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260605T052232Z-51-proof-quality-8ad9e9",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-05T05:22:32Z",
+ "summary": "The new API is small, but two proofs package core algebraic laws by undocumented definitional equality. Replace those closures with proofs through the pointwise lemmas or derive the action from the monoid hom so later refactors of `fiberHomeomorph` do not break the file.",
+ "transcript_blob": "887da5d43b4344d01134f8b164e5552310909d4cc61c3bb76f290decdc8f6c48",
+ "usage": {
+  "cached_input_tokens": 49280,
+  "input_tokens": 93309,
+  "output_tokens": 1596,
+  "reasoning_output_tokens": 651
+ },
+ "verdict": "request_changes"
+}

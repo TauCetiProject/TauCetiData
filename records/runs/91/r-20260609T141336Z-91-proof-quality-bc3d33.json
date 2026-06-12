@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.170985,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 79744,
+    "input_tokens": 120300,
+    "output_tokens": 2061,
+    "reasoning_output_tokens": 835
+   }
+  }
+ ],
+ "base_ref_oid": "2d9e8a18029339e84394e302bfc6f5d6792aa13b",
+ "cost_estimated": true,
+ "cost_usd": 0.170985,
+ "dedupe_key": "FormalFrontier/TauCeti|91|6aaa593225ae96d1850fd3b7ab9fca9ad602929e|proof-quality|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`rg` hit: `169:      (show Continuous (fun x : s => f x) from f.continuous.comp continuous_subtype_val)`.",
+   "file": "TauCeti/Analysis/Holder/Basic.lean",
+   "fix": "Remove the `show` if elaboration accepts `f.continuous.comp continuous_subtype_val`, or add a short comment explaining the coercion mismatch being resolved.",
+   "issue": "`restrict` uses `show Continuous ... from ...` without documenting why the coercion goal needs this bridge.",
+   "line": 169
+  },
+  {
+   "evidence": "Lines 141-143 use nested `simpa`; Mathlib provides `BoundedContinuousFunction.coe_sub` at `mathlib/Mathlib/Topology/ContinuousMap/Bounded/Basic.lean:657`.",
+   "file": "TauCeti/Analysis/Holder/Basic.lean",
+   "fix": "Reuse the already-defined negation closure and explicit coercion lemmas, e.g. prove from `f.memHolder.add (-g).memHolder` with `BoundedContinuousFunction.coe_sub`/`coe_neg`, or define subtraction through `f + -g`.",
+   "issue": "The `Sub` instance proof is a brittle `simpa [sub_eq_add_neg]` chain that depends on simplifying scalar multiplication by `(-1 : \u211d)` and bounded-function coercions.",
+   "line": 141
+  }
+ ],
+ "head_sha": "6aaa593225ae96d1850fd3b7ab9fca9ad602929e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 91,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T141336Z-91-proof-quality-bc3d33",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T14:13:36Z",
+ "summary": "Proof-quality issues remain: one proof uses an undocumented `show`, and the subtraction closure proof relies on simplifier/defeq shape instead of the available coercion lemmas.",
+ "transcript_blob": "c260dd3d99ba8098bf1a75372ecb766333d60b50ae4ad87be99ce0013a2cf891",
+ "usage": {
+  "cached_input_tokens": 79744,
+  "input_tokens": 120300,
+  "output_tokens": 2061,
+  "reasoning_output_tokens": 835
+ },
+ "verdict": "request_changes"
+}

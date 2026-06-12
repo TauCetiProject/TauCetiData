@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.754416,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 516736,
+    "input_tokens": 577605,
+    "output_tokens": 3241,
+    "reasoning_output_tokens": 1044
+   }
+  }
+ ],
+ "base_ref_oid": "bbe45f4c944bbda92ff9a3252d6f5df8e7d11145",
+ "cost_estimated": true,
+ "cost_usd": 0.754416,
+ "dedupe_key": "FormalFrontier/TauCeti|111|ac01177885e33f0c5fccded0fed65fc880678b25|generality|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`ComoduleCat` is declared with `variable (R : Type u) [CommSemiring R]` in `TauCeti/Algebra/Coalgebra/ComoduleCat.lean:42`, `ComoduleCat.of` takes `[AddCommMonoid M]` at `ComoduleCat.lean:65`, `Comodule.Hom` is semiring-level at `Comodule.lean:104`, and Mathlib has semiring-level `Module.Finite` lemmas such as `Module.Finite.of_basis` in `Mathlib/LinearAlgebra/FreeModule/Finite/Basic.lean:39`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Finite.lean",
+   "fix": "Define the object property, full subcategory, coercions, `Module.Finite` instance, `of`, and `ofHom` in a `[CommSemiring R]` section; keep only the inherited `AddCommGroup`/preadditive conveniences in a separate `[CommRing R]` section if needed.",
+   "issue": "`ComoduleCat.isFinite` and `FiniteComoduleCat` require `[CommRing R]`, but the ambient `ComoduleCat` and `Comodule.Hom` are defined over `[CommSemiring R]`.",
+   "line": 42
+  },
+  {
+   "evidence": "`Finite.lean:95` and `Finite.lean:116` require `[AddCommGroup]`, while the wrapped signatures are `[AddCommMonoid M] ...` in `ComoduleCat.of` at `ComoduleCat.lean:65` and `ComoduleCat.ofHom` at `ComoduleCat.lean:120`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Finite.lean",
+   "fix": "Change these constructor and simp lemma hypotheses to `[AddCommMonoid M]` and `[AddCommMonoid N]`, matching `ComoduleCat.of`/`ComoduleCat.ofHom`; additive groups can be derived separately when `R` is a ring.",
+   "issue": "`FiniteComoduleCat.of`, `of_obj`, `of_coact`, `ofHom`, and their simp lemmas require `[AddCommGroup]` on the source modules, although the unbundled comodule and morphism APIs they wrap only require `[AddCommMonoid]`.",
+   "line": 95
+  }
+ ],
+ "head_sha": "ac01177885e33f0c5fccded0fed65fc880678b25",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 111,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T080905Z-111-generality-957bcd",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T08:09:05Z",
+ "summary": "The finite-comodule API is stated one level too restrictively: the full subcategory and its basic constructors only need the semiring-level comodule infrastructure already present in TauCeti.",
+ "transcript_blob": "b56812621ced0ff47f35ec703ee93771392250fe5aee012dd1a2e90e19daa2fd",
+ "usage": {
+  "cached_input_tokens": 516736,
+  "input_tokens": 577605,
+  "output_tokens": 3241,
+  "reasoning_output_tokens": 1044
+ },
+ "verdict": "request_changes"
+}

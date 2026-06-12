@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.351574,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 205056,
+    "input_tokens": 251547,
+    "output_tokens": 3714,
+    "reasoning_output_tokens": 1797
+   }
+  }
+ ],
+ "base_ref_oid": "cc5fa737cc8e84f8f1ee4513ce0f08d21cca7e24",
+ "cost_estimated": true,
+ "cost_usd": 0.351574,
+ "dedupe_key": "FormalFrontier/TauCeti|48|a249cf10b1c3a0e7cb5f684c2815f73d1bf395b9|api-design|gpt-5.5|dccacfb6e0bf58e2|production|4",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`rg -n \"bialgHom_antipode_apply|map_antipode\" TauCeti/RingTheory/HopfAlgebra/BaseChange.lean` shows the public lemma at line 254 and its only use in the file at line 285 inside `map_antipode`.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Make it `private` in this file, or move it intentionally to a general Hopf/BialgHom API namespace with the right name and annotations if downstream users need it independently.",
+   "issue": "`bialgHom_antipode_apply` is a general theorem about all bialgebra maps between Hopf algebras, not base-change API, and it is only used to prove `map_antipode`.",
+   "line": 254
+  },
+  {
+   "evidence": "Lines 211-227 define the four wrappers, while Mathlib already supplies these laws for `BialgHom`/map-like homs (`Mathlib/RingTheory/Bialgebra/Hom.lean` has `map_zero`, `map_add`, and `map_mul` in the hom classes).",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Delete these four public lemmas and rely on `map_zero`, `map_add`, `map_one`, and `map_mul`; keep only scalar-extension-specific lemmas such as `map_tmul`, `map_includeRight`, and operation compatibility.",
+   "issue": "`map_zero_apply`, `map_add_apply`, `map_one_apply`, and `map_mul_apply` expose scalar-extension-specific wrappers for generic homomorphism laws, duplicating existing API instead of characterizing base change.",
+   "line": 212
+  }
+ ],
+ "head_sha": "a249cf10b1c3a0e7cb5f684c2815f73d1bf395b9",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 48,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260605T025109Z-48-api-design-52bde5",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-05T02:51:09Z",
+ "summary": "The base-change API now includes the needed antipode compatibility, but it still exposes proof scaffolding and generic homomorphism laws as public API. Keep the public surface to scalar-extension-specific declarations.",
+ "transcript_blob": "ab57778e464625b1979a67d199ff5aa6f4b69c8a5724be34f663c0298a2d33a7",
+ "usage": {
+  "cached_input_tokens": 205056,
+  "input_tokens": 251547,
+  "output_tokens": 3714,
+  "reasoning_output_tokens": 1797
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.537412,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 306304,
+    "input_tokens": 384754,
+    "output_tokens": 5647,
+    "reasoning_output_tokens": 3143
+   }
+  }
+ ],
+ "base_ref_oid": "2d010f358dd60ce2d071becb589d5f0ee1c25787",
+ "cost_estimated": true,
+ "cost_usd": 0.537412,
+ "dedupe_key": "FormalFrontier/TauCeti|117|a92db8194f9d50a154b1deb19e1681dd78749761|api-design|gpt-5.5|68ec685af806ec41|production|2",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Lines 73-84 define `ComoduleCat.zero` as `abbrev ... PUnit` plus `zero_carrier`/`zero_coact`; lines 122-128 do the same for `FGComoduleCat.zero` via `.obj = ComoduleCat.zero`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Zero.lean",
+   "fix": "Make the construction opaque where possible and expose only characterization lemmas (`IsZero`, unique maps, and any needed `*_def` lemmas) rather than reducible bodies/carrier facts.",
+   "issue": "`ComoduleCat.zero` and `FGComoduleCat.zero` are public `abbrev`s, with `[simp]` lemmas exposing the carrier/coaction representation as `PUnit`; this leaks the implementation instead of forcing downstream code through the zero-object API.",
+   "line": 73
+  },
+  {
+   "evidence": "`rg -n \"zero_hom_ext|hom_zero_ext|isZero_zero\" TauCeti/Algebra/Coalgebra/Comodule/Zero.lean` finds no such API; only `hasZeroObject` instances appear at lines 104 and 132.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Zero.lean",
+   "fix": "Add characteristic lemmas for the named zero objects, e.g. `ComoduleCat.isZero_zero`, `FGComoduleCat.isZero_zero`, and `[simp]`/`@[ext]` lemmas that maps from or to these zeros are equal to `0`.",
+   "issue": "The named `FGComoduleCat.zero` has no direct `IsZero` theorem or morphism normal forms, so users of the roadmap-facing finite-dimensional category must unfold/full-subcategory internals or reason through the inherited existential zero object.",
+   "line": 132
+  }
+ ],
+ "head_sha": "a92db8194f9d50a154b1deb19e1681dd78749761",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 117,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T164609Z-117-api-design-35f4f0",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T16:46:09Z",
+ "summary": "The zero-object instance is present for both comodule categories, but the public API still exposes the concrete `PUnit` model while not providing the characteristic zero-object lemmas users should depend on.",
+ "transcript_blob": "46b777c876e44b2044b5f6a20a08533eddf6b733060205b6a95845ee6dfc5e46",
+ "usage": {
+  "cached_input_tokens": 306304,
+  "input_tokens": 384754,
+  "output_tokens": 5647,
+  "reasoning_output_tokens": 3143
+ },
+ "verdict": "request_changes"
+}

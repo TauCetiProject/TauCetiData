@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.234483,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 123776,
+    "input_tokens": 154922,
+    "output_tokens": 4083,
+    "reasoning_output_tokens": 2270
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.234483,
+ "dedupe_key": "FormalFrontier/TauCeti|68|e3a86b806ba50fe5c05e6059747e8275fdf8110f|api-design|gpt-5.5|68ec685af806ec41|production|5",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`rg -n \"map_ofHom|pointsFunctor\"` shows only `map_ofHom_hom`, `map_ofHom_apply`, and `map_ofHom_apply_apply` at lines 62-80; `CommAlgCat` morphisms have `.hom` directly (`mathlib/Mathlib/Algebra/Category/CommAlgCat/Basic.lean:81-85`).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Add bundled-morphism lemmas such as `map_hom`, `map_apply`, and `map_apply_apply` for `{A B : CommAlgCat R} (\u03c6 : A \u27f6 B)`, stated in terms of `\u03c6.hom`.",
+   "issue": "`pointsFunctor` only exposes map lemmas for morphisms built as `CommAlgCat.ofHom`; downstream categorical use has arbitrary `\u03c6 : A \u27f6 B` and cannot simplify `(pointsFunctor R H).map \u03c6` without unfolding the functor.",
+   "line": 62
+  },
+  {
+   "evidence": "Lines 245-247 tag `one_hom_apply` with `@[simp]` and lines 263-265 tag `inv_hom_apply`; line 251 defines `mul_hom_apply` with no attribute.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean",
+   "fix": "Mark `Bialgebra.AlgPoints.mul_hom_apply` with `@[simp]` unless there is a concrete looping concern, and otherwise provide the intended automation lemma under a non-looping simp statement.",
+   "issue": "`AlgPoints.mul_hom_apply` is the characteristic normal form for multiplication of points, but unlike `one_hom_apply` and `inv_hom_apply` it is not tagged `@[simp]`, so the public API does not normalize convolution products uniformly.",
+   "line": 251
+  }
+ ],
+ "head_sha": "e3a86b806ba50fe5c05e6059747e8275fdf8110f",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 68,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 5,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T225854Z-68-api-design-4566b6",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T22:58:54Z",
+ "summary": "The named points type now has the basic operation lemmas, but the public functor API still does not characterize maps for arbitrary `CommAlgCat` morphisms, and the multiplication normal form is not available to simplification.",
+ "transcript_blob": "6525301dc58a330cc7ecb36d0ce8004ee01d7fa17c4c20dba3e86775e22a379f",
+ "usage": {
+  "cached_input_tokens": 123776,
+  "input_tokens": 154922,
+  "output_tokens": 4083,
+  "reasoning_output_tokens": 2270
+ },
+ "verdict": "request_changes"
+}

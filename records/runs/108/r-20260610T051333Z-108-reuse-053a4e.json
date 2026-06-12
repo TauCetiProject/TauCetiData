@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.425831,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 230784,
+    "input_tokens": 310937,
+    "output_tokens": 3716,
+    "reasoning_output_tokens": 1844
+   }
+  }
+ ],
+ "base_ref_oid": "4e66cace633e6ceca3c8b4568f418c8fdc299cc6",
+ "cost_estimated": true,
+ "cost_usd": 0.425831,
+ "dedupe_key": "FormalFrontier/TauCeti|108|0380cd0ad981ec5c232b92d33df76032b5077783|reuse|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "New code defines `driftForm` with `LinearMap.mkContinuous\u2082` at lines 45-60; Mathlib has `innerSL` and `innerSL_apply_apply` at `Mathlib/Analysis/InnerProductSpace/LinearMap.lean:164-172`, and `smulRightL` with `smulRightL (c) (f) (x) = c x \u2022 f` at `Mathlib/Analysis/Normed/Operator/Bilinear.lean:412-418`, plus `norm_smulRightL` at `Mathlib/Analysis/Normed/Operator/NormedSpace.lean:214`.",
+   "file": "TauCeti/Analysis/PDE/LowerOrder.lean",
+   "fix": "Replace the custom `mkContinuous\u2082` definition and norm lemmas by this existing `smulRightL`/`innerSL` construction and its norm API.",
+   "issue": "`driftForm` reinvents Mathlib's rank-one continuous map: it is `ContinuousLinearMap.smulRightL \u211d (EuclideanSpace \u211d n) \u211d (innerSL \u211d b)`, up to commutativity of real multiplication.",
+   "line": 45
+  },
+  {
+   "evidence": "New code defines `massForm` by `LinearMap.mkContinuous\u2082` at lines 105-114; Mathlib already provides `ContinuousLinearMap.mul : R \u2192L[\ud835\udd5c] R \u2192L[\ud835\udd5c] R` and `mul_apply'` at `Mathlib/Analysis/Normed/Operator/Mul.lean:40-45`, with `opNorm_mul_le` at line 52.",
+   "file": "TauCeti/Analysis/PDE/LowerOrder.lean",
+   "fix": "Remove `massForm` or define it as the existing `c \u2022 ContinuousLinearMap.mul \u211d \u211d` and reuse `ContinuousLinearMap.mul_apply'`, `opNorm_mul_le`, and scalar-norm lemmas instead of reproving the API.",
+   "issue": "`massForm c` is just scalar multiplication of Mathlib's bundled continuous multiplication, `c \u2022 ContinuousLinearMap.mul \u211d \u211d`, so the definition and its basic apply/add/smul/norm API are parallel duplicates.",
+   "line": 105
+  }
+ ],
+ "head_sha": "0380cd0ad981ec5c232b92d33df76032b5077783",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 108,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T051333Z-108-reuse-053a4e",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T05:13:33Z",
+ "summary": "The new pointwise forms duplicate existing bundled continuous bilinear/rank-one maps from Mathlib instead of reusing them.",
+ "transcript_blob": "93a2a548b1802cd217e893848a29318d8d741cb46b77709f26221ad7c49eba35",
+ "usage": {
+  "cached_input_tokens": 230784,
+  "input_tokens": 310937,
+  "output_tokens": 3716,
+  "reasoning_output_tokens": 1844
+ },
+ "verdict": "block"
+}

@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.221509,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 117248,
+    "input_tokens": 159367,
+    "output_tokens": 2230,
+    "reasoning_output_tokens": 587
+   }
+  }
+ ],
+ "base_ref_oid": "575b18d09a600b608eb3c73bfee0b95ac8f80ce6",
+ "cost_estimated": true,
+ "cost_usd": 0.221509,
+ "dedupe_key": "FormalFrontier/TauCeti|125|d6a04088fb5ceb61963d5ddef8fb13a41ff87555|reuse|gpt-5.5|68ec685af806ec41|production|2",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`Finite.lean:123-133` proves the object/map equations by `rfl`; Mathlib already provides `ObjectProperty.\u03b9_obj` and `ObjectProperty.\u03b9_map` at `mathlib/Mathlib/CategoryTheory/ObjectProperty/FullSubcategory.lean:61-67`, with `ObjectProperty.FullSubcategory.hasForget\u2082` at `mathlib/Mathlib/CategoryTheory/ConcreteCategory/Forget.lean:113-116`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Finite.lean",
+   "fix": "Remove these local lemmas and use `ObjectProperty.\u03b9_obj`/`ObjectProperty.\u03b9_map` through the existing `ObjectProperty.FullSubcategory.hasForget\u2082` instance.",
+   "issue": "`forget\u2082_comoduleCat_obj` and `forget\u2082_comoduleCat_map` restate the generic full-subcategory forgetful simp lemmas.",
+   "line": 123
+  },
+  {
+   "evidence": "`Finite.lean:217-276` defines `isoToLinearEquiv` via `ComoduleCat.isoToLinearEquiv ((incl ...).mapIso i)` and reproves toLinearMap/app/refl/symm/trans lemmas; the original API is at `code/TauCeti/Algebra/Coalgebra/ComoduleCat.lean:333-389`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Finite.lean",
+   "fix": "Use `ComoduleCat.isoToLinearEquiv ((ComoduleCat.isFG ...).\u03b9.mapIso i)` directly, or keep at most a minimal abbreviation without duplicating the full simp API.",
+   "issue": "`FGComoduleCat.isoToLinearEquiv` and its simp family are a parallel copy of the existing `ComoduleCat.isoToLinearEquiv` API after applying the inclusion functor.",
+   "line": 217
+  },
+  {
+   "evidence": "`Finite.lean:279-340` is `ObjectProperty.isoMk (ComoduleCat.isoOfLinearEquiv ... )` plus wrapper lemmas; the underlying TauCeti declarations are `ComoduleCat.isoOfLinearEquiv` and its simp/round-trip API at `code/TauCeti/Algebra/Coalgebra/ComoduleCat.lean:393-466`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Finite.lean",
+   "fix": "Build finite comodule isomorphisms at use sites with `ObjectProperty.isoMk (ComoduleCat.isoOfLinearEquiv e h)` and rely on the existing `ComoduleCat.isoOfLinearEquiv_*` lemmas.",
+   "issue": "`FGComoduleCat.isoOfLinearEquiv` and its round-trip/app simp lemmas duplicate `ComoduleCat.isoOfLinearEquiv` wrapped in `ObjectProperty.isoMk`.",
+   "line": 279
+  }
+ ],
+ "head_sha": "d6a04088fb5ceb61963d5ddef8fb13a41ff87555",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 125,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T234842Z-125-reuse-0ffe7b",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T23:48:42Z",
+ "summary": "The PR adds mostly thin full-subcategory wrappers around existing Mathlib/TauCeti APIs. These create parallel names for `ObjectProperty.\u03b9` and `ComoduleCat` iso/linear-equivalence machinery instead of reusing the existing declarations at call sites.",
+ "transcript_blob": "826fc8b0ccc3b4f0188f9dab8b54bc5ca96e44ef4b76695fbdcb7ec6fa40f3bb",
+ "usage": {
+  "cached_input_tokens": 117248,
+  "input_tokens": 159367,
+  "output_tokens": 2230,
+  "reasoning_output_tokens": 587
+ },
+ "verdict": "request_changes"
+}

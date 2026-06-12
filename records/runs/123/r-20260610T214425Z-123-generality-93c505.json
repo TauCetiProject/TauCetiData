@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.250225,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 101888,
+    "input_tokens": 179420,
+    "output_tokens": 2595,
+    "reasoning_output_tokens": 1025
+   }
+  }
+ ],
+ "base_ref_oid": "86022a11d516b897abb94bb71e9349d89346685c",
+ "cost_estimated": true,
+ "cost_usd": 0.250225,
+ "dedupe_key": "FormalFrontier/TauCeti|123|1706deae41efc9d74f69d2eda87abbb223440d5c|generality|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`code/TauCeti/Algebra/Coalgebra/ComoduleCat.lean:333` has exactly the same arguments as the generic `Iso` fields shown in `mathlib/Mathlib/CategoryTheory/Iso.lean:56-62`.",
+   "file": "TauCeti/Algebra/Coalgebra/ComoduleCat.lean",
+   "fix": "Remove this declaration and construct the iso directly with `where hom := f; inv := g; hom_inv_id := hfg; inv_hom_id := hgf`, or add a genuinely generic helper upstream if one is needed.",
+   "issue": "`isoOfHomInv` is a `ComoduleCat`-specific wrapper for the generic `CategoryTheory.Iso` structure fields, so it adds duplicated API at the wrong level.",
+   "line": 333
+  },
+  {
+   "evidence": "`code/TauCeti/Algebra/Coalgebra/ComoduleCat.lean:401-407` asks for `hinv`; Mathlib provides the needed tensor functoriality at `mathlib/Mathlib/LinearAlgebra/TensorProduct/Map.lean:110` (`TensorProduct.map_comp`) and `:136` (`TensorProduct.map_id`).",
+   "file": "TauCeti/Algebra/Coalgebra/ComoduleCat.lean",
+   "fix": "Change the signature to take only `(e : M \u2243\u2097[R] N)` and the forward coaction equality, then prove the inverse morphism's `map_coact` internally using `TensorProduct.map_comp`, `TensorProduct.map_id`, and the `LinearEquiv` inverse laws.",
+   "issue": "`isoOfLinearEquiv` requires both forward compatibility `h` and inverse compatibility `hinv`, but `hinv` follows from `h` by composing with `e.symm` and using tensor-map composition.",
+   "line": 401
+  }
+ ],
+ "head_sha": "1706deae41efc9d74f69d2eda87abbb223440d5c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 123,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260610T214425Z-123-generality-93c505",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-10T21:44:25Z",
+ "summary": "The new isomorphism API is mostly at the intended categorical-comodule layer, but two constructors are over-specialized: one duplicates the generic `Iso` constructor, and one asks users for inverse coaction compatibility that follows from the forward condition.",
+ "transcript_blob": "26e29a310b922e2535840ad6547d4080fe126b82c0c8f50e7db535a3177e5ae0",
+ "usage": {
+  "cached_input_tokens": 101888,
+  "input_tokens": 179420,
+  "output_tokens": 2595,
+  "reasoning_output_tokens": 1025
+ },
+ "verdict": "request_changes"
+}

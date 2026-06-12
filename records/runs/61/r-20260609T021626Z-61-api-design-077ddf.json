@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.22687,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 105344,
+    "input_tokens": 153432,
+    "output_tokens": 3508,
+    "reasoning_output_tokens": 2124
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.22687,
+ "dedupe_key": "FormalFrontier/TauCeti|61|e2f0c2c8235e470183036ff82b7116bca9023cab|api-design|gpt-5.5|68ec685af806ec41|production|4",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Lines 135-144 define `monodromy_smul_eq` and `monodromy_smul_eq_monodromyPerm` as `rfl` characteristic lemmas for `monodromyMulAction`; line 155 gives the projected-loop smul lemma, while only the permutation form at line 148 is tagged `@[simp]`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/MonodromyAction.lean",
+   "fix": "Add `@[simp]` to the chosen normal form, preferably `monodromy_smul_eq`, and add the corresponding simp form for `map_smul_self` or make it follow from the normal form without manual unfolding.",
+   "issue": "`monodromyMulAction`'s pointwise characteristic lemmas are public but not simp-normal forms, so `simp` will not reduce the local `\u03c0\u2081` action to Mathlib monodromy in downstream proofs.",
+   "line": 135
+  },
+  {
+   "evidence": "The lemma body is exactly `FundamentalGroup.map_apply f x \u03b3` at line 71; Mathlib declares `@[simps!] def FundamentalGroup.map` in `Mathlib/AlgebraicTopology/FundamentalGroupoid/FundamentalGroup.lean:78`, which generates the existing `FundamentalGroup.map_apply` used here.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/MonodromyAction.lean",
+   "fix": "Make it private or remove it and use `FundamentalGroup.map_apply` directly in `monodromyPerm_map_self`.",
+   "issue": "`fundamentalGroup_map_toPath` adds a public TauCeti synonym for existing Mathlib API rather than a new surface needed by the monodromy action.",
+   "line": 68
+  }
+ ],
+ "head_sha": "e2f0c2c8235e470183036ff82b7116bca9023cab",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 61,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T021626Z-61-api-design-077ddf",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T02:16:26Z",
+ "summary": "The monodromy permutation/hom API is mostly focused, but the local action exposes characteristic smul lemmas without the automation annotations downstream users need, and one public lemma is just a duplicate wrapper around Mathlib API.",
+ "transcript_blob": "500209965e618fa4fb4cea60925ae24be0d90073f80960acfbcaa7bd17092662",
+ "usage": {
+  "cached_input_tokens": 105344,
+  "input_tokens": 153432,
+  "output_tokens": 3508,
+  "reasoning_output_tokens": 2124
+ },
+ "verdict": "request_changes"
+}

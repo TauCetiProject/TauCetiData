@@ -1,0 +1,61 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.064,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 24832,
+    "input_tokens": 42800,
+    "output_tokens": 1050,
+    "reasoning_output_tokens": 324
+   }
+  }
+ ],
+ "base_ref_oid": "2d9e8a18029339e84394e302bfc6f5d6792aa13b",
+ "cost_estimated": true,
+ "cost_usd": 0.064,
+ "dedupe_key": "FormalFrontier/TauCeti|94|d1b2a3044fb316222b1ed3301cff06d803ca553b|proof-quality|gpt-5.5|68ec685af806ec41|production|2",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "grep hit: lines 188-192 are `simp only [... mapPoints, ... baseChangePointsIso, MulEquiv.toGrpIso_inv, ... AlgHom.baseChangePointsMulEquiv_symm_apply ...]; rfl`, while lines 153-168 already define pointwise simp lemmas for the iso.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/BaseChange.lean",
+   "fix": "Prove it via the public pointwise lemmas, especially `baseChangePointsIso_inv_apply` and `mapPoints_apply` or a small pointwise lemma for postcomposition, so changes to the bundled representation do not break naturality.",
+   "issue": "`mapPoints_baseChangePointsIso_inv` uses a long `simp only` list that unfolds `mapPoints`, `baseChangePointsIso`, `MulEquiv.toGrpIso_inv`, and `GrpCat` wrappers, then closes by `rfl`; this rests on bundled definitional details rather than the pointwise API.",
+   "line": 188
+  },
+  {
+   "evidence": "grep hit: lines 202-206 list `mapPoints`, `baseChangePointsIso`, `MulEquiv.toGrpIso_hom`, `AlgHom.baseChangePointsMulEquiv_apply_ofConv`, `AlgHom.liftEquiv_tmul`, and coercion lemmas in one `simp only` chain.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/BaseChange.lean",
+   "fix": "Rewrite the proof to reduce both sides with `baseChangePointsIso_hom_apply_tmul` plus the map-points pointwise lemma, or derive the forward naturality from the inverse naturality by categorical iso cancellation.",
+   "issue": "`baseChangePointsIso_hom_mapPoints` repeats the same brittle unfolding pattern for the forward direction, including `baseChangePointsIso`, `MulEquiv.toGrpIso_hom`, `AlgHom.liftEquiv_tmul`, and wrapper coercions.",
+   "line": 202
+  }
+ ],
+ "head_sha": "d1b2a3044fb316222b1ed3301cff06d803ca553b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 94,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260609T174536Z-94-proof-quality-c5b892",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-09T17:45:36Z",
+ "summary": "The new group-level API is packaged, but the naturality proofs are brittle: they prove pointwise equalities by unfolding the bundled iso and map-point machinery instead of using the public pointwise lemmas just introduced.",
+ "transcript_blob": "fdcfb82695d14fac17442b25eae4d64cbc8d1852dab75fc4276a1c982416e0de",
+ "usage": {
+  "cached_input_tokens": 24832,
+  "input_tokens": 42800,
+  "output_tokens": 1050,
+  "reasoning_output_tokens": 324
+ },
+ "verdict": "request_changes"
+}

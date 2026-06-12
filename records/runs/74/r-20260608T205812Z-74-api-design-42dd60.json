@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.144089,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 48256,
+    "input_tokens": 96583,
+    "output_tokens": 2336,
+    "reasoning_output_tokens": 1148
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": true,
+ "cost_usd": 0.144089,
+ "dedupe_key": "FormalFrontier/TauCeti|74|4b46912b3b068bf540a4533de2f2a580eba436b2|api-design|gpt-5.5|68ec685af806ec41|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "Line 49 defines `ellipticQuadraticForm`; the only API grep hit is `ellipticQuadraticForm_one` at line 54, while line 56 proves it by `rw [ellipticQuadraticForm]`.",
+   "file": "TauCeti/Analysis/PDE/UniformEllipticity.lean",
+   "fix": "Add a theorem such as `ellipticQuadraticForm_def : ellipticQuadraticForm A \u03be = \u03be \u2b1d\u1d65 (A *\u1d65 \u03be)` and use that in proofs instead of unfolding the def directly.",
+   "issue": "`ellipticQuadraticForm` has no public `_def` lemma for the arbitrary-matrix case, so consumers must unfold the definition to connect it to the dot-product integrand used in the weak bilinear form.",
+   "line": 49
+  },
+  {
+   "evidence": "Line 64 defines `UniformlyEllipticOn`; grep shows projections `pos`, `le`, `lower_bound`, `upper_bound` and `of_bounds`, but no `_iff` or `_def` restatement for the predicate.",
+   "file": "TauCeti/Analysis/PDE/UniformEllipticity.lean",
+   "fix": "Add a public `uniformlyEllipticOn_iff`/`UniformlyEllipticOn_iff` theorem spelling out `0 < lam \u2227 lam \u2264 Lam \u2227 \u2200 x \u2208 \u03a9, ...`, with the existing constructor and projections derived from it as needed.",
+   "issue": "`UniformlyEllipticOn` lacks a characteristic iff/restatement of the full predicate, leaving only manual tuple projections and the constructor.",
+   "line": 64
+  },
+  {
+   "evidence": "Lines 75, 79, 83, and 89 define the four projections with no attributes; the file has no `@[grind]` hits.",
+   "file": "TauCeti/Analysis/PDE/UniformEllipticity.lean",
+   "fix": "Mark the elimination lemmas `pos`, `le`, `lower_bound`, and `upper_bound` with `@[grind]` if they do not loop; these are exactly the facts later coercivity and boundedness proofs should get from the hypothesis.",
+   "issue": "The characteristic projection lemmas for the predicate are unannotated, so `grind` will not automatically recover the side conditions or quadratic-form bounds from a `UniformlyEllipticOn` hypothesis.",
+   "line": 75
+  }
+ ],
+ "head_sha": "4b46912b3b068bf540a4533de2f2a580eba436b2",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 74,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "68ec685af806ec41",
+ "run_id": "r-20260608T205812Z-74-api-design-42dd60",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-08T20:58:12Z",
+ "summary": "The public predicate is close, but its characteristic API is not complete enough for downstream use without unfolding and its main projection lemmas are not annotated for automation.",
+ "transcript_blob": "2500e63594c318030205e55b1308fe7ebc31688d4f6d65a4728121bd65ef160b",
+ "usage": {
+  "cached_input_tokens": 48256,
+  "input_tokens": 96583,
+  "output_tokens": 2336,
+  "reasoning_output_tokens": 1148
+ },
+ "verdict": "request_changes"
+}

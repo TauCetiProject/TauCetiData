@@ -1,0 +1,75 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.167275,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 63744,
+    "input_tokens": 107236,
+    "output_tokens": 3323,
+    "reasoning_output_tokens": 2247
+   }
+  }
+ ],
+ "base_ref_oid": "8b99891c1057ffca76cefca75c4ff6f889c30116",
+ "cost_estimated": true,
+ "cost_usd": 0.167275,
+ "dedupe_key": "FormalFrontier/TauCeti|42|0d60044d61ba0bfca82b5f9ef21e6985f7ce1450|api-design|gpt-5.5|dccacfb6e0bf58e2|production|3",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "The diff has `@[expose] public section` before `unitInterval.half`, partition lemmas, `Path.codRestrict`, `Path.subpathOn`, and homotopy helper lemmas.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/UniversalCoverPrelude.lean",
+   "fix": "Remove the section-wide `@[expose]`; expose only declarations that genuinely need computation, and provide public `*_apply`/quotient/characteristic lemmas for the rest.",
+   "issue": "`@[expose] public section` exposes the bodies of all vendored prelude declarations, including helper definitions and proof lemmas such as `Path.subpathOn` internals and homotopy quotient helpers.",
+   "line": 18
+  },
+  {
+   "evidence": "The diff marks `SemilocallySimplyConnectedAt`, `SemilocallySimplyConnectedOn`, and `IsPathHomotopyTrivial` with `@[expose] public def`.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean",
+   "fix": "Drop `@[expose]` from these Prop definitions and make consumers use `semilocallySimplyConnectedAt_iff`, `semilocallySimplyConnectedOn_iff`, and the path-trivial API.",
+   "issue": "The proposition definitions `SemilocallySimplyConnectedAt`, `SemilocallySimplyConnectedOn`, and `IsPathHomotopyTrivial` expose their bodies even though the file provides public iff/constructor API for using them.",
+   "line": 50
+  },
+  {
+   "evidence": "The diff declares `@[expose] public noncomputable def append` and follows it only with `endpoint_append`.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
+   "fix": "Remove `@[expose]` from `append` and add characteristic lemmas such as `toPath_append` or an `append_apply`/`append_toContinuousMap` lemma sufficient for downstream use.",
+   "issue": "`BasedPath.append` is exposed, but the public API only characterizes its endpoint; users who need the underlying path must unfold the definition.",
+   "line": 128
+  },
+  {
+   "evidence": "The diff has `public theorem endpoint_ofPath ... : endpoint (ofPath \u03b3) = y` and `public theorem endpoint_append ... : endpoint (append \u03b3 \u03b4) = y` without `@[simp]`.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
+   "fix": "Mark these endpoint lemmas `@[simp]` unless they create an actual loop, or document and provide an alternative simp-normal endpoint API.",
+   "issue": "Endpoint normal forms for constructors are not marked for automation: `endpoint_ofPath` and `endpoint_append` are characteristic simplification lemmas but lack `@[simp]`.",
+   "line": 113
+  }
+ ],
+ "head_sha": "0d60044d61ba0bfca82b5f9ef21e6985f7ce1450",
+ "mode": "manual",
+ "model": "gpt-5.5",
+ "pr": 42,
+ "prompt_policy": "reactivation",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260604T042121Z-42-api-design-f49a64",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-reviews-branch",
+ "started_at": "2026-06-04T04:21:21Z",
+ "summary": "The PR exposes too much implementation detail and relies on unfolded bodies where characteristic API should be provided instead. Several core constructor endpoint lemmas are also missing normal-form simp annotations.",
+ "transcript_blob": "a6a73ac3debda126bda8d4428a28decff355d417943e414f7c20cc65efc1b3b3",
+ "usage": {
+  "cached_input_tokens": 63744,
+  "input_tokens": 107236,
+  "output_tokens": 3323,
+  "reasoning_output_tokens": 2247
+ },
+ "verdict": "request_changes"
+}

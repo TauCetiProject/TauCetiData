@@ -1,0 +1,64 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.074951,
+   "returncode": 0,
+   "usage": {
+    "input_tokens": 141781,
+    "output_tokens": 14551
+   }
+  }
+ ],
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": false,
+ "cost_usd": 0.074951,
+ "dedupe_key": "FormalFrontier/TauCeti|52|da13604df5e7223d273af87fd0d98bdd607c7bba|reuse|deepseek/deepseek-v4-pro|dccacfb6e0bf58e2|production|2",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "`mathlib/Mathlib/RingTheory/Coalgebra/TensorProduct.lean:69`: `lemma counit_tmul (x : A) (y : B) : counit (R := S) (x \u2297\u209c[R] y) = counit (R := R) y \u2022 counit (R := S) x := rfl` \u2014 setting `x = 1` and using `counit_one` (Bialgebra/Basic.lean:99, `@[simp]`) gives the PR statement.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/BaseChange.lean",
+   "fix": "Remove the lemma, or replace its proof with `simpa [Algebra.smul_def, mul_one] using TensorProduct.counit_tmul (R := k) (S := K) (1 : K) a` and drop the `@[simp]` attribute.",
+   "issue": "`baseChange_counit_tmul` is the `x = 1` specialization of Mathlib's `TensorProduct.counit_tmul` (Coalgebra/TensorProduct.lean:68). The `@[simp]` attribute adds a parallel lemma for what `simp` already handles via `counit_tmul` + `counit_one`.",
+   "line": 44
+  },
+  {
+   "evidence": "`mathlib/Mathlib/RingTheory/Bialgebra/TensorProduct.lean:77`: `@[simp] theorem map_tmul (f : A \u2192\u2090c[S] C) (g : B \u2192\u2090c[R] D) (x : A) (y : B) : map f g (x \u2297\u209c y) = f x \u2297\u209c g y := rfl` \u2014 already `@[simp]` for the exact constructor used in `baseChangeMap` (line 54).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/BaseChange.lean",
+   "fix": "Remove the lemma, or replace its proof with `simpa [baseChangeMap] using Bialgebra.TensorProduct.map_tmul (BialgHom.id K K) f x a` and drop the `@[simp]` attribute.",
+   "issue": "`baseChangeMap_tmul` is the `f = BialgHom.id K K` specialization of Mathlib's `Bialgebra.TensorProduct.map_tmul` (Bialgebra/TensorProduct.lean:77). Since `baseChangeMap` is defined as `Bialgebra.TensorProduct.map (BialgHom.id K K) f`, the `@[simp]` lemma duplicates what `simp` already knows.",
+   "line": 60
+  },
+  {
+   "evidence": "The proof `simp [baseChangeMap_tmul]` (line 97) directly reduces to `baseChangeMap_tmul`, which itself duplicates `map_tmul` (see finding on line 60).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/BaseChange.lean",
+   "fix": "Remove the lemma. Use `simpa using map_tmul (BialgHom.id K K) f (1 : K) a` at each use site.",
+   "issue": "`baseChangeMap_one_tmul` is `baseChangeMap_tmul` with `x = 1`. It is a second-order specialization of `map_tmul` and adds no new simplification power.",
+   "line": 95
+  }
+ ],
+ "head_sha": "da13604df5e7223d273af87fd0d98bdd607c7bba",
+ "mode": "commit",
+ "model": "deepseek/deepseek-v4-pro",
+ "pr": 52,
+ "prompt_policy": "reactivation",
+ "provider": "deepseek",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260605T054630Z-52-reuse-bfb46a",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-ledger",
+ "started_at": "2026-06-05T05:46:30Z",
+ "summary": "Three lemmas are thin specializations of existing Mathlib `@[simp]` lemmas: `baseChange_counit_tmul` is `counit_tmul` with `x = 1`, `baseChangeMap_tmul` is `Bialgebra.TensorProduct.map_tmul` with `f = id`, and `baseChangeMap_one_tmul` is a further specialization. The definitions `baseChangeMap`, `baseChangeMap_id`, and `baseChangeMap_comp` are genuinely new.",
+ "transcript_blob": "de35d5a85ee7b63266144b0c9cbd538abdc92cde0bfe272f0685256d563ec384",
+ "usage": {
+  "input_tokens": 141781,
+  "output_tokens": 14551
+ },
+ "verdict": "request_changes"
+}

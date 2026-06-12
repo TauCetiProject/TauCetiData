@@ -1,0 +1,68 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.075798,
+   "returncode": 0,
+   "usage": {
+    "cached_input_tokens": 35968,
+    "input_tokens": 45478,
+    "output_tokens": 1895,
+    "reasoning_output_tokens": 948
+   }
+  }
+ ],
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": true,
+ "cost_usd": 0.075798,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|correctness|gpt-5.5|dccacfb6e0bf58e2|production|1",
+ "fidelity": "reconstructed",
+ "findings": [
+  {
+   "evidence": "The diff declares `class ReductiveGroup : Prop extends AffineAlgGroup k A where ... unipotent_radical_trivial : True`, and `ReductiveGroup.unipotentRadical_trivial'` only returns that `True` field.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Do not add `ReductiveGroup` until the unipotent radical after base change is formalized, or replace this field with the actual triviality predicate for that radical.",
+   "issue": "`ReductiveGroup.unipotent_radical_trivial : True` makes every `AffineAlgGroup` reductive by construction, so the stated defining condition has no mathematical content.",
+   "line": 64
+  },
+  {
+   "evidence": "The diff declares `class SemisimpleGroup : Prop extends ReductiveGroup k A where ... radical_trivial : True`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Wait for or implement the actual radical/maximal connected solvable normal subgroup predicate and use its triviality as the field type.",
+   "issue": "`SemisimpleGroup.radical_trivial : True` likewise turns the radical condition into a placeholder, so semisimplicity is just reductivity plus a vacuous field.",
+   "line": 69
+  },
+  {
+   "evidence": "Lines 40-41 define `AlgPoints k A := A \u2192\u2090[k] k`, but lines 47-49 state \u201cAn element `g \u2208 G(k)`\u201d while typing `g` as `GroupLike k A` and checking `IsNilpotent ((g : A) - 1)`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Define unipotence on group points, or defer it until a faithful linear representation/closed embedding into `GL_n` is available; do not test nilpotence of `(g : A) - 1` for a coordinate-ring element.",
+   "issue": "`IsUnipotent (g : GroupLike k A)` does not match the docstring or mathematics of a unipotent group element: `GroupLike k A` is a group-like element of the Hopf coordinate ring, while the file\u2019s own `AlgPoints` definition represents `k`-points as `A \u2192\u2090[k] k`.",
+   "line": 48
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_version": "dccacfb6e0bf58e2",
+ "run_id": "r-20260604T021123Z-40-correctness-6e1287",
+ "schema": "tauceti.run/v1",
+ "source": "backfill-reviews-branch",
+ "started_at": "2026-06-04T02:11:23Z",
+ "summary": "The PR encodes the central reductive/semisimple conditions as placeholders and mis-types unipotence as a property of coordinate-ring group-like elements rather than group points. These are semantic faults in the new API, not missing downstream lemmas.",
+ "transcript_blob": "1b3a55e0b165f1d72d3c992bdf02b71dc4bfcc5560e41250959f6fe77c5cd4ca",
+ "usage": {
+  "cached_input_tokens": 35968,
+  "input_tokens": 45478,
+  "output_tokens": 1895,
+  "reasoning_output_tokens": 948
+ },
+ "verdict": "block"
+}
