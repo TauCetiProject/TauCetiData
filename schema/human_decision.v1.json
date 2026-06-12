@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tauceti.human_decision/v1",
+  "title": "Human meta-review decision",
+  "description": "A human's pairwise choice, recorded with everything needed to reconstruct exactly what was on screen: the raw left/right click, the deterministic left/right-to-arm mapping presented, and the bundle hash.",
+  "type": "object",
+  "required": ["schema", "decision_id", "pair_id", "decision", "reviewer"],
+  "properties": {
+    "schema": {"const": "tauceti.human_decision/v1"},
+    "decision_id": {"type": "string", "description": "ULID — conflict-free across concurrent labellers"},
+    "pair_id": {"type": "string"},
+    "decision": {"enum": ["a", "b", "tie"]},
+    "raw_choice": {"enum": ["left", "right", "tie", null]},
+    "presented": {
+      "type": ["object", "null"],
+      "properties": {
+        "left": {"enum": ["a", "b"]},
+        "right": {"enum": ["a", "b"]},
+        "seed": {"type": "string"}
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "required": ["github_login"],
+      "properties": {
+        "github_login": {"type": "string"},
+        "auth": {"type": ["string", "null"]}
+      }
+    },
+    "comment": {"type": ["string", "null"]},
+    "context": {"enum": ["escalated", "audit", null]},
+    "bundle_sha256": {"type": ["string", "null"]},
+    "ui": {"type": ["string", "null"], "description": "tool name + version that recorded this"},
+    "duration_s": {"type": ["number", "null"]},
+    "ts": {"type": ["string", "null"], "format": "date-time"}
+  }
+}

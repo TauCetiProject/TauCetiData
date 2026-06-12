@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tauceti.judgment/v1",
+  "title": "AI pairwise judgment",
+  "description": "One judge model's verdict on an A/B pair, comprising two passes (both presentation orders). Idempotency key: (pair_id, judge.model, judge.prompt_sha256, sample).",
+  "type": "object",
+  "required": ["schema", "judgment_id", "pair_id", "judge", "decision"],
+  "properties": {
+    "schema": {"const": "tauceti.judgment/v1"},
+    "judgment_id": {"type": "string"},
+    "pair_id": {"type": "string"},
+    "sample": {"type": ["integer", "null"]},
+    "judge": {
+      "type": "object",
+      "required": ["provider", "model", "prompt_sha256"],
+      "properties": {
+        "provider": {"type": "string"},
+        "model": {"type": "string"},
+        "prompt_file": {"type": ["string", "null"]},
+        "prompt_sha256": {"type": "string"},
+        "harness_version": {"type": ["string", "null"]}
+      }
+    },
+    "passes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "order": {"type": "array", "items": {"enum": ["a", "b"]}},
+          "raw_winner": {"enum": ["first", "second", "tie", null]},
+          "winner": {"enum": ["a", "b", "tie", null]},
+          "confidence": {"enum": ["high", "medium", "low", null]},
+          "rationale": {"type": ["string", "null"]},
+          "tokens": {"type": ["object", "null"]},
+          "cost_usd": {"type": ["number", "null"]},
+          "runtime_s": {"type": ["number", "null"]},
+          "returncode": {"type": ["integer", "null"]}
+        }
+      }
+    },
+    "decision": {
+      "enum": ["a", "b", "tie", "inconsistent"],
+      "description": "inconsistent = the two passes disagreed after order-flip; treated as an escalation signal"
+    },
+    "confidence": {"enum": ["high", "medium", "low", null]},
+    "cost_usd": {"type": ["number", "null"]},
+    "ts": {"type": ["string", "null"], "format": "date-time"}
+  }
+}
