@@ -1,0 +1,82 @@
+{
+ "arm": "shadow:deepseek-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.007835,
+   "returncode": 0,
+   "secs": 68.5,
+   "usage": {
+    "input_tokens": 12642,
+    "output_tokens": 2674
+   }
+  },
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.019383,
+   "returncode": 0,
+   "secs": 106.2,
+   "usage": {
+    "input_tokens": 34786,
+    "output_tokens": 4834
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.027218,
+ "dedupe_key": "FormalFrontier/TauCeti|39|8331841f9f7a2b18a035e50bed5b6582f9cf2fb5|generality|deepseek/deepseek-v4-pro|e1aee6e8c6688dd8|shadow:deepseek-backfill|1",
+ "diff_blob": "03888c08fc14567b85bf6055557b647401f91a05a3881b6a470eeebd2a9c4816",
+ "diff_sha256": "03888c08fc14567b85bf6055557b647401f91a05a3881b6a470eeebd2a9c4816",
+ "duration_s": 174.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The proof is `h_transform` (line 24); `h_transform : F' = g_inv * F * g` is the hypothesis, making the theorem a tautology. `_hg` appears nowhere in the proof.",
+   "file": "TauCeti/AtlasExamples.lean",
+   "fix": "Either remove the theorem (it adds nothing) or state a nontrivial claim about actual curvature forms on a manifold; if kept as a ring identity, drop the unused `_hg` and `Ring R`.",
+   "issue": "Unused hypothesis `_hg : g_inv * g = 1` in `curvature_gauge_transformation`. The theorem is trivially `h_transform` with no differential-geometric content, and the `Ring R` is unnecessary.",
+   "line": 21
+  },
+  {
+   "evidence": "`oriented : True` at line 30; Mathlib defines `Orientation` as `Module.Ray R (M [\u22c0^\u03b9]\u2192\u2097[R] R)` in `Mathlib/LinearAlgebra/Orientation.lean:51`.",
+   "file": "TauCeti/AtlasExamples.lean",
+   "fix": "Use `Orientation` from `Mathlib/LinearAlgebra/Orientation.lean` (an `Orientation R M \u03b9` field) and add the appropriate manifold typeclass requirements.",
+   "issue": "`IsCompactOrientedManifold.oriented : True` is vacuous \u2014 `True` is always provable and carries no orientability constraint. The class also lacks any manifold structure (no `ChartedSpace` or `IsManifold`).",
+   "line": 30
+  },
+  {
+   "evidence": "`banach_steinhaus` at `Mathlib/Analysis/Normed/Operator/BanachSteinhaus.lean:37` has `{E F \ud835\udd5c \ud835\udd5c\u2082 : Type*} [NontriviallyNormedField \ud835\udd5c] [NontriviallyNormedField \ud835\udd5c\u2082] ... {\u03c3\u2081\u2082 : \ud835\udd5c \u2192+* \ud835\udd5c\u2082} [RingHomIsometric \u03c3\u2081\u2082]`. The PR version at line 39 uses only `\u211d`.",
+   "file": "TauCeti/AtlasExamples.lean",
+   "fix": "Drop the wrapper and use `banach_steinhaus` directly, or match its general signature (type variables `\ud835\udd5c`, `\ud835\udd5c\u2082`, `\u03c3\u2081\u2082`).",
+   "issue": "`uniform_boundedness_principle` hardcodes `\u211d` where Mathlib's `banach_steinhaus` (imported from the same file) works for any `NontriviallyNormedField` and any `RingHomIsometric`. This is an under-generalized duplicate.",
+   "line": 39
+  }
+ ],
+ "head_sha": "8331841f9f7a2b18a035e50bed5b6582f9cf2fb5",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "deepseek/deepseek-v4-pro",
+ "pr": 39,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1ca65a2f3418a7680c1daafcb6818562bd92c10b2af92fbfe63197ebb7bd9570",
+ "provider": "deepseek",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "2e8f28c349ad7304012e72e065b52e966c18ebe4",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260612T110611Z-39-generality-47a828",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-12T11:06:11Z",
+ "summary": "Three statements sit at the wrong level of generality: curvature_gauge_transformation has an unused hypothesis and is trivially true (h_transform); IsCompactOrientedManifold uses vacuous `oriented : True` and no manifold structure; uniform_boundedness_principle is a \u211d-specialization of the already-imported general banach_steinhaus.",
+ "transcript_blob": "f18a796efc30b3d2e0a513852b77a9dde69d05a74c8549f44797ecc45a31facf",
+ "usage": {
+  "input_tokens": 34786,
+  "output_tokens": 4834
+ },
+ "verdict": "request_changes"
+}

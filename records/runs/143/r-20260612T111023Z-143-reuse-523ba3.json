@@ -1,0 +1,76 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.608475,
+   "returncode": 0,
+   "secs": 70.3,
+   "usage": {
+    "cached_input_tokens": 379520,
+    "input_tokens": 461628,
+    "output_tokens": 3144,
+    "reasoning_output_tokens": 769
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ecbb68804f47965ec971c6f7189d5ff738abe02c",
+ "cost_estimated": true,
+ "cost_usd": 0.608475,
+ "dedupe_key": "FormalFrontier/TauCeti|143|2aab6047c295cf77d19cde32d2d3bb69960ed974|reuse|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "b9ece8397cf2a4b912f687545ec292170813a157f2453f21812e14a467a62701",
+ "diff_sha256": "b9ece8397cf2a4b912f687545ec292170813a157f2453f21812e14a467a62701",
+ "duration_s": 70.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PR line 161 proves `(ratBelow F P).Prime`; grep hit: `mathlib/Mathlib/RingTheory/Ideal/Int.lean:120:theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] : (absNorm (under \u2124 P)).Prime`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/IdealCount.lean",
+   "fix": "Delete `ratBelow_prime` and use `Nat.absNorm_under_prime P` after unfolding `ratBelow` and supplying `P.IsPrime`/`NeZero P` from the hypotheses.",
+   "issue": "`ratBelow_prime` duplicates Mathlib's prime-under-norm theorem for exactly `Ideal.absNorm (Ideal.under \u2124 P)`.",
+   "line": 160
+  },
+  {
+   "evidence": "PR lines 180-182 are exactly `Ideal.under_ne_bot (A := \u2124) hP0`; grep hit: `mathlib/Mathlib/RingTheory/Ideal/GoingUp.lean:422:theorem under_ne_bot ... (hP : P \u2260 \u22a5) : under A P \u2260 \u22a5`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/IdealCount.lean",
+   "fix": "Delete this theorem and call `Ideal.under_ne_bot (A := \u2124) hP0` directly at use sites.",
+   "issue": "`under_ne_bot` is only a renamed wrapper around existing `Ideal.under_ne_bot` and even carries an unused primality hypothesis.",
+   "line": 180
+  },
+  {
+   "evidence": "PR line 188 proves `ratBelow F P \u2264 Ideal.absNorm P`; grep hit: `mathlib/Mathlib/RingTheory/Ideal/Int.lean:92:theorem absNorm_under_dvd_absNorm ... (I : Ideal S) : absNorm (under \u2124 I) \u2223 absNorm I`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/IdealCount.lean",
+   "fix": "Prove the needed inequality from `Int.absNorm_under_dvd_absNorm P` plus positivity of `Ideal.absNorm P`, or inline that argument instead of adding a parallel foundational lemma.",
+   "issue": "`ratBelow_le_absNorm` reproves a special case of Mathlib's divisibility result for `absNorm (under \u2124 I)`.",
+   "line": 187
+  }
+ ],
+ "head_sha": "2aab6047c295cf77d19cde32d2d3bb69960ed974",
+ "merge_base_sha": "ecbb68804f47965ec971c6f7189d5ff738abe02c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 143,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "673e4d5bfbf8e85262f73f223a075fd3a9c1d4a1d9a53597185b4c4e9393de30",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "2e8f28c349ad7304012e72e065b52e966c18ebe4",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260612T111023Z-143-reuse-523ba3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-12T11:10:23Z",
+ "summary": "The main explicit ideal-count statement does not appear duplicated, but the PR adds public support lemmas that directly wrap existing Mathlib API. Replace those with the Mathlib declarations instead of adding parallel TauCeti names.",
+ "transcript_blob": "df9a803c043b8e83c9a806e5663b8bc2b4c326988f908d81ffbd3439a95c9337",
+ "usage": {
+  "cached_input_tokens": 379520,
+  "input_tokens": 461628,
+  "output_tokens": 3144,
+  "reasoning_output_tokens": 769
+ },
+ "verdict": "block"
+}

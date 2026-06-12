@@ -1,0 +1,65 @@
+{
+ "arm": "shadow:deepseek-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.134622,
+   "returncode": 0,
+   "secs": 359.8,
+   "usage": {
+    "input_tokens": 266968,
+    "output_tokens": 21041
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "cc5fa737cc8e84f8f1ee4513ce0f08d21cca7e24",
+ "cost_estimated": false,
+ "cost_usd": 0.134622,
+ "dedupe_key": "FormalFrontier/TauCeti|48|c61c963e986e7e46904dba94edb3f7b1689b2eb2|api-design|deepseek/deepseek-v4-pro|e1aee6e8c6688dd8|shadow:deepseek-backfill|1",
+ "diff_blob": "f0952f0d5344daccaaf50b2fed61675538514d1d1046e63898e40ef64f22ae4b",
+ "diff_sha256": "f0952f0d5344daccaaf50b2fed61675538514d1d1046e63898e40ef64f22ae4b",
+ "duration_s": 359.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 209: `noncomputable def map \u2026 := Bialgebra.TensorProduct.map (BialgHom.id K K) f`. Line 249: `(map \u2026 f : \u2026 \u2192\u2090[K] \u2026) = Algebra.TensorProduct.map \u2026`. The LHS of `map_toAlgHom` is a coercion of `map f`; the RHS reveals the internal `Algebra.TensorProduct.map` decomposition.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Remove both lemmas or make them `private`.",
+   "issue": "`map_toAlgHom` (line 249) and `map_toCoalgHom` (line 257) are `@[simp]` lemmas that expose the body of `map` (line 209, defined as `Bialgebra.TensorProduct.map (BialgHom.id K K) f`). The consumer can already use `map_tmul`, `map_includeRight`, `map_comp_apply`, and the `BialgHom`/`AlgHom`/`CoalgHom` typeclass methods without knowing this detail.",
+   "line": 249
+  },
+  {
+   "evidence": "Line 131: `def includeRight \u2026 := Algebra.TensorProduct.includeRight \u2026`. Line 137: `@[simp]` lemma proves `includeRight \u2026 a = Algebra.TensorProduct.includeRight \u2026 a` by `rfl`. The RHS is strictly longer and exposes the implementation.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Remove `@[simp]`. Users can still `rw [includeRight_apply]` when they need the expansion.",
+   "issue": "`@[simp]` on `includeRight_apply` rewrites the API name `includeRight a` to the longer implementation detail `Algebra.TensorProduct.includeRight (R := k) (A := K) (B := A) a`, which is the wrong simplification direction.",
+   "line": 137
+  }
+ ],
+ "head_sha": "c61c963e986e7e46904dba94edb3f7b1689b2eb2",
+ "merge_base_sha": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "mode": "manual",
+ "model": "deepseek/deepseek-v4-pro",
+ "pr": 48,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "cd312082063819192bb1145836edc31d528e972154c2276b5d510b9fa2ac8e6a",
+ "provider": "deepseek",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "59403d5471ff29d54e2a2781005539703a08567a",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260612T110149Z-48-api-design-7fcf59",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-12T11:01:49Z",
+ "summary": "The core API (`baseChange`, `includeRight`, `map`) is appropriate for the Layer 0 target, but two pairs of lemmas expose implementation bodies that a consumer should not need. `map_toAlgHom`/`map_toCoalgHom` reveal `map` as `Bialgebra.TensorProduct.map`; `includeRight_apply` with `@[simp]` expands the API name to an implementation detail.",
+ "transcript_blob": "206fdc527b7a1414c4458f97d3a0293aafc8e3c49ae8474c74268f255148a500",
+ "usage": {
+  "input_tokens": 266968,
+  "output_tokens": 21041
+ },
+ "verdict": "request_changes"
+}
