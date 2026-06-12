@@ -38,7 +38,7 @@ records/
   posts/<pr>/<round_id>.json   comment ids confirmed posted, for linking to live threads
 blobs/<aa>/<sha256>.gz         content-addressed reviewed diffs and reviewer transcripts
 eval/          pairwise A/B evaluation data (pairs, judgments, resolutions, decisions)
-scripts/       ingest/scrape/build tooling
+scripts/       ingest/scrape/build tooling + A/B pairing (make_pairs, ab_fill)
 state/         scrape cursors (per writer)
 docs/          design docs for the evaluation pipeline
 db/            derived SQLite (gitignored)
@@ -60,6 +60,22 @@ The TauCetiReview runner writes records into `<store>/outbox/` during a review
 (`runner/archive.py`), and `runner/archive.py sync --data-dir <checkout>`
 drains the outbox into this repo: write-if-absent, commit, rebase, push, then
 clear. Safe to re-run; a push outage never fails a review.
+
+## A/B pairs
+
+```
+python3 scripts/make_pairs.py                       # register pairs from coexisting runs
+python3 scripts/ab_fill.py --target deepseek        # estimate cost of filling deepseek's arm
+python3 scripts/ab_fill.py --target deepseek --commands --limit 25 > fill.sh   # then run a sample
+```
+
+`make_pairs.py` registers an `eval/pairs/<id>.json` for every two runs of the same
+(pr, head_sha, rubric) that differ in model, rubric version, or arm — the naturally-occurring
+model-vs-model collisions already in the history, plus any shadow arm added later.
+`ab_fill.py` finds tasks lacking a given provider's arm and either estimates the cost of
+filling them (calibrated against that provider's own historical token usage) or emits the
+`tauceti-review --shadow` commands that produce the arms. The shadow runs archive back here and
+pair up the next time `make_pairs.py` runs.
 
 ## Rebuilding the database
 
