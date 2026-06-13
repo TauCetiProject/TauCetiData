@@ -1,0 +1,115 @@
+{
+ "arm": "shadow:sonnet-backfill",
+ "attempts": [
+  {
+   "cost_usd": 0.6642246999999999,
+   "returncode": 0,
+   "secs": 209.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 27776,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 27776,
+    "cache_read_input_tokens": 1107989,
+    "inference_geo": "not_available",
+    "input_tokens": 33,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 357,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 357,
+      "cache_read_input_tokens": 45346,
+      "input_tokens": 1,
+      "output_tokens": 787,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10751,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_usd": 0.664225,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|generality|claude-sonnet-4-6|e1aee6e8c6688dd8|shadow:sonnet-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 209.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "GroupLike is defined in Mathlib.RingTheory.Coalgebra.GroupLike under `variable [CommSemiring R] ... [Coalgebra R A]`. IsGeometricallyReduced requires [CommRing R] [Ring A], not Field. The outer variable (line 31) fixes [Field k] [CommRing A], both strictly stronger than needed for this definition.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Define IsUnipotent outside or before the [Field k] variable scope, or introduce a separate `variable` block with [CommSemiring k] [Ring A] [HopfAlgebra k A] for the Unipotent section. Concretely: `def IsUnipotent {k A : Type*} [CommSemiring k] [Ring A] [HopfAlgebra k A] (g : GroupLike k A) : Prop := IsNilpotent ((g : A) - 1)`.",
+   "issue": "IsUnipotent carries [Field k] [CommRing A] from the outer variable block (line 31) when GroupLike k A requires only CommSemiring k and Coalgebra k A, and IsNilpotent ((g : A) - 1) requires only Ring A. The same over-strong context propagates to isUnipotent_one (line 54).",
+   "line": 49
+  },
+  {
+   "evidence": "Lean 4 class inheritance registers the parent projection as an instance automatically (same pattern as `LeftCancelSemigroup.toSemigroup` etc. in Mathlib.Algebra.Group.Defs). The body `SemisimpleGroup.toReductiveGroup` confirms this is just the auto-projection.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Delete lines 76\u201378; Lean 4's class-extension mechanism already synthesizes `ReductiveGroup k A` from `[SemisimpleGroup k A]` via the auto-generated `toReductiveGroup` projection.",
+   "issue": "SemisimpleGroup.instReductiveGroup is redundant. `class SemisimpleGroup extends ReductiveGroup k A` (line 68) causes Lean 4 to auto-register `SemisimpleGroup.toReductiveGroup` as an instance; the explicit instance restates the same projection.",
+   "line": 77
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "claude-sonnet-4-6",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e2355ceebbe91853164e42e1099712074a58b461d9aba2b08c11f491c8c24f6c",
+ "provider": "sonnet",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T044718Z-40-generality-311115",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T04:47:18Z",
+ "summary": "IsUnipotent and isUnipotent_one inherit [Field k] [CommRing A] from the outer variable block, but the definition only requires [CommSemiring k] [Ring A] [HopfAlgebra k A] \u2014 GroupLike needs only CommSemiring, and IsNilpotent on a difference needs only Ring. The explicit instance SemisimpleGroup.instReductiveGroup duplicates what Lean 4 class extension auto-generates.",
+ "transcript_blob": "1cdde6c16c4396945e952615b75132fe367c54981bf4596c923dfdcfd6546dbd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 27776,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 27776,
+  "cache_read_input_tokens": 1107989,
+  "inference_geo": "not_available",
+  "input_tokens": 33,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 357,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 357,
+    "cache_read_input_tokens": 45346,
+    "input_tokens": 1,
+    "output_tokens": 787,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10751,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

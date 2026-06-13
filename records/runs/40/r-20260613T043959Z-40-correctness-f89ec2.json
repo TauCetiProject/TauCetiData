@@ -1,0 +1,122 @@
+{
+ "arm": "shadow:sonnet-backfill",
+ "attempts": [
+  {
+   "cost_usd": 0.34572359999999996,
+   "returncode": 0,
+   "secs": 181.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 20396,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 20396,
+    "cache_read_input_tokens": 110144,
+    "inference_geo": "not_available",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2822,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2822,
+      "cache_read_input_tokens": 35501,
+      "input_tokens": 1,
+      "output_tokens": 2467,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9137,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_usd": 0.345724,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|correctness|claude-sonnet-4-6|e1aee6e8c6688dd8|shadow:sonnet-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 181.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Rubric: 'reject `True` or any trivial stand-in in a signature or as a structure-field type'. `unipotent_radical_trivial : True` and `radical_trivial : True` are literal `True`; Lean elaborates both by `trivial` unconditionally.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Replace `True` with the actual mathematical condition: for `ReductiveGroup`, the set of unipotent k-points of `A \u2297[k] AlgebraicClosure k` (base-changed group) is trivial; for `SemisimpleGroup`, additionally that the maximal solvable connected normal subgroup is trivial. These require the unipotent radical to be defined first.",
+   "issue": "`ReductiveGroup.unipotent_radical_trivial : True` is a `True`-typed placeholder. Any `AffineAlgGroup` instance trivially satisfies `ReductiveGroup` by supplying `trivial`; the class adds no mathematical content. `SemisimpleGroup.radical_trivial : True` on line 70 is identical. Both fields bear plausible mathematical names but encode nothing.",
+   "line": 65
+  },
+  {
+   "evidence": "Mathlib/RingTheory/Coalgebra/GroupLike.lean lines 37\u201343: `IsGroupLikeElem` requires `\u0394(a) = a \u2297 a` and `\u03b5(a) = 1`, the character condition. Mathlib/RingTheory/Nilpotent/GeometricallyReduced.lean line 85: `isReduced_of_isGeometricallyReduced` gives `IsReduced A` from `AffineAlgGroup`'s `geomReduced` hypothesis; in a reduced ring `IsNilpotent x \u2194 x = 0`, so `IsUnipotent g \u2194 (g : A) = 1 \u2194 g = 1` \u2014 the definition has collapsed to equality with the identity and captures no unipotency content.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Replace `g : GroupLike k A` with `g : AlgPoints k A` and define the correct unipotency condition for a k-algebra homomorphism (e.g., via a faithful representation or the standard Hopf-algebraic characterization of the unipotent radical).",
+   "issue": "`IsUnipotent (g : GroupLike k A)` has the wrong domain type. `GroupLike k A` consists of group-like elements of the coordinate ring A (satisfying \u0394(a) = a \u2297 a), which correspond to characters G \u2192 Gm, not to k-points G(k). The docstring 'g \u2208 G(k)' is false. The k-points type is `AlgPoints k A` (= `A \u2192\u2090[k] k`), defined on line 42 of this same file.",
+   "line": 49
+  },
+  {
+   "evidence": "Statement: `theorem ... : True := h.unipotent_radical_trivial`. Both sides are `True`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove once `unipotent_radical_trivial` is given a real type; the real analogue will be a non-trivial theorem.",
+   "issue": "`ReductiveGroup.unipotentRadical_trivial'` is a theorem whose statement and proof are both `True`. It is a direct consequence of the placeholder field and adds nothing.",
+   "line": 73
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "claude-sonnet-4-6",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4674dbcf3ceeaedc9561c1b37ebc9898e97e89ab5d791ae82ea38f92749a0df0",
+ "provider": "sonnet",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T043959Z-40-correctness-f89ec2",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T04:39:59Z",
+ "summary": "The `ReductiveGroup` and `SemisimpleGroup` classes contain `True`-typed placeholder fields and encode no mathematical content distinguishing them from `AffineAlgGroup`. The `IsUnipotent` predicate applies to the wrong type and, in the context where it is used, collapses to `g = 1`.",
+ "transcript_blob": "98fdb3b2e4dab1034af371cf25e2406c2aee5d509aadb7f53819b57aaf1cec25",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 20396,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 20396,
+  "cache_read_input_tokens": 110144,
+  "inference_geo": "not_available",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2822,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2822,
+    "cache_read_input_tokens": 35501,
+    "input_tokens": 1,
+    "output_tokens": 2467,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9137,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}

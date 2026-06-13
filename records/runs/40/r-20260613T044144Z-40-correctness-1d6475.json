@@ -1,0 +1,115 @@
+{
+ "arm": "shadow:sonnet-backfill",
+ "attempts": [
+  {
+   "cost_usd": 0.4354359,
+   "returncode": 0,
+   "secs": 213.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 29234,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 29234,
+    "cache_read_input_tokens": 217773,
+    "inference_geo": "not_available",
+    "input_tokens": 9,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1929,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1929,
+      "cache_read_input_tokens": 45232,
+      "input_tokens": 1,
+      "output_tokens": 1514,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12704,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_usd": 0.435436,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|correctness|claude-sonnet-4-6|e1aee6e8c6688dd8|shadow:sonnet-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 213.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 65: `unipotent_radical_trivial : True`; line 70: `radical_trivial : True`. In Lean, a `Prop`-valued class field of type `True` is satisfied by `trivial` for any instance, adding zero proof obligation.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Replace both `True`-typed fields with the actual mathematical conditions: for `ReductiveGroup`, a proposition expressing that every unipotent `k`-point of `A \u2297_k k\u0304` is the identity (or equivalently that the unipotent radical of `G_{k\u0304}` is trivial); for `SemisimpleGroup`, that the radical is also trivial. These require the unipotent radical to be developed first (as the PR description acknowledges), so either do that work here or do not introduce the classes until the prerequisites exist.",
+   "issue": "`ReductiveGroup.unipotent_radical_trivial : True` and `SemisimpleGroup.radical_trivial : True` are `True`-typed placeholder fields. Any `AffineAlgGroup k A` instance trivially satisfies both via `trivial`, so the class hierarchy collapses: `ReductiveGroup` and `SemisimpleGroup` impose no condition beyond `AffineAlgGroup`. The theorem `ReductiveGroup.unipotentRadical_trivial'` (line 73) is a direct consequence \u2014 it proves `True` from `True`.",
+   "line": 65
+  },
+  {
+   "evidence": "Mathlib `GroupLike` (Coalgebra/GroupLike.lean line 66): `structure GroupLike where val : A; isGroupLikeElem_val : IsGroupLikeElem R val`. For `A = k[x]` with additive Hopf structure, `x` is primitive not group-like, so `GroupLike k (k[x]) \u2245 {1}`, while `AlgPoints k (k[x]) \u2245 k`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Define `IsUnipotent` on `AlgPoints k A = A \u2192\u2090[k] k`. The correct characterization of a unipotent `k`-point in the Hopf algebra language requires additional infrastructure (e.g., the augmentation ideal, or faithfully flat descent), which the PR description says is left to follow-ups \u2014 so either provide it here or omit `IsUnipotent` entirely from this PR.",
+   "issue": "`IsUnipotent` takes `g : GroupLike k A`, but for a commutative Hopf algebra `A` (coordinate ring), `GroupLike k A` is the group of group-like elements of `A` itself \u2014 NOT the group of `k`-points `G(k)`. The k-points are `AlgPoints k A = A \u2192\u2090[k] k` (defined on line 42 but unused here). For `G = \ud835\udd3e_a` with `A = k[x]`, the generator `x` is primitive (`\u0394(x) = x \u2297 1 + 1 \u2297 x`), so `GroupLike k (k[x])` contains only `1`, yet every `k`-point of `\ud835\udd3e_a` should be unipotent. The docstring itself says 'g \u2208 G(k)' confirming the intended domain is wrong.",
+   "line": 49
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "claude-sonnet-4-6",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1a55489daaa18827758af0876b8197babbd91d9a76e8eab44444d43df3ac98ab",
+ "provider": "sonnet",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T044144Z-40-correctness-1d6475",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T04:41:44Z",
+ "summary": "Both `ReductiveGroup` and `SemisimpleGroup` carry `True`-typed fields as stand-ins for their defining conditions, making every `AffineAlgGroup` trivially both reductive and semisimple. Additionally, `IsUnipotent` is defined on `GroupLike k A` (group-like elements of the coordinate ring) rather than on `AlgPoints k A` (the actual k-points `A \u2192\u2090[k] k`), which is a mis-formalization.",
+ "transcript_blob": "e76685c3cca4a44f94a4bc4c5793d613d950bfef3cbad0e837a7dbe68be2ed80",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 29234,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 29234,
+  "cache_read_input_tokens": 217773,
+  "inference_geo": "not_available",
+  "input_tokens": 9,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1929,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1929,
+    "cache_read_input_tokens": 45232,
+    "input_tokens": 1,
+    "output_tokens": 1514,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12704,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
