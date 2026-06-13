@@ -26,10 +26,10 @@ import subprocess
 
 import tcdata
 
-PROMPT_FILE = tcdata.ROOT / "eval" / "prompts" / "pairwise-judge-v1.md"
-PROMPT = PROMPT_FILE.read_text()
-PROMPT_SHA = hashlib.sha256(PROMPT.encode()).hexdigest()[:16]
 DIFF_CAP = 120_000
+PROMPT = ""        # set in main() from --prompt
+PROMPT_SHA = ""
+PROMPT_NAME = ""
 
 # judge spec -> (transport, model). pi = OpenRouter via the `pi` agent; claude = subscription CLI.
 JUDGES = {
@@ -139,11 +139,17 @@ def one_judgment(pair, spec, order, sample):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--judge", default="deepseek", choices=list(JUDGES))
+    ap.add_argument("--prompt", default="pairwise-judge-v2", help="prompt file stem in eval/prompts/")
     ap.add_argument("--pairs", type=int, default=5, help="number of pairs (ignored with --all)")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--rubric", default="")
     ap.add_argument("--samples", type=int, default=3, help="samples per order (per pair: 2*samples calls)")
     a = ap.parse_args()
+
+    global PROMPT, PROMPT_SHA, PROMPT_NAME
+    PROMPT_NAME = a.prompt
+    PROMPT = (tcdata.ROOT / "eval" / "prompts" / (PROMPT_NAME + ".md")).read_text()
+    PROMPT_SHA = hashlib.sha256(PROMPT.encode()).hexdigest()[:16]
 
     pairs = [json.loads(p.read_text()) for p in sorted((tcdata.ROOT / "eval" / "pairs").glob("*.json"))]
     if a.rubric:
@@ -167,7 +173,7 @@ def main():
                     rec = {"schema": "tauceti.judgment/v1", "judgment_id": jid,
                            "pair_id": pair["pair_id"], "pr": pair["pr"], "rubric": pair["rubric"],
                            "judge": {"spec": a.judge, "model": JUDGES[a.judge][1],
-                                     "prompt_file": "eval/prompts/pairwise-judge-v1.md",
+                                     "prompt_file": f"eval/prompts/{PROMPT_NAME}.md",
                                      "prompt_sha": PROMPT_SHA},
                            "order": order, "sample": s, **res}
                     dst.parent.mkdir(parents=True, exist_ok=True)
