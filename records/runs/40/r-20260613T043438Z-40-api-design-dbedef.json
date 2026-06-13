@@ -1,0 +1,143 @@
+{
+ "arm": "shadow:sonnet-backfill",
+ "attempts": [
+  {
+   "cost_usd": 0.5691148999999999,
+   "returncode": 0,
+   "secs": 299.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 31168,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 31168,
+    "cache_read_input_tokens": 183464,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7941,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7941,
+      "cache_read_input_tokens": 41154,
+      "input_tokens": 1,
+      "output_tokens": 2405,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14067,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_usd": 0.569115,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|api-design|claude-sonnet-4-6|e1aee6e8c6688dd8|shadow:sonnet-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 299.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Both `Algebra.FiniteType` (FiniteType.lean:39) and `Algebra.IsGeometricallyReduced` (GeometricallyReduced.lean:54) are `class` declarations in Mathlib; Lean 4 does not auto-register Prop-class fields as instances without an explicit `instance` or `attribute [instance]`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Add `instance AffineAlgGroup.toFiniteType [AffineAlgGroup k A] : Algebra.FiniteType k A := AffineAlgGroup.finiteType` and the parallel instance for `IsGeometricallyReduced`.",
+   "issue": "`AffineAlgGroup` fields `finiteType : Algebra.FiniteType k A` and `geomReduced : Algebra.IsGeometricallyReduced k A` are plain Prop fields, not typeclass instances; `[AffineAlgGroup k A]` does not synthesize either Mathlib class for downstream lemmas.",
+   "line": "35"
+  },
+  {
+   "evidence": "Roadmap \u00a7Standing hypotheses: \"do not bundle them into one mega-class \u2026 Keep two distinct notions, and never make smoothness implicit\"; Design notes: \"Don't bundle typeclasses; admit non-smooth/non-reduced groups (\u03bc_p)\".",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove `geomReduced` from `AffineAlgGroup` (keep only `finiteType`); add `[Algebra.IsGeometricallyReduced k A]` as an explicit named hypothesis in results that need smoothness.",
+   "issue": "`AffineAlgGroup` bundles finite-type with smoothness (`geomReduced`), making it impossible to take `\u03bc_p` or `\u03b1\u209a` as instances; the roadmap explicitly requires two separate notions and forbids a mega-class.",
+   "line": "35"
+  },
+  {
+   "evidence": "Roadmap Layer 0: \"Generalize `AlgPoints R A := A \u2192\u2090[k] R` for every commutative `k`-algebra `R` \u2026 Give it a group structure by convolution\"; the current `def` has no associated lemmas.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Either make `AlgPoints` private until the convolution group instance and `ext`/`mk` API are present, or generalize to `AlgPoints (k R A : Type*) [CommSemiring k] [CommSemiring R] [Algebra k R] [Semiring A] [Algebra k A] := A \u2192\u2090[k] R` and add the group structure.",
+   "issue": "`AlgPoints` is a type alias with no characteristic API: no group structure (the roadmap requires convolution), no `ext`, no `mk`; also fixes `R = k` where the roadmap targets `A \u2192\u2090[k] R` for general commutative `R`.",
+   "line": "42"
+  },
+  {
+   "evidence": "The lemma states `IsUnipotent (1 : GroupLike k A)`, which is a normal-form fact about the identity that simp should close automatically.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Add `@[simp]` before `theorem isUnipotent_one`.",
+   "issue": "`isUnipotent_one` is missing `@[simp]`; it is the canonical normalization lemma for the identity.",
+   "line": "54"
+  },
+  {
+   "evidence": "Body is `h.unipotent_radical_trivial`, which is identical to `trivial`; no downstream use is possible that could not use the field directly.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove it.",
+   "issue": "`ReductiveGroup.unipotentRadical_trivial'` proves `True` from the field `unipotent_radical_trivial : True`; it is the field accessor with a different name and provides no API value.",
+   "line": "73"
+  },
+  {
+   "evidence": "Line 78: body is `SemisimpleGroup.toReductiveGroup`; Lean 4 `class extends` automatically synthesizes the parent class, making the explicit instance a no-op duplicate.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove the explicit instance.",
+   "issue": "`SemisimpleGroup.instReductiveGroup` duplicates `SemisimpleGroup.toReductiveGroup`, which `class SemisimpleGroup extends ReductiveGroup k A` already generates as a registered typeclass instance.",
+   "line": "77"
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "claude-sonnet-4-6",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fabb86dc2f66ddabdfc385d23b4893521e2b3a3dd906aa1f0fe721501fac30bf",
+ "provider": "sonnet",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T043438Z-40-api-design-dbedef",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T04:34:38Z",
+ "summary": "The class hierarchy has two blocking API gaps: `AffineAlgGroup` bundles finite-type and smoothness into one class against the roadmap's explicit design rule (non-smooth groups `\u03bc_p` / `\u03b1\u209a` must be admissible), and neither bundled typeclass is registered as an instance, so `[AffineAlgGroup k A]` cannot synthesize `[Algebra.FiniteType k A]` or `[Algebra.IsGeometricallyReduced k A]` for Mathlib lemmas. Several smaller issues compound this: `AlgPoints` is a dead type alias (no group structure, wrong `R`), `isUnipotent_one` is missing `@[simp]`, and two public declarations are entirely redundant.",
+ "transcript_blob": "b6df724fb08f9071a3879791dc14ec6407caa25946acb2bb7d4dcf77e7236d2c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 31168,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 31168,
+  "cache_read_input_tokens": 183464,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7941,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7941,
+    "cache_read_input_tokens": 41154,
+    "input_tokens": 1,
+    "output_tokens": 2405,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14067,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
