@@ -1,0 +1,79 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.118513,
+   "returncode": 0,
+   "secs": 290.0,
+   "usage": {
+    "input_tokens": 38189,
+    "output_tokens": 18763
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": false,
+ "cost_usd": 0.118513,
+ "dedupe_key": "FormalFrontier/TauCeti|51|4284df3a644fb2885e56bd7f9fb7f5218d075999|proof-quality|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "432b0f37fe35e3d466757dbcec56ce8ae238ddaafb90b225bcd51d40b6731f36",
+ "diff_sha256": "432b0f37fe35e3d466757dbcec56ce8ae238ddaafb90b225bcd51d40b6731f36",
+ "duration_s": 290.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 35-43: `map_one' := by apply Homeomorph.ext; intro e; rfl` and `map_mul' \u03c6 \u03c8 := by apply Homeomorph.ext; intro e; rfl`. The defeq depends on `Subgroup.coe_mul` being `rfl`, `Homeomorph.mul` being `trans`, and `Homeomorph.subtype := subtypeEquiv` (Lemmas.lean:160).",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Prove a pointwise lemma such as `fiberHomeomorph_one_apply : (fiberHomeomorph (1 : Deck p) b \u27e8e, he\u27e9 : E) = e` (and `fiberHomeomorph_mul_apply` for the product) using `fiberHomeomorph_apply` and `map_proj`, then derive `map_one'`/`map_mul'` from them via `Homeomorph.ext` + `fun e => ... \u25b8 rfl`.",
+   "issue": "`fiberHomeomorphMonoidHom.map_one'` (and the symmetric `map_mul'` at line 42) close with `rfl` after `Homeomorph.ext`, relying on the defeq chain `(1 : Deck p).1 = Homeomorph.refl`, `Homeomorph.refl.subtype _ = Homeomorph.refl` (via `Equiv.subtypeEquiv_refl`), and `(\u03c6.1 * \u03c8.1).subtype _ = \u03c6.1.subtype _ * \u03c8.1.subtype _`. This is exactly the 'reliance on accidental definitional equality across wrappers or coercions' the rubric flags.",
+   "line": 38
+  },
+  {
+   "evidence": "Lines 92-95: `one_smul e := by exact Subtype.ext rfl` and `mul_smul \u03c6 \u03c8 e := by exact Subtype.ext rfl`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Either derive the `MulAction` from `fiberHomeomorphMonoidHom` via a `MonoidHom.toMulAction`-style construction, or prove the two fields via the explicit pointwise lemma from the previous finding.",
+   "issue": "`instFiberMulAction.one_smul` and `mul_smul` close with `exact Subtype.ext rfl`, repeating the same `rfl`-through-defeq reliance (now through `Equiv.subtypeEquiv`'s `toFun` lambda) as the `fiberHomeomorphMonoidHom` fields.",
+   "line": 93
+  },
+  {
+   "evidence": "Lines 101-106: LHS unfolds (via `fiberHomeomorph \u03c6 b` = `\u03c6.1.subtypeEquiv (fun e => by simp [Set.mem_preimage, eq_comm, map_proj])`) to `\u27e8\u03c6.1 e, (h_iff e).mp he\u27e9`; RHS is `\u27e8\u03c6.1 e, by simpa [Set.mem_preimage, Set.mem_singleton_iff] using map_proj \u03c6 e \u25b8 he\u27e9`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Replace the `rfl` with `ext` and an explicit proof, e.g. use `fiberHomeomorph_apply` to reduce both sides to `\u03c6.1 e` and discharge the membership with `map_proj \u03c6 e \u25b8 he` followed by `simp [Set.mem_preimage, Set.mem_singleton_iff]`; or weaken the RHS so it does not embed a `by simpa` block.",
+   "issue": "`smul_fiber_mk` closes with `rfl`, but the defeq match goes through `Homeomorph.subtype = Equiv.subtypeEquiv` and the simp-proved `(h_iff e).mp he` must defeq the `by simpa [Set.mem_preimage, Set.mem_singleton_iff] using map_proj \u03c6 e \u25b8 he` block on the RHS. This is a short-but-brittle proof whose load-bearing step is the defeq match against a `by simpa` block.",
+   "line": 105
+  },
+  {
+   "evidence": "Lines 69-73: `\u00b7 intro h e; have hfun : (fiberHomeomorph \u03c6 b e : E) = (fiberHomeomorph \u03c8 b e : E) := by rw [h]; simpa using hfun`. The lemma `fiberHomeomorph_apply` (Deck.lean) makes the Subtype-stripping step a single `simp` argument.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Write it directly, e.g. `intro h e; simpa [fiberHomeomorph_apply] using h e`, or `intro h e; exact (congr_fun h e : (fiberHomeomorph \u03c6 b e : E) = (fiberHomeomorph \u03c8 b e : E))`.",
+   "issue": "The forward direction of `fiberHomeomorph_eq_iff` uses a `have hfun : ... := by rw [h]` followed by `simpa using hfun`. The `have` introduces an indirection that obscures the fact that we are just applying `h` to `e` and stripping a Subtype coercion.",
+   "line": 70
+  }
+ ],
+ "head_sha": "4284df3a644fb2885e56bd7f9fb7f5218d075999",
+ "merge_base_sha": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 51,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "772618f7b67e8683ac464a0ffb8ff0ede3dde09fce106ddaf4b255b382a81e86",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T074511Z-51-proof-quality-41409a",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T07:45:11Z",
+ "summary": "The new API is well-factored, but several proofs close with `rfl` that works only through multi-step definitional equality across the `Subgroup`/`Homeomorph`/`Equiv.subtypeEquiv` wrappers, and the forward direction of `fiberHomeomorph_eq_iff` is awkwardly constructed. These should be replaced with explicit pointwise lemmas and a more direct proof.",
+ "transcript_blob": "5b511c0a080b348b284e8cfdba88f31533dd1658adc852c781f548f351aa1056",
+ "usage": {
+  "input_tokens": 38189,
+  "output_tokens": 18763
+ },
+ "verdict": "request_changes"
+}

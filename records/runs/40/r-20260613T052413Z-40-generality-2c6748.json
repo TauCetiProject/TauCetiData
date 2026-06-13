@@ -1,0 +1,79 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.040585,
+   "returncode": 0,
+   "secs": 101.8,
+   "usage": {
+    "input_tokens": 16133,
+    "output_tokens": 6023
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.040585,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|generality|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 101.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/Nilpotent/GeometricallyReduced.lean:85 (`isReduced_of_isGeometricallyReduced`); roadmap/TauCetiRoadmap/ReductiveGroups/README.md:198 ('A na\u00efve `IsUnipotent` that tests nilpotence in the reduced ring `A` is vacuous \u2026 the correct definition needs comodule theory (Layer 1)').",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Drop `IsUnipotent` and the `IsAlgClosed`/`AffineAlgGroup` machinery supporting it from this PR, or replace it with the comodule-based definition planned for Layer 1. At minimum, do not ship a predicate whose only provable instance is `1`.",
+   "issue": "`IsUnipotent g := IsNilpotent ((g : A) - 1)` is vacuous whenever `AffineAlgGroup k A` holds: `geomReduced` gives `IsReduced A`, so the only nilpotent in `A` is `0`, making the predicate equivalent to `g = 1`. The roadmap README explicitly calls out this exact formulation as the wrong level and says the correct definition needs comodule theory (Layer 1).",
+   "line": 51
+  },
+  {
+   "evidence": "Code: `class ReductiveGroup : Prop extends AffineAlgGroup k A where unipotent_radical_trivial : True` and `class SemisimpleGroup : Prop extends ReductiveGroup k A where radical_trivial : True`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Either make the fields real (e.g. the unipotent radical as `HopfIdeal A \u2293 \u2026` once it is built) or omit them entirely and add them in the PR that defines the radical. A `True` projection is not a placeholder \u2014 it locks the API into a vacuous shape.",
+   "issue": "`ReductiveGroup`'s only field beyond `AffineAlgGroup` is `unipotent_radical_trivial : True`, and `SemisimpleGroup.radical_trivial` is likewise `True`. A class field of type `True` carries no information and ages badly when real content (the unipotent radical / radical subgroups) is later filled in.",
+   "line": 60
+  },
+  {
+   "evidence": "Code lines 71\u201378: `theorem ... : True := h.unipotent_radical_trivial` and `instance ... := SemisimpleGroup.toReductiveGroup`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Delete `ReductiveGroup.unipotentRadical_trivial'` and `SemisimpleGroup.instReductiveGroup`; the `extends ReductiveGroup` clause already provides the latter.",
+   "issue": "`ReductiveGroup.unipotentRadical_trivial'` is a 'theorem' that returns `True`, and `SemisimpleGroup.instReductiveGroup` re-derives the auto-generated `toReductiveGroup` from the `extends` clause. Both are vacuous / duplicated.",
+   "line": 74
+  },
+  {
+   "evidence": "Mathlib convention: `HopfAlgebra` and `IsGeometricallyReduced` are over `CommRing`; `Field` is only needed for the algebraic-closure base change used in the reductive definition.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Drop `[Field k]` to `[CommRing k]` on `AffineAlgGroup` and `AlgPoints`; reintroduce `[Field k]` (or `[IsAlgClosed k]`) on `ReductiveGroup`/`IsUnipotent` where geometric notions actually require it.",
+   "issue": "`AffineAlgGroup` is parameterised by `[Field k]`, but its two projections (`Algebra.FiniteType k A`, `Algebra.IsGeometricallyReduced k A`) make sense over any `CommRing k`. Only the reductive layer (algebraic closure) needs `k` a field, so the `Field` constraint is under-generalised at the foundational class.",
+   "line": 41
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b8ef2595864b87296334eb51ccca883e1173d0919ebf3ec7e2ae78f90aed72a3",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T052413Z-40-generality-2c6748",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T05:24:13Z",
+ "summary": "The `IsUnipotent` predicate is vacuous in the only setting the PR provides (reduced coordinate ring) and the roadmap itself flags this exact definition as wrong. The `ReductiveGroup`/`SemisimpleGroup` classes carry only `True` fields and a `True` 'theorem', placing the API at the wrong level.",
+ "transcript_blob": "722e66f5f5c2f120bd0152733ceeb0d5cfc84fff73f329b895da3bfa9ff96dd0",
+ "usage": {
+  "input_tokens": 16133,
+  "output_tokens": 6023
+ },
+ "verdict": "request_changes"
+}

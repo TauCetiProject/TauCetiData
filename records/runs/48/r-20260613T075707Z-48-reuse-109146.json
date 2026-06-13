@@ -1,0 +1,86 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.365439,
+   "returncode": 0,
+   "secs": 363.7,
+   "usage": {
+    "input_tokens": 67260,
+    "output_tokens": 17266
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "cc5fa737cc8e84f8f1ee4513ce0f08d21cca7e24",
+ "cost_estimated": false,
+ "cost_usd": 0.365439,
+ "dedupe_key": "FormalFrontier/TauCeti|48|c61c963e986e7e46904dba94edb3f7b1689b2eb2|reuse|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "f0952f0d5344daccaaf50b2fed61675538514d1d1046e63898e40ef64f22ae4b",
+ "diff_sha256": "f0952f0d5344daccaaf50b2fed61675538514d1d1046e63898e40ef64f22ae4b",
+ "duration_s": 363.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep -n 'private lemma' BaseChange.lean shows `antipode_comp`, `map_antipode`, `TensorProduct.antipode_tmul`, `Bialgebra.TensorProduct.map_id`, `Bialgebra.TensorProduct.map_comp`; grep for `Bialgebra.TensorProduct.map_id` / `map_comp` in mathlib/Mathlib/RingTheory returns no hits; grep for `map_antipode` / `BialgHom.*antipode` in mathlib returns no hits.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Drop `private` (and the unnecessary `@[simp]` on the private `map_id`/`map_comp`) so other TauCeti files can reuse them, and consider upstreaming `BialgHom.map_antipode` / `Bialgebra.TensorProduct.map_id` / `map_comp` to Mathlib (`Bialgebra/Hom.lean`, `Bialgebra/TensorProduct.lean`), where they are missing.",
+   "issue": "Private general helpers are hidden from downstream TauCeti reuse. `TauCeti.BialgHom.map_antipode` (a bialgebra hom between Hopf algebras preserves the antipode), `TauCeti.Bialgebra.TensorProduct.map_id`, and `TauCeti.Bialgebra.TensorProduct.map_comp` are general results, but are declared `private` and used only once each. `TauCeti.BialgHom.antipode_comp` is also private.",
+   "line": 0
+  },
+  {
+   "evidence": "Line 119: `lemma includeRight_apply ... := rfl`; Mathlib `Mathlib/RingTheory/TensorProduct/Basic.lean:330` already has `@[simp] theorem includeRight_apply (b : B) : (includeRight : B \u2192\u2090[R] A \u2297[R] B) b = 1 \u2297\u209c b := rfl`.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Delete the lemma; rely on `Algebra.TensorProduct.includeRight_apply` (already `@[simp]` in Mathlib).",
+   "issue": "`BaseChange.includeRight_apply` is `rfl` (the LHS unfolds to the RHS by definition of `includeRight`), so the `@[simp] lemma` is a no-op duplicate of Mathlib's `Algebra.TensorProduct.includeRight_apply`.",
+   "line": 119
+  },
+  {
+   "evidence": "Mathlib `Mathlib/RingTheory/Bialgebra/TensorProduct.lean` defines `@[simp] theorem map_tmul (f : A \u2192\u2090c[S] C) (g : B \u2192\u2090c[R] D) (x : A) (y : B) : map f g (x \u2297\u209c y) = f x \u2297\u209c g y := rfl`.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Either (a) drop the lemma and let the public lemmas call `simp [Bialgebra.TensorProduct.map_tmul]`, or (b) keep it but make the specialization explicit in the docstring (e.g. `:= by unfold map; simp [Bialgebra.TensorProduct.map_tmul]`) so reviewers see the reuse.",
+   "issue": "`BaseChange.map_tmul` is a direct specialization of Mathlib's `Bialgebra.TensorProduct.map_tmul` (with `g := BialgHom.id K K`); the proof `simp [map]` already reduces to that Mathlib lemma.",
+   "line": 211
+  },
+  {
+   "evidence": "Mathlib `Mathlib/RingTheory/Bialgebra/TensorProduct.lean` has `@[simp] theorem map_toAlgHom` and `@[simp] theorem map_toCoalgHom`; PR proofs at lines 242/253 are `ext x; simp [map]`.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Drop both lemmas and call `simp [Bialgebra.TensorProduct.map_toAlgHom]` / `map_toCoalgHom` at use sites, or inline the proof to point at the existing lemma (`unfold map; simp [Bialgebra.TensorProduct.map_toAlgHom]`).",
+   "issue": "`BaseChange.map_toAlgHom` and `BaseChange.map_toCoalgHom` are direct specializations of Mathlib's `Bialgebra.TensorProduct.map_toAlgHom` / `map_toCoalgHom` (with `g := BialgHom.id K K`); both Mathlib lemmas are already `@[simp]`.",
+   "line": 242
+  },
+  {
+   "evidence": "Mathlib `Mathlib/RingTheory/HopfAlgebra/TensorProduct.lean:73` defines `@[simp] theorem antipode_def : antipode S (A := B \u2297[R] A) = AlgebraTensorModule.map (antipode S) (antipode R) := rfl`; private lemma at line 84 proves its pointwise form by `simp [_root_.TensorProduct.antipode_def]`.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "State the lemma as the unfolding of `TensorProduct.antipode_def` directly (`exact congr_fun (congr_arg LinearMap.toFun (TensorProduct.antipode_def (R := k) (S := K))) _`), or drop the private `TauCeti.TensorProduct.antipode_tmul` indirection and have `BaseChange.antipode_tmul` apply `antipode_def` itself.",
+   "issue": "`BaseChange.antipode_tmul` is a pointwise specialization of Mathlib's `_root_.TensorProduct.antipode_def` (which the private `TauCeti.TensorProduct.antipode_tmul` itself proves by `simp [_root_.TensorProduct.antipode_def]`); the public lemma is just the private one unfolded for the `K \u2297[k] A` typing.",
+   "line": 192
+  }
+ ],
+ "head_sha": "c61c963e986e7e46904dba94edb3f7b1689b2eb2",
+ "merge_base_sha": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 48,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9304528ed1a546c967a083e6b46b157f1a1b1b8b5373b1ea045348a25b0c3904",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T075707Z-48-reuse-109146",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T07:57:07Z",
+ "summary": "The PR adds genuinely new base-change material (the `includeRight` handle, scalar extension `map`, and the fact that bialgebra maps between Hopf algebras preserve the antipode), but several public simp lemmas are direct specializations of Mathlib's `Bialgebra.TensorProduct.map_*` / `TensorProduct.antipode_def` and the generally useful helpers are marked `private`.",
+ "transcript_blob": "f29b342a796cf96c625799a7331b6d13ec1c2de2a5cb5b85217e45df366be70a",
+ "usage": {
+  "input_tokens": 67260,
+  "output_tokens": 17266
+ },
+ "verdict": "request_changes"
+}

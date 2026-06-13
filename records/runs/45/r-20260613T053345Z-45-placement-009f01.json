@@ -1,0 +1,115 @@
+{
+ "arm": "shadow:sonnet-backfill",
+ "attempts": [
+  {
+   "cost_usd": 0.5058003,
+   "returncode": 0,
+   "secs": 136.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 33197,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 33197,
+    "cache_read_input_tokens": 625261,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 186,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 186,
+      "cache_read_input_tokens": 50938,
+      "input_tokens": 1,
+      "output_tokens": 1355,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7460,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1f1d7527e4085f3ac0ffad2ac3ad69cfbebe809c",
+ "cost_usd": 0.5058,
+ "dedupe_key": "FormalFrontier/TauCeti|45|6a4a08fbd39f8481124b33599f93037c54eee7a0|placement|claude-sonnet-4-6|e1aee6e8c6688dd8|shadow:sonnet-backfill|1",
+ "diff_blob": "9bd2c7497e6abb417f12ee6857597ad6588fc069cd2b3ea19be5ddb49888e411",
+ "diff_sha256": "9bd2c7497e6abb417f12ee6857597ad6588fc069cd2b3ea19be5ddb49888e411",
+ "duration_s": 136.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`TauCeti.lean` contains only `import TauCeti.Basic`; grepping the entire `code/` tree for `FunctorOfPoints` or `AlgebraicGroup` yields no hits outside the file itself.",
+   "file": "TauCeti.lean",
+   "fix": "Add `import TauCeti.Algebra.AlgebraicGroup.FunctorOfPoints` to `TauCeti.lean` (or introduce an intermediate `TauCeti/Algebra/AlgebraicGroup.lean` barrel file and import that).",
+   "issue": "`TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean` is never imported from the library root, making every declaration it contains unreachable. `lake build` compiles all package modules regardless, so CI passes, but the module is dead from a library perspective.",
+   "line": 6
+  },
+  {
+   "evidence": "Grep for `TensorProduct` in the file returns only line 53 itself; the other three namespaces (`Coalgebra`, `HopfAlgebra`, `WithConv`) all have active references.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean",
+   "fix": "Remove `TensorProduct` from the `open` list.",
+   "issue": "`open TensorProduct` opens a namespace that is never used in the file body \u2014 no bare `tmul`, `map`, `lift`, or other `TensorProduct`-namespace identifiers appear after line 53.",
+   "line": 53
+  }
+ ],
+ "head_sha": "6a4a08fbd39f8481124b33599f93037c54eee7a0",
+ "merge_base_sha": "1f1d7527e4085f3ac0ffad2ac3ad69cfbebe809c",
+ "mode": "manual",
+ "model": "claude-sonnet-4-6",
+ "pr": 45,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9d1a94c160d87272206d12d3c29086ebe158ff54c249791fe10ea4e1d77d98a8",
+ "provider": "sonnet",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T053345Z-45-placement-009f01",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T05:33:45Z",
+ "summary": "The new file is an orphan: nothing in the library imports it, so all its declarations are unreachable to downstream consumers. Additionally, `TensorProduct` is opened but never referenced.",
+ "transcript_blob": "c4c25865df8b796c84680188e7d56c680e852a303af09d1953e5c92fa55aa116",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 33197,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 33197,
+  "cache_read_input_tokens": 625261,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 186,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 186,
+    "cache_read_input_tokens": 50938,
+    "input_tokens": 1,
+    "output_tokens": 1355,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7460,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

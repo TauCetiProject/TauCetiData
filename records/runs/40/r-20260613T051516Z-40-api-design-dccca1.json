@@ -1,0 +1,114 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.069023,
+   "returncode": 0,
+   "secs": 165.3,
+   "usage": {
+    "input_tokens": 19542,
+    "output_tokens": 6983
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.069023,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|api-design|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 165.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap/TauCetiRoadmap/ReductiveGroups/README.md Layer 5 \u26a0; lines 46\u201357 of the diff set up `[IsAlgClosed k] [AffineAlgGroup k A]` then `omit` them \u2014 the omission signals the current def does not match the section's hypotheses.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Do not expose `IsUnipotent` yet. Either drop the def and the section (and add it back when Layer 1 comodules land with the correct geometric definition), or replace it with the `g = 1` fact and a `non_vacuous_IsUnipotent` placeholder pointing to the Layer 1/5 work.",
+   "issue": "`def IsUnipotent` is the na\u00efve `(g - 1) \u2208 Nil(A)` version the roadmap's Layer 5 explicitly warns against: 'A na\u00efve `IsUnipotent` that tests nilpotence in the reduced ring `A` is *vacuous* (only `g = 1` qualifies): the correct definition needs comodule theory (Layer 1).' Because `AffineAlgGroup.geomReduced` is in scope, `A` has no nonzero nilpotents, so `IsUnipotent g \u2194 g = 1` \u2014 the predicate carries no information and contradicts the file's own `IsAlgClosed` + `AffineAlgGroup` setup.",
+   "line": 49
+  },
+  {
+   "evidence": "`grep AlgPoints` returns only the definition site; README Layer 0 'R-points as a group'.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove `AlgPoints` from this PR. Land it in the Layer 0 PR that actually defines the convolution group structure and functoriality in `R`.",
+   "issue": "`def AlgPoints (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] := A \u2192\u2090[k] k` is exposed, unused anywhere in the codebase, and is a *partial* functor-of-points (only the `k`-points, with no group structure). The roadmap's Layer 0 demands the full `AlgPoints R A := A \u2192\u2090[k] R` with the convolution group structure, so this stub will be superseded and creates a duplicate API to clean up later.",
+   "line": 42
+  },
+  {
+   "evidence": "line 42 vs. the namespace `variable (k A : Type*) [Field k] [CommRing A] [HopfAlgebra k A]` at line 30.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Use `def AlgPoints {k A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] := A \u2192\u2090[k] k` (or, better, drop it \u2014 see above).",
+   "issue": "`AlgPoints` rebinds the namespace variables `(k A : Type*)` and their algebra instances, silently overriding the outer `[Field k] [CommRing A] [HopfAlgebra k A]`. Downstream code reading the signature does not see the Hopf-algebra context this file is set up for.",
+   "line": 42
+  },
+  {
+   "evidence": "lines 67 (field type) and 76 (theorem body `h.unipotent_radical_trivial`).",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Delete the theorem. When the unipotent radical is actually defined, reintroduce it as a real lemma with the correct statement; do not ship placeholder `True` theorems under characteristic-looking names.",
+   "issue": "`theorem ReductiveGroup.unipotentRadical_trivial'` is a tautology: the class field `unipotent_radical_trivial : True` is literally `True`, so the theorem is `True \u2192 True` and conveys no mathematical content. Exposed as if it were a real characteristic lemma.",
+   "line": 76
+  },
+  {
+   "evidence": "line 80 body is literally `SemisimpleGroup.toReductiveGroup`; class definition at line 73 has `extends ReductiveGroup k A`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Delete the explicit instance; let the `extends` clause handle it.",
+   "issue": "`instance SemisimpleGroup.instReductiveGroup` is redundant: the `extends ReductiveGroup k A` clause in `class SemisimpleGroup` already generates `SemisimpleGroup.toReductiveGroup` and the corresponding instance, so this manual instance is dead code and a misleading signal that the coercion needed to be set up by hand.",
+   "line": 80
+  },
+  {
+   "evidence": "lines 53\u201357; current annotation block is empty.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Add `@[simp]` to `isUnipotent_one`.",
+   "issue": "`isUnipotent_one` is the canonical normal-form lemma (`IsUnipotent 1 \u2194 True`) and is missing `@[simp]`. No `@[grind]`-relevant lemma is annotated either.",
+   "line": 54
+  },
+  {
+   "evidence": "lines 49\u201357 are the entire `IsUnipotent` API surface; no other `IsUnipotent` references in the repo (`grep IsUnipotent` returns only these lines).",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Once the correct geometric definition lands (see first finding), add `IsUnipotent.one`, `IsUnipotent.mul`, `IsUnipotent.inv` (or their equivalences), and the representation-stability lemma. Do not ship the predicate without these.",
+   "issue": "Missing `IsUnipotent` characteristic API: no `IsUnipotent.inv`, `IsUnipotent.mul`/`IsUnipotent.one_mul`/`IsUnipotent.mul_one`, no `IsUnipotent` under a representation, and no elimination/intro form. The only lemma is the identity. Per the rubric the predicate needs introduction and elimination plus interaction with the group operations.",
+   "line": 54
+  },
+  {
+   "evidence": "line 54 declaration name vs. Mathlib `class`/theorem naming conventions.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Rename to `IsUnipotent.one` (along with the `@[simp]` from the previous finding).",
+   "issue": "Naming: `isUnipotent_one` is snake_case and not namespaced. Mathlib convention is `IsUnipotent.one` in the `IsUnipotent` namespace.",
+   "line": 54
+  },
+  {
+   "evidence": "lines 36\u201339 are the entire `AffineAlgGroup` API surface; no further references in the repo.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Add the standard `AffineAlgGroup` intro form and at least one construction instance (e.g. from `GL_n`'s coordinate ring) so downstream code can use the class without manually packaging the two projections.",
+   "issue": "Missing `AffineAlgGroup` characteristic API: the class has projections `finiteType` and `geomReduced` but no introduction/elimination restatements (no `AffineAlgGroup.mk` introduction, no `mem_*_iff` form), no instance from a known group, and no interaction lemmas. The rubric requires the API that characterizes the definition.",
+   "line": 36
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ae130d1b7689c19b31753b385db253dd54f6cef16d9ff898cbbfe5764d9928da",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T051516Z-40-api-design-dccca1",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T05:15:16Z",
+ "summary": "The headline `IsUnipotent` predicate exposes the na\u00efve nilpotent-in-A version that the roadmap itself flags as a vacuous pitfall (under `AffineAlgGroup.geomReduced` it reduces to `g = 1`); the file additionally exposes dead, tautological, and redundant API and lacks characteristic lemmas and `@[simp]` annotations on the only meaningful theorem it ships.",
+ "transcript_blob": "43aa5e8660900e16b95f91054ebdc33acef3cf80a4efcf42d72d73bff9cc9077",
+ "usage": {
+  "input_tokens": 19542,
+  "output_tokens": 6983
+ },
+ "verdict": "request_changes"
+}

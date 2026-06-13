@@ -1,0 +1,79 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.040658,
+   "returncode": 0,
+   "secs": 104.9,
+   "usage": {
+    "input_tokens": 21698,
+    "output_tokens": 5465
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.040658,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|scope|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 104.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap/TauCetiRoadmap/ReductiveGroups/README.md lines 14-28, 247-248.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Split into an `AffineGroupSchemeOfFiniteType` (finite type only) and a separate smoothness predicate/hypothesis, or add the smoothness as a non-extending named assumption; record the standalone `IsGeometricallyReduced` so non-smooth groups like \u03bc_p can be carried.",
+   "issue": "`AffineAlgGroup` bundles `Algebra.FiniteType` with `Algebra.IsGeometricallyReduced`, i.e. it bakes smoothness into the class. The roadmap's Standing hypotheses explicitly say \"do not bundle them into one mega-class\", \"Keep two distinct notions, and never make smoothness implicit\", and the Design notes say \"Don't bundle typeclasses; admit non-smooth/non-reduced groups (\u03bc_p) and make smoothness an explicit hypothesis where used.\" This class excludes the very non-smooth/non-reduced examples (\u03bc_p, \u03b1_p) the roadmap wants the theory to admit.",
+   "line": 38
+  },
+  {
+   "evidence": "roadmap/TauCetiRoadmap/ReductiveGroups/README.md lines 181-188 (\"correct, geometric definition: g \u2208 G(k\u0304) is unipotent iff \u03c1_g \u2212 id is nilpotent for every f.d. representation \u2026 A na\u00efve `IsUnipotent` that tests nilpotence in the reduced ring A is vacuous\").",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Either defer `IsUnipotent` to the follow-up that builds the comodule / representation machinery (and remove it from this PR), or state the predicate as a placeholder that the docstring marks as the wrong definition so it is not depended on.",
+   "issue": "`IsUnipotent` is the \"na\u00efve `IsUnipotent` that tests nilpotence in the reduced ring A\" that the roadmap itself flags with \u26a0 as *vacuous* (only `g = 1` qualifies), with the correct definition stated to require comodule theory (Layer 1). Shipping this name with the wrong definition creates a stable API the rest of the tower will have to override; it does not advance Layer 5.",
+   "line": 51
+  },
+  {
+   "evidence": "roadmap/TauCetiRoadmap/ReductiveGroups/README.md lines 130-134 (Layer 0 R-points) and 243 (\"Functor of points is the notion of points, not GroupLike, not just k-points\").",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Define `AlgPoints R A := A \u2192\u2090[k] R` (matching Layer 0's prescription) and either omit `k`-points or define it as the specialization `AlgPoints k A`. Drop the `GroupLike k A` argument to `IsUnipotent`; the unipotent predicate should take a `k\u0304`-point.",
+   "issue": "`AlgPoints k A := A \u2192\u2090[k] k` is the `k`-points-only specialization. The roadmap's Design notes say \"Functor of points is the notion of points, not GroupLike, not just k-points\", and Layer 0 calls out generalizing to `A \u2192\u2090[k] R` for every commutative `k`-algebra `R` as the right default. Establishing the `k`-points name as the points type now will make the eventual functor-of-points refactor a breaking change.",
+   "line": 45
+  },
+  {
+   "evidence": "Reductive.lean lines 59-78: `unipotent_radical_trivial : True`, `radical_trivial : True`, the theorem proving `True` from `h.unipotent_radical_trivial`, and the instance `:= SemisimpleGroup.toReductiveGroup`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Cut the `True`-field stubs from this PR; they belong in the Layer 6 PR that actually constructs the unipotent/radical and the `R_u(G_{k\u0304}) = 1` condition, or leave a `TODO` with the type signature only.",
+   "issue": "`ReductiveGroup` and `SemisimpleGroup` carry only `True` fields, so they are not class constraints at all \u2014 every `AffineAlgGroup` would satisfy them vacuously. The `ReductiveGroup.unipotentRadical_trivial'` and `SemisimpleGroup.instReductiveGroup` \"results\" prove `True`. This adds API surface without advancing the Layer 6 targets (radical `R(G)`, centre, derived group, central isogenies).",
+   "line": 60
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "dd224ce3e53152e4a80639f0af0951b937ff2bc551e6377fdddd0db25f4fbad7",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "scope",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T053502Z-40-scope-007fef",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T05:35:02Z",
+ "summary": "PR is in scope for the ReductiveGroups roadmap (Layer 5/6), but the `AffineAlgGroup` class bundles smoothness into the typeclass, `IsUnipotent` is the na\u00efve vacuous definition the roadmap itself flags with \u26a0, and `AlgPoints` is `k`-points-only \u2014 each of these contradicts the roadmap's own design notes, so as written the PR does not advance the targets it claims to.",
+ "transcript_blob": "148195b842d5eb0a0056c59d5602e42adee3a0e3b19ed4598b1ecb813f156a8c",
+ "usage": {
+  "input_tokens": 21698,
+  "output_tokens": 5465
+ },
+ "verdict": "request_changes"
+}

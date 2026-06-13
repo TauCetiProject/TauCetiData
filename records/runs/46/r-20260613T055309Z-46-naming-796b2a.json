@@ -1,0 +1,79 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.291324,
+   "returncode": 0,
+   "secs": 640.0,
+   "usage": {
+    "input_tokens": 51392,
+    "output_tokens": 35128
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1099f3b5a435778fc581f977cf605c10292c7bf3",
+ "cost_estimated": false,
+ "cost_usd": 0.291324,
+ "dedupe_key": "FormalFrontier/TauCeti|46|3fef29a6addb11d98b4c6c1f3efe358b09f9e8f1|naming|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "c8d3ba61d1704c491c6d9a0bfb80d96db89cc2fbeceae69e49f874e2016c5e93",
+ "diff_sha256": "c8d3ba61d1704c491c6d9a0bfb80d96db89cc2fbeceae69e49f874e2016c5e93",
+ "duration_s": 640.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Deck.lean:54 `lemma map_proj (\u03c6 : Deck p) (e : E) : p (\u03c6.1 e) = p e := \u03c6.2 e`. Mathlib has no precedent for `map_proj` in this sense; conventions for `p \u2218 \u03c6 = p` use `proj_comp`/`preserves_\u2026`/`comp_apply`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck.lean",
+   "fix": "Rename to `proj_comp` (concise) or `preserves_proj` (descriptive) or `apply_proj_eq` (literal). Update the `simp` call in `mapsTo_fiber` (line 60), `mapsTo_fiber_symm` (line 67), and the proof in `fiberHomeomorph` (line 73) accordingly.",
+   "issue": "`map_proj` does not describe its conclusion. The lemma is `p (\u03c6.1 e) = p e`, i.e. `p \u2218 \u03c6.1 = p` (the deck transformation preserves the projection), but `map_proj` reads as 'the image of the projection' rather than 'preservation of the projection'.",
+   "line": 54
+  },
+  {
+   "evidence": "Deck.lean:93 `@[simp] lemma smul_eq_apply (\u03c6 : Deck p) (e : E) : \u03c6 \u2022 e = \u03c6.1 e := rfl`. Mathlib/Algebra/Group/Subgroup/Actions.lean:35 `lemma smul_def (g : S) (m : \u03b1) : g \u2022 m = (g : G) \u2022 m := rfl` \u2014 same shape, standard name.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck.lean",
+   "fix": "Rename to `smul_def` (paralleling `Subgroup.smul_def` and the ambient `TauCeti.Homeomorph.smul_def`; the `Deck` and `Homeomorph` namespaces are different, so there is no conflict).",
+   "issue": "`smul_eq_apply` is nonstandard. The Mathlib convention for 'the smul of a `Subgroup` element equals the smul of the underlying group element' is `Subgroup.smul_def`.",
+   "line": 93
+  },
+  {
+   "evidence": "HomeomorphAction.lean:56 `instance applySubgroupContinuousConstSMul (H : Subgroup (E \u2243\u209c E)) : ContinuousConstSMul H E := \u2026`. Compare Mathlib/Algebra/Group/Subgroup/Actions.lean, where subgroup-level instances live in a `Subgroup` namespace without an `apply` prefix.",
+   "file": "TauCeti/Topology/Algebra/HomeomorphAction.lean",
+   "fix": "Drop the `apply` prefix: rename to `subgroupContinuousConstSMul`. The `Subgroup` argument already indicates the scope.",
+   "issue": "`applySubgroupContinuousConstSMul` stacks the `apply` prefix (from the ambient `Homeomorph` namespace) with a `Subgroup` qualifier, producing a name that conflates two conventions and reads ambiguously as either `apply-Subgroup-\u2026` or `applySubgroup-\u2026`.",
+   "line": 56
+  },
+  {
+   "evidence": "Deck.lean:31-32 docstring `/-- \u2026 the subgroup of homeomorphisms of E which commute with p. \u2026 -/`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck.lean",
+   "fix": "Replace 'commute with' with 'preserve' or 'such that `p \u2218 \u03c6 = p`'.",
+   "issue": "The `Deck` docstring says 'which commute with `p`'. Deck transformations satisfy `p \u2218 \u03c6 = p` (preservation), not categorical commutativity (which would require a square `p \u2218 \u03c6 = \u03c8 \u2218 p`).",
+   "line": 32
+  }
+ ],
+ "head_sha": "3fef29a6addb11d98b4c6c1f3efe358b09f9e8f1",
+ "merge_base_sha": "1099f3b5a435778fc581f977cf605c10292c7bf3",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 46,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9836b2a7d47714f8a30259f0e97389dc93099a94f159041f3fb137584021b5df",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T055309Z-46-naming-796b2a",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T05:53:09Z",
+ "summary": "Two lemma names in Deck.lean depart from Mathlib conventions: `map_proj` is vague and does not describe its conclusion (that the deck transformation preserves `p`), and `smul_eq_apply` breaks the standard `Subgroup.smul_def` pattern. The other names \u2014 `Deck`, `mem_iff`, `fiberHomeomorph`, `applyMulAction`, `applyFaithfulSMul`, `applyContinuousConstSMul` \u2014 are standard.",
+ "transcript_blob": "a3a51c40894667e194bd5c0ce0095a06170f6b0e0c4ca06b3da02cecd820d53a",
+ "usage": {
+  "input_tokens": 51392,
+  "output_tokens": 35128
+ },
+ "verdict": "request_changes"
+}

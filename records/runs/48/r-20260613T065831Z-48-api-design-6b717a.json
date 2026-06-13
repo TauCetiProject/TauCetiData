@@ -1,0 +1,89 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.415691,
+   "returncode": 0,
+   "secs": 739.6,
+   "usage": {
+    "input_tokens": 42767,
+    "output_tokens": 37829
+   }
+  },
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.369975,
+   "returncode": 0,
+   "secs": 635.4,
+   "usage": {
+    "input_tokens": 100702,
+    "output_tokens": 40937
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "cc5fa737cc8e84f8f1ee4513ce0f08d21cca7e24",
+ "cost_estimated": false,
+ "cost_usd": 0.785666,
+ "dedupe_key": "FormalFrontier/TauCeti|48|c61c963e986e7e46904dba94edb3f7b1689b2eb2|api-design|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "f0952f0d5344daccaaf50b2fed61675538514d1d1046e63898e40ef64f22ae4b",
+ "diff_sha256": "f0952f0d5344daccaaf50b2fed61675538514d1d1046e63898e40ef64f22ae4b",
+ "duration_s": 1375.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`includeRight` is defined as `Algebra.TensorProduct.includeRight (R := k) (A := K) (B := A)` (BaseChange.lean:131); Mathlib's `Algebra.TensorProduct.includeRight_apply` (TensorProduct/Basic.lean:330) is `@[simp]` and gives `includeRight b = 1 \u2297\u209c b`. The PR's lemma equates two definitionally identical terms.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Replace the body with the useful equation, e.g. `includeRight (K := K) a = (1 : K) \u2297\u209c[k] a`, which is `rfl` after unfolding `includeRight` (or after a one-line `unfold includeRight; exact Algebra.TensorProduct.includeRight_apply a`). Drop the lemma entirely if the project prefers to fall through to the Mathlib @[simp] lemma.",
+   "issue": "`includeRight_apply` is `rfl` after defeq: the wrapped `includeRight` is literally `Algebra.TensorProduct.includeRight (R := k) (A := K) (B := A)`, so the RHS is the same term as the LHS. It does not reduce `includeRight a` to the useful form `1 \u2297\u209c[k] a`; that reduction is the Mathlib @[simp] lemma `Algebra.TensorProduct.includeRight_apply` (in TensorProduct/Basic.lean:330).",
+   "line": 137
+  },
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/Bialgebra/TensorProduct.lean:77 declares `theorem map_tmul (f : A \u2192\u2090c[S] C) (g : B \u2192\u2090c[R] D) (x : A) (y : B) : map f g (x \u2297\u209c y) = f x \u2297\u209c g y` as `@[simp]`. `BialgHom.coe_id` is `@[simp]` in Mathlib.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Drop `BaseChange.map_tmul`; the proof `simp [map]` in the PR shows the Mathlib lemma is sufficient on its own.",
+   "issue": "`map_tmul` is a special case of Mathlib's @[simp] lemma `Bialgebra.TensorProduct.map_tmul`: after simp unfolds `map` to `Bialgebra.TensorProduct.map (BialgHom.id K K) f`, the Mathlib lemma fires with `f := BialgHom.id K K, g := f, x := r, y := a`, giving the same conclusion (with `(BialgHom.id K K) r` reduced to `r` by `BialgHom.coe_id`).",
+   "line": 216
+  },
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/Bialgebra/TensorProduct.lean:86 declares `theorem map_toAlgHom (f : A \u2192\u2090c[S] C) (g : B \u2192\u2090c[R] D) : (map f g : A \u2297[R] B \u2192\u2090[S] C \u2297[R] D) = Algebra.TensorProduct.map (f : A \u2192\u2090[S] C) (g : B \u2192\u2090[R] D)` as `@[simp]`; `BialgHom.id_toAlgHom` is `@[simp]` in Mathlib.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Drop `BaseChange.map_toAlgHom`.",
+   "issue": "`map_toAlgHom` is a special case of Mathlib's @[simp] `Bialgebra.TensorProduct.map_toAlgHom`; the same unfolding and specialization of the Mathlib lemma (with `BialgHom.id_toAlgHom` reducing `(BialgHom.id K K) : K \u2192\u2090[K] K` to `AlgHom.id K K`) yields the PR's statement.",
+   "line": 249
+  },
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/Bialgebra/TensorProduct.lean:82 declares `theorem map_toCoalgHom (f : A \u2192\u2090c[S] C) (g : B \u2192\u2090c[R] D) : map f g = Coalgebra.TensorProduct.map (f : A \u2192\u2097c[S] C) (g : B \u2192\u2097c[R] D)` as `@[simp]`.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Drop `BaseChange.map_toCoalgHom`.",
+   "issue": "`map_toCoalgHom` is a special case of Mathlib's @[simp] `Bialgebra.TensorProduct.map_toCoalgHom`; the same unfolding path gives the PR's statement.",
+   "line": 257
+  }
+ ],
+ "head_sha": "c61c963e986e7e46904dba94edb3f7b1689b2eb2",
+ "merge_base_sha": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 48,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7babc232bbef0e9b07d6c3c24a2d0b557f40655c483a6bb402f5e9ab113a4dfa",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T065831Z-48-api-design-6b717a",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T06:58:31Z",
+ "summary": "The base-change API is well-shaped for its target, but its public @[simp] surface contains one no-op lemma and three lemmas that duplicate Mathlib's @[simp] lemmas (just specialized), so the surface is needlessly large and one entry mis-annotates its LHS.",
+ "transcript_blob": "5d6088965a18801b2dbae1167dc9d105871f2da7ea36620edc3d01a5f62a376e",
+ "usage": {
+  "input_tokens": 100702,
+  "output_tokens": 40937
+ },
+ "verdict": "request_changes"
+}

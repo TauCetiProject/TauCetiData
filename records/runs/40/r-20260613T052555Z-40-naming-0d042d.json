@@ -1,0 +1,86 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.054449,
+   "returncode": 0,
+   "secs": 151.8,
+   "usage": {
+    "input_tokens": 20167,
+    "output_tokens": 6961
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.054449,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|naming|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 151.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`IsUnipotent` is defined in the same namespace as `AffineAlgGroup`; Mathlib grep on `class Is.*: Prop extends` returns 10+ examples of the convention.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Rename to `IsAffineAlgGroup` to match the `Is`-prefix convention used by every other prop-class in this file and throughout Mathlib.",
+   "issue": "`AffineAlgGroup : Prop` lacks the `Is`-prefix that Mathlib uses for `Prop` classes (cf. `IsSimpleGroup`, `IsAlgClosed`, `IsAbelianGalois`, `IsRealClosed`, `IsNoetherian`); the same file already uses `IsUnipotent` correctly, so the bare form is also internally inconsistent.",
+   "line": 36
+  },
+  {
+   "evidence": "Same convention evidence as the `AffineAlgGroup` finding; `IsSimpleGroup` in `Mathlib/GroupTheory/Subgroup/Simple.lean:38` is the closest analogue.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Rename to `IsReductiveGroup` and `IsSemisimpleGroup`.",
+   "issue": "`ReductiveGroup : Prop` (and `SemisimpleGroup : Prop` on line 68) drop the `Is`-prefix that Mathlib applies to prop-classes (cf. `IsSimpleGroup`, `IsAlgClosed`, `IsAbelianGalois`).",
+   "line": 63
+  },
+  {
+   "evidence": "Body is `h.unipotent_radical_trivial`; class field is `unipotent_radical_trivial : True` (line 65).",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Delete the lemma and rely on dot-notation access (`h.unipotent_radical_trivial`); if a wrapper is later needed, name it after the actual content the unipotent radical provides, not after the act of rephrasing a placeholder.",
+   "issue": "`ReductiveGroup.unipotentRadical_trivial'` is a `True`-valued rephrasing of the class field `unipotent_radical_trivial`; the `'` suffix names the proof act (rephrasing) rather than a conclusion, and the body is a one-token projection of a `True` field.",
+   "line": 73
+  },
+  {
+   "evidence": "Field declaration: `unipotent_radical_trivial : True`; same overstatement applies to `radical_trivial : True` on line 70.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "When the unipotent radical is actually defined (Layer 5), give the field a content-bearing type (e.g. `R_u (A \u2297[k] k\u0304) = \u22a5`). Until then, either drop the placeholder or use a name that signals it is a stub (e.g. suffixed `_placeholder`).",
+   "issue": "Field `unipotent_radical_trivial : True` advertises a real mathematical claim (the unipotent radical over `k\u0304` is trivial) in its name, but the proposition is `True`, so no content is asserted \u2014 a name-strength-vs-statement-strength overstatement.",
+   "line": 65
+  },
+  {
+   "evidence": "Roadmap README, Layer 0: \"R-points as a group. Generalize `AlgPoints R A := A \u2192\u2090[k] R` for every commutative `k`-algebra `R`\".",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Either drop `AlgPoints` (it has no consumers in this PR) or define it now with the general signature from the roadmap, e.g. `def AlgPoints (R A : Type*) [CommSemiring R] [CommRing A] [Algebra k R] [Algebra k A] := A \u2192\u2090[k] R`.",
+   "issue": "`AlgPoints (k A) := A \u2192\u2090[k] k` reserves the name `AlgPoints` for a k-specialized definition, but the roadmap's Layer 0 plan uses `AlgPoints R A := A \u2192\u2090[k] R` for the general functor of points; the same name with two different signatures will force a rename later.",
+   "line": 42
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "21236db1dd90f4e9d03c090938561aed7f690ef20284653e1a138cb1e9f56946",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T052555Z-40-naming-0d042d",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T05:25:55Z",
+ "summary": "Three `Prop` classes inconsistently skip the `Is`-prefix that Mathlib uses for prop-classes (`IsSimpleGroup`, `IsAlgClosed`, `IsAbelianGalois`, etc.), a class field is `True` and its rephrased lemma is named after the proof act, and `AlgPoints` reserves the roadmap's general functor-of-points name with a k-specialized signature.",
+ "transcript_blob": "3f726cba8e84027eb1e6e450b62944d08bf17f2d63964100133bcc063006426f",
+ "usage": {
+  "input_tokens": 20167,
+  "output_tokens": 6961
+ },
+ "verdict": "request_changes"
+}

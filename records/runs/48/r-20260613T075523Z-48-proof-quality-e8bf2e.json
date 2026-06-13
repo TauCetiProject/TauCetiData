@@ -1,0 +1,86 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.043065,
+   "returncode": 0,
+   "secs": 104.2,
+   "usage": {
+    "input_tokens": 13620,
+    "output_tokens": 4582
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "cc5fa737cc8e84f8f1ee4513ce0f08d21cca7e24",
+ "cost_estimated": false,
+ "cost_usd": 0.043065,
+ "dedupe_key": "FormalFrontier/TauCeti|48|c61c963e986e7e46904dba94edb3f7b1689b2eb2|proof-quality|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "f0952f0d5344daccaaf50b2fed61675538514d1d1046e63898e40ef64f22ae4b",
+ "diff_sha256": "f0952f0d5344daccaaf50b2fed61675538514d1d1046e63898e40ef64f22ae4b",
+ "duration_s": 104.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`@\\[simp\\] lemma includeRight_apply` at line 137; the `change` block at lines 175-180 re-derives the same equality by hand.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Delete the `change` and replace its use with `rw [includeRight_apply]` (or fold the rewrite into the `simp` call). The LHS and RHS will then stay in their original `includeRight` form.",
+   "issue": "`comul_includeRight` uses a comment-less `change` to manually unfold `includeRight` to `Algebra.TensorProduct.includeRight`, but the file defines `@[simp] lemma includeRight_apply` (line 137) that performs exactly that rewrite. The `change` is redundant and creates an asymmetric LHS/RHS form that the subsequent `rw`/`simp` has to navigate.",
+   "line": 173
+  },
+  {
+   "evidence": "Lines 50-55: `let u : A \u2192\u2097[k] B := f` followed by `change ... = u.comp ...`. The comment at line 49 explicitly states the coercion is for defeq, not for structure.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Add an explicit coercion/equality lemma (e.g. `BialgHom.coe_toLinearMap` or a `change`-with-rfl after `show`) showing the two `WithConv` arguments are definitionally equal up to the published coercion, or apply `WithConv.toConv_injective` directly to a `LinearMap` equality assembled by `ext` and `show`. The goal should be reachable without an auxiliary `let` whose only purpose is defeq alignment.",
+   "issue": "`antipode_comp` introduces `let u : A \u2192\u2097[k] B := f` solely so the two `HopfAlgebra.antipode` coercions and `f` share a defeq-equal `LinearMap` type for `left_inv_eq_right_inv`. The accompanying comment documents the defeq reliance rather than removing it; this is the \"accidental definitional equality across wrappers\" pattern.",
+   "line": 52
+  },
+  {
+   "evidence": "Lines 95-104 (map_id) and 117-127 (map_comp) share the same `ext x` + `TensorProduct.induction_on` + `simp` skeleton.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Either unfold `Bialgebra.TensorProduct.map` and `BialgHom.id` once explicitly, then prove the `tmul` case with a short calculation, or split the proof into named lemmas (e.g. `map_id_tmul`) so the simp call's job is visible. Avoid `ext x; induction; simp` as the entire argument.",
+   "issue": "`Bialgebra.TensorProduct.map_id` proves `Bialgebra.TensorProduct.map (BialgHom.id S A) (BialgHom.id R B) = BialgHom.id S (A \u2297[R] B)` by `ext x; induction on tensor product; simp` in each case. The `tmul` case in particular makes `simp` discharge an equality of bialgebra homomorphisms on a pure tensor, which requires unfolding `Bialgebra.TensorProduct.map`, dealing with `BialgHom.id`, and reconciling the bialgebra-hom coercions \u2014 all hidden behind `simp`. This is exactly the short-but-brittle pattern.",
+   "line": 98
+  },
+  {
+   "evidence": "Lines 117-127 in `Bialgebra.TensorProduct` namespace, mirroring the `map_id` structure.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Same as `map_id`: factor out a `map_tmul`/`map_comp_tmul` lemma showing how `Bialgebra.TensorProduct.map` acts on pure tensors, then assemble the composition equality from those named steps instead of a single `simp`.",
+   "issue": "`Bialgebra.TensorProduct.map_comp` uses the same `ext x; induction; simp` shape as `map_id`; the `simp` calls in the `tmul` and `add` cases are silent on how composition of tensor-product maps collapses. This is a non-obvious equality being closed by automation.",
+   "line": 120
+  },
+  {
+   "evidence": "Line 183: the `simp` invocation and its lemma-rewrite arguments.",
+   "file": "TauCeti/RingTheory/HopfAlgebra/BaseChange.lean",
+   "fix": "Replace the `simp` chain with a short explicit calculation, or at minimum add a comment naming the intermediate step each lemma discharges (Sweedler rewrite, tensor-tensor-tensor-comm, sum distribution).",
+   "issue": "`comul_includeRight` ends with `simp [\u2190 (\u211b k a).eq, TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_tmul, TensorProduct.tmul_sum]`, an undocumented chain of rewrites that drives the comultiplication equality to a Sweedler representation. The lemma names passed to `simp` reveal substantial structure being closed silently.",
+   "line": 183
+  }
+ ],
+ "head_sha": "c61c963e986e7e46904dba94edb3f7b1689b2eb2",
+ "merge_base_sha": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 48,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d3b919163bfd2bbf12ac408063b64977080e8fd2cafa5917424b99754e47b14b",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T075523Z-48-proof-quality-e8bf2e",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T07:55:23Z",
+ "summary": "Several proofs rely on undocumented definitional equality or on simp-driven induction that hides substantial work. The `change` in `comul_includeRight` is redundant with the local `includeRight_apply` simp lemma, `antipode_comp` uses a `let u` defeq coercion trick, and the `Bialgebra.TensorProduct.map_id`/`map_comp` induction proofs close non-obvious goals through `simp` on bialgebra-hom coercions.",
+ "transcript_blob": "4805ab468f08fc3f35ba05d5adba373de7457ce2fd8061f1ff8cb5e13876c7eb",
+ "usage": {
+  "input_tokens": 13620,
+  "output_tokens": 4582
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,72 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.072133,
+   "returncode": 0,
+   "secs": 189.6,
+   "usage": {
+    "input_tokens": 21170,
+    "output_tokens": 10888
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": false,
+ "cost_usd": 0.072133,
+ "dedupe_key": "FormalFrontier/TauCeti|51|4284df3a644fb2885e56bd7f9fb7f5218d075999|naming|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "432b0f37fe35e3d466757dbcec56ce8ae238ddaafb90b225bcd51d40b6731f36",
+ "diff_sha256": "432b0f37fe35e3d466757dbcec56ce8ae238ddaafb90b225bcd51d40b6731f36",
+ "duration_s": 189.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 82\u201384: `rw [MonoidHom.mem_ker, fiberHomeomorphMonoidHom_apply, fiberHomeomorph_eq_one_iff]`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Remove the lemma; let callers `rw [MonoidHom.mem_ker, fiberHomeomorphMonoidHom_apply, fiberHomeomorph_eq_one_iff]` directly, or fold the kernel characterization into the definition's docstring.",
+   "issue": "`mem_ker_fiberHomeomorphMonoidHom_iff` is a one-line unfolding of `MonoidHom.mem_ker`, `fiberHomeomorphMonoidHom_apply`, and `fiberHomeomorph_eq_one_iff`. It adds no mathematical content beyond the existing lemmas and is the kind of chain-iff that should not occupy a top-level name in a `Deck` namespace.",
+   "line": 82
+  },
+  {
+   "evidence": "Lines 126 and 132: bodies are `(mem_stabilizer_fiber_iff \u03c6 b e).mp h\u03c6` and `.mpr h\u03c6` respectively.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Drop both lemmas; callers should use `mem_stabilizer_fiber_iff.mp` / `.mpr` directly. If a forward/backward version is genuinely needed, keep only one direction and drop the redundant iff, or vice versa.",
+   "issue": "`coe_eq_of_mem_stabilizer_fiber` (line 124) and `mem_stabilizer_fiber_of_coe_eq` (line 130) are trivial one-line extractions of `.mp`/`.mpr` on `mem_stabilizer_fiber_iff`. Naming both forward and backward pieces alongside the iff is name pollution.",
+   "line": 124
+  },
+  {
+   "evidence": "`DeckFiberAction.lean` lines 92/100 vs `Deck.lean` line 93 `lemma smul_eq_apply (\u03c6 : Deck p) (e : E) : \u03c6 \u2022 e = \u03c6.1 e` \u2014 same `namespace Deck`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/DeckFiberAction.lean",
+   "fix": "Rename to match the existing convention, e.g. `smul_fiber_apply` for the coercion form, and drop `smul_fiber_mk` (its `rfl` proof and non-`rfl`-shaped proposition are a presentation liability on top of the naming mismatch).",
+   "issue": "The new simp lemmas `smul_fiber_coe` (line 92) and `smul_fiber_mk` (line 100) use the `_coe`/`_mk` (subtype-constructor) suffix style, while the adjacent `smul_eq_apply` in `Deck.lean` (line 93) uses the `_apply` suffix \u2014 both in `namespace Deck`. The rubric says consistency with adjacent declarations beats a theoretically better name.",
+   "line": 92
+  }
+ ],
+ "head_sha": "4284df3a644fb2885e56bd7f9fb7f5218d075999",
+ "merge_base_sha": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 51,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e43816931083997a99df71c1790c1e8d1665c4efc135b5ff3606c06b02899dbd",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T074100Z-51-naming-2622d4",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T07:41:00Z",
+ "summary": "The fibre-action API is mathematically sensible, but three naming issues should be fixed: a chain lemma and two mp/mpr extractions add no content beyond existing lemmas, and the new smul simp lemmas use a suffix style inconsistent with `smul_eq_apply` in the adjacent `Deck.lean` (same namespace).",
+ "transcript_blob": "9db39cac6f36b0bcaa58525f234b56ac972973cd6417360ddd0840fa4244e4d3",
+ "usage": {
+  "input_tokens": 21170,
+  "output_tokens": 10888
+ },
+ "verdict": "request_changes"
+}

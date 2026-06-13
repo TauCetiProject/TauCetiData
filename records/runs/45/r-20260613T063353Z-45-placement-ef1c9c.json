@@ -1,0 +1,65 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.158415,
+   "returncode": 0,
+   "secs": 271.8,
+   "usage": {
+    "input_tokens": 39514,
+    "output_tokens": 12476
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1f1d7527e4085f3ac0ffad2ac3ad69cfbebe809c",
+ "cost_estimated": false,
+ "cost_usd": 0.158415,
+ "dedupe_key": "FormalFrontier/TauCeti|45|6a4a08fbd39f8481124b33599f93037c54eee7a0|placement|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "9bd2c7497e6abb417f12ee6857597ad6588fc069cd2b3ea19be5ddb49888e411",
+ "diff_sha256": "9bd2c7497e6abb417f12ee6857597ad6588fc069cd2b3ea19be5ddb49888e411",
+ "duration_s": 271.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n '^public ' TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean` (or visual inspection) shows only `Inv`/`Group`/`CommGroup`/`MonoidHom`/`AlgHom`/`LinearMap`/`TensorProduct`/`WithConv` usage; no `Spec`, `GrpObj`, `AffineScheme`, `Scheme` reference anywhere in the file.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean",
+   "fix": "Split into `TauCeti/Algebra/Bialgebra/Convolution.lean` (extending Mathlib's, for `mapValue` and its functoriality) and `TauCeti/Algebra/HopfAlgebra/Convolution.lean` (for the `Inv`/`Group`/`CommGroup` instances and `convInv_apply`). Have the eventual `TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean` import these and supply the algebraic-group framing once that infrastructure exists.",
+   "issue": "File path and name `AlgebraicGroup/FunctorOfPoints.lean` imply an algebraic-geometry setting, but the file contains no `Spec`, `GrpObj`, `AffineScheme`, or other algebraic-group infrastructure. All eight public declarations (`instGroup`, `instCommGroup`, `convInv_apply`, `mapValue`, `mapValue_apply`, `mapValue_id`, `mapValue_comp`, `TauCeti.HopfAlgebra.antipode_convMul_id`) are generic bialgebra/Hopf-algebra extensions of Mathlib's `Bialgebra.Convolution` and `HopfAlgebra.Basic`, broadly useful and depending on no later theory.",
+   "line": 0
+  },
+  {
+   "evidence": "`grep antipodeAlgHom code/` returns no matches; `grep antipodeComp code/` returns only the private declaration on line 87 and its usages on lines 96, 97, 102, 106, 108, 122 of `FunctorOfPoints.lean`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean",
+   "fix": "Either add a public `TauCeti.HopfAlgebra.antipodeAlgHom : H \u2192\u2090[R] H` (as a `noncomputable def` using `AlgHom.ofLinearMap` with `antipode_one` and the commuted `antipode_mul`, mirroring the private `antipodeComp` proof) placed in a Hopf-algebra-specific file (e.g. a `TauCeti/Algebra/HopfAlgebra/Convolution.lean`), or correct the PR description so it does not claim a discharged Mathlib TODO.",
+   "issue": "PR description states the diff \"packages the antipode of a commutative Hopf algebra as an `R`-algebra homomorphism `HopfAlgebra.antipodeAlgHom`\" discharging a Mathlib TODO, but no such public declaration exists. The only related definition is `private noncomputable def antipodeComp (f : H \u2192\u2090[R] A) : H \u2192\u2090[R] A` (line 87), which takes an extra `f` argument and is private \u2014 it is not a standalone `antipodeAlgHom : H \u2192\u2090[R] H`.",
+   "line": 87
+  }
+ ],
+ "head_sha": "6a4a08fbd39f8481124b33599f93037c54eee7a0",
+ "merge_base_sha": "1f1d7527e4085f3ac0ffad2ac3ad69cfbebe809c",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 45,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "040471fa9629aedbe2beeb9ff08a4ec8ee2cf243c5e18cbdd17e82dbe7f8dc53",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T063353Z-45-placement-ef1c9c",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T06:33:53Z",
+ "summary": "The file is positioned as the algebraic-group \"functor of points\", but its eight public declarations are generic bialgebra/Hopf-algebra extensions of Mathlib (no Spec, GrpObj, or AffineScheme) and should live in Bialgebra/ and HopfAlgebra/ folders. The PR description also claims a public `HopfAlgebra.antipodeAlgHom` that the diff does not actually define.",
+ "transcript_blob": "3244a46bc52c9dfd3e4b876649cd06f4698ffd50ff75c70c6e6f3d5d0bd41f5c",
+ "usage": {
+  "input_tokens": 39514,
+  "output_tokens": 12476
+ },
+ "verdict": "request_changes"
+}

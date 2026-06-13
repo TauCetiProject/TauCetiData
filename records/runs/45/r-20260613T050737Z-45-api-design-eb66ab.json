@@ -1,0 +1,122 @@
+{
+ "arm": "shadow:sonnet-backfill",
+ "attempts": [
+  {
+   "cost_usd": 0.38905390000000006,
+   "returncode": 0,
+   "secs": 136.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 25888,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 25888,
+    "cache_read_input_tokens": 388953,
+    "inference_geo": "not_available",
+    "input_tokens": 13,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1604,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1604,
+      "cache_read_input_tokens": 42211,
+      "input_tokens": 1,
+      "output_tokens": 1226,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7326,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1f1d7527e4085f3ac0ffad2ac3ad69cfbebe809c",
+ "cost_usd": 0.389054,
+ "dedupe_key": "FormalFrontier/TauCeti|45|6a4a08fbd39f8481124b33599f93037c54eee7a0|api-design|claude-sonnet-4-6|e1aee6e8c6688dd8|shadow:sonnet-backfill|1",
+ "diff_blob": "9bd2c7497e6abb417f12ee6857597ad6588fc069cd2b3ea19be5ddb49888e411",
+ "diff_sha256": "9bd2c7497e6abb417f12ee6857597ad6588fc069cd2b3ea19be5ddb49888e411",
+ "duration_s": 136.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -rn antipodeAlgHom /tmp/tauceti-review-45-qggvumh9` returns only `replies.json` and `pr_desc.txt`; `HopfAlgebra/Basic.lean:33` confirms the TODO is still open.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean",
+   "fix": "Add `noncomputable def HopfAlgebra.antipodeAlgHom [CommSemiring H] [HopfAlgebra R H] : H \u2192\u2090[R] H` using `AlgHom.ofLinearMap (antipode R) ...` with commutativity of `H` supplying `map_mul`, and expose its characteristic simp lemma `antipodeAlgHom_apply`.",
+   "issue": "`HopfAlgebra.antipodeAlgHom` is advertised in the PR description as a named public deliverable discharging the Mathlib TODO at `HopfAlgebra/Basic.lean:33` ('If `A` is commutative then `antipode` is an algebra homomorphism'), but no such declaration exists anywhere in the diff. `antipodeComp` is `private` and constructs `f \u2218 S` for a given `f : H \u2192\u2090[R] A`, which is not the standalone algebra endomorphism `H \u2192\u2090[R] H` the TODO describes.",
+   "line": 0
+  },
+  {
+   "evidence": "The only reference is `rw [HopfAlgebra.antipode_convMul_id, ...]` at line 129, inside `private lemma convInv_mul_cancel`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean",
+   "fix": "Mark it `private`.",
+   "issue": "`HopfAlgebra.antipode_convMul_id` is public but is used only inside the private `convInv_mul_cancel` (line 129). No downstream consumer of `instGroup` or `convInv_apply` needs to call it directly; it is an implementation helper.",
+   "line": 64
+  },
+  {
+   "evidence": "`grep -n '@\\[simp\\]' FunctorOfPoints.lean` shows `@[simp]` on lines 112, 165, 170 but not on 179.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean",
+   "fix": "Add `@[simp]` to `mapValue_comp`.",
+   "issue": "`mapValue_comp` lacks `@[simp]` while the parallel functor law `mapValue_id` (line 170) carries it. Without `@[simp]`, nested `mapValue` expressions do not reduce automatically, breaking the expected automation symmetry.",
+   "line": 179
+  }
+ ],
+ "head_sha": "6a4a08fbd39f8481124b33599f93037c54eee7a0",
+ "merge_base_sha": "1f1d7527e4085f3ac0ffad2ac3ad69cfbebe809c",
+ "mode": "manual",
+ "model": "claude-sonnet-4-6",
+ "pr": 45,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3691ea50625802943cc63d8991b5dd695726ed01066a5a8780512585c8e817f0",
+ "provider": "sonnet",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T050737Z-45-api-design-eb66ab",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T05:07:37Z",
+ "summary": "The PR claims to deliver `HopfAlgebra.antipodeAlgHom` as a public API item but no such declaration exists; `antipode_convMul_id` is a private implementation lemma that has been left public; and `mapValue_comp` is missing `@[simp]` while the symmetric `mapValue_id` has it.",
+ "transcript_blob": "4f1933a84b7cf88ffe33fac85dcf5cf529e10f4035022f54be9fea5726a086ed",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 25888,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 25888,
+  "cache_read_input_tokens": 388953,
+  "inference_geo": "not_available",
+  "input_tokens": 13,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1604,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1604,
+    "cache_read_input_tokens": 42211,
+    "input_tokens": 1,
+    "output_tokens": 1226,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7326,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

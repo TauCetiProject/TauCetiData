@@ -1,0 +1,86 @@
+{
+ "arm": "shadow:minimax-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.07887,
+   "returncode": 0,
+   "secs": 167.7,
+   "usage": {
+    "input_tokens": 39034,
+    "output_tokens": 8017
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.07887,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|correctness|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 167.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "lines 65-67 of the diff: `class ReductiveGroup : Prop extends AffineAlgGroup k A where /-- The unipotent radical over the algebraic closure is trivial. -/ unipotent_radical_trivial : True`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Construct the unipotent radical (after base change) as a real notion in this library, then add a real hypothesis \u2014 e.g. `IsBaseChange k (algebraicClosure k) A B \u2227 IsUnipotentRadical B \u2192 False` or whatever concrete shape the radical takes \u2014 instead of `True`. Until that prerequisite exists, do not ship the class.",
+   "issue": "`ReductiveGroup` extends `AffineAlgGroup` and adds the field `unipotent_radical_trivial : True`. The class adds no content beyond `AffineAlgGroup` and does not encode the intended triviality of the unipotent radical after base change to the algebraic closure.",
+   "line": 67
+  },
+  {
+   "evidence": "lines 71-73 of the diff: `class SemisimpleGroup : Prop extends ReductiveGroup k A where /-- The radical (maximal connected solvable normal subgroup) is trivial. -/ radical_trivial : True`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Define a real radical (e.g. the maximal connected solvable normal subgroup / maximal central torus of the identity component) and state `radical_trivial` as a non-trivial condition. If the real notion does not yet exist, omit `SemisimpleGroup` from this PR.",
+   "issue": "`SemisimpleGroup.radical_trivial : True` is a placeholder of the same kind. Read literally, it would assert that every reductive group is semisimple, which is false (e.g. `GL_n`); the `True` field hides the falsehood rather than discharging the claim.",
+   "line": 73
+  },
+  {
+   "evidence": "lines 41-55 of the diff: `def AlgPoints (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] := A \u2192\u2090[k] k` followed by `def IsUnipotent (g : GroupLike k A) : Prop := IsNilpotent ((g : A) - 1)` with docstring \"An element `g \u2208 G(k)` is unipotent\u2026\".",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Either (a) change the type to `AlgPoints k A` and redefine unipotence in terms of the augmentation ideal / representation action (e.g. g acts as 1 + nilpotent on every finite-dimensional representation, or pull back to A via the structure map and check nilpotence there), or (b) update the docstring to make clear the predicate is on `GroupLike k A`, not on k-rational points. The current mismatch between name/docstring and type is a mis-formalization.",
+   "issue": "`IsUnipotent (g : GroupLike k A)` is typed at group-like elements of the coordinate ring, but the docstring says \"An element `g \u2208 G(k)` is unipotent\" and the author defines `AlgPoints k A := A \u2192\u2090[k] k` as the k-points. For a k-point `g : A \u2192\u2090[k] k`, `g - 1` does not typecheck, so the formalization does not match the stated definition.",
+   "line": 55
+  },
+  {
+   "evidence": "line 78: `instance SemisimpleGroup.instReductiveGroup [SemisimpleGroup k A] : ReductiveGroup k A := SemisimpleGroup.toReductiveGroup`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Delete the instance as a follow-up of removing the `True` placeholders; do not rely on it.",
+   "issue": "`SemisimpleGroup.instReductiveGroup` is the trivial `SemisimpleGroup.toReductiveGroup`; it is an instance only because `ReductiveGroup` adds a `True` field, not because of any content. It will (correctly) need to be removed or rewritten once the placeholder fields are replaced.",
+   "line": 78
+  },
+  {
+   "evidence": "line 80: `theorem ReductiveGroup.unipotentRadical_trivial' [h : ReductiveGroup k A] : True := h.unipotent_radical_trivial`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Replace with the real theorem once the radical is defined; until then remove it.",
+   "issue": "`ReductiveGroup.unipotentRadical_trivial'` is a content-free theorem that just unwraps a `True` field, and the trailing prime suggests it is a stub for a real statement about the unipotent radical.",
+   "line": 80
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fd56568bed0786a8b09e5a6fd86e85afad1dbbf0dd99c28d85e974ae723205cf",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T051851Z-40-correctness-6210b0",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T05:18:51Z",
+ "summary": "`ReductiveGroup.unipotent_radical_trivial : True` and `SemisimpleGroup.radical_trivial : True` are placeholders that make both classes defeq to their parent (modulo a `\u27e8\u27e9`); the rubric explicitly rejects `True` as a structure-field type, and the unipotent radical over the algebraic closure is a real prerequisite that must be built first. `IsUnipotent` is typed at `GroupLike k A` (group-like elements of A) but its docstring and the author's own `AlgPoints k A` say the input is a k-point, so the formalization does not match the stated definition.",
+ "transcript_blob": "42b930452baf56ed2f285ed47d6fd4e959959e4e25ac8391b4aea746af478fbe",
+ "usage": {
+  "input_tokens": 39034,
+  "output_tokens": 8017
+ },
+ "verdict": "block"
+}
