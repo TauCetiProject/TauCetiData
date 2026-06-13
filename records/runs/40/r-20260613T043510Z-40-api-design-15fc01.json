@@ -1,0 +1,143 @@
+{
+ "arm": "shadow:sonnet-backfill",
+ "attempts": [
+  {
+   "cost_usd": 0.3268876,
+   "returncode": 0,
+   "secs": 153.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 25063,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 25063,
+    "cache_read_input_tokens": 179712,
+    "inference_geo": "not_available",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 726,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 726,
+      "cache_read_input_tokens": 42264,
+      "input_tokens": 1,
+      "output_tokens": 2343,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7908,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_usd": 0.326888,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|api-design|claude-sonnet-4-6|e1aee6e8c6688dd8|shadow:sonnet-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 153.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`isReduced_of_isGeometricallyReduced` at mathlib/Mathlib/RingTheory/Nilpotent/GeometricallyReduced.lean:85; `IsGroupLikeElem.isUnit` at mathlib/Mathlib/RingTheory/HopfAlgebra/GroupLike.lean:47; roadmap Layer 5 warning at roadmap/TauCetiRoadmap/ReductiveGroups/README.md:187\u2013188.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove `IsUnipotent` and `isUnipotent_one` until Layer 1 comodule theory is in place. The correct definition requires nilpotence of `\u03c1_g \u2212 id` across every finite-dimensional comodule, not in the coordinate ring.",
+   "issue": "`IsUnipotent` is vacuous. `AffineAlgGroup` includes `geomReduced : Algebra.IsGeometricallyReduced k A`, and Mathlib's `isReduced_of_isGeometricallyReduced` gives `IsReduced A`. Group-like elements are units (`IsGroupLikeElem.isUnit`). In a reduced ring, `(u - 1)^n = 0` implies `u - 1 = 0`, so `IsUnipotent g \u2194 g = 1`. The roadmap Layer 5 warns explicitly: 'A na\u00efve `IsUnipotent` that tests nilpotence in the reduced ring `A` is *vacuous* (only `g = 1` qualifies): the correct definition needs comodule theory (Layer 1).'",
+   "line": 49
+  },
+  {
+   "evidence": "Lines 65, 70, 73\u201374 of the diff; every instance of `ReductiveGroup` is discharged by `\u27e8\u2039AffineAlgGroup k A\u203a, trivial\u27e9`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Do not ship these typeclasses until the unipotent radical (and radical) are formalized. The stubs should live in a `Targets.lean` file with `sorry`-blocked statements, not as shipped API.",
+   "issue": "`ReductiveGroup` and `SemisimpleGroup` are mathematically vacuous. Their sole novel fields are `unipotent_radical_trivial : True` and `radical_trivial : True`, which any instance discharges with `trivial`. `ReductiveGroup.unipotentRadical_trivial'` is a theorem deriving `True` from `True`. These classes add nothing beyond `AffineAlgGroup`.",
+   "line": 63
+  },
+  {
+   "evidence": "Roadmap README lines 20\u201328: 'Keep two distinct notions... This admits \u03bc_p, \u03b1\u209a, and other non-smooth / non-reduced groups.'",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Split: a `FiniteTypeHopf` (or `AffGrpSchFT`) class for `Algebra.FiniteType k A` alone, and require `Algebra.IsGeometricallyReduced k A` separately wherever smoothness is needed.",
+   "issue": "`AffineAlgGroup` bundles finite type and geometric reducedness into one class. The roadmap design notes say explicitly: 'Keep **two distinct notions**, and never make smoothness implicit' \u2014 one for affine group schemes of finite type (admits `\u03bc_p`, `\u03b1\u209a`) and one with smoothness as a named hypothesis. Bundling prevents finite-type results from applying to non-smooth groups.",
+   "line": 35
+  },
+  {
+   "evidence": "Roadmap Layer 0 lines 98\u2013106; roadmap design note line 243.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Generalize to `AlgPoints (R : Type*) [CommSemiring R] [Algebra k R] := A \u2192\u2090[k] R` and add the convolution group instance (multiplication, identity, inverse via antipode) as Layer 0 specifies.",
+   "issue": "`AlgPoints` is defined as `A \u2192\u2090[k] k` (only `k`-points), not the functor of points `R \u21a6 A \u2192\u2090[k] R`. The roadmap Layer 0 target requires the full functor with convolution group structure. Roadmap design note: 'Functor of points is the notion of points, not `GroupLike`.' No group structure or characteristic API is provided.",
+   "line": 42
+  },
+  {
+   "evidence": "Rubric: 'Annotate `@[simp]` the normal-form lemmas... Flag a characteristic lemma that should carry one and does not.'",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Add `@[simp]` before `theorem isUnipotent_one`.",
+   "issue": "`isUnipotent_one` is missing `@[simp]`. It is a characteristic normal-form fact about the identity.",
+   "line": 54
+  },
+  {
+   "evidence": "Lean 4 class inheritance: `extends` auto-generates `toParent` and registers the instance.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Delete the explicit instance; Lean's `extends` machinery already provides it.",
+   "issue": "`SemisimpleGroup.instReductiveGroup` is redundant. `class SemisimpleGroup extends ReductiveGroup k A` already generates `SemisimpleGroup.toReductiveGroup` and the corresponding instance.",
+   "line": 77
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "claude-sonnet-4-6",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "70705c61cf9fada4b8fe56876e0846a2e7182d2328841f63cb0a49c468ac6d3a",
+ "provider": "sonnet",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "dd768d6a9f04a9f5d64c4930c172fd7ebccf763d",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T043510Z-40-api-design-15fc01",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T04:35:10Z",
+ "summary": "Three of the four exposed definitions carry no mathematical content: `IsUnipotent` is vacuous in any `AffineAlgGroup` (reduced ring), `ReductiveGroup` and `SemisimpleGroup` hold trivially for any `AffineAlgGroup` instance because their defining fields are literally `True`. The roadmap explicitly warns against the first; the other two are placeholder shells that should not be shipped as public API.",
+ "transcript_blob": "425a5a93f5159a93e0a2d77fcb03a329a6cbfb5f2e610708ce4e370515b8050a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 25063,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 25063,
+  "cache_read_input_tokens": 179712,
+  "inference_geo": "not_available",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 726,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 726,
+    "cache_read_input_tokens": 42264,
+    "input_tokens": 1,
+    "output_tokens": 2343,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7908,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
