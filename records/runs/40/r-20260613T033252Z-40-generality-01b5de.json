@@ -1,0 +1,79 @@
+{
+ "arm": "shadow:deepseek-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.048092,
+   "returncode": 0,
+   "secs": 189.7,
+   "usage": {
+    "input_tokens": 93712,
+    "output_tokens": 8122
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.048092,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|generality|deepseek/deepseek-v4-pro|e1aee6e8c6688dd8|shadow:deepseek-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 189.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Roadmap README.md: 'Spell hypotheses out; do not bundle them into one mega-class (Kevin Buzzard, repeatedly on Zulip: separate typeclass assumptions let every result be proved in its correct generality).' and 'Keep two distinct notions, and never make smoothness implicit.'",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Unbundle: keep `Algebra.FiniteType k A` as a separate typeclass (or no class at all) and add `Algebra.IsGeometricallyReduced k A` as an explicit hypothesis where smoothness is needed.",
+   "issue": "`AffineAlgGroup` bundles `Algebra.FiniteType` and `Algebra.IsGeometricallyReduced` into one class, contradicting the roadmap's explicit directive: 'Do not bundle them into one mega-class' and 'Keep two distinct notions.'",
+   "line": 36
+  },
+  {
+   "evidence": "Roadmap README.md Layer 0: 'Generalize `AlgPoints R A := A \u2192\u2090[k] R` for every commutative `k`-algebra `R` (the functor of points lives on `CommAlgCat k`).'",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Define `AlgPoints (R k A : Type*) [CommSemiring R] ... := A \u2192\u2090[k] R` (or `G(R) := A \u2192\u2090[k] R` as a functor on `CommAlgCat k`).",
+   "issue": "`AlgPoints k A` is defined only for the `k`-points `A \u2192\u2090[k] k`, but the roadmap's Layer 0 requires the functor of points `A \u2192\u2090[k] R` for every commutative `k`-algebra `R`.",
+   "line": 43
+  },
+  {
+   "evidence": "`AffineAlgGroup` requires `IsGeometricallyReduced k A`, which implies `IsReduced A` (`isReduced_of_isGeometricallyReduced` at Mathlib/RingTheory/Nilpotent/GeometricallyReduced.lean:85). `IsReduced` (Mathlib/Algebra/GroupWithZero/Basic.lean:191) has `eq_zero : \u2200 x, IsNilpotent x \u2192 x = 0`. So `IsNilpotent ((g : A) - 1)` forces `(g : A) = 1`, making the predicate true only for the identity. Roadmap README.md Layer 5 warns exactly this.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove this definition; the correct notion requires the functor of points and comodule theory (roadmap Layer 1, Layer 5).",
+   "issue": "`IsUnipotent` defined as `IsNilpotent ((g : A) - 1)` on `GroupLike k A`. The roadmap warns this is vacuous ('\u26a0 A na\u00efve `IsUnipotent` that tests nilpotence in the reduced ring `A` is vacuous (only `g = 1` qualifies)') and that `GroupLike` is the wrong domain ('`GroupLike k A` is not the points functor').",
+   "line": 49
+  },
+  {
+   "evidence": "Roadmap README.md Layer 6: 'Reductive: smooth, connected, with `R_u(G_{k\u0304})` trivial.' The current `True` field makes the class admit every `AffineAlgGroup` regardless of reductivity.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Replace `True` with the real mathematical condition once the unipotent radical is defined (roadmap Layer 5\u20136), or keep the class out until then.",
+   "issue": "`ReductiveGroup` (and `SemisimpleGroup` at line 62) has `unipotent_radical_trivial : True`, making the class vacuously satisfied by every `AffineAlgGroup`. The roadmap describes reductive as requiring connectedness and a nontrivial condition on the unipotent radical.",
+   "line": 56
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "deepseek/deepseek-v4-pro",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b9fd5810c2b0c2621382330956c95de4d410ea1f51e503a2daade7b480e0e76e",
+ "provider": "deepseek",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "59403d5471ff29d54e2a2781005539703a08567a",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T033252Z-40-generality-01b5de",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T03:32:52Z",
+ "summary": "The PR bundles finite type and smoothness into one class against the roadmap's explicit 'do not bundle' directive; defines `AlgPoints` only for k-points instead of all commutative k-algebras as the roadmap's Layer 0 requires; defines `IsUnipotent` via `IsNilpotent` in the reduced ring `A`, which the roadmap warns is vacuous and uses the wrong domain (`GroupLike` instead of the functor of points); and provides `ReductiveGroup`/`SemisimpleGroup` with `True` placeholder conditions that make them vacuous rather than meaningful mathematical definitions.",
+ "transcript_blob": "11cb2ca8fd9250c610a7b78030bc7f180f77d3ddc14ca7930762f04233f63125",
+ "usage": {
+  "input_tokens": 93712,
+  "output_tokens": 8122
+ },
+ "verdict": "request_changes"
+}

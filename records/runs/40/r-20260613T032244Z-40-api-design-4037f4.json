@@ -1,0 +1,79 @@
+{
+ "arm": "shadow:deepseek-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.059055,
+   "returncode": 0,
+   "secs": 231.5,
+   "usage": {
+    "input_tokens": 118423,
+    "output_tokens": 7865
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.059055,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|api-design|deepseek/deepseek-v4-pro|e1aee6e8c6688dd8|shadow:deepseek-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 231.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Roadmap README.md Layer 5: 'A na\u00efve IsUnipotent that tests nilpotence in the reduced ring A is vacuous (only g = 1 qualifies): the correct definition needs comodule theory (Layer 1).' Mathlib/RingTheory/Nilpotent/GeometricallyReduced.lean:85: isReduced_of_isGeometricallyReduced.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove IsUnipotent and isUnipotent_one until Layer 1 (comodule theory) provides the correct definition: g \u2208 G(k\u0304) unipotent iff \u03c1_g \u2212 id nilpotent for every f.d. representation.",
+   "issue": "IsUnipotent tests nilpotence of (g-1) in A. Since AffineAlgGroup requires geometric reducedness, A is reduced (Mathlib/RingTheory/Nilpotent/GeometricallyReduced.lean:85), so (g-1) nilpotent \u21d4 g=1 \u2014 the predicate is vacuous for all non-identity elements. The roadmap explicitly flags this (Layer 5, \u26a0 naive IsUnipotent).",
+   "line": 47
+  },
+  {
+   "evidence": "Roadmap README.md Layer 0: 'Generalize AlgPoints R A := A \u2192\u2090[k] R for every commutative k-algebra R (the functor of points lives on CommAlgCat k).'",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Either parameterize over a general commutative k-algebra R: `def AlgPoints (R A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] [CommSemiring R] [Algebra k R] := A \u2192\u2090[k] R`, or rename to kPoints to be honest about the scope.",
+   "issue": "AlgPoints is defined only as A \u2192\u2090[k] k (k-points), but the roadmap explicitly requires 'AlgPoints R A := A \u2192\u2090[k] R for every commutative k-algebra R' (Layer 0). The current API does not serve the functor-of-points approach that is the roadmap's first target.",
+   "line": 42
+  },
+  {
+   "evidence": "The field declaration at line 69: `unipotent_radical_trivial : True`. The lemma at line 76 merely returns `h.unipotent_radical_trivial`.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove the lemma; the field projection already serves as the accessor. When the class carries a real hypothesis, a characteristic lemma may then be warranted.",
+   "issue": "ReductiveGroup.unipotentRadical_trivial' returns True, which is a vacuous lemma. The field unipotent_radical_trivial is already True, so the projection already yields the same information. Dead API weight.",
+   "line": 76
+  },
+  {
+   "evidence": "Line 69: `unipotent_radical_trivial : True`. Line 74: `radical_trivial : True`. No other non-trivial hypotheses distinguish these classes from AffineAlgGroup.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Either keep the classes private/internal until the real hypotheses (trivial unipotent radical, trivial radical) are expressible, or add a `-- TODO: replace True with actual condition after Layer 5` comment and mark the constructor as private so no premature instances are created.",
+   "issue": "ReductiveGroup and SemisimpleGroup have only True fields (lines 69, 74), making them semantically empty: any AffineAlgGroup trivially satisfies both. Code depending on [ReductiveGroup k A] receives no actual reductive guarantee, defeating the purpose.",
+   "line": 68
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "deepseek/deepseek-v4-pro",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6a2d8e93156ecd70cdfa1849f9951370cf3b93f17bceaafc487c12763c0ef90e",
+ "provider": "deepseek",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "59403d5471ff29d54e2a2781005539703a08567a",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T032244Z-40-api-design-4037f4",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T03:22:44Z",
+ "summary": "Four API issues: IsUnipotent is vacuous in reduced rings (roadmap-flagged pitfall); AlgPoints only gives k-points, not the general R-points the roadmap's Layer 0 demands; ReductiveGroup.unipotentRadical_trivial' is a dead lemma returning True; and ReductiveGroup/SemisimpleGroup carry only True fields, making them semantically empty typeclasses that cannot distinguish reductive from non-reductive.",
+ "transcript_blob": "1c98ffd991bb2cea03803a74a05b638dc4265343e358b4c76a00ecfa109e98b7",
+ "usage": {
+  "input_tokens": 118423,
+  "output_tokens": 7865
+ },
+ "verdict": "request_changes"
+}

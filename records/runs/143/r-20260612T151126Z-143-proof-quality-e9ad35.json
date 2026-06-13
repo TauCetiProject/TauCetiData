@@ -1,0 +1,76 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.2406,
+   "returncode": 0,
+   "secs": 53.4,
+   "usage": {
+    "cached_input_tokens": 132992,
+    "input_tokens": 172904,
+    "output_tokens": 2447,
+    "reasoning_output_tokens": 961
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ecbb68804f47965ec971c6f7189d5ff738abe02c",
+ "cost_estimated": true,
+ "cost_usd": 0.2406,
+ "dedupe_key": "FormalFrontier/TauCeti|143|2df27863741852ede26a39a041a52615c86d3a75|proof-quality|gpt-5.5|e1aee6e8c6688dd8|production|2",
+ "diff_blob": "0b668ff102de544cfe323adc4316f7291ba3a9ab63b0a322b8071c194d3e9193",
+ "diff_sha256": "0b668ff102de544cfe323adc4316f7291ba3a9ab63b0a322b8071c194d3e9193",
+ "duration_s": 53.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: line 197 defines `hr'' ... := by`; line 198 is only `simp_all +decide`; Mathlib has `Int.ideal_span_absNorm_eq_self`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/IdealCount.lean",
+   "fix": "Use the existing theorem directly, e.g. replace `hr''` with `(Int.ideal_span_absNorm_eq_self J).symm` and drop the unused hypotheses from the local statement.",
+   "issue": "`under_eq_of_ratBelow_eq` proves `J = Ideal.span {(Ideal.absNorm J : \u2124)}` with `simp_all +decide` and redundant prime/nonzero hypotheses, hiding the actual fact used.",
+   "line": 197
+  },
+  {
+   "evidence": "grep: line 218 is `rw [show l.idxOf P = primeCoord F P from rfl, hQ', hc]`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/IdealCount.lean",
+   "fix": "Replace the `show ... from rfl` with an explicit helper equality proved by rewriting `primeCoord` and `hl`, then rewrite with that helper.",
+   "issue": "`prime_eq_of_coord_eq` uses undocumented `show l.idxOf P = primeCoord F P from rfl`, relying on definitional equality through the local `set l := ...`.",
+   "line": 218
+  },
+  {
+   "evidence": "grep: lines 219-223 define `hgen` with `induction m <;> simp_all +decide [List.idxOf_cons]` and `grind`; Mathlib has `theorem idxOf_inj` in `Data/List/Basic.lean`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/IdealCount.lean",
+   "fix": "Use Mathlib's `List.idxOf_inj` directly, e.g. `exact (List.idxOf_inj hPl).mp hidx`, and remove the local induction.",
+   "issue": "The local `hgen` proof re-proves list `idxOf` injectivity by induction plus `simp_all`/`grind`, making a foundational step depend on fragile automation.",
+   "line": 219
+  }
+ ],
+ "head_sha": "2df27863741852ede26a39a041a52615c86d3a75",
+ "merge_base_sha": "ecbb68804f47965ec971c6f7189d5ff738abe02c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 143,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "371c49f170b309ac1122e0efbf8295d2702470e85f6907b612453760145ee34a",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "2e8f28c349ad7304012e72e065b52e966c18ebe4",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260612T151126Z-143-proof-quality-e9ad35",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-12T15:11:26Z",
+ "summary": "Several foundational proof steps are unnecessarily brittle: standard facts are hidden behind broad automation or undocumented definitional equality. Refactor these to named lemmas or explicit rewrites.",
+ "transcript_blob": "5b62d78807ac42a8f9da6fc0a68ee4a2ede75085ccdcf18e944105759ae41603",
+ "usage": {
+  "cached_input_tokens": 132992,
+  "input_tokens": 172904,
+  "output_tokens": 2447,
+  "reasoning_output_tokens": 961
+ },
+ "verdict": "request_changes"
+}

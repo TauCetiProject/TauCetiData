@@ -1,0 +1,76 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.133535,
+   "returncode": 0,
+   "secs": 39.8,
+   "usage": {
+    "cached_input_tokens": 62080,
+    "input_tokens": 91940,
+    "output_tokens": 1861,
+    "reasoning_output_tokens": 414
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c265daf5fe1a2a4b5c6de53e6f937e4a0e4d52f1",
+ "cost_estimated": true,
+ "cost_usd": 0.133535,
+ "dedupe_key": "FormalFrontier/TauCeti|140|c8f88b199e4e2fe06bf2bfa9a52ac74e685499d4|api-design|gpt-5.5|e1aee6e8c6688dd8|production|2",
+ "diff_blob": "4ddc7e54db0c58a46bf13c1fa94ff201a23e21a9dcf5d396283e66b997eb57d2",
+ "diff_sha256": "4ddc7e54db0c58a46bf13c1fa94ff201a23e21a9dcf5d396283e66b997eb57d2",
+ "duration_s": 39.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`sqrtTower : (\u2115 \u2192 \u211a) \u2192 \u2115 \u2192 IntermediateField \u211a \u211d` at lines 41-42 and `squareClass_of_sqrt_mem` uses `r : \u211a`/`Real.sqrt` at lines 127-130; roadmap `Targets.lean` lines 42-45 states the target for arbitrary `K`, `L`, and README lines 47-49 says not to bake in `K = \u211a`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/SquareClass.lean",
+   "fix": "Expose the field-generic tower/descent statements over `[Field K] [Field L] [Algebra K L]` and derive the `\u211a`/`\u211d` real-root specialization as a corollary if needed.",
+   "issue": "The exported tower/descent API bakes in `\u211a` and `\u211d`, but the roadmap's Layer-0 degree theorem is over arbitrary `K`, `L` with chosen roots.",
+   "line": 41
+  },
+  {
+   "evidence": "Line 61 states `mem_sup_adjoin_sq ... (hy : y \u2208 K \u2294 IntermediateField.adjoin \u211a {x}) : \u2203 a b ... y = a + b * x`; `rg` finds no matching `_iff` or reverse public declaration in this file.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/SquareClass.lean",
+   "fix": "Add the reverse lemma and a `mem_sup_adjoin_sq_iff`/normal-form theorem, with the normal-form direction usable by `simp` or `grind` where appropriate.",
+   "issue": "`mem_sup_adjoin_sq` exposes only the elimination direction from membership in `K \u2294 \u211a(x)` to `a + b*x`; the normal form has no public introduction or iff characterization.",
+   "line": 61
+  },
+  {
+   "evidence": "The public declarations grep lists only `sqrtTower`, `sqrtTower_zero`, `sqrtTower_succ`, `mem_sup_adjoin_sq`, and `squareClass_of_sqrt_mem`; there is no `mem_sqrtTower`, generator lemma, monotonicity lemma, or `@[simp]` attribute on lines 44-49.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/SquareClass.lean",
+   "fix": "Add `@[simp]` normal forms such as `sqrtTower_zero`, generator-introduction/membership lemmas for `j < n`, and any monotonicity/restatement lemmas needed to use the tower without unfolding `sqrtTower`.",
+   "issue": "`sqrtTower` has only zero/succ equations and no characteristic membership/generator API, and even the base normal form is not marked for simplification.",
+   "line": 44
+  }
+ ],
+ "head_sha": "c8f88b199e4e2fe06bf2bfa9a52ac74e685499d4",
+ "merge_base_sha": "c265daf5fe1a2a4b5c6de53e6f937e4a0e4d52f1",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 140,
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "428a8476698b8c7906807fbdad1937c011d196657f7e3209d3ce8e58ab48d79d",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "2e8f28c349ad7304012e72e065b52e966c18ebe4",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260612T204301Z-140-api-design-40c547",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-12T20:43:01Z",
+ "summary": "The new public surface is not yet the API needed for the named Layer-0 target: it is specialized to the rational-real tower and lacks characteristic normal-form/tower lemmas. Fix the exposed statements before downstream degree work depends on this interface.",
+ "transcript_blob": "4e9ade339698bb05c7afe9c334a88f01009532d70f853be0753ef76c0ac0efcd",
+ "usage": {
+  "cached_input_tokens": 62080,
+  "input_tokens": 91940,
+  "output_tokens": 1861,
+  "reasoning_output_tokens": 414
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,72 @@
+{
+ "arm": "shadow:deepseek-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.047533,
+   "returncode": 0,
+   "secs": 124.3,
+   "usage": {
+    "input_tokens": 99292,
+    "output_tokens": 4719
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "cost_estimated": false,
+ "cost_usd": 0.047533,
+ "dedupe_key": "FormalFrontier/TauCeti|40|9cfaae886bccbffe9a74e55be28fb687e278e635|scope|deepseek/deepseek-v4-pro|e1aee6e8c6688dd8|shadow:deepseek-backfill|1",
+ "diff_blob": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "diff_sha256": "0d62834398723710bc478de32cceb477f52ab36dd222332fc1f5576fd1eb48df",
+ "duration_s": 124.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap/TauCetiRoadmap/ReductiveGroups/README.md line 247: 'Don't bundle typeclasses; admit non-smooth/non-reduced groups (\u03bc_p) and make smoothness an explicit hypothesis where used.'",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Split into separate classes: a minimal AffineGroupSchemeOfFiniteType (finite type only) plus a separate Smooth predicate applied as a named hypothesis where needed.",
+   "issue": "AffineAlgGroup bundles finiteType and geomReduced together, violating the roadmap's explicit directive: 'Don't bundle typeclasses; admit non-smooth/non-reduced groups (\u03bc_p) and make smoothness an explicit hypothesis where used' (README.md line 247).",
+   "line": 34
+  },
+  {
+   "evidence": "roadmap/TauCetiRoadmap/ReductiveGroups/README.md line 187: '\u26a0 A na\u00efve IsUnipotent that tests nilpotence in the reduced ring A is vacuous (only g = 1 qualifies): the correct definition needs comodule theory (Layer 1).'",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove IsUnipotent until after Layer 1 (comodules) is built, then define it via the representation-theoretic criterion described in the roadmap.",
+   "issue": "IsUnipotent tests nilpotence of (g - 1) in the coordinate ring A. The roadmap's Layer 5 explicitly warns this definition is vacuous (only g = 1 qualifies) and that the correct definition requires comodule theory (Layer 1), which is not yet built.",
+   "line": 48
+  },
+  {
+   "evidence": "roadmap/TauCetiRoadmap/ReductiveGroups/README.md layers 0\u20136 describe the full dependency chain. Targets.lean contains only Layer 0 targets. The PR jumps to Layer 6 with no lower layers built and uses True as a placeholder field.",
+   "file": "TauCeti/AlgebraicGroup/Reductive.lean",
+   "fix": "Remove these classes. Build the dependency chain (Layers 0\u20135) first, per the roadmap's layered plan, and reintroduce reductive/semisimple only when the unipotent radical is actually constructed.",
+   "issue": "ReductiveGroup and SemisimpleGroup (Layers 5\u20136 in the roadmap) are introduced before any of their prerequisite layers (0\u20135) are built. The unipotent_radical_trivial field is True, a placeholder that states no real mathematics. No genuine path exists from current code to any roadmap target.",
+   "line": 60
+  }
+ ],
+ "head_sha": "9cfaae886bccbffe9a74e55be28fb687e278e635",
+ "merge_base_sha": "05fa5c597924a4d9423470968b64d4a9e6038e0b",
+ "mode": "manual",
+ "model": "deepseek/deepseek-v4-pro",
+ "pr": 40,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f6327f5c857fcd635d7985e0223d0a3431f8bd3af36be0df7856178add1a9ebe",
+ "provider": "deepseek",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "scope",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "59403d5471ff29d54e2a2781005539703a08567a",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T034419Z-40-scope-aff035",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T03:44:19Z",
+ "summary": "This PR introduces typeclasses for reductive algebraic groups (Layer 6) but no path from existing code through the prerequisite Layers 0\u20135 exists in the codebase. Moreover, the PR bundles smoothness into AffineAlgGroup in direct violation of the roadmap's explicit 'Don't bundle' directive, and its IsUnipotent definition is the na\u00efve ring-nilpotence test the roadmap's Layer 5 explicitly warns is vacuous without comodule theory (Layer 1). The ReductiveGroup/SemisimpleGroup classes are stubs with True fields and state no real mathematics.",
+ "transcript_blob": "e5dd0194100edb46866943e754211a010f5125062d5fed60733dffd5d6749581",
+ "usage": {
+  "input_tokens": 99292,
+  "output_tokens": 4719
+ },
+ "verdict": "block"
+}
