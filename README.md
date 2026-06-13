@@ -83,3 +83,21 @@ pair up the next time `make_pairs.py` runs.
 python3 scripts/build_db.py            # writes db/tauceti.db
 sqlite3 db/tauceti.db "SELECT * FROM ab_pairs LIMIT 5"
 ```
+
+## Cost analysis
+
+`tauceti-review-costs` (in
+[TauCetiReview](https://github.com/FormalFrontier/TauCetiReview/blob/main/runner/COSTS.md))
+attributes review spend — tokens **and** imputed dollars — to PRs and to merged
+lines of code, reading the `records/runs/` files here. Because the token counts
+are the immutable fact, it recomputes cost from them at the rate in effect on
+each run's date (`runner/prices-history.json`), so the numbers are faithful to
+when a run happened and reproducible by anyone from this public archive:
+
+```
+git clone --depth 1 https://github.com/FormalFrontier/TauCetiData /tmp/TauCetiData
+uvx --from git+https://github.com/FormalFrontier/TauCetiReview tauceti-review-costs \
+  --source data --data-dir /tmp/TauCetiData all
+```
+
+It defaults to the production arm; `--include-shadows` includes the A/B arms.
