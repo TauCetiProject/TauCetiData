@@ -1,74 +1,94 @@
 #!/usr/bin/env python3
-"""Re-cost estimated run records from token counts using the canonical price table.
+"""Re-cost ESTIMATED run records cache-aware, from token counts and the canonical prices.
 
-Reviews run in subscription/CLI mode report no real billed cost, so review.py estimated
-cost_usd from a PRICES table — which had three stale, wrong entries (claude-opus-4-8 at
-$15/$75, gpt-5.5 at $1.25/$10, minimax at $0.60/$2.40). This recomputes cost_usd from the
-immutable token usage times the corrected prices in schema/prices.json, preserving the
-original under cost_usd_legacy. Records with cost_estimated == False carry a real
-provider-reported cost and are left untouched. Round records' `cost` is re-summed from
-their member runs. Idempotent: re-running changes nothing once recosted.
+Only codex/gpt-5.5 reviews carry an *estimated* cost (cost_estimated == true): in
+subscription mode the CLI reports no billed cost, so review.py estimated it from a price
+table — and that estimate (a) used three stale rates (corrected in TauCetiReview #50) and
+(b) charged ALL input at full rate, ignoring that most of it is prompt-cache reads (billed
+at ~10%). This recomputes those costs as
+    (input - cached_input)*input + cached_input*cache_read + output*output
+using schema/prices.json, preserving the original in cost_usd_legacy.
+
+claude costs are the CLI's real, cache-accurate total_cost_usd (cost_estimated absent), and
+deepseek/pi costs are provider-reported (cost_estimated == false) — both are left untouched.
+Round `cost` is re-summed from member runs. Self-healing + idempotent: a record that should
+NOT be recosted but was touched by an earlier run is restored from its legacy value.
 
     python3 scripts/recost.py
 """
 import json
-import pathlib
 
 import tcdata
 
-PRICES = {k: tuple(v) for k, v in
+PRICES = {k: v for k, v in
           json.loads((tcdata.ROOT / "schema" / "prices.json").read_text()).items()
           if not k.startswith("_")}
 
 
-def recost_run(d):
-    if d.get("cost_estimated") is False:          # real provider cost — never touch
+def corrected(d):
+    """Cache-aware corrected cost for an estimated run, or None if it must not be recosted."""
+    if d.get("cost_estimated") is not True:        # real cost (claude CLI / deepseek pi)
         return None
-    price = PRICES.get(d.get("model"))
-    if not price:                                  # unpriced model — can't recompute
+    p = PRICES.get(d.get("model"))
+    if not p:
         return None
     u = d.get("usage") or {}
-    new = (u.get("input_tokens", 0) * price[0] + u.get("output_tokens", 0) * price[1]) / 1e6
-    new = round(new, 6)
-    if abs(new - (d.get("cost_usd") or 0)) < 1e-9 and "cost_usd_legacy" in d:
-        return None                                # already recosted to this value
-    if "cost_usd_legacy" not in d:
-        d["cost_usd_legacy"] = d.get("cost_usd")
-    d["cost_usd"] = new
-    d["cost_recosted"] = True
-    return new
+    inp, out = u.get("input_tokens", 0), u.get("output_tokens", 0)
+    cached = u.get("cached_input_tokens", 0)        # codex: cache-read subset of input
+    non_cached = max(inp - cached, 0)
+    cost = (non_cached * p["input"] + cached * p.get("cache_read", p["input"])
+            + out * p["output"]) / 1e6
+    return round(cost, 6)
+
+
+def restore(d, cur, legacy):
+    """Undo a prior (wrong) recost: move legacy back to cur, drop markers. Returns changed?"""
+    if legacy in d:
+        d[cur] = d.pop(legacy)
+        d.pop("cost_recosted", None)
+        return True
+    return False
 
 
 def main():
-    runs_dir = tcdata.ROOT / "records" / "runs"
-    new_cost = {}                                  # run_id -> corrected cost
-    changed = 0
-    for p in sorted(runs_dir.rglob("*.json")):
+    new_cost, runs_changed, runs_reverted = {}, 0, 0
+    for p in sorted((tcdata.ROOT / "records" / "runs").rglob("*.json")):
         d = json.loads(p.read_text())
-        before = d.get("cost_usd")
-        recost_run(d)
-        new_cost[d["run_id"]] = d.get("cost_usd") or 0
-        if d.get("cost_usd") != before:
-            p.write_text(json.dumps(d, indent=2) + "\n")
-            changed += 1
+        target = corrected(d)
+        if target is not None:
+            if "cost_usd_legacy" not in d:
+                d["cost_usd_legacy"] = d.get("cost_usd")
+            if d.get("cost_usd") != target or not d.get("cost_recosted"):
+                d["cost_usd"], d["cost_recosted"] = target, True
+                p.write_text(json.dumps(d, indent=2) + "\n"); runs_changed += 1
+            new_cost[d["run_id"]] = target
+        else:
+            if restore(d, "cost_usd", "cost_usd_legacy"):
+                p.write_text(json.dumps(d, indent=2) + "\n"); runs_reverted += 1
+            new_cost[d["run_id"]] = d.get("cost_usd") or 0
 
-    # Re-sum round costs from corrected member-run costs (only when all members are known).
-    rounds_changed = 0
+    rounds_changed, rounds_reverted = 0, 0
     for p in sorted((tcdata.ROOT / "records" / "rounds").rglob("*.json")):
         d = json.loads(p.read_text())
         ids = d.get("run_ids") or []
+        orig = d.get("cost_legacy") if "cost_legacy" in d else d.get("cost")
         if not ids or not all(i in new_cost for i in ids):
+            if restore(d, "cost", "cost_legacy"):
+                p.write_text(json.dumps(d, indent=2) + "\n"); rounds_reverted += 1
             continue
         total = round(sum(new_cost[i] for i in ids), 6)
-        if abs(total - (d.get("cost") or 0)) > 1e-9:
+        if abs(total - (orig or 0)) < 1e-9:          # corrected == original: keep clean
+            if restore(d, "cost", "cost_legacy"):
+                p.write_text(json.dumps(d, indent=2) + "\n"); rounds_reverted += 1
+        else:
             if "cost_legacy" not in d:
                 d["cost_legacy"] = d.get("cost")
-            d["cost"] = total
-            d["cost_recosted"] = True
-            p.write_text(json.dumps(d, indent=2) + "\n")
-            rounds_changed += 1
+            if d.get("cost") != total or not d.get("cost_recosted"):
+                d["cost"], d["cost_recosted"] = total, True
+                p.write_text(json.dumps(d, indent=2) + "\n"); rounds_changed += 1
 
-    print(f"recost: {changed} run records, {rounds_changed} round records updated")
+    print(f"recost: runs {runs_changed} recosted / {runs_reverted} reverted; "
+          f"rounds {rounds_changed} recosted / {rounds_reverted} reverted")
 
 
 if __name__ == "__main__":
