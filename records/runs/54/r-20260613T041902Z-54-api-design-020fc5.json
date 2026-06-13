@@ -1,0 +1,86 @@
+{
+ "arm": "shadow:deepseek-backfill",
+ "attempts": [
+  {
+   "cost_estimated": false,
+   "cost_usd": 0.074938,
+   "returncode": 0,
+   "secs": 159.0,
+   "usage": {
+    "input_tokens": 152844,
+    "output_tokens": 9141
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "cost_estimated": false,
+ "cost_usd": 0.074938,
+ "dedupe_key": "FormalFrontier/TauCeti|54|ba21b3eea060ea634140b80af551a35190315475|api-design|deepseek/deepseek-v4-pro|e1aee6e8c6688dd8|shadow:deepseek-backfill|1",
+ "diff_blob": "18a0554e0e61777c203aada94faf0954a7ad1ed8ad9cd84d011a36c774c31e77",
+ "diff_sha256": "18a0554e0e61777c203aada94faf0954a7ad1ed8ad9cd84d011a36c774c31e77",
+ "duration_s": 159.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mapPoints is defined via GrpCat.ofHom (line 58); Mathlib/Algebra/Category/Grp/Basic.lean:156 gives @[simp] lemma hom_ofHom: (ofHom f).hom = f, so .hom.map_one is directly available.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Remove the lemma. The user accesses the property via (mapPoints \u03c6).hom.map_one.",
+   "issue": "mapPoints_one is a trivial wrapper around (mapPoints \u03c6).hom.map_one; it carries no @[simp] annotation and adds unnecessary API surface.",
+   "line": 68
+  },
+  {
+   "evidence": "Same as mapPoints_one \u2014 the proof body is exactly (mapPoints \u03c6).hom.map_mul f g.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Remove the lemma.",
+   "issue": "mapPoints_mul is a trivial wrapper around (mapPoints \u03c6).hom.map_mul; it carries no @[simp] annotation and adds unnecessary API surface.",
+   "line": 73
+  },
+  {
+   "evidence": "Same pattern \u2014 the proof body is exactly (mapPoints \u03c6).hom.map_inv f.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Remove the lemma.",
+   "issue": "mapPoints_inv is a trivial wrapper around (mapPoints \u03c6).hom.map_inv; it carries no @[simp] annotation and adds unnecessary API surface.",
+   "line": 78
+  },
+  {
+   "evidence": "The lemma is the normal form for the functor's object part; without @[simp] the characteristic API is incomplete for automation.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Add @[simp] to pointsFunctor_obj.",
+   "issue": "pointsFunctor_obj characterizes the functor's object action but lacks @[simp], so simp cannot normalize (pointsFunctor \u2026).obj A.",
+   "line": 104
+  },
+  {
+   "evidence": "The lemma is the normal form for the functor's morphism part; analogous to mapPoints_apply which already carries @[simp].",
+   "file": "TauCeti/Algebra/AlgebraicGroup/PointsFunctor.lean",
+   "fix": "Add @[simp] to pointsFunctor_map.",
+   "issue": "pointsFunctor_map characterizes the functor's morphism action but lacks @[simp], so simp cannot normalize (pointsFunctor \u2026).map \u03c6.",
+   "line": 109
+  }
+ ],
+ "head_sha": "ba21b3eea060ea634140b80af551a35190315475",
+ "merge_base_sha": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+ "mode": "manual",
+ "model": "deepseek/deepseek-v4-pro",
+ "pr": 54,
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a6995d7c4c0030877bf3cd8e06352919cfb1dce42b62b17b6443aeb8f4c70d21",
+ "provider": "deepseek",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "4ba876efaa230b44970ce5084f1a6c461a26f46e",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T041902Z-54-api-design-020fc5",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-13T04:19:02Z",
+ "summary": "Three trivial convenience lemmas (mapPoints_one/mul/inv) are redundant \u2014 each is exactly (mapPoints \u03c6).hom.map_one/map_mul/map_inv \u2014 and should be removed. The characteristic API lemmas pointsFunctor_obj and pointsFunctor_map are missing @[simp].",
+ "transcript_blob": "252a1b715d5af4f88a6ceb4f17875d95fca29688178c812858d2693d19e03041",
+ "usage": {
+  "input_tokens": 152844,
+  "output_tokens": 9141
+ },
+ "verdict": "request_changes"
+}
