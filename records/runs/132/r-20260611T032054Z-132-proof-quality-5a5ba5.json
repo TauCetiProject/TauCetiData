@@ -1,68 +1,70 @@
 {
- "arm": "production",
- "attempts": [
-  {
-   "cost_estimated": true,
-   "cost_usd": 0.127915,
-   "returncode": 0,
-   "usage": {
+  "arm": "production",
+  "attempts": [
+    {
+      "cost_estimated": true,
+      "cost_usd": 0.127915,
+      "returncode": 0,
+      "usage": {
+        "cached_input_tokens": 46208,
+        "input_tokens": 85948,
+        "output_tokens": 2048,
+        "reasoning_output_tokens": 830
+      }
+    }
+  ],
+  "base_ref_oid": "ffd8c182274adf8cdddef36549a74b10eaa7debc",
+  "cost_estimated": true,
+  "cost_usd": 0.49118,
+  "dedupe_key": "FormalFrontier/TauCeti|132|aad03b778ab4afc232869b6575f9c27dd75888a0|proof-quality|gpt-5.5|e1aee6e8c6688dd8|production|1",
+  "fidelity": "reconstructed",
+  "findings": [
+    {
+      "evidence": "`rg` hits: lines 101, 113, 125, and 134 all use `rw [show prodCoact ... from congr($prodCoact_comp_...)]`.",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
+      "fix": "Introduce explicit apply lemmas for `prodCoact` on `LinearMap.inl`/`LinearMap.inr` before these private proofs, then rewrite by those lemmas directly.",
+      "issue": "`prodCoassoc_inl`/`prodCoassoc_inr` and `prodCounit_inl`/`prodCounit_inr` start with undocumented inline `show ... from congr($prodCoact_comp_...)` rewrites, making the proofs depend on a fragile presentation of function congruence.",
+      "line": 101
+    },
+    {
+      "evidence": "Line 146: `rw [show (m, n) = LinearMap.inl R M N m + LinearMap.inr R M N n by simp]`.",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
+      "fix": "Factor the decomposition into a named lemma, e.g. `prod_eq_inl_add_inr`, or rewrite via an existing explicit product/coproduct lemma instead of an inline `show`.",
+      "issue": "The coassociativity proof decomposes `(m, n)` with an undocumented `show ... by simp`, which is exactly the kind of hidden definitional/product-coercion step the proof-quality rubric asks to avoid.",
+      "line": 146
+    },
+    {
+      "evidence": "Line 229: `change TensorProduct.map (f.toLinearMap.prod g.toLinearMap) LinearMap.id (coact p) = ...`; Mathlib has `LinearMap.rTensor_def` (`mathlib/Mathlib/LinearAlgebra/TensorProduct/Map.lean:338`).",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
+      "fix": "Rewrite explicitly with `LinearMap.rTensor_def` or add a short comment explaining why this goal-shape change is unavoidable.",
+      "issue": "`Hom.prod.map_coact` uses an undocumented `change` to replace the `rTensor` form of the goal by `TensorProduct.map`, relying on the definitional shape of `LinearMap.rTensor`.",
+      "line": 229
+    }
+  ],
+  "head_sha": "aad03b778ab4afc232869b6575f9c27dd75888a0",
+  "mode": "commit",
+  "model": "gpt-5.5",
+  "pr": 132,
+  "prompt_policy": "fresh",
+  "provider": "codex",
+  "repo": "FormalFrontier/TauCeti",
+  "round": 1,
+  "rubric": "proof-quality",
+  "rubrics_repo": "FormalFrontier/TauCetiReview",
+  "rubrics_version": "e1aee6e8c6688dd8",
+  "run_id": "r-20260611T032054Z-132-proof-quality-5a5ba5",
+  "schema": "tauceti.run/v1",
+  "source": "backfill-ledger",
+  "started_at": "2026-06-11T03:20:54Z",
+  "summary": "The proofs compile, but several steps rely on undocumented goal-shape changes and inline `show` casts. These should be replaced by explicit rewrite lemmas or documented if unavoidable.",
+  "transcript_blob": "2adae4f4612a68c4fbc8cc321050b1a34c7ba07e52a7c91e58bc6a68c210a75f",
+  "usage": {
     "cached_input_tokens": 46208,
     "input_tokens": 85948,
     "output_tokens": 2048,
     "reasoning_output_tokens": 830
-   }
-  }
- ],
- "base_ref_oid": "ffd8c182274adf8cdddef36549a74b10eaa7debc",
- "cost_estimated": true,
- "cost_usd": 0.127915,
- "dedupe_key": "FormalFrontier/TauCeti|132|aad03b778ab4afc232869b6575f9c27dd75888a0|proof-quality|gpt-5.5|e1aee6e8c6688dd8|production|1",
- "fidelity": "reconstructed",
- "findings": [
-  {
-   "evidence": "`rg` hits: lines 101, 113, 125, and 134 all use `rw [show prodCoact ... from congr($prodCoact_comp_...)]`.",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
-   "fix": "Introduce explicit apply lemmas for `prodCoact` on `LinearMap.inl`/`LinearMap.inr` before these private proofs, then rewrite by those lemmas directly.",
-   "issue": "`prodCoassoc_inl`/`prodCoassoc_inr` and `prodCounit_inl`/`prodCounit_inr` start with undocumented inline `show ... from congr($prodCoact_comp_...)` rewrites, making the proofs depend on a fragile presentation of function congruence.",
-   "line": 101
   },
-  {
-   "evidence": "Line 146: `rw [show (m, n) = LinearMap.inl R M N m + LinearMap.inr R M N n by simp]`.",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
-   "fix": "Factor the decomposition into a named lemma, e.g. `prod_eq_inl_add_inr`, or rewrite via an existing explicit product/coproduct lemma instead of an inline `show`.",
-   "issue": "The coassociativity proof decomposes `(m, n)` with an undocumented `show ... by simp`, which is exactly the kind of hidden definitional/product-coercion step the proof-quality rubric asks to avoid.",
-   "line": 146
-  },
-  {
-   "evidence": "Line 229: `change TensorProduct.map (f.toLinearMap.prod g.toLinearMap) LinearMap.id (coact p) = ...`; Mathlib has `LinearMap.rTensor_def` (`mathlib/Mathlib/LinearAlgebra/TensorProduct/Map.lean:338`).",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/Prod.lean",
-   "fix": "Rewrite explicitly with `LinearMap.rTensor_def` or add a short comment explaining why this goal-shape change is unavoidable.",
-   "issue": "`Hom.prod.map_coact` uses an undocumented `change` to replace the `rTensor` form of the goal by `TensorProduct.map`, relying on the definitional shape of `LinearMap.rTensor`.",
-   "line": 229
-  }
- ],
- "head_sha": "aad03b778ab4afc232869b6575f9c27dd75888a0",
- "mode": "commit",
- "model": "gpt-5.5",
- "pr": 132,
- "prompt_policy": "fresh",
- "provider": "codex",
- "repo": "FormalFrontier/TauCeti",
- "round": 1,
- "rubric": "proof-quality",
- "rubrics_repo": "FormalFrontier/TauCetiReview",
- "rubrics_version": "e1aee6e8c6688dd8",
- "run_id": "r-20260611T032054Z-132-proof-quality-5a5ba5",
- "schema": "tauceti.run/v1",
- "source": "backfill-ledger",
- "started_at": "2026-06-11T03:20:54Z",
- "summary": "The proofs compile, but several steps rely on undocumented goal-shape changes and inline `show` casts. These should be replaced by explicit rewrite lemmas or documented if unavoidable.",
- "transcript_blob": "2adae4f4612a68c4fbc8cc321050b1a34c7ba07e52a7c91e58bc6a68c210a75f",
- "usage": {
-  "cached_input_tokens": 46208,
-  "input_tokens": 85948,
-  "output_tokens": 2048,
-  "reasoning_output_tokens": 830
- },
- "verdict": "request_changes"
+  "verdict": "request_changes",
+  "cost_usd_legacy": 0.127915,
+  "cost_recosted": true
 }

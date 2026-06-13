@@ -1,68 +1,70 @@
 {
- "arm": "production",
- "attempts": [
-  {
-   "cost_estimated": true,
-   "cost_usd": 0.17771,
-   "returncode": 0,
-   "usage": {
+  "arm": "production",
+  "attempts": [
+    {
+      "cost_estimated": true,
+      "cost_usd": 0.17771,
+      "returncode": 0,
+      "usage": {
+        "cached_input_tokens": 73856,
+        "input_tokens": 124496,
+        "output_tokens": 2209,
+        "reasoning_output_tokens": 725
+      }
+    }
+  ],
+  "base_ref_oid": "ffd46b4684b23372affece11c67881eb38c3cb90",
+  "cost_estimated": true,
+  "cost_usd": 0.68875,
+  "dedupe_key": "FormalFrontier/TauCeti|118|cc04f0a23c3e047628f85949455e1294269093ce|reuse|gpt-5.5|68ec685af806ec41|production|1",
+  "fidelity": "reconstructed",
+  "findings": [
+    {
+      "evidence": "New line 62: `def groupLikeTensor ... := groupLike ... (g * h)`; existing `code/TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean:71:def groupLike`, `:82:theorem groupLike_coact_apply`, `:89:theorem groupLike_coact`.",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorTrivial.lean",
+      "fix": "Remove `groupLikeTensor` and use `Comodule.groupLike (R := R) (C := C) (M := M \u2297[R] N) (g * h)` together with `groupLike_coact`/`groupLike_coact_apply`.",
+      "issue": "`Comodule.groupLikeTensor g h` is definitionally just the existing `Comodule.groupLike (g * h)`, and its coaction simp lemmas duplicate the existing group-like coaction lemmas specialized to `M \u2297[R] N`.",
+      "line": 62
+    },
+    {
+      "evidence": "New lines 99-100 call `Hom.ofGroupLike ... (g * h) (TensorProduct.map f k)`; existing `code/TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean:96:def Hom.ofGroupLike`, `:112:theorem ofGroupLike_toLinearMap`, `:121:theorem ofGroupLike_apply`, `:130:theorem ofGroupLike_id`.",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorTrivial.lean",
+      "fix": "Remove `Hom.tensorOfGroupLike` and use `Hom.ofGroupLike (g * h) (TensorProduct.map f k)` at the call sites.",
+      "issue": "`Hom.tensorOfGroupLike` directly re-exposes the existing `Hom.ofGroupLike` applied to `(g * h)` and `TensorProduct.map f k`; the following `toLinearMap`, `tmul`, and `id` lemmas are special cases of existing `ofGroupLike_*` lemmas plus Mathlib `TensorProduct.map` simp lemmas.",
+      "line": 89
+    },
+    {
+      "evidence": "New lines 153-155 define `trivialTensor` via `groupLikeTensor 1 1`, and line 197 defines `Hom.tensorOfTrivial` via `Hom.tensorOfGroupLike 1 1`; existing `code/TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean:214:def trivial`, `:223:theorem trivial_coact_apply`, `:229:theorem trivial_coact`, `:235:def Hom.ofTrivial`.",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorTrivial.lean",
+      "fix": "Remove the trivial tensor wrappers and use `Comodule.trivial (M := M \u2297[R] N)` and `Hom.ofTrivial (TensorProduct.map f k)`.",
+      "issue": "`Comodule.trivialTensor` is just the existing `Comodule.trivial` on the tensor product, since `1 * 1 = 1`; `Hom.tensorOfTrivial` likewise duplicates `Hom.ofTrivial (TensorProduct.map f k)`.",
+      "line": 153
+    }
+  ],
+  "head_sha": "cc04f0a23c3e047628f85949455e1294269093ce",
+  "mode": "commit",
+  "model": "gpt-5.5",
+  "pr": 118,
+  "prompt_policy": "fresh",
+  "provider": "codex",
+  "repo": "FormalFrontier/TauCeti",
+  "round": 1,
+  "rubric": "reuse",
+  "rubrics_repo": "FormalFrontier/TauCetiReview",
+  "rubrics_version": "68ec685af806ec41",
+  "run_id": "r-20260610T182249Z-118-reuse-891872",
+  "schema": "tauceti.run/v1",
+  "source": "backfill-ledger",
+  "started_at": "2026-06-10T18:22:49Z",
+  "summary": "The PR adds named tensor/trivial APIs that are direct wrappers around existing TauCeti group-like/trivial comodule constructors and morphism constructors. These declarations should be removed or replaced by uses of the existing APIs specialized to `M \u2297[R] N` and `g * h`.",
+  "transcript_blob": "34102f90169a3653be92d21027b0cf17a1a3966e5ce8318b853d8aff64fe2ec7",
+  "usage": {
     "cached_input_tokens": 73856,
     "input_tokens": 124496,
     "output_tokens": 2209,
     "reasoning_output_tokens": 725
-   }
-  }
- ],
- "base_ref_oid": "ffd46b4684b23372affece11c67881eb38c3cb90",
- "cost_estimated": true,
- "cost_usd": 0.17771,
- "dedupe_key": "FormalFrontier/TauCeti|118|cc04f0a23c3e047628f85949455e1294269093ce|reuse|gpt-5.5|68ec685af806ec41|production|1",
- "fidelity": "reconstructed",
- "findings": [
-  {
-   "evidence": "New line 62: `def groupLikeTensor ... := groupLike ... (g * h)`; existing `code/TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean:71:def groupLike`, `:82:theorem groupLike_coact_apply`, `:89:theorem groupLike_coact`.",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorTrivial.lean",
-   "fix": "Remove `groupLikeTensor` and use `Comodule.groupLike (R := R) (C := C) (M := M \u2297[R] N) (g * h)` together with `groupLike_coact`/`groupLike_coact_apply`.",
-   "issue": "`Comodule.groupLikeTensor g h` is definitionally just the existing `Comodule.groupLike (g * h)`, and its coaction simp lemmas duplicate the existing group-like coaction lemmas specialized to `M \u2297[R] N`.",
-   "line": 62
   },
-  {
-   "evidence": "New lines 99-100 call `Hom.ofGroupLike ... (g * h) (TensorProduct.map f k)`; existing `code/TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean:96:def Hom.ofGroupLike`, `:112:theorem ofGroupLike_toLinearMap`, `:121:theorem ofGroupLike_apply`, `:130:theorem ofGroupLike_id`.",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorTrivial.lean",
-   "fix": "Remove `Hom.tensorOfGroupLike` and use `Hom.ofGroupLike (g * h) (TensorProduct.map f k)` at the call sites.",
-   "issue": "`Hom.tensorOfGroupLike` directly re-exposes the existing `Hom.ofGroupLike` applied to `(g * h)` and `TensorProduct.map f k`; the following `toLinearMap`, `tmul`, and `id` lemmas are special cases of existing `ofGroupLike_*` lemmas plus Mathlib `TensorProduct.map` simp lemmas.",
-   "line": 89
-  },
-  {
-   "evidence": "New lines 153-155 define `trivialTensor` via `groupLikeTensor 1 1`, and line 197 defines `Hom.tensorOfTrivial` via `Hom.tensorOfGroupLike 1 1`; existing `code/TauCeti/Algebra/Coalgebra/Comodule/Trivial.lean:214:def trivial`, `:223:theorem trivial_coact_apply`, `:229:theorem trivial_coact`, `:235:def Hom.ofTrivial`.",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorTrivial.lean",
-   "fix": "Remove the trivial tensor wrappers and use `Comodule.trivial (M := M \u2297[R] N)` and `Hom.ofTrivial (TensorProduct.map f k)`.",
-   "issue": "`Comodule.trivialTensor` is just the existing `Comodule.trivial` on the tensor product, since `1 * 1 = 1`; `Hom.tensorOfTrivial` likewise duplicates `Hom.ofTrivial (TensorProduct.map f k)`.",
-   "line": 153
-  }
- ],
- "head_sha": "cc04f0a23c3e047628f85949455e1294269093ce",
- "mode": "commit",
- "model": "gpt-5.5",
- "pr": 118,
- "prompt_policy": "fresh",
- "provider": "codex",
- "repo": "FormalFrontier/TauCeti",
- "round": 1,
- "rubric": "reuse",
- "rubrics_repo": "FormalFrontier/TauCetiReview",
- "rubrics_version": "68ec685af806ec41",
- "run_id": "r-20260610T182249Z-118-reuse-891872",
- "schema": "tauceti.run/v1",
- "source": "backfill-ledger",
- "started_at": "2026-06-10T18:22:49Z",
- "summary": "The PR adds named tensor/trivial APIs that are direct wrappers around existing TauCeti group-like/trivial comodule constructors and morphism constructors. These declarations should be removed or replaced by uses of the existing APIs specialized to `M \u2297[R] N` and `g * h`.",
- "transcript_blob": "34102f90169a3653be92d21027b0cf17a1a3966e5ce8318b853d8aff64fe2ec7",
- "usage": {
-  "cached_input_tokens": 73856,
-  "input_tokens": 124496,
-  "output_tokens": 2209,
-  "reasoning_output_tokens": 725
- },
- "verdict": "block"
+  "verdict": "block",
+  "cost_usd_legacy": 0.17771,
+  "cost_recosted": true
 }

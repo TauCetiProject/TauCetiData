@@ -1,68 +1,70 @@
 {
- "arm": "production",
- "attempts": [
-  {
-   "cost_estimated": true,
-   "cost_usd": 0.390125,
-   "returncode": 0,
-   "usage": {
+  "arm": "production",
+  "attempts": [
+    {
+      "cost_estimated": true,
+      "cost_usd": 0.390125,
+      "returncode": 0,
+      "usage": {
+        "cached_input_tokens": 205312,
+        "input_tokens": 290020,
+        "output_tokens": 2760,
+        "reasoning_output_tokens": 1021
+      }
+    }
+  ],
+  "base_ref_oid": "8b99891c1057ffca76cefca75c4ff6f889c30116",
+  "cost_estimated": true,
+  "cost_usd": 1.5329,
+  "dedupe_key": "FormalFrontier/TauCeti|42|a9eb3610a6b5d29945465e5f84529695b77c7394|api-design|gpt-5.5|dccacfb6e0bf58e2|production|3",
+  "fidelity": "reconstructed",
+  "findings": [
+    {
+      "evidence": "`rg -n \"continuous.*endpoint|endpoint.*continuous|isOpenMap_endpoint\" code/TauCeti mathlib/Mathlib` finds only `isOpenMap_endpoint` at BasedPath.lean:428 and no continuity API.",
+      "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
+      "fix": "Add a public lemma such as `continuous_endpoint : Continuous (endpoint (x\u2080 := x\u2080))`, preferably before `isOpenMap_endpoint`.",
+      "issue": "`BasedPath.endpoint` is public but there is no public continuity theorem for it, so downstream cannot use the projection-like endpoint map without unfolding the subtype/compact-open implementation.",
+      "line": 65
+    },
+    {
+      "evidence": "`rg -n \"terminalTail|deformTerminal\" code/TauCeti` shows all uses confined to `BasedPath.lean`, mainly `exists_deformTerminal_mem_basicNeighborhood` and the proof of `isOpenMap_endpoint`.",
+      "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
+      "fix": "Make these definitions and lemmas private/non-public, or replace them with a single public theorem only if a downstream consumer actually needs that theorem.",
+      "issue": "`terminalTail`, `deformTerminal`, and their evaluation lemmas are public construction scaffolding for the open-map proof, not part of the named based-path or endpoint-component API.",
+      "line": 152
+    },
+    {
+      "evidence": "`rg -n \"TubeData.toSet|mem_.*toSet|toSet_iff\" code/TauCeti/AlgebraicTopology/FundamentalGroupoid` shows the exposed def at SemilocallySimplyConnected.lean:365 and unfolding in `TubeData.isOpen`, but no membership restatement.",
+      "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean",
+      "fix": "Either make the tube machinery private/internal, or keep `TubeData.toSet` opaque and add a public `mem_toSet_iff`/`toSet_def` API used by `TubeData.isOpen`.",
+      "issue": "`TubeData.toSet` is `@[expose] public def` but lacks a named membership theorem, so consumers and exported proofs rely on unfolding the body `{\u03b3 | PathInTube \u03b3 part T}`.",
+      "line": 365
+    }
+  ],
+  "head_sha": "a9eb3610a6b5d29945465e5f84529695b77c7394",
+  "mode": "commit",
+  "model": "gpt-5.5",
+  "pr": 42,
+  "prompt_policy": "reactivation",
+  "provider": "codex",
+  "repo": "FormalFrontier/TauCeti",
+  "round": 3,
+  "rubric": "api-design",
+  "rubrics_repo": "FormalFrontier/TauCetiReview",
+  "rubrics_version": "dccacfb6e0bf58e2",
+  "run_id": "r-20260605T012155Z-42-api-design-d0ec59",
+  "schema": "tauceti.run/v1",
+  "source": "backfill-ledger",
+  "started_at": "2026-06-05T01:21:55Z",
+  "summary": "The based-path API still lacks a basic characteristic lemma for the endpoint map as a topological map, and the PR exposes proof scaffolding that is not part of the roadmap-facing surface.",
+  "transcript_blob": "695980e9b8a1c0103cb905efdd2f7a1f0b71227b5a28e29093186349d6828a6a",
+  "usage": {
     "cached_input_tokens": 205312,
     "input_tokens": 290020,
     "output_tokens": 2760,
     "reasoning_output_tokens": 1021
-   }
-  }
- ],
- "base_ref_oid": "8b99891c1057ffca76cefca75c4ff6f889c30116",
- "cost_estimated": true,
- "cost_usd": 0.390125,
- "dedupe_key": "FormalFrontier/TauCeti|42|a9eb3610a6b5d29945465e5f84529695b77c7394|api-design|gpt-5.5|dccacfb6e0bf58e2|production|3",
- "fidelity": "reconstructed",
- "findings": [
-  {
-   "evidence": "`rg -n \"continuous.*endpoint|endpoint.*continuous|isOpenMap_endpoint\" code/TauCeti mathlib/Mathlib` finds only `isOpenMap_endpoint` at BasedPath.lean:428 and no continuity API.",
-   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
-   "fix": "Add a public lemma such as `continuous_endpoint : Continuous (endpoint (x\u2080 := x\u2080))`, preferably before `isOpenMap_endpoint`.",
-   "issue": "`BasedPath.endpoint` is public but there is no public continuity theorem for it, so downstream cannot use the projection-like endpoint map without unfolding the subtype/compact-open implementation.",
-   "line": 65
   },
-  {
-   "evidence": "`rg -n \"terminalTail|deformTerminal\" code/TauCeti` shows all uses confined to `BasedPath.lean`, mainly `exists_deformTerminal_mem_basicNeighborhood` and the proof of `isOpenMap_endpoint`.",
-   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
-   "fix": "Make these definitions and lemmas private/non-public, or replace them with a single public theorem only if a downstream consumer actually needs that theorem.",
-   "issue": "`terminalTail`, `deformTerminal`, and their evaluation lemmas are public construction scaffolding for the open-map proof, not part of the named based-path or endpoint-component API.",
-   "line": 152
-  },
-  {
-   "evidence": "`rg -n \"TubeData.toSet|mem_.*toSet|toSet_iff\" code/TauCeti/AlgebraicTopology/FundamentalGroupoid` shows the exposed def at SemilocallySimplyConnected.lean:365 and unfolding in `TubeData.isOpen`, but no membership restatement.",
-   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean",
-   "fix": "Either make the tube machinery private/internal, or keep `TubeData.toSet` opaque and add a public `mem_toSet_iff`/`toSet_def` API used by `TubeData.isOpen`.",
-   "issue": "`TubeData.toSet` is `@[expose] public def` but lacks a named membership theorem, so consumers and exported proofs rely on unfolding the body `{\u03b3 | PathInTube \u03b3 part T}`.",
-   "line": 365
-  }
- ],
- "head_sha": "a9eb3610a6b5d29945465e5f84529695b77c7394",
- "mode": "commit",
- "model": "gpt-5.5",
- "pr": 42,
- "prompt_policy": "reactivation",
- "provider": "codex",
- "repo": "FormalFrontier/TauCeti",
- "round": 3,
- "rubric": "api-design",
- "rubrics_repo": "FormalFrontier/TauCetiReview",
- "rubrics_version": "dccacfb6e0bf58e2",
- "run_id": "r-20260605T012155Z-42-api-design-d0ec59",
- "schema": "tauceti.run/v1",
- "source": "backfill-ledger",
- "started_at": "2026-06-05T01:21:55Z",
- "summary": "The based-path API still lacks a basic characteristic lemma for the endpoint map as a topological map, and the PR exposes proof scaffolding that is not part of the roadmap-facing surface.",
- "transcript_blob": "695980e9b8a1c0103cb905efdd2f7a1f0b71227b5a28e29093186349d6828a6a",
- "usage": {
-  "cached_input_tokens": 205312,
-  "input_tokens": 290020,
-  "output_tokens": 2760,
-  "reasoning_output_tokens": 1021
- },
- "verdict": "request_changes"
+  "verdict": "request_changes",
+  "cost_usd_legacy": 0.390125,
+  "cost_recosted": true
 }

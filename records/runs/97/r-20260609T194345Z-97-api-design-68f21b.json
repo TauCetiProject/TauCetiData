@@ -1,68 +1,70 @@
 {
- "arm": "production",
- "attempts": [
-  {
-   "cost_estimated": true,
-   "cost_usd": 0.328496,
-   "returncode": 0,
-   "usage": {
+  "arm": "production",
+  "attempts": [
+    {
+      "cost_estimated": true,
+      "cost_usd": 0.328496,
+      "returncode": 0,
+      "usage": {
+        "cached_input_tokens": 185088,
+        "input_tokens": 236573,
+        "output_tokens": 3278,
+        "reasoning_output_tokens": 1240
+      }
+    }
+  ],
+  "base_ref_oid": "2d9e8a18029339e84394e302bfc6f5d6792aa13b",
+  "cost_estimated": true,
+  "cost_usd": 1.281205,
+  "dedupe_key": "FormalFrontier/TauCeti|97|66cac116f8109ae21a64d59314ff152c3f27b17a|api-design|gpt-5.5|68ec685af806ec41|production|1",
+  "fidelity": "reconstructed",
+  "findings": [
+    {
+      "evidence": "`nl` shows `@[reducible] def Corestrict` at lines 57-58.",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/Corestrict.lean",
+      "fix": "Remove `@[reducible]`; add the missing simp/characteristic lemmas needed by users rather than exposing the instance body.",
+      "issue": "`Comodule.Corestrict` is marked `@[reducible]`, making the full structure body part of the public reduction surface instead of relying on API lemmas.",
+      "line": 57
+    },
+    {
+      "evidence": "Lines 50-51 define `corestrictCoact`; lines 131-135 only prove `coact = corestrictCoact`, with no `rg` hit for `corestrictCoact_apply` or `corestrict_coact_apply`.",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/Corestrict.lean",
+      "fix": "Add `@[simp]` lemmas such as `corestrictCoact_apply` and/or a direct `corestrict_coact_apply` giving the evaluated coaction formula.",
+      "issue": "The main coaction lemma rewrites only to the public helper `corestrictCoact`, whose actual `(TensorProduct.map LinearMap.id f.toLinearMap) (coact m)` formula has no simp/apply theorem, so users must unfold the helper to use the construction.",
+      "line": 131
+    },
+    {
+      "evidence": "`rg` shows only `corestrictCoact_id` at lines 139-143, while Mathlib provides `CoalgHom.comp` and simp lemmas at `Mathlib/RingTheory/Coalgebra/Hom.lean:215-235`.",
+      "file": "TauCeti/Algebra/Coalgebra/Comodule/Corestrict.lean",
+      "fix": "Add `[simp]` composition lemmas for `corestrictCoact`, `corestrictHom`, and preferably the bundled functor, e.g. corestricting along `g.comp f` agrees with corestricting along `f` then `g`.",
+      "issue": "Corestriction is not characterized under composition of coalgebra morphisms; only identity is exposed at the raw coaction-map level, so the promised functoriality in the coalgebra map is unusable without unfolding.",
+      "line": 139
+    }
+  ],
+  "head_sha": "66cac116f8109ae21a64d59314ff152c3f27b17a",
+  "mode": "commit",
+  "model": "gpt-5.5",
+  "pr": 97,
+  "prompt_policy": "fresh",
+  "provider": "codex",
+  "repo": "FormalFrontier/TauCeti",
+  "round": 1,
+  "rubric": "api-design",
+  "rubrics_repo": "FormalFrontier/TauCetiReview",
+  "rubrics_version": "68ec685af806ec41",
+  "run_id": "r-20260609T194345Z-97-api-design-68f21b",
+  "schema": "tauceti.run/v1",
+  "source": "backfill-ledger",
+  "started_at": "2026-06-09T19:43:45Z",
+  "summary": "The corestriction surface is too thin for downstream use without unfolding: it exposes the construction body and lacks the characteristic simp lemmas for the actual coaction formula and composition in the coalgebra map.",
+  "transcript_blob": "8d16741ceca36f7bb7122f149755eedbdc0643cd809f608fb2c36c1ce9daef55",
+  "usage": {
     "cached_input_tokens": 185088,
     "input_tokens": 236573,
     "output_tokens": 3278,
     "reasoning_output_tokens": 1240
-   }
-  }
- ],
- "base_ref_oid": "2d9e8a18029339e84394e302bfc6f5d6792aa13b",
- "cost_estimated": true,
- "cost_usd": 0.328496,
- "dedupe_key": "FormalFrontier/TauCeti|97|66cac116f8109ae21a64d59314ff152c3f27b17a|api-design|gpt-5.5|68ec685af806ec41|production|1",
- "fidelity": "reconstructed",
- "findings": [
-  {
-   "evidence": "`nl` shows `@[reducible] def Corestrict` at lines 57-58.",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/Corestrict.lean",
-   "fix": "Remove `@[reducible]`; add the missing simp/characteristic lemmas needed by users rather than exposing the instance body.",
-   "issue": "`Comodule.Corestrict` is marked `@[reducible]`, making the full structure body part of the public reduction surface instead of relying on API lemmas.",
-   "line": 57
   },
-  {
-   "evidence": "Lines 50-51 define `corestrictCoact`; lines 131-135 only prove `coact = corestrictCoact`, with no `rg` hit for `corestrictCoact_apply` or `corestrict_coact_apply`.",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/Corestrict.lean",
-   "fix": "Add `@[simp]` lemmas such as `corestrictCoact_apply` and/or a direct `corestrict_coact_apply` giving the evaluated coaction formula.",
-   "issue": "The main coaction lemma rewrites only to the public helper `corestrictCoact`, whose actual `(TensorProduct.map LinearMap.id f.toLinearMap) (coact m)` formula has no simp/apply theorem, so users must unfold the helper to use the construction.",
-   "line": 131
-  },
-  {
-   "evidence": "`rg` shows only `corestrictCoact_id` at lines 139-143, while Mathlib provides `CoalgHom.comp` and simp lemmas at `Mathlib/RingTheory/Coalgebra/Hom.lean:215-235`.",
-   "file": "TauCeti/Algebra/Coalgebra/Comodule/Corestrict.lean",
-   "fix": "Add `[simp]` composition lemmas for `corestrictCoact`, `corestrictHom`, and preferably the bundled functor, e.g. corestricting along `g.comp f` agrees with corestricting along `f` then `g`.",
-   "issue": "Corestriction is not characterized under composition of coalgebra morphisms; only identity is exposed at the raw coaction-map level, so the promised functoriality in the coalgebra map is unusable without unfolding.",
-   "line": 139
-  }
- ],
- "head_sha": "66cac116f8109ae21a64d59314ff152c3f27b17a",
- "mode": "commit",
- "model": "gpt-5.5",
- "pr": 97,
- "prompt_policy": "fresh",
- "provider": "codex",
- "repo": "FormalFrontier/TauCeti",
- "round": 1,
- "rubric": "api-design",
- "rubrics_repo": "FormalFrontier/TauCetiReview",
- "rubrics_version": "68ec685af806ec41",
- "run_id": "r-20260609T194345Z-97-api-design-68f21b",
- "schema": "tauceti.run/v1",
- "source": "backfill-ledger",
- "started_at": "2026-06-09T19:43:45Z",
- "summary": "The corestriction surface is too thin for downstream use without unfolding: it exposes the construction body and lacks the characteristic simp lemmas for the actual coaction formula and composition in the coalgebra map.",
- "transcript_blob": "8d16741ceca36f7bb7122f149755eedbdc0643cd809f608fb2c36c1ce9daef55",
- "usage": {
-  "cached_input_tokens": 185088,
-  "input_tokens": 236573,
-  "output_tokens": 3278,
-  "reasoning_output_tokens": 1240
- },
- "verdict": "request_changes"
+  "verdict": "request_changes",
+  "cost_usd_legacy": 0.328496,
+  "cost_recosted": true
 }

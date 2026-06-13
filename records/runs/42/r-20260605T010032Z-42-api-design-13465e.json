@@ -1,68 +1,70 @@
 {
- "arm": "production",
- "attempts": [
-  {
-   "cost_estimated": true,
-   "cost_usd": 0.339753,
-   "returncode": 0,
-   "usage": {
+  "arm": "production",
+  "attempts": [
+    {
+      "cost_estimated": true,
+      "cost_usd": 0.339753,
+      "returncode": 0,
+      "usage": {
+        "cached_input_tokens": 180224,
+        "input_tokens": 245762,
+        "output_tokens": 3255,
+        "reasoning_output_tokens": 1688
+      }
+    }
+  ],
+  "base_ref_oid": "8b99891c1057ffca76cefca75c4ff6f889c30116",
+  "cost_estimated": true,
+  "cost_usd": 1.32646,
+  "dedupe_key": "FormalFrontier/TauCeti|42|6ea23b149c096719bdbf8e21a57d49245936f775|api-design|gpt-5.5|dccacfb6e0bf58e2|production|2",
+  "fidelity": "reconstructed",
+  "findings": [
+    {
+      "evidence": "`rg -n \"IsPathHomotopyTrivial\"` shows the exposed def at line 170 and uses as a raw predicate throughout, but no dedicated `*_iff`, `.mk`, or `.elim` API for the abstraction.",
+      "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean",
+      "fix": "Remove `@[expose]` and add explicit API, e.g. an iff theorem plus application/constructor lemmas for proving and using `IsPathHomotopyTrivial U`.",
+      "issue": "`IsPathHomotopyTrivial` is `@[expose] public def`, so consumers use the unfolded forall-body as the interface instead of named introduction/elimination API.",
+      "line": 170
+    },
+    {
+      "evidence": "`rg -n \"terminalTail|deformTerminal\" TauCeti` shows the definitions at lines 152 and 160 and their uses confined to `BasedPath.lean` proofs like `exists_deformTerminal_mem_basicNeighborhood`, with no roadmap target naming them.",
+      "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
+      "fix": "Make these helpers and their evaluation lemmas private/internal unless a downstream consumer needs them; otherwise expose only the resulting theorems such as `isOpenMap_endpoint` and path-component lemmas.",
+      "issue": "`terminalTail` and `deformTerminal` are exposed public construction helpers for the open-map proof, not part of the roadmap target surface for based paths or endpoint preimage components.",
+      "line": 152
+    },
+    {
+      "evidence": "`rg -n \"@\\[expose\\]|def codRestrict|def subpathOn\" UniversalCoverPrelude.lean` shows `@[expose]` on `codRestrict` at line 80 and `subpathOn` at line 147, followed by the named API lemmas at lines 88-93 and 153-285.",
+      "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/UniversalCoverPrelude.lean",
+      "fix": "Keep the definitions public if downstream theorem statements mention them, but remove body exposure; if exported proofs break, add the missing public lemmas instead of requiring consumers to unfold the definitions.",
+      "issue": "Vendored helper bodies such as `Path.codRestrict` and `Path.subpathOn` are still `@[expose]` even though the file supplies characteristic lemmas (`codRestrict_coe`, `map_codRestrict`, `subpathOn_apply`, `subpathOn_trans`, `subpathOn_zero_one`).",
+      "line": 80
+    }
+  ],
+  "head_sha": "6ea23b149c096719bdbf8e21a57d49245936f775",
+  "mode": "commit",
+  "model": "gpt-5.5",
+  "pr": 42,
+  "prompt_policy": "reactivation",
+  "provider": "codex",
+  "repo": "FormalFrontier/TauCeti",
+  "round": 2,
+  "rubric": "api-design",
+  "rubrics_repo": "FormalFrontier/TauCetiReview",
+  "rubrics_version": "dccacfb6e0bf58e2",
+  "run_id": "r-20260605T010032Z-42-api-design-13465e",
+  "schema": "tauceti.run/v1",
+  "source": "backfill-ledger",
+  "started_at": "2026-06-05T01:00:32Z",
+  "summary": "The characteristic endpoint API for `append` is now present, but the public surface still exposes proof scaffolding and bodies where opaque definitions plus lemmas would be the right interface.",
+  "transcript_blob": "b936f6a6de40f86a8713c5a9d845cddfb5d1ff959d45ce1122f40b3ce7c65a94",
+  "usage": {
     "cached_input_tokens": 180224,
     "input_tokens": 245762,
     "output_tokens": 3255,
     "reasoning_output_tokens": 1688
-   }
-  }
- ],
- "base_ref_oid": "8b99891c1057ffca76cefca75c4ff6f889c30116",
- "cost_estimated": true,
- "cost_usd": 0.339753,
- "dedupe_key": "FormalFrontier/TauCeti|42|6ea23b149c096719bdbf8e21a57d49245936f775|api-design|gpt-5.5|dccacfb6e0bf58e2|production|2",
- "fidelity": "reconstructed",
- "findings": [
-  {
-   "evidence": "`rg -n \"IsPathHomotopyTrivial\"` shows the exposed def at line 170 and uses as a raw predicate throughout, but no dedicated `*_iff`, `.mk`, or `.elim` API for the abstraction.",
-   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/SemilocallySimplyConnected.lean",
-   "fix": "Remove `@[expose]` and add explicit API, e.g. an iff theorem plus application/constructor lemmas for proving and using `IsPathHomotopyTrivial U`.",
-   "issue": "`IsPathHomotopyTrivial` is `@[expose] public def`, so consumers use the unfolded forall-body as the interface instead of named introduction/elimination API.",
-   "line": 170
   },
-  {
-   "evidence": "`rg -n \"terminalTail|deformTerminal\" TauCeti` shows the definitions at lines 152 and 160 and their uses confined to `BasedPath.lean` proofs like `exists_deformTerminal_mem_basicNeighborhood`, with no roadmap target naming them.",
-   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/BasedPath.lean",
-   "fix": "Make these helpers and their evaluation lemmas private/internal unless a downstream consumer needs them; otherwise expose only the resulting theorems such as `isOpenMap_endpoint` and path-component lemmas.",
-   "issue": "`terminalTail` and `deformTerminal` are exposed public construction helpers for the open-map proof, not part of the roadmap target surface for based paths or endpoint preimage components.",
-   "line": 152
-  },
-  {
-   "evidence": "`rg -n \"@\\[expose\\]|def codRestrict|def subpathOn\" UniversalCoverPrelude.lean` shows `@[expose]` on `codRestrict` at line 80 and `subpathOn` at line 147, followed by the named API lemmas at lines 88-93 and 153-285.",
-   "file": "TauCeti/AlgebraicTopology/FundamentalGroupoid/UniversalCoverPrelude.lean",
-   "fix": "Keep the definitions public if downstream theorem statements mention them, but remove body exposure; if exported proofs break, add the missing public lemmas instead of requiring consumers to unfold the definitions.",
-   "issue": "Vendored helper bodies such as `Path.codRestrict` and `Path.subpathOn` are still `@[expose]` even though the file supplies characteristic lemmas (`codRestrict_coe`, `map_codRestrict`, `subpathOn_apply`, `subpathOn_trans`, `subpathOn_zero_one`).",
-   "line": 80
-  }
- ],
- "head_sha": "6ea23b149c096719bdbf8e21a57d49245936f775",
- "mode": "commit",
- "model": "gpt-5.5",
- "pr": 42,
- "prompt_policy": "reactivation",
- "provider": "codex",
- "repo": "FormalFrontier/TauCeti",
- "round": 2,
- "rubric": "api-design",
- "rubrics_repo": "FormalFrontier/TauCetiReview",
- "rubrics_version": "dccacfb6e0bf58e2",
- "run_id": "r-20260605T010032Z-42-api-design-13465e",
- "schema": "tauceti.run/v1",
- "source": "backfill-ledger",
- "started_at": "2026-06-05T01:00:32Z",
- "summary": "The characteristic endpoint API for `append` is now present, but the public surface still exposes proof scaffolding and bodies where opaque definitions plus lemmas would be the right interface.",
- "transcript_blob": "b936f6a6de40f86a8713c5a9d845cddfb5d1ff959d45ce1122f40b3ce7c65a94",
- "usage": {
-  "cached_input_tokens": 180224,
-  "input_tokens": 245762,
-  "output_tokens": 3255,
-  "reasoning_output_tokens": 1688
- },
- "verdict": "request_changes"
+  "verdict": "request_changes",
+  "cost_usd_legacy": 0.339753,
+  "cost_recosted": true
 }

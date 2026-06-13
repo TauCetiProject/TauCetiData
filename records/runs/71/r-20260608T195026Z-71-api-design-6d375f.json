@@ -1,68 +1,70 @@
 {
- "arm": "production",
- "attempts": [
-  {
-   "cost_estimated": true,
-   "cost_usd": 0.17222,
-   "returncode": 0,
-   "usage": {
+  "arm": "production",
+  "attempts": [
+    {
+      "cost_estimated": true,
+      "cost_usd": 0.17222,
+      "returncode": 0,
+      "usage": {
+        "cached_input_tokens": 61440,
+        "input_tokens": 115504,
+        "output_tokens": 2784,
+        "reasoning_output_tokens": 1242
+      }
+    }
+  ],
+  "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+  "cost_estimated": true,
+  "cost_usd": 0.66104,
+  "dedupe_key": "FormalFrontier/TauCeti|71|a43dfb4a898d7b6bfcc53cc1491545826d58bf2e|api-design|gpt-5.5|68ec685af806ec41|production|3",
+  "fidelity": "reconstructed",
+  "findings": [
+    {
+      "evidence": "`rg -n \"toFinsupp|Finsupp\" TauCeti/Analysis/Sobolev/MultiIndex.lean` shows the public field at line 26 and public raw bridge lemmas at lines 55, 59, and 80.",
+      "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+      "fix": "Hide or avoid exporting the raw representation bridge; keep any `Finsupp` conversion private/internal and expose only the needed multiindex constructors, coercion/extensionality, order, unit, and bounded-degree lemmas.",
+      "issue": "`MultiIndex.toFinsupp` is a public structure field, with public `toFinsupp_zero/add/unit` lemmas, so users can still program against arbitrary `Finsupp` operations instead of the intended Sobolev-facing multiindex API.",
+      "line": 26
+    },
+    {
+      "evidence": "Line 51 defines `LE` via `\u03b1.toFinsupp \u2264 \u03b2.toFinsupp`; `rg -n \"lemma .*le_iff|unit_le_iff\" TauCeti/Analysis/Sobolev/MultiIndex.lean` finds only `unit_le_iff` at line 105, while Mathlib has the underlying `Finsupp.le_def`.",
+      "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+      "fix": "Add a normal-form lemma such as `@[simp, grind] lemma le_iff (\u03b1 \u03b2 : MultiIndex \u03b9) : \u03b1 \u2264 \u03b2 \u2194 \u2200 i, \u03b1 i \u2264 \u03b2 i`, and use it to prove `unit_le_iff`.",
+      "issue": "The public `LE` instance has no characteristic lemma, so proving or simplifying `\u03b1 \u2264 \u03b2` requires unfolding through `toFinsupp`.",
+      "line": 51
+    },
+    {
+      "evidence": "`rg -n \"apply_le|le_order|order_eq.*iff|eq_unit|order.*one\" TauCeti/Analysis/Sobolev/MultiIndex.lean` finds only `order_unit` at line 84; Mathlib provides the underlying facts as `Finsupp.le_degree` and `Finsupp.range_single_eq_degree_one`.",
+      "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
+      "fix": "Add lemmas like `apply_le_order : \u03b1 i \u2264 order \u03b1`, `order_eq_zero_iff`, and `order_eq_one_iff : order \u03b1 = 1 \u2194 \u2203 i, \u03b1 = unit i`, with appropriate `[simp]`/`[grind]` annotations where they are normal forms.",
+      "issue": "`order` lacks the characteristic bounded-coordinate and first-order elimination API needed for derivative indexing, despite exposing `unit` and bounded-degree types.",
+      "line": 72
+    }
+  ],
+  "head_sha": "a43dfb4a898d7b6bfcc53cc1491545826d58bf2e",
+  "mode": "commit",
+  "model": "gpt-5.5",
+  "pr": 71,
+  "prompt_policy": "reactivation",
+  "provider": "codex",
+  "repo": "FormalFrontier/TauCeti",
+  "round": 3,
+  "rubric": "api-design",
+  "rubrics_repo": "FormalFrontier/TauCetiReview",
+  "rubrics_version": "68ec685af806ec41",
+  "run_id": "r-20260608T195026Z-71-api-design-6d375f",
+  "schema": "tauceti.run/v1",
+  "source": "backfill-ledger",
+  "started_at": "2026-06-08T19:50:26Z",
+  "summary": "The wrapper is closer than the prior abbrev, but the public surface still leaks the raw `Finsupp` representation and the order/LE API is not complete enough to use downstream without unfolding.",
+  "transcript_blob": "e5fa554292bccc421810b194496e1e44a9e4a1174e5314de558cdd0a963ada4c",
+  "usage": {
     "cached_input_tokens": 61440,
     "input_tokens": 115504,
     "output_tokens": 2784,
     "reasoning_output_tokens": 1242
-   }
-  }
- ],
- "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
- "cost_estimated": true,
- "cost_usd": 0.17222,
- "dedupe_key": "FormalFrontier/TauCeti|71|a43dfb4a898d7b6bfcc53cc1491545826d58bf2e|api-design|gpt-5.5|68ec685af806ec41|production|3",
- "fidelity": "reconstructed",
- "findings": [
-  {
-   "evidence": "`rg -n \"toFinsupp|Finsupp\" TauCeti/Analysis/Sobolev/MultiIndex.lean` shows the public field at line 26 and public raw bridge lemmas at lines 55, 59, and 80.",
-   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
-   "fix": "Hide or avoid exporting the raw representation bridge; keep any `Finsupp` conversion private/internal and expose only the needed multiindex constructors, coercion/extensionality, order, unit, and bounded-degree lemmas.",
-   "issue": "`MultiIndex.toFinsupp` is a public structure field, with public `toFinsupp_zero/add/unit` lemmas, so users can still program against arbitrary `Finsupp` operations instead of the intended Sobolev-facing multiindex API.",
-   "line": 26
   },
-  {
-   "evidence": "Line 51 defines `LE` via `\u03b1.toFinsupp \u2264 \u03b2.toFinsupp`; `rg -n \"lemma .*le_iff|unit_le_iff\" TauCeti/Analysis/Sobolev/MultiIndex.lean` finds only `unit_le_iff` at line 105, while Mathlib has the underlying `Finsupp.le_def`.",
-   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
-   "fix": "Add a normal-form lemma such as `@[simp, grind] lemma le_iff (\u03b1 \u03b2 : MultiIndex \u03b9) : \u03b1 \u2264 \u03b2 \u2194 \u2200 i, \u03b1 i \u2264 \u03b2 i`, and use it to prove `unit_le_iff`.",
-   "issue": "The public `LE` instance has no characteristic lemma, so proving or simplifying `\u03b1 \u2264 \u03b2` requires unfolding through `toFinsupp`.",
-   "line": 51
-  },
-  {
-   "evidence": "`rg -n \"apply_le|le_order|order_eq.*iff|eq_unit|order.*one\" TauCeti/Analysis/Sobolev/MultiIndex.lean` finds only `order_unit` at line 84; Mathlib provides the underlying facts as `Finsupp.le_degree` and `Finsupp.range_single_eq_degree_one`.",
-   "file": "TauCeti/Analysis/Sobolev/MultiIndex.lean",
-   "fix": "Add lemmas like `apply_le_order : \u03b1 i \u2264 order \u03b1`, `order_eq_zero_iff`, and `order_eq_one_iff : order \u03b1 = 1 \u2194 \u2203 i, \u03b1 = unit i`, with appropriate `[simp]`/`[grind]` annotations where they are normal forms.",
-   "issue": "`order` lacks the characteristic bounded-coordinate and first-order elimination API needed for derivative indexing, despite exposing `unit` and bounded-degree types.",
-   "line": 72
-  }
- ],
- "head_sha": "a43dfb4a898d7b6bfcc53cc1491545826d58bf2e",
- "mode": "commit",
- "model": "gpt-5.5",
- "pr": 71,
- "prompt_policy": "reactivation",
- "provider": "codex",
- "repo": "FormalFrontier/TauCeti",
- "round": 3,
- "rubric": "api-design",
- "rubrics_repo": "FormalFrontier/TauCetiReview",
- "rubrics_version": "68ec685af806ec41",
- "run_id": "r-20260608T195026Z-71-api-design-6d375f",
- "schema": "tauceti.run/v1",
- "source": "backfill-ledger",
- "started_at": "2026-06-08T19:50:26Z",
- "summary": "The wrapper is closer than the prior abbrev, but the public surface still leaks the raw `Finsupp` representation and the order/LE API is not complete enough to use downstream without unfolding.",
- "transcript_blob": "e5fa554292bccc421810b194496e1e44a9e4a1174e5314de558cdd0a963ada4c",
- "usage": {
-  "cached_input_tokens": 61440,
-  "input_tokens": 115504,
-  "output_tokens": 2784,
-  "reasoning_output_tokens": 1242
- },
- "verdict": "request_changes"
+  "verdict": "request_changes",
+  "cost_usd_legacy": 0.17222,
+  "cost_recosted": true
 }

@@ -1,68 +1,70 @@
 {
- "arm": "production",
- "attempts": [
-  {
-   "cost_estimated": true,
-   "cost_usd": 0.117291,
-   "returncode": 0,
-   "usage": {
+  "arm": "production",
+  "attempts": [
+    {
+      "cost_estimated": true,
+      "cost_usd": 0.117291,
+      "returncode": 0,
+      "usage": {
+        "cached_input_tokens": 40064,
+        "input_tokens": 74761,
+        "output_tokens": 2384,
+        "reasoning_output_tokens": 1184
+      }
+    }
+  ],
+  "base_ref_oid": "da5504bc53145726284ff579ea713a3b8e603ba0",
+  "cost_estimated": true,
+  "cost_usd": 0.445325,
+  "dedupe_key": "FormalFrontier/TauCeti|81|8e96ebf506eaf6ff943fe4d0b8166d9f3e3b0b86|api-design|gpt-5.5|68ec685af806ec41|production|1",
+  "fidelity": "reconstructed",
+  "findings": [
+    {
+      "evidence": "`rg` shows `def pointwiseEnergyLinear` at line 47 and it is only used to define/prove `pointwiseEnergyOfBound` and its norm bound.",
+      "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
+      "fix": "Make the linear helper private or inline it into the public constructor, and expose only `pointwiseEnergy` plus characteristic lemmas.",
+      "issue": "`pointwiseEnergyLinear` is a public implementation helper for building the continuous bilinear map, not part of the roadmap-facing API.",
+      "line": 47
+    },
+    {
+      "evidence": "Lines 56-78 define `pointwiseEnergyOfBound` and then `abbrev pointwiseEnergy := pointwiseEnergyOfBound`; line 89 exposes only `norm_pointwiseEnergyOfBound_le`.",
+      "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
+      "fix": "Keep one public constructor, preferably `pointwiseEnergy`; remove or hide `pointwiseEnergyOfBound` and restate `norm_pointwiseEnergy_le` for `pointwiseEnergy`.",
+      "issue": "`pointwiseEnergyOfBound` duplicates `pointwiseEnergy`, so downstream gets two public constructors for the same form and the norm API is attached to the lower-level name.",
+      "line": 56
+    },
+    {
+      "evidence": "Line 145 states `laplacianPointwiseEnergy \u03b7 \u03be = inner \u211d \u03b7 \u03be` without an annotation, while the generic application lemma at line 82 is already `@[simp]`.",
+      "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
+      "fix": "Add `@[simp]` to `laplacianPointwiseEnergy_apply` and, if kept public, to the parallel identity normal form `pointwiseEnergy_one`.",
+      "issue": "`laplacianPointwiseEnergy_apply` is the normal-form lemma for the canonical Laplacian energy but is not marked `@[simp]`.",
+      "line": 145
+    }
+  ],
+  "head_sha": "8e96ebf506eaf6ff943fe4d0b8166d9f3e3b0b86",
+  "mode": "commit",
+  "model": "gpt-5.5",
+  "pr": 81,
+  "prompt_policy": "fresh",
+  "provider": "codex",
+  "repo": "FormalFrontier/TauCeti",
+  "round": 1,
+  "rubric": "api-design",
+  "rubrics_repo": "FormalFrontier/TauCetiReview",
+  "rubrics_version": "68ec685af806ec41",
+  "run_id": "r-20260609T054753Z-81-api-design-045bcf",
+  "schema": "tauceti.run/v1",
+  "source": "backfill-ledger",
+  "started_at": "2026-06-09T05:47:53Z",
+  "summary": "The new pointwise energy API exposes construction internals and leaves the Laplacian/identity normal forms under-annotated. Keep the public surface centered on `pointwiseEnergy` and its characteristic lemmas.",
+  "transcript_blob": "6090cc63b87a56af4dcc1c44c90a8734999a29aa86cf86b1d848c9feca6475ac",
+  "usage": {
     "cached_input_tokens": 40064,
     "input_tokens": 74761,
     "output_tokens": 2384,
     "reasoning_output_tokens": 1184
-   }
-  }
- ],
- "base_ref_oid": "da5504bc53145726284ff579ea713a3b8e603ba0",
- "cost_estimated": true,
- "cost_usd": 0.117291,
- "dedupe_key": "FormalFrontier/TauCeti|81|8e96ebf506eaf6ff943fe4d0b8166d9f3e3b0b86|api-design|gpt-5.5|68ec685af806ec41|production|1",
- "fidelity": "reconstructed",
- "findings": [
-  {
-   "evidence": "`rg` shows `def pointwiseEnergyLinear` at line 47 and it is only used to define/prove `pointwiseEnergyOfBound` and its norm bound.",
-   "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
-   "fix": "Make the linear helper private or inline it into the public constructor, and expose only `pointwiseEnergy` plus characteristic lemmas.",
-   "issue": "`pointwiseEnergyLinear` is a public implementation helper for building the continuous bilinear map, not part of the roadmap-facing API.",
-   "line": 47
   },
-  {
-   "evidence": "Lines 56-78 define `pointwiseEnergyOfBound` and then `abbrev pointwiseEnergy := pointwiseEnergyOfBound`; line 89 exposes only `norm_pointwiseEnergyOfBound_le`.",
-   "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
-   "fix": "Keep one public constructor, preferably `pointwiseEnergy`; remove or hide `pointwiseEnergyOfBound` and restate `norm_pointwiseEnergy_le` for `pointwiseEnergy`.",
-   "issue": "`pointwiseEnergyOfBound` duplicates `pointwiseEnergy`, so downstream gets two public constructors for the same form and the norm API is attached to the lower-level name.",
-   "line": 56
-  },
-  {
-   "evidence": "Line 145 states `laplacianPointwiseEnergy \u03b7 \u03be = inner \u211d \u03b7 \u03be` without an annotation, while the generic application lemma at line 82 is already `@[simp]`.",
-   "file": "TauCeti/Analysis/PDE/PointwiseEnergy.lean",
-   "fix": "Add `@[simp]` to `laplacianPointwiseEnergy_apply` and, if kept public, to the parallel identity normal form `pointwiseEnergy_one`.",
-   "issue": "`laplacianPointwiseEnergy_apply` is the normal-form lemma for the canonical Laplacian energy but is not marked `@[simp]`.",
-   "line": 145
-  }
- ],
- "head_sha": "8e96ebf506eaf6ff943fe4d0b8166d9f3e3b0b86",
- "mode": "commit",
- "model": "gpt-5.5",
- "pr": 81,
- "prompt_policy": "fresh",
- "provider": "codex",
- "repo": "FormalFrontier/TauCeti",
- "round": 1,
- "rubric": "api-design",
- "rubrics_repo": "FormalFrontier/TauCetiReview",
- "rubrics_version": "68ec685af806ec41",
- "run_id": "r-20260609T054753Z-81-api-design-045bcf",
- "schema": "tauceti.run/v1",
- "source": "backfill-ledger",
- "started_at": "2026-06-09T05:47:53Z",
- "summary": "The new pointwise energy API exposes construction internals and leaves the Laplacian/identity normal forms under-annotated. Keep the public surface centered on `pointwiseEnergy` and its characteristic lemmas.",
- "transcript_blob": "6090cc63b87a56af4dcc1c44c90a8734999a29aa86cf86b1d848c9feca6475ac",
- "usage": {
-  "cached_input_tokens": 40064,
-  "input_tokens": 74761,
-  "output_tokens": 2384,
-  "reasoning_output_tokens": 1184
- },
- "verdict": "request_changes"
+  "verdict": "request_changes",
+  "cost_usd_legacy": 0.117291,
+  "cost_recosted": true
 }

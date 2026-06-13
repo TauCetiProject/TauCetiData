@@ -1,61 +1,63 @@
 {
- "arm": "production",
- "attempts": [
-  {
-   "cost_estimated": true,
-   "cost_usd": 0.176366,
-   "returncode": 0,
-   "usage": {
+  "arm": "production",
+  "attempts": [
+    {
+      "cost_estimated": true,
+      "cost_usd": 0.176366,
+      "returncode": 0,
+      "usage": {
+        "cached_input_tokens": 90112,
+        "input_tokens": 121757,
+        "output_tokens": 2417,
+        "reasoning_output_tokens": 839
+      }
+    }
+  ],
+  "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
+  "cost_estimated": true,
+  "cost_usd": 0.681295,
+  "dedupe_key": "FormalFrontier/TauCeti|66|c456c1b9918375101947fed74577d148f931b9fd|api-design|gpt-5.5|68ec685af806ec41|production|3",
+  "fidelity": "reconstructed",
+  "findings": [
+    {
+      "evidence": "`WeilDivisor.lean:128-136` documents pushforward as summing coefficients over fibres, but the only theorem is `pushForward_apply`; Mathlib only provides special `Finsupp.mapDomain_apply` for injective maps and `mapDomain_of_not_mem_image_support` (`Mathlib/Data/Finsupp/Basic.lean:267-279`), not the general fibre coefficient restatement.",
+      "file": "TauCeti/AlgebraicGeometry/Jacobian/WeilDivisor.lean",
+      "fix": "Add a characteristic lemma such as `coeff_pushForward` expressing the coefficient as the finite sum over `D.support` filtered by `f x = y`, and mark the normal form appropriately for simp if it reduces `coeff (pushForward ...)`.",
+      "issue": "`pushForward_apply` only restates `pushForward f D = D.mapDomain f`; there is no coefficient/fibre-sum lemma for `coeff (pushForward f D) y`, so consumers cannot use the advertised fibre-summing behavior through the Weil-divisor API.",
+      "line": 135
+    },
+    {
+      "evidence": "`WeilDivisor.lean:86-125` gives zero/add/nsmul/ofPoint and the submonoid API; `WeilDivisor.lean:131` defines `pushForward`. Mathlib has the underlying ordered-finsupp fact `Finsupp.mapDomain_nonneg` (`Mathlib/Data/Finsupp/Order.lean:147`), but no Weil-divisor wrapper is exposed.",
+      "file": "TauCeti/AlgebraicGeometry/Jacobian/WeilDivisor.lean",
+      "fix": "Add `IsEffective.pushForward` and/or `pushForward_mem_effectiveSubmonoid` proving `IsEffective D -> IsEffective (pushForward f D)`.",
+      "issue": "`IsEffective` is public and `pushForward` is public, but the API omits that pushforward preserves effectiveness, an essential interaction between the exposed predicate and operation.",
+      "line": 86
+    }
+  ],
+  "head_sha": "c456c1b9918375101947fed74577d148f931b9fd",
+  "mode": "commit",
+  "model": "gpt-5.5",
+  "pr": 66,
+  "prompt_policy": "reactivation",
+  "provider": "codex",
+  "repo": "FormalFrontier/TauCeti",
+  "round": 3,
+  "rubric": "api-design",
+  "rubrics_repo": "FormalFrontier/TauCetiReview",
+  "rubrics_version": "68ec685af806ec41",
+  "run_id": "r-20260608T213503Z-66-api-design-b9be2b",
+  "schema": "tauceti.run/v1",
+  "source": "backfill-ledger",
+  "started_at": "2026-06-08T21:35:03Z",
+  "summary": "The public surface exposes `pushForward` and effectivity but does not provide the characteristic coefficient/effectivity API needed to use them without unfolding `Finsupp.mapDomain`.",
+  "transcript_blob": "326814c261d8ea57dcff4506b0d63ef6f87b85b029645888e557002cfc1ba3ff",
+  "usage": {
     "cached_input_tokens": 90112,
     "input_tokens": 121757,
     "output_tokens": 2417,
     "reasoning_output_tokens": 839
-   }
-  }
- ],
- "base_ref_oid": "618dcba3081036febfa43a160d2e0f5a8c34f43f",
- "cost_estimated": true,
- "cost_usd": 0.176366,
- "dedupe_key": "FormalFrontier/TauCeti|66|c456c1b9918375101947fed74577d148f931b9fd|api-design|gpt-5.5|68ec685af806ec41|production|3",
- "fidelity": "reconstructed",
- "findings": [
-  {
-   "evidence": "`WeilDivisor.lean:128-136` documents pushforward as summing coefficients over fibres, but the only theorem is `pushForward_apply`; Mathlib only provides special `Finsupp.mapDomain_apply` for injective maps and `mapDomain_of_not_mem_image_support` (`Mathlib/Data/Finsupp/Basic.lean:267-279`), not the general fibre coefficient restatement.",
-   "file": "TauCeti/AlgebraicGeometry/Jacobian/WeilDivisor.lean",
-   "fix": "Add a characteristic lemma such as `coeff_pushForward` expressing the coefficient as the finite sum over `D.support` filtered by `f x = y`, and mark the normal form appropriately for simp if it reduces `coeff (pushForward ...)`.",
-   "issue": "`pushForward_apply` only restates `pushForward f D = D.mapDomain f`; there is no coefficient/fibre-sum lemma for `coeff (pushForward f D) y`, so consumers cannot use the advertised fibre-summing behavior through the Weil-divisor API.",
-   "line": 135
   },
-  {
-   "evidence": "`WeilDivisor.lean:86-125` gives zero/add/nsmul/ofPoint and the submonoid API; `WeilDivisor.lean:131` defines `pushForward`. Mathlib has the underlying ordered-finsupp fact `Finsupp.mapDomain_nonneg` (`Mathlib/Data/Finsupp/Order.lean:147`), but no Weil-divisor wrapper is exposed.",
-   "file": "TauCeti/AlgebraicGeometry/Jacobian/WeilDivisor.lean",
-   "fix": "Add `IsEffective.pushForward` and/or `pushForward_mem_effectiveSubmonoid` proving `IsEffective D -> IsEffective (pushForward f D)`.",
-   "issue": "`IsEffective` is public and `pushForward` is public, but the API omits that pushforward preserves effectiveness, an essential interaction between the exposed predicate and operation.",
-   "line": 86
-  }
- ],
- "head_sha": "c456c1b9918375101947fed74577d148f931b9fd",
- "mode": "commit",
- "model": "gpt-5.5",
- "pr": 66,
- "prompt_policy": "reactivation",
- "provider": "codex",
- "repo": "FormalFrontier/TauCeti",
- "round": 3,
- "rubric": "api-design",
- "rubrics_repo": "FormalFrontier/TauCetiReview",
- "rubrics_version": "68ec685af806ec41",
- "run_id": "r-20260608T213503Z-66-api-design-b9be2b",
- "schema": "tauceti.run/v1",
- "source": "backfill-ledger",
- "started_at": "2026-06-08T21:35:03Z",
- "summary": "The public surface exposes `pushForward` and effectivity but does not provide the characteristic coefficient/effectivity API needed to use them without unfolding `Finsupp.mapDomain`.",
- "transcript_blob": "326814c261d8ea57dcff4506b0d63ef6f87b85b029645888e557002cfc1ba3ff",
- "usage": {
-  "cached_input_tokens": 90112,
-  "input_tokens": 121757,
-  "output_tokens": 2417,
-  "reasoning_output_tokens": 839
- },
- "verdict": "request_changes"
+  "verdict": "request_changes",
+  "cost_usd_legacy": 0.176366,
+  "cost_recosted": true
 }
