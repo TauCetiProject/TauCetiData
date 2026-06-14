@@ -154,6 +154,15 @@ def main():
     pairs = [json.loads(p.read_text()) for p in sorted((tcdata.ROOT / "eval" / "pairs").glob("*.json"))]
     if a.rubric:
         pairs = [p for p in pairs if p["rubric"] == a.rubric]
+
+    def has_diff(p):
+        b = p.get("diff_blob")
+        return bool(b) and (tcdata.ROOT / "blobs" / b[:2] / (b + ".gz")).exists()
+
+    nodiff = [p for p in pairs if not has_diff(p)]
+    pairs = [p for p in pairs if has_diff(p)]
+    if nodiff:
+        print(f"skipping {len(nodiff)} pairs with no cached diff (not judgeable)")
     if not a.all:
         pairs = pairs[:a.pairs]
     print(f"judging {len(pairs)} pairs with {a.judge}, {a.samples} samples x 2 orders each")
