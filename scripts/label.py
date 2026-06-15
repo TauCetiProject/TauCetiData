@@ -97,7 +97,10 @@ def main():
     ap.add_argument("--no-push", action="store_true", help="commit locally but don't push each decision")
     a = ap.parse_args()
     me = gh_login()
-    print(f"{BOLD}labelling as {me}{RESET}\n")
+    print(f"{BOLD}labelling as {me}{RESET}")
+    print(f"{DIM}Your correctness bar sets the ceiling: the more carefully you check each finding —")
+    print("is it actually true? would acting on it really make the PR better? — the better the")
+    print(f"automatic judge we can calibrate against you. Don't just trust the claims.{RESET}\n")
 
     pairs = {json.loads(p.read_text())["pair_id"]: json.loads(p.read_text())
              for p in (tcdata.ROOT / "eval" / "pairs").glob("*.json")}
