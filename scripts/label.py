@@ -104,6 +104,15 @@ def main():
     pairs = {k: v for k, v in pairs.items()
              if (not a.rubric or v["rubric"] == a.rubric) and v.get("diff_blob")
              and (tcdata.ROOT / "blobs" / v["diff_blob"][:2] / (v["diff_blob"] + ".gz")).exists()}
+
+    def informative(p):  # drop forced ties and pairs with an errored/non-review arm
+        try:
+            return tcdata.is_informative(load_run(p["arms"]["a"]["run_id"], p["pr"]),
+                                         load_run(p["arms"]["b"]["run_id"], p["pr"]))
+        except Exception:
+            return False
+    pairs = {k: v for k, v in pairs.items() if informative(v)}
+
     done = {json.loads(p.read_text())["pair_id"]
             for p in (tcdata.ROOT / "eval" / "decisions").glob("*.json")
             if json.loads(p.read_text()).get("labeller") == me}

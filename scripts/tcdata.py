@@ -51,3 +51,24 @@ def write_record(rel, record, root=None):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(body)
     return "new"
+
+
+VERDICTS = {"approve", "request_changes", "block"}
+
+
+def is_informative(run_a, run_b):
+    """True if a pair is worth judging/labelling — i.e. it's two REAL reviews that differ.
+
+    Skipped as uninformative:
+    - either side isn't a real review: its verdict is `error` / missing / unparseable (a failed
+      run is nothing to compare against);
+    - a 'forced tie': both sides share a verdict and neither raised findings (overwhelmingly both
+      `approve` with no findings).
+    Kept: differing verdicts, or the same verdict but different findings.
+    """
+    va, vb = (run_a or {}).get("verdict"), (run_b or {}).get("verdict")
+    if va not in VERDICTS or vb not in VERDICTS:
+        return False
+    fa = (run_a or {}).get("findings") or []
+    fb = (run_b or {}).get("findings") or []
+    return not (not fa and not fb and va == vb)

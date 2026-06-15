@@ -182,6 +182,18 @@ def main():
     pairs = [p for p in pairs if has_diff(p)]
     if nodiff:
         print(f"skipping {len(nodiff)} pairs with no cached diff (not judgeable)")
+
+    def informative(p):  # drop forced ties and pairs with an errored/non-review arm
+        try:
+            return tcdata.is_informative(load_run(p["arms"]["a"]["run_id"], p["pr"]),
+                                         load_run(p["arms"]["b"]["run_id"], p["pr"]))
+        except Exception:
+            return False
+    uninf = [p for p in pairs if not informative(p)]
+    pairs = [p for p in pairs if informative(p)]
+    if uninf:
+        print(f"skipping {len(uninf)} uninformative pairs (forced tie / errored arm)")
+
     if not a.all:
         pairs = pairs[:a.pairs]
     print(f"judging {len(pairs)} pairs with {a.judge}, {a.samples} samples x 2 orders each")
