@@ -162,6 +162,7 @@ def main():
     ap.add_argument("--pairs", type=int, default=5, help="number of pairs (ignored with --all)")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--rubric", default="")
+    ap.add_argument("--pr", default="", help="comma-separated PR numbers to restrict to")
     ap.add_argument("--samples", type=int, default=3, help="samples per order (per pair: 2*samples calls)")
     a = ap.parse_args()
 
@@ -173,6 +174,9 @@ def main():
     pairs = [json.loads(p.read_text()) for p in sorted((tcdata.ROOT / "eval" / "pairs").glob("*.json"))]
     if a.rubric:
         pairs = [p for p in pairs if p["rubric"] == a.rubric]
+    if a.pr:
+        prset = {int(x) for x in a.pr.split(",") if x.strip()}
+        pairs = [p for p in pairs if p["pr"] in prset]
 
     def has_diff(p):
         b = p.get("diff_blob")
