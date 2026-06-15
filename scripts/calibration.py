@@ -6,9 +6,18 @@ import tcdata
 
 def modal(ws): return collections.Counter(ws).most_common(1)[0][0] if ws else None
 
+def _ver(r):
+    pf=r['judge']['prompt_file']
+    return 3 if 'v3' in pf else 2 if 'v2' in pf else 1
+
 def judge_consensus(spec):
     rs=[json.load(open(f)) for f in glob.glob(str(tcdata.ROOT/'eval'/'judgments'/'*.json'))]
-    rs=[r for r in rs if r['judge']['spec']==spec and 'v2' in r['judge']['prompt_file']]
+    rs=[r for r in rs if r['judge']['spec']==spec]
+    # Per pair, use the LATEST prompt version this judge scored it under (v3 quad pairs and the
+    # v2 deck/Hopf history both count; we never mix versions within a single pair's consensus).
+    best=collections.defaultdict(int)
+    for r in rs: best[r['pair_id']]=max(best[r['pair_id']],_ver(r))
+    rs=[r for r in rs if _ver(r)==best[r['pair_id']]]
     byp=collections.defaultdict(lambda: collections.defaultdict(list))
     for r in rs: byp[r['pair_id']][r['order']].append(r['winner_arm'])
     out={}
