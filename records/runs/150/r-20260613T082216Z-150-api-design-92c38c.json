@@ -1,0 +1,70 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.319946,
+   "returncode": 0,
+   "secs": 55.7,
+   "usage": {
+    "cached_input_tokens": 67712,
+    "input_tokens": 110176,
+    "output_tokens": 2459,
+    "reasoning_output_tokens": 1274
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8f65730ce62623714df53190c41468f3eceb8ebb",
+ "cost_estimated": true,
+ "cost_usd": 0.319946,
+ "dedupe_key": "FormalFrontier/TauCeti|150|2493b79f6e2fa3bd032d06da265e7f9a56dc9dab|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "358fee351b00e176aa63a16a18b8a380de3dcad456330b23fed413465a7bda94",
+ "diff_sha256": "358fee351b00e176aa63a16a18b8a380de3dcad456330b23fed413465a7bda94",
+ "duration_s": 55.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"galoisGroupEquiv|signPattern\" code/TauCeti` shows only the def at line 249 and sign-pattern lemmas; there is no `galoisGroupEquiv_apply`, `galoisGroupEquiv_symm_apply`, or generator-action theorem for the equivalence.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/GaloisGroup.lean",
+   "fix": "Add simp-characteristic lemmas such as `(galoisGroupEquiv hroot hindep \u03c3).toAdd = signPattern root \u03c3` and `((galoisGroupEquiv hroot hindep).symm (Multiplicative.ofAdd \u03b5)) (gen root i) = (-1) ^ (\u03b5 i).val * gen root i`, with appropriate `@[simp]` where they give the normal form.",
+   "issue": "`galoisGroupEquiv` has no public apply/symm characterization, so downstream code cannot use the advertised sign-change isomorphism without unfolding the `MulEquiv.ofBijective` body.",
+   "line": 249
+  },
+  {
+   "evidence": "Grep hits: lines 50, 73, 95, 100, and 107 are public theorems used to prove `isSplittingField`/`isGalois`, while roadmap `Multiquadratic/Targets.lean` lines 48-65 exposes only the Galois instance target and the group equivalence.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/GaloisGroup.lean",
+   "fix": "Make proof-only helpers `private` or move them into a private section; keep public only the defining polynomial/generator if they are intentionally part of the characteristic API, plus their documented simp lemmas.",
+   "issue": "Proof-internal lemmas and definitions (`splits_X_sq_sub_C`, `adjoin_gen_eq_top`, `mqPoly_ne_zero`, `splits_mqPoly`, `isAlgebraic_gen`) are exported as public API even though the roadmap target only needs `isGalois`, `signHom`/sign data, and `galoisGroupEquiv`.",
+   "line": 50
+  }
+ ],
+ "head_sha": "2493b79f6e2fa3bd032d06da265e7f9a56dc9dab",
+ "merge_base_sha": "8f65730ce62623714df53190c41468f3eceb8ebb",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 150,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6157210cd189087221dddb26d7886d5fefac649b54ef95eaf43edae4b6528711",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e79ac3fc257ceadea7b8114825ca7d39d51cb3b7",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260613T082216Z-150-api-design-92c38c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-13T08:22:16Z",
+ "summary": "The main equivalence is exposed without the characteristic API that makes it usable as the sign-change isomorphism, and several proof-only helpers are unnecessarily public.",
+ "transcript_blob": "a66e6c5f452176bd42a1374267ab8be987fc00d5cbb1c028138e7da291c492c4",
+ "usage": {
+  "cached_input_tokens": 67712,
+  "input_tokens": 110176,
+  "output_tokens": 2459,
+  "reasoning_output_tokens": 1274
+ },
+ "verdict": "request_changes"
+}

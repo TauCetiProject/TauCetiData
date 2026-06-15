@@ -1,0 +1,68 @@
+{
+ "arm": "shadow:minimax-quad",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.092978,
+   "returncode": 0,
+   "secs": 181.3,
+   "usage": {
+    "cached_input_tokens": 251380,
+    "input_tokens": 23322,
+    "output_tokens": 8806
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "01aa043caf521e015b498cdf8fca6db6810fe0d2",
+ "cost_estimated": true,
+ "cost_usd": 0.092978,
+ "dedupe_key": "FormalFrontier/TauCeti|149|a2b34d5e8cdd5ad2055ed00b976a05ddb8863430|api-design|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-quad|1",
+ "diff_blob": "f96315fc5f78e383381acb0908702caa28dfd2c8ab24abe050b2215bb88546ab",
+ "diff_sha256": "f96315fc5f78e383381acb0908702caa28dfd2c8ab24abe050b2215bb88546ab",
+ "duration_s": 181.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Galois.lean:58-60 \u2014 `rcases sq_eq_sq_iff_eq_or_eq_neg.mp h1 with h | h` derives `\u03c3 y = \u00b1 y` internally; this is exactly the fact the roadmap's next-step `(Z/2)\u207f` iso and any sign-change automorphism API will need.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/Galois.lean",
+   "fix": "Add and prove a public `aut_apply_root` (or similarly named) lemma stating, for each `i`, that `\u03c3 \u27e8root i, hmem\u27e9` is `\u27e8root i, hmem\u27e9` or its negation; prove it before `aut_mul_self_eq_one` and use it in `aut_mul_self_eq_one`'s body.",
+   "issue": "The proof of `aut_mul_self_eq_one` establishes the key characteristic fact `\u03c3 \u27e8root i, _\u27e9 = \u27e8root i, _\u27e9 \u2228 \u03c3 \u27e8root i, _\u27e9 = -\u27e8root i, _\u27e9` via `sq_eq_sq_iff_eq_or_eq_neg`, but it is left as a local `rcases` inside the proof and never exposed.",
+   "line": 49
+  },
+  {
+   "evidence": "Galois.lean:42 `@[simp]` on a derived `\u03c3 * \u03c3 = 1`; the proof below uses the simp normal form `\u03c3 y = \u00b1y`, not `\u03c3 * \u03c3 = 1`, as the working form.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/Galois.lean",
+   "fix": "Drop `@[simp]` from `aut_mul_self_eq_one`; add `@[simp]` (or `@[grind]`) to the new `aut_apply_root` characteristic lemma, which is the actual normal form for the image of a generator.",
+   "issue": "`@[simp]` is attached to `aut_mul_self_eq_one`, a deep derived consequence (`\u03c3 * \u03c3 = 1`), rather than to the characteristic normal-form lemma (the missing `aut_apply_root`). The deep-fact annotation can fire whenever `\u03c3 * \u03c3` appears in this `AlgEquiv` type and obscures the simp normal form for the underlying action on generators.",
+   "line": 42
+  }
+ ],
+ "head_sha": "a2b34d5e8cdd5ad2055ed00b976a05ddb8863430",
+ "merge_base_sha": "01aa043caf521e015b498cdf8fca6db6810fe0d2",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 149,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9764054ace553bee42d57435e000bd91b87ed6e4143b2219f818a79ec731049e",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "394fce7e95d56cf6d68376a72b2f975c71c589fd",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260615T061019Z-149-api-design-bc7e32",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-15T06:10:19Z",
+ "summary": "The file exposes only the two consequences (`aut_mul_self_eq_one`, `aut_commute`) of the multiquadratic automorphism structure; the characteristic lemma each proof relies on internally \u2014 that \u03c3 sends each generator \u27e8root i, _\u27e9 to \u00b1\u27e8root i, _\u27e9 \u2014 is never stated or given an automation attribute, so the next roadmap layer (sign-change automorphisms and the (\u2124/2)\u207f iso) would have to re-derive it.",
+ "transcript_blob": "60e143a4186b06975495b8fdf6740c62bb4c8975c3a95196d46c7b94121f4e2f",
+ "usage": {
+  "cached_input_tokens": 251380,
+  "input_tokens": 23322,
+  "output_tokens": 8806
+ },
+ "verdict": "request_changes"
+}

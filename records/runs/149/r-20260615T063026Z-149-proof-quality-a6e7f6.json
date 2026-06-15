@@ -1,0 +1,75 @@
+{
+ "arm": "shadow:minimax-quad",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.029471,
+   "returncode": 0,
+   "secs": 214.4,
+   "usage": {
+    "cached_input_tokens": 21835,
+    "input_tokens": 22461,
+    "output_tokens": 13485
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "01aa043caf521e015b498cdf8fca6db6810fe0d2",
+ "cost_estimated": true,
+ "cost_usd": 0.029471,
+ "dedupe_key": "FormalFrontier/TauCeti|149|a2b34d5e8cdd5ad2055ed00b976a05ddb8863430|proof-quality|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-quad|1",
+ "diff_blob": "f96315fc5f78e383381acb0908702caa28dfd2c8ab24abe050b2215bb88546ab",
+ "diff_sha256": "f96315fc5f78e383381acb0908702caa28dfd2c8ab24abe050b2215bb88546ab",
+ "duration_s": 214.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 55\u201357: `apply Subtype.ext; have hcoe : ((y : L)) ^ 2 = algebraMap K L (d i) := by rw [hy]; exact hroot i; simpa using hcoe`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/Galois.lean",
+   "fix": "Fold the coercion into the goal directly: `have hsq : y ^ 2 = algebraMap K _ (d i) := Subtype.ext (by simpa [hy] using hroot i)` (or `cases y; simpa [hy] using hroot i`).",
+   "issue": "`hsq` ends with `simpa using hcoe`, where `hcoe` already proves the goal after unfolding \u2014 the `simpa` is just doing extra unfolding to discharge the goal. This is the `simpa`-as-unfolder pattern that hides the proof structure.",
+   "line": 57
+  },
+  {
+   "evidence": "Line 58: `have h1 : (\u03c3 y) ^ 2 = y ^ 2 := by rw [\u2190 map_pow, hsq, AlgEquiv.commutes, \u2190 hsq]`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/Galois.lean",
+   "fix": "Replace with a `simp` call, e.g. `have h1 : (\u03c3 y) ^ 2 = y ^ 2 := by rw [\u2190 map_pow, hsq]; simp [AlgEquiv.commutes, hsq]`, or `simp [\u2190 map_pow, hsq, AlgEquiv.commutes]`.",
+   "issue": "`h1` is a four-step named-lemma chain (`\u2190 map_pow, hsq, AlgEquiv.commutes, \u2190 hsq`) that is fragile against Mathlib renames of `map_pow`/`AlgEquiv.commutes` and obscures the fact that the only non-trivial step is the alg-equiv commuting with the algebra map.",
+   "line": 58
+  },
+  {
+   "evidence": "Lines 43\u201347 vs. line 70: the `by rw [pow_two]; exact aut_mul_self_eq_one hroot \u03c3` step exists only to bridge between `\u03c3^2` and `\u03c3 * \u03c3`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/Galois.lean",
+   "fix": "State the lemma as `(\u03c3 : M \u2243\u2090[K] M) ^ 2 = 1` (or `\u03c3\u207b\u00b9 = \u03c3`) and keep `@[simp]`. Then `aut_commute` becomes `Commute.of_orderOf_dvd_two (fun \u03c3 => orderOf_dvd_of_pow_eq_one (aut_mul_self_eq_one hroot \u03c3)) a b` with no `rw [pow_two]`.",
+   "issue": "`aut_mul_self_eq_one` is tagged `@[simp]` and stated as `\u03c3 * \u03c3 = 1`. The natural involution form is `\u03c3^2 = 1` (or `\u03c3\u207b\u00b9 = \u03c3`); the current form rewrites the less common shape and is exactly why `aut_commute` has to do a `rw [pow_two]` at line 70.",
+   "line": 44
+  }
+ ],
+ "head_sha": "a2b34d5e8cdd5ad2055ed00b976a05ddb8863430",
+ "merge_base_sha": "01aa043caf521e015b498cdf8fca6db6810fe0d2",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 149,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8f8f86246c10b5ff4206bcf0814626e54dec2eb17039fecbf63d971364b72f9f",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "394fce7e95d56cf6d68376a72b2f975c71c589fd",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260615T063026Z-149-proof-quality-a6e7f6",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-15T06:30:26Z",
+ "summary": "The involution/abelian argument is correct in structure but the proof contains a brittle `simpa using hcoe` step, a long named-lemma rewrite chain that should be a `simp` call, and the simp-tagged involution lemma uses the awkward `\u03c3 * \u03c3 = 1` form rather than `\u03c3^2 = 1` (which then forces `aut_commute` to do a `rw [pow_two]` step).",
+ "transcript_blob": "4da64e93c591846d3443811a29d0f1e569950e3457b138f5f539c298636d8797",
+ "usage": {
+  "cached_input_tokens": 21835,
+  "input_tokens": 22461,
+  "output_tokens": 13485
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,75 @@
+{
+ "arm": "shadow:minimax-quad",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.097897,
+   "returncode": 0,
+   "secs": 186.2,
+   "usage": {
+    "cached_input_tokens": 233780,
+    "input_tokens": 52452,
+    "output_tokens": 10023
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b57f73654ed3c9c3c25445cfc1a9fadacbc590f0",
+ "cost_estimated": true,
+ "cost_usd": 0.097897,
+ "dedupe_key": "FormalFrontier/TauCeti|147|0ddc5c267128b9b164d31e2b91b039857de4183f|naming|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-quad|1",
+ "diff_blob": "5a9b9eab35b385d907ead0a840df8868c6ae4eba0aa0debb96926655ed5daeb8",
+ "diff_sha256": "5a9b9eab35b385d907ead0a840df8868c6ae4eba0aa0debb96926655ed5daeb8",
+ "duration_s": 186.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Quadratic.lean:128 declaration; Mathlib LinearAlgebra/Dimension/StrongRankCondition.lean:683 `IsQuadraticExtension.finrank_eq_two`; Mathlib FieldTheory/IntermediateField/Adjoin/Basic.lean:338 `finrank_adjoin_simple_eq_one_iff`.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Quadratic.lean",
+   "fix": "Rename to `finrank_adjoin_simple_eq_two` (or `IntermediateField.finrank_adjoin_simple_eq_two`), keeping `x^2 \u2208 F` and `x \u2209 F` as explicit hypotheses.",
+   "issue": "`finrank_adjoin_simple_eq_two_of_sq_mem_notMem` repeats its hypotheses `hx2 : x^2 \u2208 F` and `hxF : x \u2209 F` in the name's suffix; this is unidiomatic for a one-direction `= 2` conclusion, and does not match adjacent Mathlib conventions (`IsQuadraticExtension.finrank_eq_two`, `IntermediateField.finrank_adjoin_simple_eq_one_iff`).",
+   "line": 128
+  },
+  {
+   "evidence": "Quadratic.lean:165 declaration; Mathlib FieldTheory/LinearDisjoint.lean:412 `finrank_sup`, Mathlib RingTheory/Adjoin/Dimension.lean:46 `finrank_sup_le_of_free`.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Quadratic.lean",
+   "fix": "Shorten to e.g. `finrank_sup_eq_mul_two_of_adjoin_simple` or `finrank_adjoin_simple_doubles_degree`, putting the quadratic situation in the hypothesis list.",
+   "issue": "`finrank_sup_adjoin_simple_eq_mul_two` is verbose; the `sup_adjoin_simple` cluster is hard to parse and the suffix is unidiomatic for a tower-sup identity.",
+   "line": 165
+  },
+  {
+   "evidence": "Quadratic.lean:159\u2013162 `private theorem finrank_restrictScalars_eq \u2026 := rfl`; call site at lines 177\u2013178 of the same file uses `rw [finrank_restrictScalars_eq]` for a definitional rewrite.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Quadratic.lean",
+   "fix": "Delete the private theorem and inline `rfl` (using `show Module.finrank K (IntermediateField.adjoin F {x})` or `change \u2026` to retype the LHS) at the call site in `finrank_sup_adjoin_simple_eq_mul_two`.",
+   "issue": "`private theorem finrank_restrictScalars_eq` is `rfl`: `restrictScalars K` is the identity on the carrier, so the equation is definitional. Naming it suggests substantive content where there is none, and the justification comment is wrong (`change` is not needed; `rfl` with a `show` works).",
+   "line": 159
+  }
+ ],
+ "head_sha": "0ddc5c267128b9b164d31e2b91b039857de4183f",
+ "merge_base_sha": "b57f73654ed3c9c3c25445cfc1a9fadacbc590f0",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 147,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "222fab817b6ecbc23e5a4bb8cede10ab260a5b712528202633908edab1da0138",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "394fce7e95d56cf6d68376a72b2f975c71c589fd",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260615T055220Z-147-naming-dfa6e6",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-15T05:52:20Z",
+ "summary": "The new multiquadratic degree result and tower lemmas are sound in naming overall, but the two new quadratic finrank lemmas in `FieldTheory/IntermediateField/Quadratic.lean` carry unidiomatic `_of_\u2026` suffixes and the private `finrank_restrictScalars_eq` helper is a `rfl`-only fact that should be inlined.",
+ "transcript_blob": "b9b8d8b4bc4ef07eb669ac3cdb048f8b4250b8c33fb4c0df1f8853544175bde6",
+ "usage": {
+  "cached_input_tokens": 233780,
+  "input_tokens": 52452,
+  "output_tokens": 10023
+ },
+ "verdict": "request_changes"
+}

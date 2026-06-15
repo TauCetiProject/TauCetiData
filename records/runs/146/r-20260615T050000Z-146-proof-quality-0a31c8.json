@@ -1,0 +1,86 @@
+{
+ "arm": "shadow:minimax-quad",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.022993,
+   "returncode": 0,
+   "secs": 188.4,
+   "usage": {
+    "cached_input_tokens": 114,
+    "input_tokens": 10994,
+    "output_tokens": 16384
+   }
+  },
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.074971,
+   "returncode": 0,
+   "secs": 215.9,
+   "usage": {
+    "cached_input_tokens": 157780,
+    "input_tokens": 21220,
+    "output_tokens": 17726
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0efc04dc10ed23df34a3d188eb6aaddcffe948e1",
+ "cost_estimated": true,
+ "cost_usd": 0.097964,
+ "dedupe_key": "FormalFrontier/TauCeti|146|50a094fd46b79788aa71936180f1fc12d2a8f0fd|proof-quality|minimax/minimax-m3|e1aee6e8c6688dd8|shadow:minimax-quad|1",
+ "diff_blob": "a363a413446a3ef75ae0df2660d426bba705ead168cd4db424bc7d6e7c3793ea",
+ "diff_sha256": "a363a413446a3ef75ae0df2660d426bba705ead168cd4db424bc7d6e7c3793ea",
+ "duration_s": 404.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Quadratic.lean lines 80\u201399: `have hb0 : b \u2260 0 := left_ne_zero_of_mul hbx` appears inside `hden`'s body and again at line 89; the `(2 : L) * b * x ^ 2` construction is introduced without explanation.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Quadratic.lean",
+   "fix": "Factor `(a + b*x) * (a - b*x) = a^2 - b^2 * x^2` as a private lemma, and split the inverse computation into a small helper for the `a^2 - b^2 * x^2 \u2260 0` case and one for the degenerate case. Drop the second `hb0` derivation.",
+   "issue": "The `hD` sub-case of `inv_mem'` derives `hb0 : b \u2260 0` twice (once inside `hden`, once after), and the inverse construction `((2 : L) * b * x ^ 2)\u207b\u00b9` plus the deduction that `2 \u2260 0` follows from `hy0` + `haeq` is non-obvious enough to warrant a named lemma.",
+   "line": 80
+  },
+  {
+   "evidence": "Quadratic.lean lines 93\u201396: explicit `field_simp` hypothesis list, three hand-rolled rewrites, then `show (1+1:L) = 2 by norm_num` to enable `div_self`.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Quadratic.lean",
+   "fix": "Restructure the goal so `field_simp` closes it natively (e.g., supply the non-vanishing conditions as a single `disch` fact, or use `nlinarith`/`linear_combination` on the simplified goal). At minimum, factor the cleanup into a named lemma so the brittleness is contained.",
+   "issue": "The `field_simp [hden, hbx, hb0, hx0, htwo]` cleanup is a hand-rolled patch (`mul_zero, zero_mul, zero_add` followed by `show (1+1) = 2`) to coerce `field_simp` to close the goal \u2014 exactly the short-but-brittle pattern the rubric flags.",
+   "line": 95
+  },
+  {
+   "evidence": "SquareClass.lean lines 298\u2013302: the `calc` step `_ = \u220f j \u2208 (T.attachFin hTlt).map Fin.valEmbedding, dNat j := by rw [Finset.prod_map]; rfl`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/SquareClass.lean",
+   "fix": "Pass the embedding explicitly (e.g., `rw [Finset.prod_map Fin.valEmbedding.toEmbedding, ...]`) or use a `simp`/`simp only` step that names the embedding so the equality is not defeq-by-construction.",
+   "issue": "`squareClass_of_sq_mem_fin`'s calc block uses `rw [Finset.prod_map]; rfl` as the second step, passing `rfl` as the embedding-coercion argument of `prod_map`; this is the known papercut where `rfl` works only because the LHS and RHS happen to be defeq \u2014 brittle to any future refactor of `prod_map`.",
+   "line": 301
+  }
+ ],
+ "head_sha": "50a094fd46b79788aa71936180f1fc12d2a8f0fd",
+ "merge_base_sha": "0efc04dc10ed23df34a3d188eb6aaddcffe948e1",
+ "mode": "manual",
+ "model": "minimax/minimax-m3",
+ "pr": 146,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2c24f50bd314c8678a1999a2db8cb4069f51ecb30cf1f17736d2c07151251524",
+ "provider": "minimax",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "394fce7e95d56cf6d68376a72b2f975c71c589fd",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260615T050000Z-146-proof-quality-0a31c8",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-06-15T05:00:00Z",
+ "summary": "The tower and descent proofs are robust, but the inv_mem' case of exists_add_mul_of_mem_sup_adjoin_sq is a 25-line hand-rolled algebraic block with a brittle field_simp/show patch and a duplicated hypothesis derivation; the Fin/Fintype bridge uses a fragile rfl-as-embedding prod_map step.",
+ "transcript_blob": "d3096a2955b7dee77c98580a29537cbf1ee024434896439d1c4f93c4afda69c7",
+ "usage": {
+  "cached_input_tokens": 157780,
+  "input_tokens": 21220,
+  "output_tokens": 17726
+ },
+ "verdict": "request_changes"
+}
