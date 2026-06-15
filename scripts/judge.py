@@ -31,13 +31,14 @@ PROMPT = ""        # set in main() from --prompt
 PROMPT_SHA = ""
 PROMPT_NAME = ""
 
-# judge spec -> (transport, model). pi = OpenRouter via the `pi` agent; claude = subscription CLI.
+# judge spec -> (transport, model). pi = OpenRouter via `pi`; claude/codex = subscription CLIs.
 JUDGES = {
     "deepseek": ("pi", "deepseek/deepseek-v4-pro"),
     "grok": ("pi", "x-ai/grok-4.3"),
     "minimax": ("pi", "minimax/minimax-m3"),
     "sonnet": ("claude", "claude-sonnet-4-6"),
     "opus": ("claude", "claude-opus-4-8"),
+    "gpt-5.5": ("codex", "gpt-5.5"),
 }
 
 
@@ -89,9 +90,27 @@ def call_claude(model, prompt):
     return r.stdout
 
 
+def call_codex(model, prompt):
+    cmd = ["codex", "exec", "--json", "-s", "read-only", "--skip-git-repo-check",
+           "-c", "shell_environment_policy.inherit=none", "-m", model, prompt]
+    r = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+    text = ""
+    for line in r.stdout.splitlines():
+        line = line.strip()
+        if not line.startswith("{"):
+            continue
+        try:
+            ev = json.loads(line)
+        except Exception:
+            continue
+        if ev.get("type") == "item.completed" and ev.get("item", {}).get("type") == "agent_message":
+            text = ev["item"].get("text", "")  # final assistant message carries the verdict
+    return text
+
+
 def call_judge(spec, prompt):
     transport, model = JUDGES[spec]
-    return (call_pi if transport == "pi" else call_claude)(model, prompt)
+    return {"pi": call_pi, "claude": call_claude, "codex": call_codex}[transport](model, prompt)
 
 
 def extract(text, marker):
