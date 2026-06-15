@@ -1,8 +1,12 @@
 # Human labelling — design
 
-*Status: designed, not yet built. `schema/human_decision.v1.json` is committed; this doc
-specifies the CLI labeller that will produce those records, and the constraints a future
-website front-end must keep.*
+*Status: the CLI labeller (`scripts/label.py`) is built and producing human decisions — a
+first round has landed in `eval/decisions/`. It currently selects pairs by reading
+`eval/pairs/` and `eval/judgments/` directly, with a stratified queue (a balanced mix of
+AI-consensus, AI-split, and AI-unstable pairs; the AI verdicts are used only to stratify,
+never shown) — not the resolver-emitted `eval/bundles/` + `eval/queue.json` described below,
+because the resolver is not yet built. `schema/human_decision.v1.json` is committed. The
+website front-end, and the bundle/queue constraints it would share, remain future work.*
 
 ## Decision: CLI first, website later
 

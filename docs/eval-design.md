@@ -1,8 +1,11 @@
 # Pairwise review evaluation — design
 
-*Status: designed, not yet built. Schemas are already committed (`schema/pair.v1.json`,
-`schema/judgment.v1.json`, `schema/resolution.v1.json`); this doc specifies the harness
-that will produce those records.*
+*Status: partly built and running. `scripts/make_pairs.py` and `scripts/judge.py` (both in
+this repo, not TauCetiReview as an earlier draft of this doc said) produce the pairs and AI
+judgments today — `eval/pairs/` and `eval/judgments/` already hold hundreds of pairs and over a
+thousand judgments across several judge models and prompt versions. Still unbuilt: the
+resolver, the `escalation-v1` policy, and `eval/resolutions/` below. Schemas are committed
+(`schema/pair.v1.json`, `schema/judgment.v1.json`, `schema/resolution.v1.json`).*
 
 ## Goal
 
@@ -26,7 +29,7 @@ production run) and `fidelity: exact`, and writes `eval/pairs/<pair_id>.json`. A
 metadata (provider, model, rubrics_sha, verdict) is denormalized onto the pair record —
 it is what every metric query needs, and it survives run-record schema evolution.
 
-## Judge harness (`runner/judge.py` in TauCetiReview)
+## Judge harness (`scripts/judge.py`)
 
 Reuses `review.py`'s provider runners (`run_claude` / `run_codex` / `run_pi`), env
 isolation (`reviewer_env`), one-time-marker verdict extraction, and budget ledger.
