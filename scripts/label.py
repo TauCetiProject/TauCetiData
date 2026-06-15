@@ -65,12 +65,26 @@ def render_review(run):
 
 
 def panel_consensus():
-    """Per-pair AI stratum from grok+sonnet v2 order-stable verdicts: consensus|split|unstable|none."""
+    """Per-pair AI stratum from the grok+sonnet panel's order-stable verdicts: consensus|split|
+    unstable|none. Uses the LATEST prompt version each (pair, judge) was scored under, so pairs
+    judged only with v3 (e.g. a freshly-added topic) stratify just like the v2-judged history."""
     recs = [json.loads(p.read_text()) for p in (tcdata.ROOT / "eval" / "judgments").glob("*.json")]
+
+    def ver(r):
+        pf = r["judge"]["prompt_file"]
+        return 3 if "v3" in pf else 2 if "v2" in pf else 1
+
+    best = collections.defaultdict(dict)  # pair_id -> judge -> best prompt version seen
+    for r in recs:
+        if r["judge"]["spec"] in ("grok", "sonnet"):
+            j = r["judge"]["spec"]
+            best[r["pair_id"]][j] = max(best[r["pair_id"]].get(j, 0), ver(r))
+
     byjp = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(list)))
     for r in recs:
-        if "v2" in r["judge"]["prompt_file"] and r["judge"]["spec"] in ("grok", "sonnet"):
-            byjp[r["pair_id"]][r["judge"]["spec"]][r["order"]].append(r["winner_arm"])
+        j = r["judge"]["spec"]
+        if j in ("grok", "sonnet") and ver(r) == best[r["pair_id"]].get(j):
+            byjp[r["pair_id"]][j][r["order"]].append(r["winner_arm"])
 
     def stable(po):
         def modal(ws):
@@ -94,6 +108,7 @@ def panel_consensus():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--rubric", default="")
+    ap.add_argument("--pr", default="", help="comma-separated PR numbers to restrict to")
     ap.add_argument("--no-push", action="store_true", help="commit locally but don't push each decision")
     a = ap.parse_args()
     me = gh_login()
@@ -104,8 +119,10 @@ def main():
 
     pairs = {json.loads(p.read_text())["pair_id"]: json.loads(p.read_text())
              for p in (tcdata.ROOT / "eval" / "pairs").glob("*.json")}
+    prset = {int(x) for x in a.pr.split(",") if x.strip()} if a.pr else None
     pairs = {k: v for k, v in pairs.items()
-             if (not a.rubric or v["rubric"] == a.rubric) and v.get("diff_blob")
+             if (not a.rubric or v["rubric"] == a.rubric)
+             and (prset is None or v["pr"] in prset) and v.get("diff_blob")
              and (tcdata.ROOT / "blobs" / v["diff_blob"][:2] / (v["diff_blob"] + ".gz")).exists()}
 
     def informative(p):  # drop forced ties and pairs with an errored/non-review arm
@@ -121,20 +138,24 @@ def main():
             if json.loads(p.read_text()).get("labeller") == me}
     strat = panel_consensus()
 
-    # Stratified queue: round-robin consensus / split / unstable, prefer pairs the panel has judged.
-    buckets = collections.defaultdict(list)
+    # Queue: round-robin ACROSS PRs (so topics interleave — a deck-heavy history can't crowd out a
+    # freshly-added area), and WITHIN each PR order by how informative the pair is for calibration
+    # (AI-split and AI-unstable pairs first, settled-consensus last), shuffling within a stratum.
+    rank = {"split": 0, "unstable": 1, "consensus": 2, "none": 3}
+    by_pr = collections.defaultdict(list)
     for pid, pr in pairs.items():
-        if pid in done:
-            continue
-        buckets[strat.get(pid, "none")].append(pid)
-    for b in buckets.values():
-        random.shuffle(b)
-    order = ["consensus", "split", "unstable", "none"]
+        if pid not in done:
+            by_pr[pr["pr"]].append(pid)
+    for pids in by_pr.values():
+        random.shuffle(pids)
+        pids.sort(key=lambda p: rank.get(strat.get(p, "none"), 3))
+    prs = list(by_pr)
+    random.shuffle(prs)
     queue = []
-    while any(buckets[o] for o in order):
-        for o in order:
-            if buckets[o]:
-                queue.append(buckets[o].pop())
+    while any(by_pr[p] for p in prs):
+        for p in prs:
+            if by_pr[p]:
+                queue.append(by_pr[p].pop(0))
     if not queue:
         print("nothing left to label (for you). thanks!"); return
     print(f"{len(queue)} pairs to label (already done: {len(done)}). [1]/[2]=better PR  [t]=tie  [s]=skip  [q]=quit\n")
