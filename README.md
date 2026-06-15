@@ -77,6 +77,19 @@ filling them (calibrated against that provider's own historical token usage) or 
 `tauceti-review --shadow` commands that produce the arms. The shadow runs archive back here and
 pair up the next time `make_pairs.py` runs.
 
+## Evaluation so far
+
+The pipeline on top of the run archive: `make_pairs.py` registers A/B pairs; `judge.py` runs
+AI judges over them (both presentation orders, a cross-family panel, grounded in the
+checked-out code) into `eval/judgments/`; `label.py` records human meta-review decisions in
+`eval/decisions/`; `calibration.py` compares judge consensus against the human labels.
+
+The archive currently holds several thousand review runs (with their reviewed-diff and
+transcript blobs), a few hundred A/B pairs, over a thousand AI judgments — across five judge
+models and three judge-prompt versions — and a first round of human decisions. Resolutions and
+presentation bundles (see `docs/eval-design.md` and `docs/labelling-design.md`) are still being
+wired up.
+
 ## Rebuilding the database
 
 ```
