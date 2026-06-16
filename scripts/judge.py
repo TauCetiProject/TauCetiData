@@ -148,7 +148,10 @@ def one_judgment(pair, spec, order, sample):
     marker = "JUDGE-" + secrets.token_hex(8)
     prompt = PROMPT.format(rubric=pair["rubric"], marker=marker, diff=blob_text(pair["diff_blob"])[:DIFF_CAP],
                            review_first=render_review(first), review_second=render_review(second))
-    out = call_judge(spec, prompt)
+    try:
+        out = call_judge(spec, prompt)
+    except Exception:
+        out = ""  # timeout / transport failure -> "error" sample below; the batch keeps going
     v = extract(out, marker)
     if v is None:
         winner_arm, conf, rat = "error", None, "(unparseable judge output)"
@@ -212,7 +215,7 @@ def main():
     print(f"judging {len(pairs)} pairs with {a.judge}, {a.samples} samples x 2 orders each")
 
     by_pair = collections.defaultdict(list)  # pair_id -> list of (order, sample, winner_arm)
-    new = skip = 0
+    new = skip = err = 0
     for pair in pairs:
         for order in ("ab", "ba"):
             for s in range(a.samples):
@@ -229,8 +232,11 @@ def main():
                                      "prompt_file": f"eval/prompts/{PROMPT_NAME}.md",
                                      "prompt_sha": PROMPT_SHA},
                            "order": order, "sample": s, **res}
-                    dst.parent.mkdir(parents=True, exist_ok=True)
-                    dst.write_text(json.dumps(rec, indent=2) + "\n"); new += 1
+                    if res["winner_arm"] == "error":
+                        err += 1  # don't persist failures (timeout/unparseable) — let a re-run retry
+                    else:
+                        dst.parent.mkdir(parents=True, exist_ok=True)
+                        dst.write_text(json.dumps(rec, indent=2) + "\n"); new += 1
                 by_pair[pair["pair_id"]].append((order, rec["winner_arm"]))
 
     # Reliability summary
@@ -254,7 +260,8 @@ def main():
             else:
                 flips += 1
     n = consistent_pairs + flips
-    print(f"\nwrote {new} judgments ({skip} cached). judge={a.judge}")
+    print(f"\nwrote {new} judgments ({skip} cached, {err} errored/timed-out, not persisted). "
+          f"judge={a.judge}")
     print(f"self-consistency (modal share within an order, mean): "
           f"{sum(intra)/len(intra):.2f}" if intra else "n/a")
     print(f"order-stability: {consistent_pairs}/{n} pairs keep the same winner across A/B swap "
