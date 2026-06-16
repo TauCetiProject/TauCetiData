@@ -109,6 +109,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--rubric", default="")
     ap.add_argument("--pr", default="", help="comma-separated PR numbers to restrict to")
+    ap.add_argument("--models", default="",
+                    help="comma-separated arm tokens; keep only pairs matching this matchup "
+                         "(e.g. --models minimax,deepseek)")
     ap.add_argument("--no-push", action="store_true", help="commit locally but don't push each decision")
     a = ap.parse_args()
     me = gh_login()
@@ -120,9 +123,11 @@ def main():
     pairs = {json.loads(p.read_text())["pair_id"]: json.loads(p.read_text())
              for p in (tcdata.ROOT / "eval" / "pairs").glob("*.json")}
     prset = {int(x) for x in a.pr.split(",") if x.strip()} if a.pr else None
+    models = [m for m in a.models.split(",") if m.strip()]
     pairs = {k: v for k, v in pairs.items()
              if (not a.rubric or v["rubric"] == a.rubric)
-             and (prset is None or v["pr"] in prset) and v.get("diff_blob")
+             and (prset is None or v["pr"] in prset)
+             and tcdata.pair_matches_models(v, models) and v.get("diff_blob")
              and (tcdata.ROOT / "blobs" / v["diff_blob"][:2] / (v["diff_blob"] + ".gz")).exists()}
 
     def informative(p):  # drop forced ties and pairs with an errored/non-review arm

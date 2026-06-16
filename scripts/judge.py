@@ -163,6 +163,8 @@ def main():
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--rubric", default="")
     ap.add_argument("--pr", default="", help="comma-separated PR numbers to restrict to")
+    ap.add_argument("--models", default="",
+                    help="comma-separated arm tokens; restrict to a matchup (e.g. minimax,deepseek)")
     ap.add_argument("--samples", type=int, default=3, help="samples per order (per pair: 2*samples calls)")
     a = ap.parse_args()
 
@@ -177,6 +179,9 @@ def main():
     if a.pr:
         prset = {int(x) for x in a.pr.split(",") if x.strip()}
         pairs = [p for p in pairs if p["pr"] in prset]
+    models = [m for m in a.models.split(",") if m.strip()]
+    if models:
+        pairs = [p for p in pairs if tcdata.pair_matches_models(p, models)]
 
     def has_diff(p):
         b = p.get("diff_blob")

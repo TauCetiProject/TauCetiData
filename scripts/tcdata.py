@@ -53,6 +53,25 @@ def write_record(rel, record, root=None):
     return "new"
 
 
+def arm_id(arm):
+    return ((arm.get("provider") or "") + "/" + (arm.get("model") or "")).lower()
+
+
+def pair_matches_models(pair, models):
+    """True if a pair's two arms correspond to the given model tokens (substring match against
+    each arm's provider/model). `models` is a list like ['minimax', 'deepseek']. For two tokens
+    it requires one arm to match each (either presentation order); for any other count it requires
+    every token to match some arm. Empty `models` matches everything."""
+    toks = [m.strip().lower() for m in (models or []) if m.strip()]
+    if not toks:
+        return True
+    ids = [arm_id(pair["arms"]["a"]), arm_id(pair["arms"]["b"])]
+    if len(toks) == 2:
+        x, y = ids
+        return (toks[0] in x and toks[1] in y) or (toks[0] in y and toks[1] in x)
+    return all(any(t in i for i in ids) for t in toks)
+
+
 VERDICTS = {"approve", "request_changes", "block"}
 
 
