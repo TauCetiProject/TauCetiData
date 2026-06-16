@@ -90,6 +90,22 @@ models and three judge-prompt versions — and a first round of human decisions.
 presentation bundles (see `docs/eval-design.md` and `docs/labelling-design.md`) are still being
 wired up.
 
+### Labelling and analysis
+
+```
+gh auth status                                      # label.py records your gh login as the labeller
+python3 scripts/label.py                            # human meta-review: pick the better review per pair
+python3 scripts/label.py --models minimax,deepseek  # focus one matchup (or --pr / --rubric)
+python3 scripts/calibration.py                      # do the AI judges agree with the human labels?
+python3 scripts/power.py                            # labels needed to decide a matchup; AI-boost savings
+```
+
+`label.py` shows the reviewed diff and two anonymized, order-randomized reviews and asks which
+leads to the better PR (the AI verdicts are hidden; they only stratify the queue). It writes one
+durable `eval/decisions/<id>.json` per (pair, labeller), committed and pushed as you go. The
+queue round-robins across PRs so topics interleave; `--models`/`--pr`/`--rubric` narrow it.
+`calibration.py` and `power.py` read the live decisions, so their numbers sharpen as you label.
+
 ## Rebuilding the database
 
 ```

@@ -8,12 +8,16 @@ go to eval/judgments/<id>.json (deterministic id -> idempotent re-runs).
 
     python3 scripts/judge.py --judge deepseek --pairs 5 --samples 3          # reliability pass
     python3 scripts/judge.py --judge deepseek --rubric correctness --all     # judge a cohort
+    python3 scripts/judge.py --judge grok --models minimax,deepseek --all    # cover one matchup
 
 The judge sees the cached diff + both reviews rendered through one uniform, anonymized template
 (no model identity, order set by the pass). Model is invoked read-only via its CLI (pi for
 OpenRouter, claude/codex for subscription); pricing comes from the cost the runner-style call
 reports. This is text-grounded judging (diff + structured reviews); a later version can give the
 judge the code checkout to verify findings by grep.
+
+Part of the eval pipeline (make_pairs -> judge -> label -> calibration/power). Keep the README's
+"Labelling and analysis" section in sync when these scripts' flags or behaviour change.
 """
 import argparse
 import collections

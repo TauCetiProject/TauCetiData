@@ -11,6 +11,10 @@ where they're most informative for calibration.
     gh auth status            # be logged in
     python3 scripts/label.py              # label until you quit
     python3 scripts/label.py --rubric correctness
+    python3 scripts/label.py --models minimax,deepseek   # focus one matchup
+
+Part of the eval pipeline (make_pairs -> judge -> label -> calibration/power). Keep the README's
+"Labelling and analysis" section in sync when these scripts' flags or behaviour change.
 """
 import argparse
 import collections

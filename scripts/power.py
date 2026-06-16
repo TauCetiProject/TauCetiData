@@ -18,6 +18,9 @@ accumulate. With a few dozen labels the effect-size estimate is very wide -- tre
 matchup tallies as "how sparse is the per-matchup data", not as decided win rates.
 
     python3 scripts/power.py
+
+Part of the eval pipeline (make_pairs -> judge -> label -> calibration/power). Keep the README's
+"Labelling and analysis" section in sync when these scripts' flags or behaviour change.
 """
 import collections
 import glob

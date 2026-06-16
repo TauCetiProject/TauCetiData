@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Preliminary calibration: do human decisions agree with the AI judges/panels?
-Joins eval/decisions (human) with eval/judgments (AI, v2 order-stable consensus)."""
+Joins eval/decisions (human) with eval/judgments (AI order-stable consensus, using the latest
+prompt version each pair was judged under).
+
+Part of the eval pipeline (make_pairs -> judge -> label -> calibration/power). Keep the README's
+"Labelling and analysis" section in sync when these scripts' flags or behaviour change."""
 import collections, glob, json, itertools
 import tcdata
 
