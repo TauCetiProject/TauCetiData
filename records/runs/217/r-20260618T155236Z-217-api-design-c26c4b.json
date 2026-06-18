@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.34572,
+   "returncode": 0,
+   "secs": 74.4,
+   "usage": {
+    "cached_input_tokens": 51200,
+    "input_tokens": 92838,
+    "output_tokens": 3731,
+    "reasoning_output_tokens": 2180
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f10a18e987451adbe118062e2dbd1f4d133137e0",
+ "cost_estimated": true,
+ "cost_usd": 0.34572,
+ "dedupe_key": "FormalFrontier/TauCeti|217|c7a3c65e6e9c093bd11fd54f1b53ce64ef5bd2dc|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "c52d9d237f9f40286a6d4c5776b8c111bec7b37fccf7ef669592612b7d871b7c",
+ "diff_sha256": "c52d9d237f9f40286a6d4c5776b8c111bec7b37fccf7ef669592612b7d871b7c",
+ "duration_s": 74.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 277-290 define `IsEmpty := R.toGridRectangle.IsEmptyFor x` and only expose `not_mem_interior_of_isEmpty`; roadmap line 215 names empty rectangles `Rect\u00b0(x, y)` as the target object.",
+   "file": "TauCeti/KnotTheory/Grid/Rectangle.lean",
+   "fix": "Add characteristic lemmas such as `isEmpty_iff`, `isEmpty_iff_target`, and target/source elimination lemmas, proving target equivalence via `mem_target_pointSet_iff_of_ne` and endpoint exclusion from `cyclicOpen`.",
+   "issue": "`GridRectangleBetween.IsEmpty` exposes the empty-rectangle predicate for `Rect\u00b0(x, y)` but only provides the one-way source-state eliminator `not_mem_interior_of_isEmpty`; there is no `R.IsEmpty \u2194 ...` theorem and no target-state characterization, although `y` differs from `x` only on boundary columns.",
+   "line": 279
+  },
+  {
+   "evidence": "Lines 125-147 define `columnInterior`, `rowInterior`, and `mem_interior`; the only cyclic membership theorem is `Grid.mem_cyclicOpen` at lines 56-66, with no rectangle-level bridge.",
+   "file": "TauCeti/KnotTheory/Grid/Rectangle.lean",
+   "fix": "Add simp-normal membership/endpoint lemmas for `columnInterior` and `rowInterior` (or simp def lemmas) so users can reason about sides and cyclic inequalities without unfolding the definitions manually.",
+   "issue": "`columnInterior` and `rowInterior` are public definitions, but their public API has no `mem_columnInterior`/`mem_rowInterior` or endpoint lemmas; `mem_interior` stops at these aliases instead of the underlying cyclic intervals.",
+   "line": 126
+  },
+  {
+   "evidence": "Lines 282-285 define `GridRectangleBetween.AvoidsMarkings`; grep shows the only avoids-markings API is for `GridRectangle` at lines 190-205.",
+   "file": "TauCeti/KnotTheory/Grid/Rectangle.lean",
+   "fix": "Add forwarding lemmas for `GridRectangleBetween.AvoidsMarkings`, at least an iff to separate O/X disjointness and direct no-O/no-X-in-interior eliminators matching the `GridRectangle` API.",
+   "issue": "`GridRectangleBetween.AvoidsMarkings` is a public wrapper but has no characteristic API, so downstream blocked-rectangle proofs must unfold it to use `GridRectangle.avoidsMarkings_iff` or the O/X disjoint eliminators.",
+   "line": 284
+  }
+ ],
+ "head_sha": "c7a3c65e6e9c093bd11fd54f1b53ce64ef5bd2dc",
+ "merge_base_sha": "f10a18e987451adbe118062e2dbd1f4d133137e0",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 217,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "78d7a54af7e59f878b0851e10735d0b41016e473cb9d34aa9b30f1187a60135a",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5099dcbc3dac86ac38c22ea17018347764d453af",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260618T155236Z-217-api-design-c26c4b",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-18T15:52:36Z",
+ "submitted_by": "kim-em",
+ "summary": "The exposed rectangle predicates are useful, but the public API is not yet characteristic enough for the roadmap target `Rect\u00b0(x, y)` without unfolding wrapper definitions. Add forwarding/iff lemmas for the between-state predicates and direct membership lemmas for the public interior components.",
+ "transcript_blob": "bfcedc6fbdeeaf953f0c9b076929c1f0807df8c2045a2da93c305b8b807229a9",
+ "usage": {
+  "cached_input_tokens": 51200,
+  "input_tokens": 92838,
+  "output_tokens": 3731,
+  "reasoning_output_tokens": 2180
+ },
+ "verdict": "request_changes"
+}
