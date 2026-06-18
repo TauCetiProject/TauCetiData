@@ -79,7 +79,7 @@ def main():
     CREATE TABLE human_decisions (
       decision_id TEXT PRIMARY KEY, pair_id TEXT, winner_arm TEXT, raw_choice TEXT,
       presented_first_arm TEXT, labeller TEXT, note TEXT, revised INTEGER,
-      pr INTEGER, rubric TEXT, duration_s REAL, ts TEXT
+      pr INTEGER, rubric TEXT, duration_s REAL, ts TEXT, diff_blob TEXT, arms TEXT
     );
     """)
 
@@ -147,11 +147,12 @@ def main():
                             r.get("audit"), j(r.get("judgment_ids")), r.get("reason"),
                             r.get("ts")))
             else:
-                db.execute("INSERT OR REPLACE INTO human_decisions VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                db.execute("INSERT OR REPLACE INTO human_decisions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                            (r["decision_id"], r["pair_id"], r.get("winner_arm"),
                             r.get("raw_choice"), r.get("presented_first_arm"),
                             r.get("labeller"), r.get("note"), r.get("revised"),
-                            r.get("pr"), r.get("rubric"), r.get("duration_s"), r.get("ts")))
+                            r.get("pr"), r.get("rubric"), r.get("duration_s"), r.get("ts"),
+                            r.get("diff_blob"), j(r.get("arms"))))
 
     db.executescript("""
     CREATE VIEW ab_pairs AS
