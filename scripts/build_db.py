@@ -44,7 +44,8 @@ def main():
       prompt_sha256 TEXT, diff_sha256 TEXT, diff_prompt_truncated INTEGER,
       started_at TEXT, duration_s REAL, attempts TEXT, usage TEXT,
       cost_usd REAL, cost_estimated INTEGER, verdict TEXT, confidence TEXT, summary TEXT,
-      transcript_blob TEXT, diff_blob TEXT, fidelity TEXT, n_findings INTEGER
+      transcript_blob TEXT, diff_blob TEXT, fidelity TEXT, n_findings INTEGER,
+      cost_usd_legacy REAL, cost_recosted INTEGER, prices_sha TEXT
     );
     CREATE TABLE findings (
       run_id TEXT, idx INTEGER, file TEXT, line TEXT, issue TEXT, fix TEXT, evidence TEXT
@@ -53,7 +54,8 @@ def main():
       round_id TEXT PRIMARY KEY, repo TEXT, pr INTEGER, round INTEGER, ts TEXT, mode TEXT,
       arm TEXT, source TEXT, head_sha TEXT, base_ref_oid TEXT, merge_base_sha TEXT,
       rubrics_sha TEXT, rubrics_version TEXT, diff_sha256 TEXT, ran TEXT, run_ids TEXT,
-      states TEXT, overall TEXT, cost REAL, halted_at TEXT, fidelity TEXT
+      states TEXT, overall TEXT, cost REAL, halted_at TEXT, fidelity TEXT,
+      cost_legacy REAL, cost_recosted INTEGER
     );
     CREATE TABLE posts (
       repo TEXT, pr INTEGER, round INTEGER, head_sha TEXT, posted_at TEXT,
@@ -66,17 +68,18 @@ def main():
       diff_blob TEXT, created_ts TEXT
     );
     CREATE TABLE judgments (
-      judgment_id TEXT PRIMARY KEY, pair_id TEXT, sample INTEGER, judge_provider TEXT,
-      judge_model TEXT, prompt_sha256 TEXT, decision TEXT, confidence TEXT,
-      passes TEXT, cost_usd REAL, ts TEXT
+      judgment_id TEXT PRIMARY KEY, pair_id TEXT, sample INTEGER, judge_spec TEXT,
+      judge_model TEXT, prompt_sha TEXT, winner_arm TEXT, confidence TEXT,
+      "order" TEXT, rationale TEXT, rubric TEXT, pr INTEGER
     );
     CREATE TABLE resolutions (
       pair_id TEXT, policy TEXT, status TEXT, consensus TEXT, audit INTEGER,
       judgment_ids TEXT, reason TEXT, ts TEXT, PRIMARY KEY (pair_id, policy)
     );
     CREATE TABLE human_decisions (
-      decision_id TEXT PRIMARY KEY, pair_id TEXT, decision TEXT, raw_choice TEXT,
-      presented TEXT, github_login TEXT, comment TEXT, context TEXT, duration_s REAL, ts TEXT
+      decision_id TEXT PRIMARY KEY, pair_id TEXT, winner_arm TEXT, raw_choice TEXT,
+      presented_first_arm TEXT, labeller TEXT, note TEXT, revised INTEGER,
+      pr INTEGER, rubric TEXT, duration_s REAL, ts TEXT, diff_blob TEXT, arms TEXT
     );
     """)
 
@@ -84,7 +87,7 @@ def main():
         fnd = r.get("findings") or []
         db.execute(
             "INSERT OR REPLACE INTO runs VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
-            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (r.get("run_id"), r.get("dedupe_key"), r.get("source"), r.get("arm"),
              r.get("prompt_policy"), r.get("repo"), r.get("pr"), r.get("round"),
              r.get("head_sha"), r.get("base_ref_oid"), r.get("merge_base_sha"),
@@ -95,20 +98,22 @@ def main():
              j(r.get("attempts")), j(r.get("usage")), r.get("cost_usd"),
              r.get("cost_estimated"), r.get("verdict"), r.get("confidence"),
              r.get("summary"), r.get("transcript_blob"), r.get("diff_blob"),
-             r.get("fidelity"), len(fnd)))
+             r.get("fidelity"), len(fnd),
+             r.get("cost_usd_legacy"), r.get("cost_recosted"), r.get("prices_sha")))
         for i, f in enumerate(fnd):
             db.execute("INSERT INTO findings VALUES (?,?,?,?,?,?,?)",
                        (r.get("run_id"), i, f.get("file"), str(f.get("line") or ""),
                         f.get("issue"), f.get("fix"), f.get("evidence")))
 
     for _, r in records("records/rounds"):
-        db.execute("INSERT OR REPLACE INTO rounds VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        db.execute("INSERT OR REPLACE INTO rounds VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                    (r.get("round_id"), r.get("repo"), r.get("pr"), r.get("round"), r.get("ts"),
                     r.get("mode"), r.get("arm"), r.get("source"), r.get("head_sha"),
                     r.get("base_ref_oid"), r.get("merge_base_sha"), r.get("rubrics_sha"),
                     r.get("rubrics_version"), r.get("diff_sha256"), j(r.get("ran")),
                     j(r.get("run_ids")), j(r.get("states")), r.get("overall"),
-                    r.get("cost"), r.get("halted_at"), r.get("fidelity")))
+                    r.get("cost"), r.get("halted_at"), r.get("fidelity"),
+                    r.get("cost_legacy"), r.get("cost_recosted")))
 
     for _, r in records("records/posts"):
         db.execute("INSERT INTO posts VALUES (?,?,?,?,?,?,?,?)",
@@ -129,23 +134,25 @@ def main():
                             a.get("verdict"), b.get("verdict"), r.get("diff_blob"),
                             r.get("created_ts")))
             elif table == "judgments":
-                db.execute("INSERT OR REPLACE INTO judgments VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                judge = r.get("judge") or {}
+                db.execute("INSERT OR REPLACE INTO judgments VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                            (r["judgment_id"], r["pair_id"], r.get("sample"),
-                            r["judge"].get("provider"), r["judge"].get("model"),
-                            r["judge"].get("prompt_sha256"), r.get("decision"),
-                            r.get("confidence"), j(r.get("passes")), r.get("cost_usd"),
-                            r.get("ts")))
+                            judge.get("spec"), judge.get("model"),
+                            judge.get("prompt_sha"), r.get("winner_arm"),
+                            r.get("confidence"), r.get("order"), r.get("rationale"),
+                            r.get("rubric"), r.get("pr")))
             elif table == "resolutions":
                 db.execute("INSERT OR REPLACE INTO resolutions VALUES (?,?,?,?,?,?,?,?)",
                            (r["pair_id"], r.get("policy"), r.get("status"), r.get("consensus"),
                             r.get("audit"), j(r.get("judgment_ids")), r.get("reason"),
                             r.get("ts")))
             else:
-                db.execute("INSERT OR REPLACE INTO human_decisions VALUES (?,?,?,?,?,?,?,?,?,?)",
-                           (r["decision_id"], r["pair_id"], r.get("decision"),
-                            r.get("raw_choice"), j(r.get("presented")),
-                            (r.get("reviewer") or {}).get("github_login"), r.get("comment"),
-                            r.get("context"), r.get("duration_s"), r.get("ts")))
+                db.execute("INSERT OR REPLACE INTO human_decisions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                           (r["decision_id"], r["pair_id"], r.get("winner_arm"),
+                            r.get("raw_choice"), r.get("presented_first_arm"),
+                            r.get("labeller"), r.get("note"), r.get("revised"),
+                            r.get("pr"), r.get("rubric"), r.get("duration_s"), r.get("ts"),
+                            r.get("diff_blob"), j(r.get("arms"))))
 
     db.executescript("""
     CREATE VIEW ab_pairs AS
@@ -175,12 +182,12 @@ def main():
       SELECT p.pair_id, p.pr, p.rubric, p.model_a, p.model_b,
              p.rubrics_sha_a, p.rubrics_sha_b,
              res.consensus AS ai_consensus, res.status, res.audit,
-             hd.decision AS human_decision, hd.github_login AS human_login,
-             COALESCE(hd.decision, res.consensus) AS final_label
+             hd.winner_arm AS human_decision, hd.labeller AS human_login,
+             COALESCE(hd.winner_arm, res.consensus) AS final_label
       FROM pairs p
       LEFT JOIN resolutions res ON res.pair_id = p.pair_id
-      LEFT JOIN (SELECT pair_id, decision, github_login,
-                        MAX(ts) OVER (PARTITION BY pair_id, github_login) AS _last, ts
+      LEFT JOIN (SELECT pair_id, winner_arm, labeller,
+                        MAX(ts) OVER (PARTITION BY pair_id, labeller) AS _last, ts
                  FROM human_decisions) hd
         ON hd.pair_id = p.pair_id AND hd.ts = hd._last;
     """)
