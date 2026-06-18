@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.26551,
+   "returncode": 0,
+   "secs": 45.9,
+   "usage": {
+    "cached_input_tokens": 39040,
+    "input_tokens": 75854,
+    "output_tokens": 2064,
+    "reasoning_output_tokens": 930
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7b42845ff2c77548d51f3789ee9ae5cc9c2795d9",
+ "cost_estimated": true,
+ "cost_usd": 0.26551,
+ "dedupe_key": "FormalFrontier/TauCeti|206|cc2fd1771bd6b21cf7b3ad823da244f99ad8f1f8|deprecation|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "9e67f26b906a40d6d7c89e9fe29e8495d9139ba21481c480c809f012c704305b",
+ "diff_sha256": "9e67f26b906a40d6d7c89e9fe29e8495d9139ba21481c480c809f012c704305b",
+ "duration_s": 45.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Current lines 41 and 47 show `variable ... {\u03b9 : Type*}` with `noncomputable def signPattern`; the diff shows this used to be under `variable ... {\u03b9 : Type*} [Finite \u03b9]`, and there was no `omit [Finite \u03b9] in` on the definition itself.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/GaloisGroup.lean",
+   "fix": "Preserve the old public API, or move the generalized definition to a new name and leave a dated `@[deprecated]` compatibility alias for the old finite-signature entry point.",
+   "issue": "`signPattern` is public and no longer carries the previous `[Finite \u03b9]` instance argument after the file-level variable was changed, so explicit downstream uses of the old constant arity can break despite the PR claiming no public signatures changed.",
+   "line": 47
+  },
+  {
+   "evidence": "Current line 168 defines `noncomputable def signHom` under the non-finite variable block at line 41; the diff only had `omit [Finite \u03b9] in` for `signHom_apply` and `signHom_injective`, not for `signHom` itself, so the old public definition inherited `[Finite \u03b9]`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/GaloisGroup.lean",
+   "fix": "Keep `signHom` at the old finite-signature API or introduce the generalized hom under a new name and provide a dated deprecated wrapper for the old signature.",
+   "issue": "`signHom` is public and likewise loses the inherited `[Finite \u03b9]` argument, changing the exported declaration signature without a deprecation path.",
+   "line": 168
+  }
+ ],
+ "head_sha": "cc2fd1771bd6b21cf7b3ad823da244f99ad8f1f8",
+ "merge_base_sha": "e642cc5931da9f54b9933f4a622f6d59c7b920a8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 206,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4a6f12cf7ad4602305b4e49adbd6d8026b13db2985d391340c1c47b905ea2f79",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "deprecation",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "38dc1b745c106fa3e783d80762e3f9f446be7275",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260618T091753Z-206-deprecation-641fbc",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-18T09:17:53Z",
+ "submitted_by": "kim-em",
+ "summary": "The cleanup removes an unused file-level instance, but that silently changes the public signatures of `signPattern` and `signHom`. Deleted helpers are private and the finite Galois-group results keep their `[Finite \u03b9]` requirement.",
+ "transcript_blob": "45133053329c9086e7559f83e9653b9a7f788eeff8e7cda4439cb7cf6a5497ce",
+ "usage": {
+  "cached_input_tokens": 39040,
+  "input_tokens": 75854,
+  "output_tokens": 2064,
+  "reasoning_output_tokens": 930
+ },
+ "verdict": "request_changes"
+}
