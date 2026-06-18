@@ -21,8 +21,13 @@ DB = ROOT / "db" / "tauceti.db"
 
 def records(subdir):
     for p in sorted((ROOT / subdir).rglob("*.json")):
+        text = p.read_text()
+        if "<<<<<<<" in text or "\n>>>>>>>" in text:
+            # A record with conflict markers is corruption from a botched merge, not data. Fail
+            # loudly: silently skipping it (the old behaviour) hid the loss for days.
+            raise SystemExit(f"error: {p} contains git conflict markers; repair it before building")
         try:
-            yield p, json.loads(p.read_text())
+            yield p, json.loads(text)
         except Exception as e:
             print(f"warning: unreadable record {p}: {e}", file=sys.stderr)
 

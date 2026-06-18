@@ -96,7 +96,7 @@ def ingest_store(store, source, repo, bases, counts):
                     rec["transcript_blob"] = tcdata.write_blob(art["text"])
                 counts[tcdata.write_record(
                     f"records/runs/{pr}/{run_id}.json",
-                    {k: v for k, v in rec.items() if v is not None})] += 1
+                    {k: v for k, v in rec.items() if v is not None}, id_field="run_id")] += 1
             rrec = {
                 "schema": "tauceti.round/v1", "round_id": f"{pr}-{num}",
                 "repo": repo, "pr": int(pr), "round": num, "ts": ts or None,
@@ -112,18 +112,22 @@ def ingest_store(store, source, repo, bases, counts):
                 body = sb.read_text()
                 rrec["scoreboard_sha256"] = hashlib.sha256(body.encode()).hexdigest()
                 rrec["scoreboard_blob"] = tcdata.write_blob(body)
+            # Round numbering is per-store: CI and the local worker each count their own rounds,
+            # and early PRs were reviewed from both. The execution history (run records) is keyed
+            # by timestamp so it never collides; disambiguate the CI round envelope with a readable
+            # `-ci` id rather than the generic hash sibling. Check first so we land directly on the
+            # `-ci` path; write_record still backstops any residual collision losslessly.
+            rid = f"{pr}-{num}"
+            base = tcdata.ROOT / f"records/rounds/{pr}/{rid}.json"
+            if (source == "backfill-reviews-branch" and base.exists()
+                    and base.read_text() != json.dumps(
+                        {k: v for k, v in rrec.items() if v is not None},
+                        indent=1, sort_keys=True) + "\n"):
+                rid = f"{pr}-{num}-ci"
+            rrec["round_id"] = rid
             status = tcdata.write_record(
-                f"records/rounds/{pr}/{pr}-{num}.json",
-                {k: v for k, v in rrec.items() if v is not None})
-            if status == "conflict" and source == "backfill-reviews-branch":
-                # Round numbering is per-store: CI and the local worker each count their own
-                # rounds, and early PRs were reviewed from both. The execution history (run
-                # records) is keyed by timestamp so it never collides; disambiguate the CI
-                # round envelope instead of dropping it.
-                rrec["round_id"] = f"{pr}-{num}-ci"
-                status = tcdata.write_record(
-                    f"records/rounds/{pr}/{pr}-{num}-ci.json",
-                    {k: v for k, v in rrec.items() if v is not None})
+                f"records/rounds/{pr}/{rid}.json",
+                {k: v for k, v in rrec.items() if v is not None}, id_field="round_id")
             counts[status] += 1
             seen_rubrics.update(rnd.get("ran", []))
 
@@ -141,7 +145,7 @@ def main():
 
     bases = base_oids(a.repo)
     print(f"base_ref_oid recovered for {len(bases)} PRs", file=sys.stderr)
-    counts = {"new": 0, "same": 0, "conflict": 0}
+    counts = {"new": 0, "same": 0, "preserved": 0}
 
     if a.store:
         ingest_store(pathlib.Path(a.store).expanduser(), "backfill-ledger", a.repo, bases, counts)
@@ -156,7 +160,7 @@ def main():
                          bases, counts)
 
     print(f"ingest: new={counts['new']} unchanged={counts['same']} "
-          f"conflicts={counts['conflict']}")
+          f"preserved={counts['preserved']}")
 
 
 if __name__ == "__main__":

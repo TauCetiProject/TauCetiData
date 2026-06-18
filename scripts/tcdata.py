@@ -37,20 +37,38 @@ def write_blob(text, root=None):
     return sha
 
 
-def write_record(rel, record, root=None):
-    """Write-if-absent. Returns 'new', 'same', or 'conflict' (existing file, different
-    content — logged and left alone; backfill must never clobber a live record)."""
-    path = (root or ROOT) / rel
+def write_record(rel, record, root=None, id_field=None):
+    """Write-if-absent and never lossy. Returns 'new', 'same', or 'preserved'.
+
+    A same-path/different-content write is a real id collision. Rather than clobber the existing
+    record or silently drop the newcomer (the old behaviour, which lost data), the newcomer is
+    kept under a content-disambiguated sibling `<stem>-<disc>.json`, with its own primary key
+    (`id_field`, e.g. round_id / run_id) rewritten to carry the same `disc` — otherwise the
+    derived DB, which keys those columns PRIMARY KEY, would collapse the two rows back into one.
+    Records carrying git conflict markers are refused so a botched merge can never enter as data."""
+    root = root or ROOT
     body = json.dumps(record, indent=1, sort_keys=True) + "\n"
-    if path.exists():
-        if path.read_text() == body:
+    if "<<<<<<<" in body or "\n>>>>>>>" in body:
+        raise RuntimeError(f"refusing to write record with conflict markers at {rel}")
+    path = root / rel
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(body)
+        return "new"
+    if path.read_text() == body:
+        return "same"
+    disc = hashlib.sha256(body.encode()).hexdigest()[:12]
+    if id_field and record.get(id_field):
+        record = dict(record, **{id_field: f"{record[id_field]}-{disc}"})
+        body = json.dumps(record, indent=1, sort_keys=True) + "\n"
+    sib = path.with_name(f"{path.stem}-{disc}{path.suffix}")
+    if sib.exists():
+        if sib.read_text() == body:
             return "same"
-        print(f"warning: {rel} exists with different content; keeping the existing record",
-              file=sys.stderr)
-        return "conflict"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(body)
-    return "new"
+        raise RuntimeError(f"collision at {rel}: sibling {sib.name} already differs")
+    sib.write_text(body)
+    print(f"note: id collision at {rel}; preserved newcomer as {sib.name}", file=sys.stderr)
+    return "preserved"
 
 
 def arm_id(arm):
