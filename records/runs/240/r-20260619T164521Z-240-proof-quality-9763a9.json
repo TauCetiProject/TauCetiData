@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.140661,
+   "returncode": 0,
+   "secs": 40.6,
+   "usage": {
+    "cached_input_tokens": 27392,
+    "input_tokens": 44919,
+    "output_tokens": 1311,
+    "reasoning_output_tokens": 535
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a28e9f8019183b2a0e988511dcaf794740e71d9b",
+ "cost_estimated": true,
+ "cost_usd": 0.140661,
+ "dedupe_key": "FormalFrontier/TauCeti|240|46726c8faf12fbf2c48ba275bc1134666e751ef4|proof-quality|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "c608e793f62dccadd3e1ed04a792f696e51c500683aa37640f05925dad9cfd56",
+ "diff_sha256": "c608e793f62dccadd3e1ed04a792f696e51c500683aa37640f05925dad9cfd56",
+ "duration_s": 40.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"simpa only \\[LinearMap.rTensor_map\"` hits lines 103 and 126; the two preceding blocks differ only by `LinearMap.inl` versus `LinearMap.inr`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Product.lean",
+   "fix": "Factor a reusable helper lemma saying coassociativity is preserved after applying `TensorProduct.map f id` along a linear map whose composed coaction is known, then use it for both inclusions.",
+   "issue": "The `prodCoact_coassoc_inl`/`prodCoact_coassoc_inr` proofs are duplicated and finish by a long `simpa only` over low-level tensor/linear-map lemmas, obscuring the naturality fact being used.",
+   "line": 103
+  },
+  {
+   "evidence": "`rg -n \"simpa only \\[LinearMap.lTensor_map\"` hits lines 150 and 162 with identical proof structure except for `LinearMap.inl`/`LinearMap.inr`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Product.lean",
+   "fix": "Extract the common counit-naturality argument into a lemma parameterized by the linear map into `M \u00d7 N`, and invoke it for both canonical inclusions.",
+   "issue": "The counit proofs repeat the same low-level `congrArg` plus `simpa only` normalization for `inl` and `inr`, again depending on a brittle list of implementation lemmas.",
+   "line": 150
+  }
+ ],
+ "head_sha": "46726c8faf12fbf2c48ba275bc1134666e751ef4",
+ "merge_base_sha": "a28e9f8019183b2a0e988511dcaf794740e71d9b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 240,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a6624bd7cbcd271bf99dba2eee0d1ac10dda825e6deb0e689409c9880a9e6135",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "7ecaf30e16a652142de8824a38738bed44614901",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260619T164521Z-240-proof-quality-9763a9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-19T16:45:21Z",
+ "submitted_by": "kim-em",
+ "summary": "The product construction is organized into lemmas, but the main coassociativity and counit proofs rely on duplicated low-level tensor-map normalization chains that are brittle under Mathlib API changes.",
+ "transcript_blob": "bfb8990b71c6f974ae68dd56fa36f0b896c237544d5db42c7adb0ad0458e197c",
+ "usage": {
+  "cached_input_tokens": 27392,
+  "input_tokens": 44919,
+  "output_tokens": 1311,
+  "reasoning_output_tokens": 535
+ },
+ "verdict": "request_changes"
+}
