@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.277923,
+   "returncode": 0,
+   "secs": 50.2,
+   "usage": {
+    "cached_input_tokens": 101376,
+    "input_tokens": 132741,
+    "output_tokens": 2347,
+    "reasoning_output_tokens": 1020
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f62547d0d31514a9c0ef5ac917aae402b7498711",
+ "cost_estimated": true,
+ "cost_usd": 0.277923,
+ "dedupe_key": "FormalFrontier/TauCeti|232|5ea3a36c312d64eb1c9ba0d8a7075b78948242c1|generality|gpt-5.5|e1aee6e8c6688dd8|production|3",
+ "diff_blob": "f93b6f443586179f1a3282d32cb3ac7ab7047566fca6f58727651604b4b4fe29",
+ "diff_sha256": "f93b6f443586179f1a3282d32cb3ac7ab7047566fca6f58727651604b4b4fe29",
+ "duration_s": 50.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`JHolomorphic.lean:36-44` puts the definition after normed-space variables; `AlmostComplex.lean:46-48` defines `AlmostComplexStructure` using only `[AddCommGroup V] [Module \u211d V]` and `V \u2192\u2097[\u211d] V`.",
+   "file": "TauCeti/Geometry/Symplectic/JHolomorphic.lean",
+   "fix": "Move `IsComplexLinearMap`, `isComplexLinearMap_iff_apply`, `zero`, `id`, and `comp` into an algebraic section with `[AddCommGroup V] [Module \u211d V]` etc., and introduce normed-space assumptions only for the derivative predicates.",
+   "issue": "`IsComplexLinearMap` and its algebraic lemmas are declared under the file-wide `[NormedAddCommGroup] [NormedSpace \u211d]` variables even though they only use real module structure.",
+   "line": 42
+  },
+  {
+   "evidence": "`JHolomorphic.lean:86-94` defines `IsJHolomorphicWithinAt`/`IsJHolomorphicOn`, but `JHolomorphic.lean:193-226` only has at/global composition; Mathlib has the corresponding setwise chain rules at `FDeriv/Comp.lean:74` (`HasFDerivWithinAt.comp ... MapsTo`) and `FDeriv/Comp.lean:194` (`DifferentiableOn.comp ... MapsTo`).",
+   "file": "TauCeti/Geometry/Symplectic/JHolomorphic.lean",
+   "fix": "Add setwise composition first, e.g. `IsJHolomorphicWithinAt.comp` with `hg : IsJHolomorphicWithinAt J' J'' g t (f x)`, `hf : IsJHolomorphicWithinAt J J' f s x`, and `hst : MapsTo f s t`, then derive `IsJHolomorphicOn.comp`.",
+   "issue": "Composition is proved only for `IsJHolomorphicAt` and global `IsJHolomorphic`, leaving the newly introduced `WithinAt`/`On` predicates without the natural setwise chain rule.",
+   "line": 193
+  }
+ ],
+ "head_sha": "5ea3a36c312d64eb1c9ba0d8a7075b78948242c1",
+ "merge_base_sha": "f62547d0d31514a9c0ef5ac917aae402b7498711",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 232,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "cec06fce9e5ec6e5e5a0a93bff9931f62e0a106e13e8db71d751aecde994ae18",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "2c64b79c43382ab44eebc056f6e8e11213e3d567",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260619T092600Z-232-generality-6e1c4d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-19T09:26:00Z",
+ "submitted_by": "kim-em",
+ "summary": "The analytic predicates are at the intended fixed-structure level, but the API is under-generalized in two places: the purely linear predicate unnecessarily requires normed spaces, and the introduced setwise predicates lack the natural chain-rule lemmas.",
+ "transcript_blob": "2fbabf0f5bdf5433a96e04903cc93a84ea6e75aac3c89afcbf08280e4d9ea98d",
+ "usage": {
+  "cached_input_tokens": 101376,
+  "input_tokens": 132741,
+  "output_tokens": 2347,
+  "reasoning_output_tokens": 1020
+ },
+ "verdict": "request_changes"
+}

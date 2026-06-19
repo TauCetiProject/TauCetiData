@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.284361,
+   "returncode": 0,
+   "secs": 53.3,
+   "usage": {
+    "cached_input_tokens": 54912,
+    "input_tokens": 90549,
+    "output_tokens": 2624,
+    "reasoning_output_tokens": 1439
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f62547d0d31514a9c0ef5ac917aae402b7498711",
+ "cost_estimated": true,
+ "cost_usd": 0.284361,
+ "dedupe_key": "FormalFrontier/TauCeti|232|5ea3a36c312d64eb1c9ba0d8a7075b78948242c1|api-design|gpt-5.5|e1aee6e8c6688dd8|production|3",
+ "diff_blob": "f93b6f443586179f1a3282d32cb3ac7ab7047566fca6f58727651604b4b4fe29",
+ "diff_sha256": "f93b6f443586179f1a3282d32cb3ac7ab7047566fca6f58727651604b4b4fe29",
+ "duration_s": 53.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg \"IsJHolomorphic.*comp\" code/TauCeti/Geometry/Symplectic/JHolomorphic.lean` finds only lines 193 and 221; Mathlib provides `HasFDerivWithinAt.comp` at `mathlib/Mathlib/Analysis/Calculus/FDeriv/Comp.lean:74-76`.",
+   "file": "TauCeti/Geometry/Symplectic/JHolomorphic.lean",
+   "fix": "Add `IsJHolomorphicWithinAt.comp` with a `MapsTo f s t` or `Tendsto f (\ud835\udcdd[s] x) (\ud835\udcdd[t] (f x))` hypothesis, and `IsJHolomorphicOn.comp` with `MapsTo f s t`, using `HasFDerivWithinAt.comp`.",
+   "issue": "`IsJHolomorphicWithinAt` and `IsJHolomorphicOn` are public, but composition is only exposed for `IsJHolomorphicAt` and global `IsJHolomorphic`, leaving local/setwise users without the operation lemma for the public API.",
+   "line": 86
+  },
+  {
+   "evidence": "`rg -n \"\\@\\[simp\\]|isJHolomorphic.*const|isJHolomorphic.*id|IsComplexLinearMap\" code/TauCeti/Geometry/Symplectic/JHolomorphic.lean` shows only `isJHolomorphicOn_univ` is tagged `@[simp]`, while the normal-form lemmas are at lines 53, 60, 184, 189, 214, and 218.",
+   "file": "TauCeti/Geometry/Symplectic/JHolomorphic.lean",
+   "fix": "Add `@[simp]` to `isComplexLinearMap_zero`, `isComplexLinearMap_id`, `isJHolomorphicAt_const`, `isJHolomorphicAt_id`, `isJHolomorphic_const`, and `isJHolomorphic_id`; add within/on variants too if those are intended normal forms.",
+   "issue": "The zero/id/constant holomorphic normal forms are unannotated, so `simp` will not close the basic goals introduced by these public definitions.",
+   "line": 53
+  }
+ ],
+ "head_sha": "5ea3a36c312d64eb1c9ba0d8a7075b78948242c1",
+ "merge_base_sha": "f62547d0d31514a9c0ef5ac917aae402b7498711",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 232,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "ec360791d1425ca43cac3b66c79c972ab4474ea790fc0eed8265f5f872996c6f",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "2c64b79c43382ab44eebc056f6e8e11213e3d567",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260619T092507Z-232-api-design-8ef854",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-19T09:25:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The public predicates expose within/setwise holomorphicity but do not provide the corresponding composition API, and the basic normal-form lemmas are not marked for automation. Downstream local chart proofs would have to unfold the new predicates or reprove derivative composition and terminal cases.",
+ "transcript_blob": "e739dfd8244c5dcc4a2075d3bcad46841d92edaabd13ebce3810bcb8a8462ab6",
+ "usage": {
+  "cached_input_tokens": 54912,
+  "input_tokens": 90549,
+  "output_tokens": 2624,
+  "reasoning_output_tokens": 1439
+ },
+ "verdict": "request_changes"
+}
