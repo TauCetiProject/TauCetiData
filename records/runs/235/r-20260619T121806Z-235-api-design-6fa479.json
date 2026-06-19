@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.418955,
+   "returncode": 0,
+   "secs": 88.8,
+   "usage": {
+    "cached_input_tokens": 124800,
+    "input_tokens": 173761,
+    "output_tokens": 3725,
+    "reasoning_output_tokens": 2020
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b459c729ddaa24b5dfc6cddea0733511398b42d4",
+ "cost_estimated": true,
+ "cost_usd": 0.418955,
+ "dedupe_key": "FormalFrontier/TauCeti|235|d637a453820d66bc9cd5df4d9d3cc88266fd4231|api-design|gpt-5.5|e1aee6e8c6688dd8|production|2",
+ "diff_blob": "8407ba3acf9b81eafd2ffddf21a06dff821ab08af2a37905f8966df8081fa2bc",
+ "diff_sha256": "8407ba3acf9b81eafd2ffddf21a06dff821ab08af2a37905f8966df8081fa2bc",
+ "duration_s": 88.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"isComplexLinear_arrowCongr_iff\" code/TauCeti` shows the raw public lemma only at `Transport.lean:124`, used only to prove `isComplexLinearMap_arrowCongr_iff` at lines 139-146.",
+   "file": "TauCeti/Geometry/Symplectic/Transport.lean",
+   "fix": "Make this helper `private`, or move it to `TauCeti.LinearAlgebra.ComplexLinearPart` with its own intended public API and annotations.",
+   "issue": "`isComplexLinear_arrowCongr_iff` exposes a raw `IsComplexLinear` helper from the symplectic transport file even though the advertised downstream API is the bundled `AlmostComplexStructure` transport.",
+   "line": 124
+  },
+  {
+   "evidence": "`Transport.lean:139` declares `lemma isComplexLinearMap_arrowCongr_iff` with no attribute, while the underlying raw definitional API is automation-tagged in `ComplexLinearPart.lean:79` as `@[simp, grind =] theorem isComplexLinear_iff`.",
+   "file": "TauCeti/Geometry/Symplectic/Transport.lean",
+   "fix": "Add `@[simp]` to `isComplexLinearMap_arrowCongr_iff`; if the raw helper remains public, give it the same normal-form annotation as well.",
+   "issue": "The characteristic equivalence `isComplexLinearMap_arrowCongr_iff` is not tagged for simplification, so `simp` will not normalize transported complex-linearity goals back to the original map.",
+   "line": 139
+  }
+ ],
+ "head_sha": "d637a453820d66bc9cd5df4d9d3cc88266fd4231",
+ "merge_base_sha": "b459c729ddaa24b5dfc6cddea0733511398b42d4",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 235,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "e38eb1e158013d45b129dc09e9bfe6e798b4f08b0513142a469657688b3230dd",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "7ecaf30e16a652142de8824a38738bed44614901",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260619T121806Z-235-api-design-6fa479",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-19T12:18:06Z",
+ "submitted_by": "kim-em",
+ "summary": "The bundled transport API has the main characteristic lemmas, but the public surface still exposes a raw helper outside the named downstream target and leaves the transported-linearity equivalence out of automation.",
+ "transcript_blob": "9159a805dc787f9030e16477f77e990fc15413877ec503501cf3393a3051e690",
+ "usage": {
+  "cached_input_tokens": 124800,
+  "input_tokens": 173761,
+  "output_tokens": 3725,
+  "reasoning_output_tokens": 2020
+ },
+ "verdict": "request_changes"
+}
