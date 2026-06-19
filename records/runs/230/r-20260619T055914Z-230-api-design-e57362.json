@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.374319,
+   "returncode": 0,
+   "secs": 59.6,
+   "usage": {
+    "cached_input_tokens": 74368,
+    "input_tokens": 124161,
+    "output_tokens": 2939,
+    "reasoning_output_tokens": 1573
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "57471dbe903d57a5f57e0266fb8bd2d434ab385d",
+ "cost_estimated": true,
+ "cost_usd": 0.374319,
+ "dedupe_key": "FormalFrontier/TauCeti|230|d7d798132d78d8513309499fd7a92ec8cd61f084|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "e6d3743dd9e0fdd907dcf77194bfbb8aace18abdb1bbaf85085c69c32ef98c82",
+ "diff_sha256": "e6d3743dd9e0fdd907dcf77194bfbb8aace18abdb1bbaf85085c69c32ef98c82",
+ "duration_s": 59.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Definitions are at lines 153 and 158; the only public restatements are `complexLinearPart_apply`/`complexAntilinearPart_apply` at lines 163 and 168, and `rg '_def|complexLinearPart_def|complexAntilinearPart_def'` finds no matching API in this file.",
+   "file": "TauCeti/LinearAlgebra/ComplexLinearPart.lean",
+   "fix": "Add `complexLinearPart_def` and `complexAntilinearPart_def` restating the `\u00bd \u2022 (F \u2213 J' \u2218\u2097 F \u2218\u2097 J)` formulas as LinearMap equalities, and use those instead of requiring `simp [complexLinearPart]`.",
+   "issue": "`complexLinearPart`/`complexAntilinearPart` expose only pointwise `*_apply` lemmas, so users cannot rewrite the defining LinearMap-level formula without unfolding the bodies.",
+   "line": 153
+  },
+  {
+   "evidence": "The file has `complexLinearPart_add` at lines 181-186 and `complexAntilinearPart_add` at lines 189-194; `rg 'complexLinearPart_smul|complexAntilinearPart_smul' code/TauCeti/LinearAlgebra/ComplexLinearPart.lean` has no hit.",
+   "file": "TauCeti/LinearAlgebra/ComplexLinearPart.lean",
+   "fix": "Add `complexLinearPart_smul` and `complexAntilinearPart_smul` (or bundle each part as a `LinearMap (V \u2192\u2097[\u211d] W) (V \u2192\u2097[\u211d] W)`), with the corresponding `zero`/`neg` normal-form lemmas as needed.",
+   "issue": "The parts are meant to be the linear `\u2202`/`\u2202\u0304` projections on `V \u2192\u2097[\u211d] W`, but the public API proves only additivity, not scalar compatibility, so downstream linear-operator uses must unfold the definitions.",
+   "line": 181
+  },
+  {
+   "evidence": "`complexLinearPart_apply` and `complexAntilinearPart_apply` are `[simp]` at lines 162 and 167, but `complexLinearPart_add` at line 181 and `complexAntilinearPart_add` at line 189 have no `[simp]` annotation.",
+   "file": "TauCeti/LinearAlgebra/ComplexLinearPart.lean",
+   "fix": "Mark the additive lemmas, and the new scalar/zero lemmas, with `[simp]` if oriented from a part of a compound map to the compound of parts.",
+   "issue": "The additive normal-form lemmas for the two projections are not marked `[simp]`, so `simp` will not normalize `complexLinearPart J J' (F + G)` or `complexAntilinearPart J J' (F + G)`.",
+   "line": 181
+  }
+ ],
+ "head_sha": "d7d798132d78d8513309499fd7a92ec8cd61f084",
+ "merge_base_sha": "57471dbe903d57a5f57e0266fb8bd2d434ab385d",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 230,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5b53e96a5be2e61fad537d10b6ef31c97917c2566ba1ba8534590cd669aa02bc",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "2c64b79c43382ab44eebc056f6e8e11213e3d567",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260619T055914Z-230-api-design-e57362",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-19T05:59:14Z",
+ "submitted_by": "kim-em",
+ "summary": "The exposed surface has the right core objects, but the characteristic API is not complete enough for downstream use without unfolding. Add the missing definitional and linearity lemmas, with simp annotations where they normalize expressions.",
+ "transcript_blob": "2a0c3e61b7ccb5ee170fdb61017cde32396869bd58fe8cd5eabd9079e8d47531",
+ "usage": {
+  "cached_input_tokens": 74368,
+  "input_tokens": 124161,
+  "output_tokens": 2939,
+  "reasoning_output_tokens": 1573
+ },
+ "verdict": "request_changes"
+}
