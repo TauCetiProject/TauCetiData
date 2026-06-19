@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.199416,
+   "returncode": 0,
+   "secs": 50.8,
+   "usage": {
+    "cached_input_tokens": 42112,
+    "input_tokens": 63744,
+    "output_tokens": 2340,
+    "reasoning_output_tokens": 1155
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "4ae4fc701cd617a235ab3867cf9144f4a985df49",
+ "cost_estimated": true,
+ "cost_usd": 0.199416,
+ "dedupe_key": "FormalFrontier/TauCeti|233|899baadf02e38bb09f5df7fc7209cf63b9ec81c9|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "a8c9a7338f6b89954085228c41229f4ac021890d8f2538b5ebb9b60f56e2dfe8",
+ "diff_sha256": "a8c9a7338f6b89954085228c41229f4ac021890d8f2538b5ebb9b60f56e2dfe8",
+ "duration_s": 50.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`nl -ba` shows `@[reducible]` immediately before `def complexModule` at lines 54-55, and `rg` shows the public characterization lemma `complexModule_smul_def` at line 85.",
+   "file": "TauCeti/Geometry/Symplectic/ComplexModule.lean",
+   "fix": "Remove `@[reducible]`; keep clients using `complexModule_smul_def`, `complexModule_I_smul`, `complexModule_ofReal_smul`, and the inverse lemmas instead of unfolding the body.",
+   "issue": "`complexModule` is marked `@[reducible]`, exposing the full module construction even though the file provides named characterization lemmas.",
+   "line": 54
+  },
+  {
+   "evidence": "`rg -n` shows `complexModule_I_smul` at line 91 and `complexModule_ofReal_smul` at line 98 with no `@[simp]`, while analogous apply lemmas in `AlmostComplex.lean` such as `apply_apply`, `linearEquiv_apply`, `neg_apply`, and `product_apply` are simp-normal forms.",
+   "file": "TauCeti/Geometry/Symplectic/ComplexModule.lean",
+   "fix": "Add `@[simp]` to `complexModule_I_smul` and `complexModule_ofReal_smul`; add it to `complexModule_smul_def` only if expanding arbitrary induced complex scalars is intended as the simp normal form.",
+   "issue": "The normal-form lemmas for the induced action of `Complex.I` and real scalars are not tagged for simplification, so `simp` will not recover `J v` or the original real action from the public API.",
+   "line": 91
+  },
+  {
+   "evidence": "`rg -n` finds only `ofComplexModule_complexModule` at lines 146-150 for the round trip; there is no `complexModule_ofComplexModule` or smul comparison lemma elsewhere in the checkout.",
+   "file": "TauCeti/Geometry/Symplectic/ComplexModule.lean",
+   "fix": "Add the reverse characteristic lemma, e.g. an explicit-smul statement comparing `@SMul.smul \u2102 V` from `(ofComplexModule V).complexModule` with the preexisting complex module action, or an equivalent module-equality theorem if practical.",
+   "issue": "The correspondence API only proves `ofComplexModule` after `complexModule`; it does not prove that `complexModule (ofComplexModule V)` recovers the original complex scalar action.",
+   "line": 146
+  }
+ ],
+ "head_sha": "899baadf02e38bb09f5df7fc7209cf63b9ec81c9",
+ "merge_base_sha": "4ae4fc701cd617a235ab3867cf9144f4a985df49",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 233,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "78abad553ec44ef5e6e533e8ae8c763466e1434af11b296f40ca06e294a9189a",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "2c64b79c43382ab44eebc056f6e8e11213e3d567",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260619T104626Z-233-api-design-a28804",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-19T10:46:26Z",
+ "submitted_by": "kim-em",
+ "summary": "The exposed correspondence is missing part of its characteristic API, and the intended normal-form lemmas are not available to automation. One public definition also exposes its body unnecessarily.",
+ "transcript_blob": "7397b1bd3c41d08a4990ccf52803d243c67c8ddc5d0f16509cf5ededc7e5f307",
+ "usage": {
+  "cached_input_tokens": 42112,
+  "input_tokens": 63744,
+  "output_tokens": 2340,
+  "reasoning_output_tokens": 1155
+ },
+ "verdict": "request_changes"
+}
