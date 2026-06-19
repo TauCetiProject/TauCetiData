@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.721358,
+   "returncode": 0,
+   "secs": 101.7,
+   "usage": {
+    "cached_input_tokens": 471936,
+    "input_tokens": 543670,
+    "output_tokens": 4224,
+    "reasoning_output_tokens": 2099
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ada918fd0e22ed65f9a28967d61082781de979fc",
+ "cost_estimated": true,
+ "cost_usd": 0.721358,
+ "dedupe_key": "FormalFrontier/TauCeti|241|6609a57a52fbc7a983008170ffdaa675f419ca04|generality|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "f8d1e01bcf4109301f98986340e37c2ede547249a62f2999999d6b83e929e99d",
+ "diff_sha256": "f8d1e01bcf4109301f98986340e37c2ede547249a62f2999999d6b83e929e99d",
+ "duration_s": 101.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Subcomodule` is defined over `[CommSemiring R] [AddCommMonoid C]` in `Subcomodule.lean:41-45`; Mathlib `Module.Flat.rTensor_preserves_injective_linearMap` is under `[CommSemiring R] [AddCommMonoid M]` in `RingTheory/Flat/Basic.lean:84-120`, and the diff never uses subtraction in `C`.",
+   "file": "TauCeti/Algebra/Coalgebra/Subcomodule/Comap.lean",
+   "fix": "Weaken the carrier assumption to `[AddCommMonoid C]`; keep additive group assumptions only where quotient/exact-subtype facts force them for `M`, `N`, and later targets.",
+   "issue": "`comap` requires `[AddCommGroup C]`, but the proof only tensors with `C` and uses flatness/right-exactness APIs that are stated for additive commutative monoids; this unnecessarily excludes coalgebra carriers supported by the existing `Subcomodule` API.",
+   "line": 43
+  },
+  {
+   "evidence": "Mathlib\u2019s corresponding submodule theorem is `le_comap_map (f) (p) : p \u2264 comap f (map f p)` in `Algebra/Module/Submodule/Map.lean:265-267`; the PR\u2019s theorem at `Comap.lean:169-172` requires `{A D}` and `hAD : A \u2264 D`.",
+   "file": "TauCeti/Algebra/Coalgebra/Subcomodule/Comap.lean",
+   "fix": "State `theorem le_comap_map (A : Subcomodule R C M) (f : Comodule.Hom R C M N) : A \u2264 (A.map f).comap f` and, if needed, add the current stronger variant under a distinct name such as `le_comap_map_of_le`.",
+   "issue": "`le_comap_map` is named like the standard unit of the map/comap Galois connection but is stated with an extra larger subcomodule `D` and hypothesis `A \u2264 D`, so the natural theorem `A \u2264 (A.map f).comap f` is not available under the expected signature.",
+   "line": 169
+  }
+ ],
+ "head_sha": "6609a57a52fbc7a983008170ffdaa675f419ca04",
+ "merge_base_sha": "a28e9f8019183b2a0e988511dcaf794740e71d9b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 241,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6d8b314792b8f1e570b8d2022ce1ba92ecebc6e1b6e10c27acdabb3fd450dad4",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "7ecaf30e16a652142de8824a38738bed44614901",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260619T200733Z-241-generality-0d59f7",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-19T20:07:33Z",
+ "submitted_by": "kim-em",
+ "summary": "The comap construction is mostly at the right level, but the exposed assumptions and one standard API theorem are not. Fix the overstrong carrier assumption and restore the usual `le_comap_map` shape.",
+ "transcript_blob": "6c53ef8dbba032f75dcda36e78106c613c642ea7d6f870f68b19ac366ee20ac7",
+ "usage": {
+  "cached_input_tokens": 471936,
+  "input_tokens": 543670,
+  "output_tokens": 4224,
+  "reasoning_output_tokens": 2099
+ },
+ "verdict": "request_changes"
+}

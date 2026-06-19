@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.731609,
+   "returncode": 0,
+   "secs": 92.0,
+   "usage": {
+    "cached_input_tokens": 418688,
+    "input_tokens": 497173,
+    "output_tokens": 4328,
+    "reasoning_output_tokens": 1681
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ada918fd0e22ed65f9a28967d61082781de979fc",
+ "cost_estimated": true,
+ "cost_usd": 0.731609,
+ "dedupe_key": "FormalFrontier/TauCeti|241|6609a57a52fbc7a983008170ffdaa675f419ca04|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "f8d1e01bcf4109301f98986340e37c2ede547249a62f2999999d6b83e929e99d",
+ "diff_sha256": "f8d1e01bcf4109301f98986340e37c2ede547249a62f2999999d6b83e929e99d",
+ "duration_s": 92.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PR exposes only `theorem map_le_iff_le_comap` at lines 162-166; Mathlib's parallel `LieIdeal` API has `theorem gc_map_comap : GaloisConnection (map f) (comap f)` at `Mathlib/Algebra/Lie/Ideal.lean:200-201`.",
+   "file": "TauCeti/Algebra/Coalgebra/Subcomodule/Comap.lean",
+   "fix": "Add `theorem gc_map_comap (f : Comodule.Hom R C M N) : GaloisConnection (fun A => A.map f) (fun B => B.comap f) := fun _ _ => map_le_iff_le_comap`.",
+   "issue": "`map_le_iff_le_comap` states the adjunction pointwise but the API does not expose the `GaloisConnection`, so downstream order lemmas cannot use the standard `gc` interface without reproving it.",
+   "line": 162
+  },
+  {
+   "evidence": "`Subcomodule` already has `\u22a5` and `bot_toSubmodule` at `TauCeti/Algebra/Coalgebra/Subcomodule.lean:174-188`; the new file has `comap_top` at lines 155-159, and `rg \"comap_bot|Comodule\\.Hom\\.ker\" TauCeti/Algebra/Coalgebra` finds no public bottom/kernel API.",
+   "file": "TauCeti/Algebra/Coalgebra/Subcomodule/Comap.lean",
+   "fix": "Add a simp-normal lemma such as `comap_bot_toSubmodule : ((\u22a5 : Subcomodule R C N).comap f).toSubmodule = LinearMap.ker f.toLinearMap`, or define `Comodule.Hom.ker` with `ker_toSubmodule` and `comap_bot`.",
+   "issue": "The comap API gives `comap_top` but no bottom/kernel normal form, leaving the stated kernel use to unfold through submodules.",
+   "line": 157
+  }
+ ],
+ "head_sha": "6609a57a52fbc7a983008170ffdaa675f419ca04",
+ "merge_base_sha": "a28e9f8019183b2a0e988511dcaf794740e71d9b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 241,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e9da89fddced67b3c7e3b3d37668a901afdf1daba1430ec190d788697ac0ef1e",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "7ecaf30e16a652142de8824a38738bed44614901",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260619T200601Z-241-api-design-75272d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-19T20:06:01Z",
+ "submitted_by": "kim-em",
+ "summary": "The inverse-image construction is present and the basic membership/submodule lemmas are exposed, but the public API is missing the bundled adjunction and the kernel-facing bottom normal form needed by the stated downstream use.",
+ "transcript_blob": "2159b9215efbad83e66718d4aaf67cc057c00f428d8ca40e2e3bb0058d70b91f",
+ "usage": {
+  "cached_input_tokens": 418688,
+  "input_tokens": 497173,
+  "output_tokens": 4328,
+  "reasoning_output_tokens": 1681
+ },
+ "verdict": "request_changes"
+}
