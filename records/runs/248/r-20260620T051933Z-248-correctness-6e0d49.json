@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.280049,
+   "returncode": 0,
+   "secs": 44.8,
+   "usage": {
+    "cached_input_tokens": 38528,
+    "input_tokens": 77731,
+    "output_tokens": 2159,
+    "reasoning_output_tokens": 902
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "42fadcd3829b731691274436ec67ccd4b321a436",
+ "cost_estimated": true,
+ "cost_usd": 0.280049,
+ "dedupe_key": "FormalFrontier/TauCeti|248|c08c259c610d6f9aa6d3c4f0150a9b94a92bd461|correctness|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "4b6ccd9357f933706b66c6d5d49df1249e7f2bb0ffc3fae7dd652f3d470ed09e",
+ "diff_sha256": "4b6ccd9357f933706b66c6d5d49df1249e7f2bb0ffc3fae7dd652f3d470ed09e",
+ "duration_s": 44.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`HomotopyWith.prop'` only checks `P` on intermediate maps (`mathlib/Mathlib/Topology/Homotopy/Basic.lean:384-389`), while the roadmap source says isotopy is an embedding `F : X \u00d7 I \u2192 Y \u00d7 I` with `F(x,t)=(f(x,t),t)` (`roadmap/TauCetiRoadmap/GeometricTopology/references/bz-knot-foundations.md:31-34`).",
+   "file": "TauCeti/Topology/Homotopy/Isotopy.lean",
+   "fix": "Define/store the level-preserving map, e.g. `fun p : I \u00d7 X => (p.1, F p)` or equivalent, and require `IsEmbedding` of that total map; derive slice embeddings as lemmas if needed.",
+   "issue": "`Isotopy` only requires each time-slice `I -> C(X,Y)` to be an `IsEmbedding`, not that the level-preserving total map `I \u00d7 X -> I \u00d7 Y` is an embedding.",
+   "line": "48"
+  },
+  {
+   "evidence": "The structure has only `isHomeomorph_apply' : \u2200 t, IsHomeomorph ...` (`TauCeti/Topology/Homotopy/Isotopy.lean:108-112`), while the cited definition requires a level-preserving isotopy `H : Y \u00d7 I \u2192 Y \u00d7 I`, `H(y,t)=(h_t(y),t)` (`roadmap/TauCetiRoadmap/GeometricTopology/references/bz-knot-foundations.md:38-40`).",
+   "file": "TauCeti/Topology/Homotopy/Isotopy.lean",
+   "fix": "Require `IsHomeomorph` (or the appropriate level-preserving isotopy predicate) for the total map `fun p : I \u00d7 Y => (p.1, \u03a6 p)`/equivalent, with `h\u2080 = id`; slice homeomorphisms can be consequences or additional lemmas.",
+   "issue": "`AmbientIsotopy` requires every slice `Y -> Y` to be `IsHomeomorph`, but not that the level-preserving map `Y \u00d7 I -> Y \u00d7 I` is the ambient isotopy from the source definition.",
+   "line": "108"
+  }
+ ],
+ "head_sha": "c08c259c610d6f9aa6d3c4f0150a9b94a92bd461",
+ "merge_base_sha": "42fadcd3829b731691274436ec67ccd4b321a436",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 248,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f50c4fa039d44c86d7db64a15ab9d454f29ffb278f3927d445e104dc649b26cf",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260620T051933Z-248-correctness-6e0d49",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-20T05:19:33Z",
+ "submitted_by": "kim-em",
+ "summary": "The new foundations formalize isotopy/ambient isotopy as pointwise-in-time embedding/homeomorphism families, but the cited roadmap source requires the level-preserving total map on the product to be an embedding/homeomorphism. This is a semantic weakening in full generality, so downstream knot-equivalence and ambient-isotopy statements would be built on the wrong relation.",
+ "transcript_blob": "41a8060196de9c1bfded46e9bb0296bd78015320cd4bc0d7b49c3b341d124b02",
+ "usage": {
+  "cached_input_tokens": 38528,
+  "input_tokens": 77731,
+  "output_tokens": 2159,
+  "reasoning_output_tokens": 902
+ },
+ "verdict": "block"
+}
