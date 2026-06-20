@@ -1,0 +1,124 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.9319299999999999,
+   "returncode": 0,
+   "secs": 66.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 66809,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 66809,
+    "cache_read_input_tokens": 208574,
+    "inference_geo": "not_available",
+    "input_tokens": 1974,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9601,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9601,
+      "cache_read_input_tokens": 73648,
+      "input_tokens": 2,
+      "output_tokens": 4417,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5037,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "14fa13b8a85ec3e3edd279166fb59a7671702952",
+ "cost_usd": 0.93193,
+ "dedupe_key": "FormalFrontier/TauCeti|273|38a17477afee1fdd1242f7d6146db960fd3126cd|api-design|claude-opus-4-8|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "f8baa83db934941803affd17318489bbfb77c7ea803f315b0cf14f1fc471012a",
+ "diff_sha256": "f8baa83db934941803affd17318489bbfb77c7ea803f315b0cf14f1fc471012a",
+ "duration_s": 66.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 765-770 use `tendsto_nhds_unique (Classical.choose_spec ...)` directly; there is no `grep` hit for any `generatorMap`-spec lemma.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Add a public `generatorMap_tendsto` (or `hasDerivAt_generatorMap`): for `x : S.domain`, `Tendsto (fun t => (1/t) \u2022 (S.operator t x \u2212 x)) (\ud835\udcdd[>] 0) (\ud835\udcdd (S.generatorMap x))`, proved from `Classical.choose_spec`. Restate `resolventRightInv` via it instead of `choose_spec`.",
+   "issue": "`generatorMap` exposes no elimination/characteristic lemma stating that `generatorMap x` IS the limit `lim_{t\u21920\u207a}(S t x \u2212 x)/t`. A downstream consumer (generation theorem, abstract Cauchy problem) cannot recover the generator's defining property without invoking `Classical.choose_spec` on the raw `generator` existential \u2014 exactly what `resolventRightInv` is forced to do at line 768.",
+   "line": "388"
+  },
+  {
+   "evidence": "Lines 592-594 and 623-625 both unfold via `simp only [ContractionSemigroup.resolvent, LinearMap.mkContinuous_apply, ...]`; no `resolvent_apply` declaration exists in the file.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Add a public characteristic lemma `resolvent_apply : S.resolvent lambda hlam x = \u222b t in Set.Ioi 0, Real.exp (-(lambda*t)) \u2022 S.operator t x`, and use it at the two unfold sites.",
+   "issue": "`resolvent` has no `resolvent_apply` lemma giving `R \u03bb x = \u222b t in Ioi 0, e^{-\u03bbt} \u2022 S t x`. To reach the integral form, code must unfold the `mkContinuous` internals (`simp only [ContractionSemigroup.resolvent, LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]`), which the follow-up resolvent-identity/analyticity PRs will need to repeat.",
+   "line": "480"
+  },
+  {
+   "evidence": "`domain.carrier := { x | S.generator x }` at line 352; no `mem_domain` lemma present.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Add `@[simp] theorem mem_domain_iff : x \u2208 S.domain \u2194 S.generator x := Iff.rfl` (or expose it together with the `generatorMap` spec).",
+   "issue": "`domain` membership has no `mem_domain_iff` characterizing `x \u2208 S.domain \u2194 S.generator x`. Consumers must know the `carrier` is `{x | S.generator x}` to use membership.",
+   "line": "350"
+  }
+ ],
+ "head_sha": "38a17477afee1fdd1242f7d6146db960fd3126cd",
+ "merge_base_sha": "a8c3cf89a8e8e14ce645548ace42bd229ba83ace",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 273,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8fd396368b59ee0a4e27b25e1c20cb992ad3a0e64ff01183e13e87bb8cffba58",
+ "provider": "claude",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260620T232516Z-273-api-design-4c1589",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-20T23:25:16Z",
+ "submitted_by": "kim-em",
+ "summary": "Surface is minimal and bodies are hidden, but the characteristic API for the two key definitions is incomplete: neither `generatorMap` nor `resolvent` has a public lemma exposing its defining property, so consumers (and the PR's own proofs) must reach into `Classical.choose_spec` / unfold `mkContinuous`.",
+ "transcript_blob": "dac25cb65505c99ad491f23fc0eb76ad95c82d40cfb9fc4be940b57aeb98ca94",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 66809,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 66809,
+  "cache_read_input_tokens": 208574,
+  "inference_geo": "not_available",
+  "input_tokens": 1974,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9601,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9601,
+    "cache_read_input_tokens": 73648,
+    "input_tokens": 2,
+    "output_tokens": 4417,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5037,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
