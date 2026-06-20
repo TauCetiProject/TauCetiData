@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.427426,
+   "returncode": 0,
+   "secs": 68.6,
+   "usage": {
+    "cached_input_tokens": 114432,
+    "input_tokens": 170210,
+    "output_tokens": 3044,
+    "reasoning_output_tokens": 1202
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b41b7fc758d61dcd421ffffabc254486c90ad572",
+ "cost_estimated": true,
+ "cost_usd": 0.427426,
+ "dedupe_key": "FormalFrontier/TauCeti|250|92e3c34390ea06f3716cf94ca461da9f91e9baff|proof-quality|gpt-5.5|e1aee6e8c6688dd8|production|5",
+ "diff_blob": "80c01fa790ed301f43df74752ecf718767294d47632f970c21c96b9314b57746",
+ "diff_sha256": "80c01fa790ed301f43df74752ecf718767294d47632f970c21c96b9314b57746",
+ "duration_s": 68.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Order.lean:73` and `:79` use `rfl`; Mathlib provides `Mathlib/Order/Preorder/Finsupp.lean:78 @[simp] lemma inf_apply` and `:92 lemma sup_apply`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Order.lean",
+   "fix": "Prove them by the public API, e.g. `Finsupp.sup_apply D E x` and `Finsupp.inf_apply D E x`, instead of definitional equality.",
+   "issue": "`coeff_sup` and `coeff_inf` are proved by `rfl`, relying on the current definitional implementation of the `Finsupp` lattice through the `coeff` wrapper.",
+   "line": "73"
+  },
+  {
+   "evidence": "`Order.lean:189` has `rw [negPart_def, hneg, \u2190 posPart_def, ...]`; Mathlib exposes this relation from `Mathlib/Algebra/Order/Group/PosPart.lean:109 @[to_additive (attr := simp)] lemma oneLePart_inv`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Order.lean",
+   "fix": "Use the named positive/negative-part relation, e.g. rewrite with the additive theorem generated from `oneLePart_inv` (`(-a)\u207a = a\u207b`) before applying `posPart_pointDifference`.",
+   "issue": "`negPart_pointDifference` unfolds `negPart_def` and `posPart_def`, so the proof depends on the current definition of positive/negative parts rather than their API.",
+   "line": "189"
+  }
+ ],
+ "head_sha": "92e3c34390ea06f3716cf94ca461da9f91e9baff",
+ "merge_base_sha": "b41b7fc758d61dcd421ffffabc254486c90ad572",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 250,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "3d96a09b6b3ca897e14d22eb485c724b5d677386dd7a8cacfa05ac20d6778f49",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 5,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260620T080654Z-250-proof-quality-c94299",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-20T08:06:54Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs mostly use stable order APIs, but two spots expose implementation definitions even though named Mathlib lemmas are available. Replace those with the public lemmas to avoid compatibility breaks from representation changes.",
+ "transcript_blob": "0f8e0ead628bed4ac17ea777fe6dd0befe62a6d61b5a05a6b0dd3ef3fbc303c3",
+ "usage": {
+  "cached_input_tokens": 114432,
+  "input_tokens": 170210,
+  "output_tokens": 3044,
+  "reasoning_output_tokens": 1202
+ },
+ "verdict": "request_changes"
+}
