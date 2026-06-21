@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.390757,
+   "returncode": 0,
+   "secs": 60.4,
+   "usage": {
+    "cached_input_tokens": 88704,
+    "input_tokens": 144437,
+    "output_tokens": 2258,
+    "reasoning_output_tokens": 1061
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "14fa13b8a85ec3e3edd279166fb59a7671702952",
+ "cost_estimated": true,
+ "cost_usd": 0.390757,
+ "dedupe_key": "FormalFrontier/TauCeti|273|6c71ab64fcbdb7c67eea79a54b8299f9c0213ba8|api-design|gpt-5.5|e1aee6e8c6688dd8|production|2",
+ "diff_blob": "a1427e5a952002d35b731b2552eaf464afa58ca5a53770341009e2ab498dc833",
+ "diff_sha256": "a1427e5a952002d35b731b2552eaf464afa58ca5a53770341009e2ab498dc833",
+ "duration_s": 60.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Grep: `operator : \u211d \u2192 X \u2192L[\u211d] X` at line 84, `semigroup ... 0 \u2264 s \u2192 0 \u2264 t` at lines 88-89; roadmap lines 37-39 say two-sided groups are a separate stretch, not reached by this API.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Index the semigroup by `\u211d\u22650` or `Set.Ici 0` (with coercion lemmas for real parameters), or hide the raw total `\u211d` field behind a nonnegative-time public accessor.",
+   "issue": "`StronglyContinuousSemigroup.operator : \u211d \u2192 X \u2192L[\u211d] X` exposes arbitrary negative-time operators, while the laws and continuity only constrain `t \u2265 0`; downstream users can depend on meaningless `S.operator (-1)` data.",
+   "line": 84
+  },
+  {
+   "evidence": "Grep: generator type at lines 380-381; roadmap lines 91-95 require `LinearPMap` directly; Mathlib `LinearPMap` is defined with `domain` and `toFun` in `Mathlib/LinearAlgebra/LinearPMap.lean:41-46`.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Expose the generator as a canonical `X \u2192\u2097.[\u211d] X` with `domain := S.domain` and prove the current subtype-linear-map theorem as an apply lemma, or add a `generatorPMap` and make the resolvent API use that as the primary interface.",
+   "issue": "The public generator is `S.domain \u2192\u2097[\u211d] X` instead of Mathlib's `LinearPMap`, so it cannot use the existing unbounded-operator API (`graph`, `inverse`, domain lemmas) required by the roadmap's resolvent work.",
+   "line": 380
+  }
+ ],
+ "head_sha": "6c71ab64fcbdb7c67eea79a54b8299f9c0213ba8",
+ "merge_base_sha": "a8c3cf89a8e8e14ce645548ace42bd229ba83ace",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 273,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d6cc6c792958a900382c8de6dd74d60289ff67a5541b5ee24fff61791fa040e5",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260621T011207Z-273-api-design-bd3daf",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-21T01:12:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR exposes a semigroup/generator interface that does not match the downstream roadmap API: negative-time operator data is public, and the generator is not a `LinearPMap`. These are public-surface problems, independent of the proofs.",
+ "transcript_blob": "915840aaae5ea3eb98d985db85c1f9ce8364cc3f4329da4b2cd49c08ffa8643a",
+ "usage": {
+  "cached_input_tokens": 88704,
+  "input_tokens": 144437,
+  "output_tokens": 2258,
+  "reasoning_output_tokens": 1061
+ },
+ "verdict": "request_changes"
+}

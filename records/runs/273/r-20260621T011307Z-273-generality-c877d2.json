@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.633884,
+   "returncode": 0,
+   "secs": 68.5,
+   "usage": {
+    "cached_input_tokens": 267648,
+    "input_tokens": 347758,
+    "output_tokens": 3317,
+    "reasoning_output_tokens": 1394
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "14fa13b8a85ec3e3edd279166fb59a7671702952",
+ "cost_estimated": true,
+ "cost_usd": 0.633884,
+ "dedupe_key": "FormalFrontier/TauCeti|273|6c71ab64fcbdb7c67eea79a54b8299f9c0213ba8|generality|gpt-5.5|e1aee6e8c6688dd8|production|2",
+ "diff_blob": "a1427e5a952002d35b731b2552eaf464afa58ca5a53770341009e2ab498dc833",
+ "diff_sha256": "a1427e5a952002d35b731b2552eaf464afa58ca5a53770341009e2ab498dc833",
+ "duration_s": 68.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 75-89 describe/law only nonnegative times but line 84 stores all `\u211d`; roadmap says C\u2080 semigroups are on `[0,\u221e)` and treats two-sided C\u2080 groups as a separate stretch goal.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Use `\u211d\u22650 \u2192 X \u2192L[\u211d] X` (or a subtype-based nonnegative time parameter) as the primary operator field and coerce to `\u211d` only in analytic lemmas that need real intervals.",
+   "issue": "`StronglyContinuousSemigroup.operator : \u211d \u2192 X \u2192L[\u211d] X` includes arbitrary negative-time operators, while all laws and continuity only constrain `t \u2265 0`; extensionally equal C\u2080-semigroups on `[0,\u221e)` can be unequal because of junk values on `t < 0`.",
+   "line": 84
+  },
+  {
+   "evidence": "Lines 344-381 define `domain : Submodule \u211d X` and `generator : S.domain \u2192\u2097[\u211d] X`; Mathlib has `LinearPMap` in `Mathlib/LinearAlgebra/LinearPMap.lean`, and roadmap lines 91-94 explicitly ask to model the generator with `LinearPMap` directly.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Make the primary generator an `X \u2192\u2097.[\u211d] X` with domain `S.domain` (plus the dense-domain theorem when available), and derive the subtype-domain linear map as a convenience lemma/definition.",
+   "issue": "The generator is exposed only as `S.domain \u2192\u2097[\u211d] X`, not as Mathlib's `LinearPMap`; this puts the unbounded operator at the wrong API level for closure, cores, adjoints, and the planned resolvent-set API.",
+   "line": 380
+  },
+  {
+   "evidence": "Lines 487-489 define `ContractionSemigroup.resolvent`; lines 789-793 prove only `\u2016S.resolvent lambda hlam\u2016 \u2264 1 / lambda`; roadmap lines 27-31 and 111-119 require the general `(M,\u03c9)` Hille-Yosida bounds with contraction as the corollary.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Define/prove the Laplace resolvent for `S : StronglyContinuousSemigroup X` assuming `S.HasGrowthBound \u03c9 M` and `\u03c9 < \u03bb`, with bound `\u2016R \u03bb\u2016 \u2264 M / (\u03bb - \u03c9)`, then specialize to `ContractionSemigroup` for `M = 1, \u03c9 = 0`.",
+   "issue": "The public resolvent and Hille-Yosida bound are only for `ContractionSemigroup`, but the natural roadmap level is a general C\u2080 semigroup with growth bound `(M,\u03c9)` and hypothesis `\u03c9 < \u03bb`; the contraction case should be a corollary.",
+   "line": 487
+  }
+ ],
+ "head_sha": "6c71ab64fcbdb7c67eea79a54b8299f9c0213ba8",
+ "merge_base_sha": "a8c3cf89a8e8e14ce645548ace42bd229ba83ace",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 273,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ce905aeb3a3e191a3cc5ebd1b96de8a0d8096bc7b0ba624fc1a13bff6477e181",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260621T011307Z-273-generality-c877d2",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-21T01:13:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR is under-generalized in the public semigroup/resolvent API and over-exposes irrelevant negative-time data. These are API-level issues that will make the new layer harder to compose with the roadmap and Mathlib's unbounded-operator tools.",
+ "transcript_blob": "6c9e5c7739c50b3928d9873ba9beaccb65a5821ffc2eb9315dbe5aef9b6a897c",
+ "usage": {
+  "cached_input_tokens": 267648,
+  "input_tokens": 347758,
+  "output_tokens": 3317,
+  "reasoning_output_tokens": 1394
+ },
+ "verdict": "request_changes"
+}
