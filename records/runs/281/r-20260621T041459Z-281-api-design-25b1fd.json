@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.360458,
+   "returncode": 0,
+   "secs": 60.9,
+   "usage": {
+    "cached_input_tokens": 110976,
+    "input_tokens": 154054,
+    "output_tokens": 2986,
+    "reasoning_output_tokens": 1361
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "99a41773b7000686b1f64c0e77d5cf07e5a29875",
+ "cost_estimated": true,
+ "cost_usd": 0.360458,
+ "dedupe_key": "FormalFrontier/TauCeti|281|75b8b046b7ea0148088b819c162f4a992c0c4ff3|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "8d8a8f6a7497b5112161406c8b3e89f78ad5bb16ba0126d900522340140c8d1c",
+ "diff_sha256": "8d8a8f6a7497b5112161406c8b3e89f78ad5bb16ba0126d900522340140c8d1c",
+ "duration_s": 60.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Basic.lean:54-56` defines the predicate; `Basic.lean:62-68` only provides eliminators. Comparable TauCeti predicates provide restatements, e.g. `LowerOrder.lean:70` `driftBoundedOn_iff` and `UniformEllipticity.lean:266` `uniformlyEllipticOn_iff`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Basic.lean",
+   "fix": "Add `isCompletelyMonotone_iff : IsCompletelyMonotone f \u2194 ContDiffOn \u211d \u221e f (Ici 0) \u2227 ...` and an `IsCompletelyMonotone.of_sign`/`mk` constructor, then use them in the file instead of bare `\u27e8...\u27e9`.",
+   "issue": "`IsCompletelyMonotone` exposes projections (`contDiffOn`, `sign`) but no characteristic `_iff` restatement or constructor, so consumers proving the predicate must rely on unfolding the definition's conjunction.",
+   "line": 54
+  },
+  {
+   "evidence": "`Basic.lean:63`, `67`, `71`, and `76` have no attributes; analogous bundled predicates annotate their public eliminators, e.g. `LowerOrder.lean:80` `@[grind \u2192] beta_nonneg` and `LowerOrder.lean:85` `@[grind =>] bound`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Basic.lean",
+   "fix": "Mark the forward-use eliminators such as `contDiffOn`, `sign`, `nonneg`, and `derivWithin_nonpos` with appropriate `@[grind =>]`/`@[grind \u2192]` annotations.",
+   "issue": "The characteristic eliminators are unannotated, so `grind` will not use a complete monotonicity hypothesis to recover smoothness, sign alternation, nonnegativity, or derivative monotonicity.",
+   "line": 63
+  }
+ ],
+ "head_sha": "75b8b046b7ea0148088b819c162f4a992c0c4ff3",
+ "merge_base_sha": "99a41773b7000686b1f64c0e77d5cf07e5a29875",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 281,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3f0007282b22b0603efd4b24c6a1d3f3b87b3829f100122b02aead2cc936c2f6",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260621T041459Z-281-api-design-25b1fd",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-21T04:14:59Z",
+ "submitted_by": "kim-em",
+ "summary": "The exposed predicate is missing its characteristic public API, so downstream users still have to unfold the definition to construct or rewrite `IsCompletelyMonotone`. The eliminators also lack the automation annotations used elsewhere for bundled analytic predicates.",
+ "transcript_blob": "c1f19710727b542831eea620b53996e1c82362f0d354af10f174388b1a7a9d0c",
+ "usage": {
+  "cached_input_tokens": 110976,
+  "input_tokens": 154054,
+  "output_tokens": 2986,
+  "reasoning_output_tokens": 1361
+ },
+ "verdict": "request_changes"
+}
