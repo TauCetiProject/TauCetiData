@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.365431,
+   "returncode": 0,
+   "secs": 71.6,
+   "usage": {
+    "cached_input_tokens": 102272,
+    "input_tokens": 147809,
+    "output_tokens": 2887,
+    "reasoning_output_tokens": 1222
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a8c3cf89a8e8e14ce645548ace42bd229ba83ace",
+ "cost_estimated": true,
+ "cost_usd": 0.365431,
+ "dedupe_key": "FormalFrontier/TauCeti|272|818980e8da635ff25aa4bebae4c77f6d3d8ad29c|api-design|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "14ced746b01fe8d184561c32d722504ede2755acfc0cc2fc8a843a7a2489885e",
+ "diff_sha256": "14ced746b01fe8d184561c32d722504ede2755acfc0cc2fc8a843a7a2489885e",
+ "duration_s": 71.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diff changes `private lemma orbitRel_eq_ker_of_exists_apply_eq` to `lemma`; the only new external use is `QuotientCovering.lean:56` in `apply_eq_iff_mem_orbit`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/Quotient.lean",
+   "fix": "Keep this helper private by moving the orbit-membership lemma into `Deck/Quotient.lean` next to it, or prove the new theorem from existing public quotient lemmas without exporting this helper.",
+   "issue": "`orbitRel_eq_ker_of_exists_apply_eq` was made public only to support the new file, exposing an implementation-level Setoid equality rather than the named deck quotient-cover API.",
+   "line": "60"
+  },
+  {
+   "evidence": "`QuotientCovering.lean:64` calls `apply_eq_iff_mem_orbit (isRegular_iff_exists_apply_eq.mp hreg).2`, showing the public theorem itself needs the missing `IsRegular`-level characteristic lemma.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/QuotientCovering.lean",
+   "fix": "Add a scoped lemma such as `Deck.IsRegular.apply_eq_iff_mem_orbit (hreg : IsRegular p) : p e\u2081 = p e\u2082 \u2194 e\u2081 \u2208 MulAction.orbit (Deck p) e\u2082`, and use it in `IsRegular.isQuotientCoveringMap`; the raw helper can remain private.",
+   "issue": "The exposed orbit characterization requires the raw pointwise transitivity hypothesis, so users with `hreg : IsRegular p` must unfold through `isRegular_iff_exists_apply_eq` instead of using a characteristic regularity API.",
+   "line": "53"
+  }
+ ],
+ "head_sha": "818980e8da635ff25aa4bebae4c77f6d3d8ad29c",
+ "merge_base_sha": "a8c3cf89a8e8e14ce645548ace42bd229ba83ace",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 272,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "91712b5eacb6b496d404e3625d7097ffbfaade21b30b2f70462ab578edf3b9cc",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260621T002340Z-272-api-design-a6bb46",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-21T00:23:40Z",
+ "submitted_by": "kim-em",
+ "summary": "The main quotient-cover theorem has the right shape, but the PR exposes a low-level relation helper and does not provide the regularity-scoped orbit characterization that downstream users would naturally use.",
+ "transcript_blob": "5398392b4702ea1d95471031581b73f63d2d4d6366541b7003cae5a5770f2f6b",
+ "usage": {
+  "cached_input_tokens": 102272,
+  "input_tokens": 147809,
+  "output_tokens": 2887,
+  "reasoning_output_tokens": 1222
+ },
+ "verdict": "request_changes"
+}
