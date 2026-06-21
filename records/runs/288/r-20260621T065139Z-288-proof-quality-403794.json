@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.188175,
+   "returncode": 0,
+   "secs": 27.4,
+   "usage": {
+    "cached_input_tokens": 19200,
+    "input_tokens": 47235,
+    "output_tokens": 1280,
+    "reasoning_output_tokens": 395
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d0eaa122d2c1d82f74f0c695ba20699e717cd095",
+ "cost_estimated": true,
+ "cost_usd": 0.188175,
+ "dedupe_key": "FormalFrontier/TauCeti|288|fb7998630beb8e6532943d02117b0004e537fc09|proof-quality|gpt-5.5|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "324d1d8218974fdb9fbe51df4dfa5c10570edec8c8ed02c9e56c6a8f3b48e800",
+ "diff_sha256": "324d1d8218974fdb9fbe51df4dfa5c10570edec8c8ed02c9e56c6a8f3b48e800",
+ "duration_s": 27.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 73-90 prove `\u2200 y, ((normSq ...) : \u2102) = \u2211 i \u2208 s, \u2211 j \u2208 s, ...` inline.",
+   "file": "TauCeti/Analysis/Bochner/CharFunPosDef.lean",
+   "fix": "Extract the pointwise identity, and preferably the exponential conjugation identity, into named lemmas so later Bochner/positive-definite proofs can reuse them instead of duplicating this fragile calculation.",
+   "issue": "The pointwise factorization of the double sum into `normSq` is a substantial standalone algebraic lemma, but it is buried as local `pt` with local `hexp`/`hconj` proofs.",
+   "line": 74
+  },
+  {
+   "evidence": "`rg` hits `126:    change (Matrix.of fun i j => charFun \u03bc (t i - t j))\u1d34`.",
+   "file": "TauCeti/Analysis/Bochner/CharFunPosDef.lean",
+   "fix": "Replace the `change` with a direct `ext`/`simp` proof against the stated Hermitian goal, or add a short comment explaining the required unfolding/definitional shape.",
+   "issue": "`charFun_posSemidef` uses `change` to expose the representation of `Matrix.IsHermitian`/`PosSemidef` without documenting why the goal cannot be reached by an explicit lemma or rewrite.",
+   "line": 126
+  },
+  {
+   "evidence": "`rg` hits `125:      rw [show t j - t i = -(t i - t j) from by abel, charFun_neg, Complex.conj_conj]`.",
+   "file": "TauCeti/Analysis/Bochner/CharFunPosDef.lean",
+   "fix": "Name this as a local `have hsub : t j - t i = -(t i - t j) := by abel` before the rewrite, or use an existing subtraction lemma if available.",
+   "issue": "The inline `show t j - t i = -(t i - t j) from by abel` is an undocumented `show` step inside a rewrite chain.",
+   "line": 125
+  }
+ ],
+ "head_sha": "fb7998630beb8e6532943d02117b0004e537fc09",
+ "merge_base_sha": "d0eaa122d2c1d82f74f0c695ba20699e717cd095",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 288,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fbe63ea77ef443680ad0937d2c8717f533b584fe8f45337176c2eac4db0a9678",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260621T065139Z-288-proof-quality-403794",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-21T06:51:39Z",
+ "submitted_by": "kim-em",
+ "summary": "The main proof works, but it hides substantial reusable algebra and uses undocumented definitional-shape steps in the matrix packaging proof.",
+ "transcript_blob": "fd952ab37fe3a78363938a9e5dd70dfbfff13e080ea688682bca5f1cbc32fc30",
+ "usage": {
+  "cached_input_tokens": 19200,
+  "input_tokens": 47235,
+  "output_tokens": 1280,
+  "reasoning_output_tokens": 395
+ },
+ "verdict": "request_changes"
+}
