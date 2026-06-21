@@ -1,0 +1,117 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.40397449999999996,
+   "returncode": 0,
+   "secs": 92.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 17443,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 17443,
+    "cache_read_input_tokens": 130493,
+    "inference_geo": "not_available",
+    "input_tokens": 956,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2882,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2882,
+      "cache_read_input_tokens": 31001,
+      "input_tokens": 2,
+      "output_tokens": 3127,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6138,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8c583a93c2cd5c48ca2bfa2ccb2e479a9d252079",
+ "cost_usd": 0.403974,
+ "dedupe_key": "FormalFrontier/TauCeti|289|5f5bb412094e57c4a447722772fa737ffd8b64b0|api-design|claude-opus-4-8|e1aee6e8c6688dd8|production|1",
+ "diff_blob": "8cb00ea026c3892bd806781f2c7176204dc671b188d69df9af5c92cc1ef61648",
+ "diff_sha256": "8cb00ea026c3892bd806781f2c7176204dc671b188d69df9af5c92cc1ef61648",
+ "duration_s": 92.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diff defines `IsPositiveDefiniteKernel` via `(Matrix.of \u2026).PosSemidef`; the file contains no form/`*_iff` lemma. `Matrix.PosSemidef` form is over `x : n \u2192\u2080 R` (mathlib PosDef.lean:60).",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Add the characteristic restatement, e.g. `IsPositiveDefiniteKernel K \u2194 \u2200 n (v : Fin n \u2192 \u03b1) (x : Fin n \u2192 \u2102), 0 \u2264 \u2211 i, \u2211 j, conj (x i) * x j * K (v i) (v j)` (or at least the forward direction).",
+   "issue": "The docstring promises the equivalent quadratic-form condition (`0 \u2264 \u2211\u1d62\u2c7c conj(x\u1d62)\u00b7x\u2c7c\u00b7K(v\u1d62)(v\u2c7c)`) but no lemma exposes it. Reaching it requires unfolding `IsPositiveDefiniteKernel` and then Mathlib's `Matrix.PosSemidef`, whose nonnegativity is stated over `n \u2192\u2080 \u2102` Finsupp sums (PosDef.lean:59-60), not a plain `Fin n` sum \u2014 awkward for the PD-function\u2194PD-kernel bridge that is the stated target.",
+   "line": "42"
+  },
+  {
+   "evidence": "Def: `\u2200 (n : \u2115) (v : Fin n \u2192 \u03b1), \u2026`; mathlib `posSemidef_submatrix_equiv` (PosDef.lean:143) supports the reindexing.",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Add a restatement for general `[Fintype \u03b9] (v : \u03b9 \u2192 \u03b1)` giving `(Matrix.of fun i j => K (v i) (v j)).PosSemidef`, derivable via `Matrix.posSemidef_submatrix_equiv`.",
+   "issue": "The def only yields `PosSemidef` for `Fin n`-indexed families; the docstring claims arbitrary finite families reindex, but no lemma is provided. The roadmap's PD condition quantifies over arbitrary finite families, so consumers must reindex by hand.",
+   "line": "39"
+  }
+ ],
+ "head_sha": "5f5bb412094e57c4a447722772fa737ffd8b64b0",
+ "merge_base_sha": "d0eaa122d2c1d82f74f0c695ba20699e717cd095",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 289,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "55b8f66b09d243870b2d3455165ec75a50c829c36d12e0cec39b1e854227907c",
+ "provider": "claude",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "5cc09bb1bbcac44f284809d523fd6e5dc7f2bdcc",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260621T070943Z-289-api-design-cecced",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-21T07:09:43Z",
+ "submitted_by": "kim-em",
+ "summary": "Surface is minimal and bodies are unexposed, but the characteristic API is incomplete: the Hermitian-form characterization the docstring advertises is not provided, and there is no general-Fintype Gram-matrix restatement, forcing consumers (the named PD-function\u2194PD-kernel target) to unfold both the def and Mathlib's Finsupp-stated `PosSemidef`.",
+ "transcript_blob": "f5f9425b4af300a30a76fa4f36238301cc40caa2f80bd2953f82c7b4f7975a6f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 17443,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 17443,
+  "cache_read_input_tokens": 130493,
+  "inference_geo": "not_available",
+  "input_tokens": 956,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2882,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2882,
+    "cache_read_input_tokens": 31001,
+    "input_tokens": 2,
+    "output_tokens": 3127,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6138,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
