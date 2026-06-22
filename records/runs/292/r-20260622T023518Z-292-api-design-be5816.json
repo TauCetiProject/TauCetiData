@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.456736,
+   "returncode": 0,
+   "secs": 58.6,
+   "usage": {
+    "cached_input_tokens": 70272,
+    "input_tokens": 137234,
+    "output_tokens": 2893,
+    "reasoning_output_tokens": 1599
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "4691b50ab25900eed4b3ecd0cd22d9c88907288c",
+ "cost_estimated": true,
+ "cost_usd": 0.456736,
+ "dedupe_key": "FormalFrontier/TauCeti|292|77557a426f438f6975b1f91106fad4982f39fcd2|api-design|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "d7efa6cabad4b024b0b52d99c03ef46f19676b55dd39d3b96bd9ee7cb94035e1",
+ "diff_sha256": "d7efa6cabad4b024b0b52d99c03ef46f19676b55dd39d3b96bd9ee7cb94035e1",
+ "duration_s": 58.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 59 proves `\u03c6 \u2208 Deck ((\u2191) : \ud835\udd5c \u2192 AddCircle p) \u2194 \u2200 e, \u03c6 e - e \u2208 zmultiples p`; existing generic `Deck.mem_iff` is `@[simp]` at `UniversalCover/Deck.lean:50`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/AddCircle.lean",
+   "fix": "Mark it `@[simp]` (and preferably name it `mem_addCircleCoe_iff` if keeping the iff as public API).",
+   "issue": "`mem_addCircleCoe` is the characteristic membership iff for `Deck ((\u2191) : \ud835\udd5c \u2192 AddCircle p)`, but it is not a simp lemma, so users cannot normalize deck-membership goals for this cover without naming the lemma manually.",
+   "line": 59
+  },
+  {
+   "evidence": "Lines 75 and 80 prove exactly the normal forms `addRightZMultiples 0 = 1` and `addRightZMultiples (a + b) = addRightZMultiples a * addRightZMultiples b` without attributes.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/AddCircle.lean",
+   "fix": "Add `@[simp]` to `addRightZMultiples_zero` and `addRightZMultiples_add`, or make them private if the hom/equiv is the only intended public interface.",
+   "issue": "The constructor API for `addRightZMultiples` exposes zero/add laws, but the normal-form lemmas are not tagged, so `addRightZMultiples 0` and `addRightZMultiples (a + b)` do not simplify to the deck identity/product.",
+   "line": 75
+  },
+  {
+   "evidence": "Lines 110-118 define and characterize `addRightZMultiplesHom`; line 126 is its only in-file use, as input to `MulEquiv.ofBijective`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/AddCircle.lean",
+   "fix": "Make `addRightZMultiplesHom` and `addRightZMultiplesHom_apply` private, or justify it as a deliberate public API with the same characteristic lemmas as the main equivalence.",
+   "issue": "`addRightZMultiplesHom` is exported even though it is only used to build `addCircleMulEquiv`; the named downstream target needs the equivalence and translation constructor, not this intermediate homomorphism surface.",
+   "line": 110
+  }
+ ],
+ "head_sha": "77557a426f438f6975b1f91106fad4982f39fcd2",
+ "merge_base_sha": "a576713f56c982b5715fff96f3e7002ee4a408da",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 292,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bdd49ee6e52d3f7e8e4ad07cfb927b24edb2fff95c65e6fee0100e1ca554aa43",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "897ca43b4554db47f1ca6891785bb4b2c4b3473e",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T023518Z-292-api-design-be5816",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T02:35:18Z",
+ "submitted_by": "kim-em",
+ "summary": "The main equivalences are usable, but the characteristic API is not consistently annotated and some proof scaffolding is exported as public surface.",
+ "transcript_blob": "ff2e72ebfb88e06a295e5be5c0b2fa8c563a508903919addd654f0e1792c2c49",
+ "usage": {
+  "cached_input_tokens": 70272,
+  "input_tokens": 137234,
+  "output_tokens": 2893,
+  "reasoning_output_tokens": 1599
+ },
+ "verdict": "request_changes"
+}
