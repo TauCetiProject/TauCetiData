@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.384746,
+   "returncode": 0,
+   "secs": 78.0,
+   "usage": {
+    "cached_input_tokens": 92672,
+    "input_tokens": 140248,
+    "output_tokens": 3351,
+    "reasoning_output_tokens": 2047
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d2af393b4d1b8faedd426e534c318ff09a9f7b49",
+ "cost_estimated": true,
+ "cost_usd": 0.384746,
+ "dedupe_key": "FormalFrontier/TauCeti|321|6e8c5179b6722091910aceb3feb965ae6ac69a81|generality|gpt-5.5|9e504cd6459fc954|production|3",
+ "diff_blob": "2a6ba63ce46e2e0d21fd784e717f2ead8d1000cdbc2497bfaac2cce3998476d5",
+ "diff_sha256": "2a6ba63ce46e2e0d21fd784e717f2ead8d1000cdbc2497bfaac2cce3998476d5",
+ "duration_s": 78.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Grep hit `CoerciveEnergy.lean:111-115`: the theorem assumes `(hmu : 0 < mu)` and `(hc : mu \u2264 c\u2080)` but concludes only `IsCoercive (energyIntegrand A 0 c\u2080)`; `mu` is absent from the result.",
+   "file": "TauCeti/Analysis/PDE/CoerciveEnergy.lean",
+   "fix": "Prove the public pointwise theorem with signature `(hlam : 0 < lam) (hc\u2080 : 0 < c\u2080) ... : IsCoercive (energyIntegrand A 0 c\u2080)`, then derive the existing lower-bound form as a corollary using `hmu.trans_le hc`.",
+   "issue": "`isCoercive_energyIntegrand_zero_drift_of_lower_bounds` carries an auxiliary `mu` that does not appear in the conclusion; pointwise zero-drift coercivity only needs `0 < c\u2080`, while the current signature forces users to manufacture a positive lower-bound constant.",
+   "line": 111
+  },
+  {
+   "evidence": "Grep hit `CoerciveEnergy.lean:46-52`: the statement fixes `(U : \u211d \u00d7 EuclideanSpace \u211d n)` and the proof immediately uses `Prod.norm_def`, `\u2016U.1\u2016`, and `\u2016U.2\u2016`, with no Euclidean-space-specific structure.",
+   "file": "TauCeti/Analysis/PDE/CoerciveEnergy.lean",
+   "fix": "Generalize it to arbitrary product seminormed groups, e.g. `(U : E \u00d7 F)` with `[SeminormedAddCommGroup E] [SeminormedAddCommGroup F]`, or keep this specialized helper private if it is intended only for PDE jets.",
+   "issue": "The exported norm bridge `min_mul_prod_norm_sq_le_add` is specialized to `\u211d \u00d7 EuclideanSpace \u211d n` even though its proof only uses the product sup norm and the two component norms.",
+   "line": 46
+  }
+ ],
+ "head_sha": "6e8c5179b6722091910aceb3feb965ae6ac69a81",
+ "merge_base_sha": "d2af393b4d1b8faedd426e534c318ff09a9f7b49",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 321,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a71cd873027962de0d9edc38f3f0453f5b4f9ce11dea0ddf9b9ca88833daa0cd",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T145043Z-321-generality-a42926",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T14:50:43Z",
+ "submitted_by": "kim-em",
+ "summary": "The coercivity proofs are organized from a general bounded-drift argument, but two exported APIs are still specialized below their natural statement level. Generalize the public entry points and derive the current lower-bound corollaries from them.",
+ "transcript_blob": "ff73435b67b6d65e32a3650187c7cbd489274a0fcfb526cb2ef89a441f27cb9d",
+ "usage": {
+  "cached_input_tokens": 92672,
+  "input_tokens": 140248,
+  "output_tokens": 3351,
+  "reasoning_output_tokens": 2047
+ },
+ "verdict": "request_changes"
+}
