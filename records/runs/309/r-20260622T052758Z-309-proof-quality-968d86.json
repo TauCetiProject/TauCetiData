@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.289646,
+   "returncode": 0,
+   "secs": 31.0,
+   "usage": {
+    "cached_input_tokens": 47232,
+    "input_tokens": 91900,
+    "output_tokens": 1423,
+    "reasoning_output_tokens": 407
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "28280698024c8fb9349793042c68cab2b3decb7d",
+ "cost_estimated": true,
+ "cost_usd": 0.289646,
+ "dedupe_key": "FormalFrontier/TauCeti|309|07035f40bf32e6163966aea2e8ab9327af12367e|proof-quality|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "94bc66c9c9aa07afb1abe7a349770c1756ec80eb537da92e98f48b653427308a",
+ "diff_sha256": "94bc66c9c9aa07afb1abe7a349770c1756ec80eb537da92e98f48b653427308a",
+ "duration_s": 31.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `Commutation.lean:169: theorem rowArc_transpose ... := rfl`; `Diagram.lean:790: def transpose (G : GridDiagram n) ... O := G.O.transpose`; `Diagram.lean:434: def transpose (x : GridState n) ... toPerm := x.toPerm.symm`.",
+   "file": "TauCeti/KnotTheory/Grid/Commutation.lean",
+   "fix": "Add explicit simp lemmas for `OColumnOfRow G.transpose c = G.O c` and `XColumnOfRow G.transpose c = G.X c`, then prove the arc transpose lemmas by `simp [rowArc, columnArc, ...]` using those lemmas.",
+   "issue": "`rowArc_transpose` and `columnArc_transpose` are proved by bare `rfl`, hiding the fact that transpose exchanges `OColumnOfRow`/`XColumnOfRow` with `G.O`/`G.X` through `toPerm.symm`.",
+   "line": 169
+  },
+  {
+   "evidence": "grep: `Commutation.lean:180: theorem rowsNoninterleaving_transpose ... := Iff.rfl`; `Commutation.lean:186: theorem columnsNoninterleaving_transpose ... := Iff.rfl`.",
+   "file": "TauCeti/KnotTheory/Grid/Commutation.lean",
+   "fix": "Prove these with the arc transpose lemmas and explicit unfolding of only `RowsNoninterleaving`/`ColumnsNoninterleaving`, or use `simp [RowsNoninterleaving, ColumnsNoninterleaving]` after the helper lemmas are available.",
+   "issue": "`rowsNoninterleaving_transpose` and `columnsNoninterleaving_transpose` use `Iff.rfl`, so the public conversion lemmas depend on a full definitional unfolding of both noninterleaving predicates and the transpose wrappers.",
+   "line": 180
+  }
+ ],
+ "head_sha": "07035f40bf32e6163966aea2e8ab9327af12367e",
+ "merge_base_sha": "28280698024c8fb9349793042c68cab2b3decb7d",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 309,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "996c74250fb7a3fdc63116521c56b3792f251a7642ec01001cfc04fb5d7b0dc3",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T052758Z-309-proof-quality-968d86",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T05:27:58Z",
+ "submitted_by": "kim-em",
+ "summary": "The transpose API proofs rely on undocumented definitional equality through `GridDiagram.transpose`, `GridState.transpose`, and the `toPerm.symm` row-column wrappers. Replace the `rfl`/`Iff.rfl` proofs with explicit rewrites or helper lemmas so later changes to these wrappers do not silently break commutation lemmas.",
+ "transcript_blob": "a78e27524ad619958b66f3a8e62803855b814d0f135ba2bc83619cf8ed3b9053",
+ "usage": {
+  "cached_input_tokens": 47232,
+  "input_tokens": 91900,
+  "output_tokens": 1423,
+  "reasoning_output_tokens": 407
+ },
+ "verdict": "request_changes"
+}
