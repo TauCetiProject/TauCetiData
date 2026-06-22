@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.458762,
+   "returncode": 0,
+   "secs": 54.8,
+   "usage": {
+    "cached_input_tokens": 163584,
+    "input_tokens": 224314,
+    "output_tokens": 2444,
+    "reasoning_output_tokens": 791
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "85a36ccb6293532fd7e836bdec6ae30596bd6701",
+ "cost_estimated": true,
+ "cost_usd": 0.458762,
+ "dedupe_key": "FormalFrontier/TauCeti|301|b28a7f822a65b9f68dc05954232d09516c768f0d|api-design|gpt-5.5|e1aee6e8c6688dd8|production|13",
+ "diff_blob": "b9b6bb138089bb950117d3350fd6a46019c701cd729fe379ab04201ba2e9df65",
+ "diff_sha256": "b9b6bb138089bb950117d3350fd6a46019c701cd729fe379ab04201ba2e9df65",
+ "duration_s": 54.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Action.lean:129` and `Action.lean:137` define the wrappers without attributes; `mathlib/Mathlib/FieldTheory/Galois/Basic.lean:251` has `@[simp] lemma mem_fixingSubgroup_iff ...` for the analogous specialized wrapper.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Action.lean",
+   "fix": "Add `@[simp]` to both membership iff lemmas, matching specialized fixing-subgroup APIs such as `IntermediateField.mem_fixingSubgroup_iff`.",
+   "issue": "`Diff.mem_fixing_iff` and `Diff.mem_relBoundary_iff` are the characteristic membership API for the new public subgroups but are not tagged `@[simp]`, so `simp` will not reduce membership in `Diff.fixing`/`Diff.relBoundary` to pointwise fixing.",
+   "line": 129
+  },
+  {
+   "evidence": "`Action.lean:78` gives only the ambient instance; the existing homeomorphism API adds exactly this transfer at `TauCeti/Topology/Algebra/HomeomorphAction.lean:56` because Mathlib does not provide it generically.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Action.lean",
+   "fix": "Add the parallel subgroup instance, e.g. `instance applySubgroupContinuousConstSMul (H : Subgroup (Diff I M n)) : ContinuousConstSMul H M := \u27e8fun f => continuous_const_smul (f : Diff I M n)\u27e9`.",
+   "issue": "The API exposes `Diff.fixing` and `Diff.relBoundary` as subgroups but only provides `ContinuousConstSMul` for the ambient `Diff I M n`; subgroup elements of `Diff(M, \u2202M)` cannot use `continuous_const_smul` without manually coercing/unfolding.",
+   "line": 78
+  }
+ ],
+ "head_sha": "b28a7f822a65b9f68dc05954232d09516c768f0d",
+ "merge_base_sha": "e8c356091331d1c5c2014a5b94bb09ccbcfd6501",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 301,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "f610bfdb05b4e97fd575c7442f6e1614f596edaef0eabc5a7c3912edc1768579",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 13,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "608cb927ee3be518b3008e16fed1ac76ba9d9a5b",
+ "rubrics_version": "e1aee6e8c6688dd8",
+ "run_id": "r-20260622T003336Z-301-api-design-6e2ff1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T00:33:36Z",
+ "submitted_by": "kim-em",
+ "summary": "The new action/fixing surface is close, but the public API is missing automation on its characteristic membership lemmas and the subgroup continuity transfer needed for the named relative groups.",
+ "transcript_blob": "3fc4cadf4676371f71660f3648e42d0d3f4bf3186d0b52968a3a72fd9fe5d46c",
+ "usage": {
+  "cached_input_tokens": 163584,
+  "input_tokens": 224314,
+  "output_tokens": 2444,
+  "reasoning_output_tokens": 791
+ },
+ "verdict": "request_changes"
+}
