@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.320624,
+   "returncode": 0,
+   "secs": 86.4,
+   "usage": {
+    "cached_input_tokens": 96768,
+    "input_tokens": 127612,
+    "output_tokens": 3934,
+    "reasoning_output_tokens": 2620
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "792701c40ec3a6afa5d2e1208ec8037f1f6cb8c8",
+ "cost_estimated": true,
+ "cost_usd": 0.320624,
+ "dedupe_key": "FormalFrontier/TauCeti|332|55ec152b01a710502594c6866e5d0d6c64ae4cb5|api-design|gpt-5.5|9e504cd6459fc954|production|2",
+ "diff_blob": "a51c9a6676cc3b4c5a8cff926c2f0cde9b845096b1c07e5d9a0f655d8471de83",
+ "diff_sha256": "a51c9a6676cc3b4c5a8cff926c2f0cde9b845096b1c07e5d9a0f655d8471de83",
+ "duration_s": 86.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Diagram.lean:70` defines public `def equivPerm`; `StateCardinality.lean:43-64` contains the only `equivPerm_*` simp lemmas.",
+   "file": "TauCeti/KnotTheory/Grid/Diagram.lean",
+   "fix": "Move the basic API for `equivPerm` (`equivPerm_apply`, `equivPerm_symm_apply`, and the evaluation/point-set simp lemmas as appropriate) next to the definition in `Diagram.lean`, or keep the equivalence private if it is only an implementation detail for cardinality.",
+   "issue": "`GridState.equivPerm` is now public in `Diagram.lean`, but its simp characterization lemmas live only in `StateCardinality.lean`, so importing the defining module exposes an uncharacterized equivalence unless users unfold it.",
+   "line": 70
+  },
+  {
+   "evidence": "`StateCardinality.lean:94-106` has `@[reducible] def uniqueOfLeOne ...` with default `(equivPerm n).symm 1`.",
+   "file": "TauCeti/KnotTheory/Grid/StateCardinality.lean",
+   "fix": "Remove `@[reducible]`; add explicit lemmas for any default computation that downstream code genuinely needs instead of relying on unfolding the body.",
+   "issue": "`uniqueOfLeOne` is marked `@[reducible]`, exposing the construction of the `Unique` instance and its chosen default even though the public API only needs the uniqueness fact/instances.",
+   "line": 94
+  }
+ ],
+ "head_sha": "55ec152b01a710502594c6866e5d0d6c64ae4cb5",
+ "merge_base_sha": "792701c40ec3a6afa5d2e1208ec8037f1f6cb8c8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 332,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "93a2091b7290309159d00629599adb8ddd314cfd0e12238b34a94fcfcb8e4582",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T213414Z-332-api-design-7d6b67",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T21:34:14Z",
+ "submitted_by": "kim-em",
+ "summary": "The cardinality statements are present, but the public surface exposes definitions without keeping their characteristic API at the point of exposure, and one helper unnecessarily exposes its body.",
+ "transcript_blob": "adcb7e90441f22727b4aa5fdb669e4c1854162b84b230eb25866b4cc89a7aa78",
+ "usage": {
+  "cached_input_tokens": 96768,
+  "input_tokens": 127612,
+  "output_tokens": 3934,
+  "reasoning_output_tokens": 2620
+ },
+ "verdict": "request_changes"
+}
