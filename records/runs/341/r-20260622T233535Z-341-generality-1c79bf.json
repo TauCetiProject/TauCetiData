@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.491982,
+   "returncode": 0,
+   "secs": 58.8,
+   "usage": {
+    "cached_input_tokens": 108544,
+    "input_tokens": 181188,
+    "output_tokens": 2483,
+    "reasoning_output_tokens": 1006
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b989297267b826aa5f4f65b97514d2173d998e5d",
+ "cost_estimated": true,
+ "cost_usd": 0.491982,
+ "dedupe_key": "FormalFrontier/TauCeti|341|ca95cb47a95cc84fb2f71f0ff8ded069b23214fa|generality|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "88009bba03b923f811e2195c2a466822fa10b660b27c8ca7b8bbc60808644d61",
+ "diff_sha256": "88009bba03b923f811e2195c2a466822fa10b660b27c8ca7b8bbc60808644d61",
+ "duration_s": 58.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 135-153 use `h.associated_pos`, `h.symplecticForm_apply_apply_self_nonneg`, and `h.associatedBilinForm_self_eq_zero`; `AlmostComplex.lean:329` defines `Tames`, and `AlmostComplex.lean:357-359` shows `Compatible.tames`.",
+   "file": "TauCeti/Geometry/Symplectic/Hermitian.lean",
+   "fix": "State these under `SymplecticForm.Tames` (or directly from `(\u03c9.associatedBilinForm J).toQuadraticMap.PosDef`) and have compatible versions, if kept, call `h.tames`.",
+   "issue": "The diagonal positivity/zero lemmas `hermitianForm_self_re_pos`, `hermitianForm_re_self_nonneg`, and `hermitianForm_self_eq_zero` require `h : \u03c9.Compatible J`, but they use only positivity of `\u03c9(v,Jv)`, not `J`-invariance.",
+   "line": 135
+  },
+  {
+   "evidence": "Lines 158-172 use only `h.invariant_apply`/`h.associatedBilinForm_apply_swap`; `AlmostComplex.lean:311-315` defines `Invariant`, and `Compatible.associatedBilinForm_apply_swap` at `AlmostComplex.lean:366-371` is itself proved from invariance.",
+   "file": "TauCeti/Geometry/Symplectic/Hermitian.lean",
+   "fix": "Move/prove these as `SymplecticForm.Invariant.hermitianForm_conj_symm` and `Invariant.hermitianForm_smul_left(_aux)` with hypothesis `(hinv : \u03c9.Invariant J)`; add an invariant-level `associatedBilinForm_apply_swap` helper if needed, then derive compatible wrappers from `h.invariant`.",
+   "issue": "`hermitianForm_conj_symm`, `hermitianForm_smul_left_aux`, and `hermitianForm_smul_left` require `h : \u03c9.Compatible J`, but conjugate symmetry and conjugate-linearity only use `\u03c9.Invariant J`, not positive definiteness.",
+   "line": 156
+  }
+ ],
+ "head_sha": "ca95cb47a95cc84fb2f71f0ff8ded069b23214fa",
+ "merge_base_sha": "9816ad66d1ad7a845890a27a7c51b08f129f3078",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 341,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2eb4256a4eeb06b3f17374c99bfd0a20310f380e7bbd92d688afcf5632e13902",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T233535Z-341-generality-1c79bf",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T23:35:35Z",
+ "submitted_by": "kim-em",
+ "summary": "Several standalone Hermitian-form lemmas require `Compatible` even though the positive or invariant half alone is the natural hypothesis. The core construction can stay compatible, but the reusable API should expose the weaker statements and derive compatible aliases only if needed.",
+ "transcript_blob": "3f85cd1437bfba4c8681d68682c56d99aa7382d85d35b4635adea87b4eaed715",
+ "usage": {
+  "cached_input_tokens": 108544,
+  "input_tokens": 181188,
+  "output_tokens": 2483,
+  "reasoning_output_tokens": 1006
+ },
+ "verdict": "request_changes"
+}

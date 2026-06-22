@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.426711,
+   "returncode": 0,
+   "secs": 72.8,
+   "usage": {
+    "cached_input_tokens": 248192,
+    "input_tokens": 291015,
+    "output_tokens": 2950,
+    "reasoning_output_tokens": 1019
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b989297267b826aa5f4f65b97514d2173d998e5d",
+ "cost_estimated": true,
+ "cost_usd": 0.426711,
+ "dedupe_key": "FormalFrontier/TauCeti|341|ca95cb47a95cc84fb2f71f0ff8ded069b23214fa|proof-quality|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "88009bba03b923f811e2195c2a466822fa10b660b27c8ca7b8bbc60808644d61",
+ "diff_sha256": "88009bba03b923f811e2195c2a466822fa10b660b27c8ca7b8bbc60808644d61",
+ "duration_s": 72.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep hit: lines 107-111 and 179-184 both use `apply Complex.ext` followed by a long `simp only [Complex.add_re, Complex.add_im, Complex.mul_re, Complex.mul_im, ...]` chain.",
+   "file": "TauCeti/Geometry/Symplectic/Hermitian.lean",
+   "fix": "Replace the hard-coded projection list with a more robust `ext <;> simp <;> ring`/`norm_num` style proof, or factor the repeated complex-coordinate calculation into one reusable lemma used by both scalar-linearity proofs.",
+   "issue": "`hermitianForm_smul_right_aux` and the analogous proof at line 180 close the algebra by a long `simp only` list of `Complex.add_re`, `Complex.mul_im`, `Complex.ofReal_*`, etc., making the proof sensitive to Mathlib projection-lemma names rather than the actual algebra.",
+   "line": 108
+  },
+  {
+   "evidence": "line 216 states `@inner \u2102 V h.hermitianCore.toInner v w = ...` and line 217 proves it with `rfl`; Mathlib\u2019s `InnerProductSpace.Core` extends `PreInnerProductSpace.Core`/`Inner`, so this crosses wrapper projections.",
+   "file": "TauCeti/Geometry/Symplectic/Hermitian.lean",
+   "fix": "Prove it by unfolding only the local `hermitianCore`/`hermitianForm` definitions or by referencing an explicit projection lemma, so the statement does not depend on accidental reducibility of the core wrapper.",
+   "issue": "`hermitianCore_inner` is a public simp lemma proved by `rfl` through `InnerProductSpace.Core`/`toInner` wrapper projections, relying on definitional equality of the packaging rather than a stable proof of the advertised formula.",
+   "line": 214
+  }
+ ],
+ "head_sha": "ca95cb47a95cc84fb2f71f0ff8ded069b23214fa",
+ "merge_base_sha": "9816ad66d1ad7a845890a27a7c51b08f129f3078",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 341,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2e237c8f5a2b3d409f28936328609e774ed2195f534198b6a3e2c5562262344c",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T233824Z-341-proof-quality-a72ccd",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T23:38:24Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs elaborate, but two proof-style choices are brittle under this rubric: repeated hard-coded Complex projection rewrites and a public lemma proved by wrapper definitional equality.",
+ "transcript_blob": "b2458639f3a21b33930753bbd81ff513ac09a323131a574486665c290e88d954",
+ "usage": {
+  "cached_input_tokens": 248192,
+  "input_tokens": 291015,
+  "output_tokens": 2950,
+  "reasoning_output_tokens": 1019
+ },
+ "verdict": "request_changes"
+}
