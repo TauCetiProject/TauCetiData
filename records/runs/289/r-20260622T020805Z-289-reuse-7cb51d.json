@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.560918,
+   "returncode": 0,
+   "secs": 65.3,
+   "usage": {
+    "cached_input_tokens": 192896,
+    "input_tokens": 267148,
+    "output_tokens": 3107,
+    "reasoning_output_tokens": 1067
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8c583a93c2cd5c48ca2bfa2ccb2e479a9d252079",
+ "cost_estimated": true,
+ "cost_usd": 0.560918,
+ "dedupe_key": "FormalFrontier/TauCeti|289|981731de56eff63f3a0ee1b2a63d59917c6b53e4|reuse|gpt-5.5|9e504cd6459fc954|production|4",
+ "diff_blob": "649c4ad5685f9e4ab66da27a1d4620e439919e30b4097f05248fe6f5a2d1fd82",
+ "diff_sha256": "649c4ad5685f9e4ab66da27a1d4620e439919e30b4097f05248fe6f5a2d1fd82",
+ "duration_s": 65.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Kernel.lean:65-67` and `119-121` prove exactly by `hK.submatrix`; `Kernel.lean:81-91` are `hK.isHermitian.apply`/`hK.diag_nonneg`. Existing Mathlib hits: `mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean:80` `PosSemidef.submatrix`, `:76` `PosSemidef.isHermitian`, `:138` `diag_nonneg`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Remove these wrappers and use `hK.submatrix v`, `hK.isHermitian.apply`, and `hK.diag_nonneg` directly, with `simp [Matrix.submatrix]` at call sites if needed.",
+   "issue": "`kernel_gram`, `kernel_conj_symm`, `kernel_apply_self_nonneg`, and `posSemidef_kernel_comp` are direct restatements of existing matrix APIs applied to `Matrix.of K`.",
+   "line": 65
+  },
+  {
+   "evidence": "`Kernel.lean:98-116` wraps `h\u2081.add h\u2082` and `h\u2081.hadamard h\u2082`; `Kernel.lean:197-205` rederives scalar closure. Existing Mathlib hits: `mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean:102` `PosSemidef.add`, `:107` `PosSemidef.smul`, and `mathlib/Mathlib/Analysis/Matrix/Order.lean:238` `PosSemidef.hadamard`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Remove these kernel-specific closure lemmas and use `h\u2081.add h\u2082`, `h\u2081.hadamard h\u2082`, and `hK.smul hc` directly, rewriting the target with `Matrix.of_add_of`, `Matrix.hadamard_apply`, or `Matrix.smul_apply` as needed.",
+   "issue": "`posSemidef_kernel_add`, `posSemidef_kernel_mul`, and `posSemidef_kernel_smul` duplicate existing closure lemmas for positive semidefinite matrices, differing only by unfolding `Matrix.of`/Hadamard/scalar application.",
+   "line": 98
+  }
+ ],
+ "head_sha": "981731de56eff63f3a0ee1b2a63d59917c6b53e4",
+ "merge_base_sha": "d0eaa122d2c1d82f74f0c695ba20699e717cd095",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 289,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "82c67739a7392ec9f6c6695612b761427ae947ec8d847440542d7c1c3cf2f042",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "897ca43b4554db47f1ca6891785bb4b2c4b3473e",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T020805Z-289-reuse-7cb51d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T02:08:05Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR no longer duplicates the predicate, but it still adds a kernel-named theorem layer that is mostly direct wrappers around existing `Matrix.PosSemidef` API. Those declarations should be removed or replaced by direct use of the matrix lemmas.",
+ "transcript_blob": "89f801cd09371b572d059f0cc90a2c5ec8c0300ae63354d69a910f979bfa8c97",
+ "usage": {
+  "cached_input_tokens": 192896,
+  "input_tokens": 267148,
+  "output_tokens": 3107,
+  "reasoning_output_tokens": 1067
+ },
+ "verdict": "block"
+}
