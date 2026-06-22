@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.397717,
+   "returncode": 0,
+   "secs": 48.1,
+   "usage": {
+    "cached_input_tokens": 59904,
+    "input_tokens": 119447,
+    "output_tokens": 2335,
+    "reasoning_output_tokens": 702
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8c583a93c2cd5c48ca2bfa2ccb2e479a9d252079",
+ "cost_estimated": true,
+ "cost_usd": 0.397717,
+ "dedupe_key": "FormalFrontier/TauCeti|289|502d02e03383e8338836dd7e2ee464cc3591b405|api-design|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "18c7e003f35d923fb480a1b9431fe7d5bc67cec53905ebae1c71e8c8c2fe6c89",
+ "diff_sha256": "18c7e003f35d923fb480a1b9431fe7d5bc67cec53905ebae1c71e8c8c2fe6c89",
+ "duration_s": 48.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"IsPositiveDefiniteKernel|posSemidef_kernel\" code/TauCeti mathlib/Mathlib` finds only `posSemidef_kernel_iff` and no named kernel predicate; lines 32-33 explicitly choose the raw `Matrix.PosSemidef` representation.",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Add the named predicate/abbrev with a definitional theorem and restate the existing characterization as `isPositiveDefiniteKernel_iff` over that predicate.",
+   "issue": "The file exposes no `TauCeti.IsPositiveDefiniteKernel` predicate or `isPositiveDefiniteKernel_def`, despite the PR target being a kernel predicate; users must state `(Matrix.of fun a b => K a b).PosSemidef` everywhere, baking in the representation.",
+   "line": 32
+  },
+  {
+   "evidence": "`rg -n \"theorem .*\\.(add|smul|mul|comp)|lemma .*\\.(add|smul|mul|comp)\" code/TauCeti/Analysis/PositiveDefinite/Kernel.lean` returns no hits, while roadmap lines 216-217 name the PD-function/PD-kernel equivalence and pullbacks.",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Provide public lemmas such as `IsPositiveDefiniteKernel.add`, `.smul`, `.mul`/Schur product, and `.comp` phrased in the named predicate, so users can build kernels without unfolding to matrices.",
+   "issue": "The characteristic construction API is incomplete: the stated downstream API needs pullbacks and closure under sums, nonnegative scalar multiples, and Schur products, but the file only exposes the rank-one theorem.",
+   "line": 129
+  },
+  {
+   "evidence": "`rg -n \"conj_symm|apply_self_nonneg|kernel_sum_conj\" code/TauCeti/Analysis/PositiveDefinite/Kernel.lean` finds only `kernel_sum_conj_mul_mul_nonneg`; the file has no direct diagonal or conjugate-symmetry API.",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Add named eliminators over the kernel predicate, with appropriate `@[simp]` on the conjugate-symmetry normal form if intended and a direct diagonal nonnegativity theorem.",
+   "issue": "Elimination lemmas are missing: `posSemidef_kernel_iff` bundles conjugate symmetry and quadratic-form nonnegativity, but there are no named `conj_symm` or `apply_self_nonneg` lemmas for kernel users.",
+   "line": 74
+  }
+ ],
+ "head_sha": "502d02e03383e8338836dd7e2ee464cc3591b405",
+ "merge_base_sha": "d0eaa122d2c1d82f74f0c695ba20699e717cd095",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 289,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "31504d544586c4718ae3bd506ce3a8cc65a26711dbb1ef612244ebab02c50656",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "897ca43b4554db47f1ca6891785bb4b2c4b3473e",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T024732Z-289-api-design-06760c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T02:47:32Z",
+ "submitted_by": "kim-em",
+ "summary": "The exposed surface is not a usable positive-definite-kernel API: it leaves users manipulating the raw `Matrix.of ... .PosSemidef` representation and omits the operation lemmas the roadmap target needs.",
+ "transcript_blob": "1415f2081e9401d943a2d50f46e9e9becd554f83f11e424d7d59837f1bae8e8c",
+ "usage": {
+  "cached_input_tokens": 59904,
+  "input_tokens": 119447,
+  "output_tokens": 2335,
+  "reasoning_output_tokens": 702
+ },
+ "verdict": "request_changes"
+}
