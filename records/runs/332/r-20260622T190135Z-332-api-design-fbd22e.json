@@ -1,0 +1,131 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.30732525,
+   "returncode": 0,
+   "secs": 87.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 16945,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 16945,
+    "cache_read_input_tokens": 73530,
+    "inference_geo": "not_available",
+    "input_tokens": 1463,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2080,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2080,
+      "cache_read_input_tokens": 31566,
+      "input_tokens": 1239,
+      "output_tokens": 5432,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6064,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "792701c40ec3a6afa5d2e1208ec8037f1f6cb8c8",
+ "cost_usd": 0.307325,
+ "dedupe_key": "FormalFrontier/TauCeti|332|98e380d97de91a630eb9573aaf1a07edb297a6f0|api-design|claude-opus-4-8|9e504cd6459fc954|production|1",
+ "diff_blob": "79d03bf499abf5ccea8a6dc95e715eefb86c7a600f42b9c519441b0b8ced118f",
+ "diff_sha256": "79d03bf499abf5ccea8a6dc95e715eefb86c7a600f42b9c519441b0b8ced118f",
+ "duration_s": 87.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 134-139: `theorem default_zero_eq : (default : GridState 0) = (equivPerm 0).symm 1`.",
+   "file": "TauCeti/KnotTheory/Grid/StateCardinality.lean",
+   "fix": "Drop `@[simp]` (or reverse the statement to `(equivPerm 0).symm 1 = default`).",
+   "issue": "`default_zero_eq` is `@[simp]` but rewrites `default` (the canonical unique element) into the strictly more complex `(equivPerm 0).symm 1` \u2014 wrong simp direction; simp normal form should be `default`, not a symm-apply term.",
+   "line": "137"
+  },
+  {
+   "evidence": "`@[simp] theorem card` at line 66; each numeral lemma is proved `by simp`.",
+   "file": "TauCeti/KnotTheory/Grid/StateCardinality.lean",
+   "fix": "Remove `@[simp]` from `card_zero/card_one/card_two`; keep them as plain sanity-check lemmas.",
+   "issue": "`card_zero`, `card_one`, `card_two` are `@[simp]` but redundant: `card` is already `@[simp]` and its specializations are closed by `simp` alone (the proofs are literally `by simp`), so these add overlapping simp entries that the general lemma already normalizes.",
+   "line": "73"
+  },
+  {
+   "evidence": "`instUniqueZero : Unique (GridState 0)` then `instSubsingletonZero : Subsingleton (GridState 0) := inferInstance`.",
+   "file": "TauCeti/KnotTheory/Grid/StateCardinality.lean",
+   "fix": "Delete the explicit `Subsingleton` instances; rely on the `Unique` instances.",
+   "issue": "`instSubsingletonZero`/`instSubsingletonOne` are redundant: the `Unique` instances already provide `Subsingleton` via core's `Unique \u2192 Subsingleton`, so these declare a second instance path (diamond/duplicate-instance risk) for no added API.",
+   "line": "127"
+  },
+  {
+   "evidence": "Diagram.lean:70 `private def equivPerm : GridState n \u2243 Equiv.Perm (Fin n)`; new file line 33 `def equivPerm (n : \u2115) : GridState n \u2243 Equiv.Perm (Fin n)`.",
+   "file": "TauCeti/KnotTheory/Grid/StateCardinality.lean",
+   "fix": "Expose the existing equiv by removing `private` in Diagram.lean (or moving it here) instead of redefining a parallel one.",
+   "issue": "The exposed `equivPerm` duplicates the existing `private def equivPerm` in Diagram.lean rather than promoting it; this puts two identical `GridState \u2243 Equiv.Perm (Fin n)` definitions in the same namespace.",
+   "line": "33"
+  }
+ ],
+ "head_sha": "98e380d97de91a630eb9573aaf1a07edb297a6f0",
+ "merge_base_sha": "792701c40ec3a6afa5d2e1208ec8037f1f6cb8c8",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 332,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6dfd1762f6d25d2f74d330019bfcfc1006a14ac1eb6f0008afbab4219b8063a1",
+ "provider": "claude",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T190135Z-332-api-design-fbd22e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T19:01:35Z",
+ "submitted_by": "kim-em",
+ "summary": "The characteristic card API is complete and bodies stay hidden, but several automation annotations are wrong or redundant, and the public equivPerm re-introduces an equiv that already exists privately in Diagram.lean.",
+ "transcript_blob": "787db28532efa0faa1990a09d1b3d5978e98d976b1351058b2f8e2f973116b4c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 16945,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 16945,
+  "cache_read_input_tokens": 73530,
+  "inference_geo": "not_available",
+  "input_tokens": 1463,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2080,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2080,
+    "cache_read_input_tokens": 31566,
+    "input_tokens": 1239,
+    "output_tokens": 5432,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6064,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
