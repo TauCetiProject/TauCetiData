@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.369381,
+   "returncode": 0,
+   "secs": 66.2,
+   "usage": {
+    "cached_input_tokens": 39552,
+    "input_tokens": 90117,
+    "output_tokens": 3226,
+    "reasoning_output_tokens": 2053
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d2af393b4d1b8faedd426e534c318ff09a9f7b49",
+ "cost_estimated": true,
+ "cost_usd": 0.369381,
+ "dedupe_key": "FormalFrontier/TauCeti|321|efbb8d4e842433132a7d6e2d0d4db6031bff0c05|api-design|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "631b73951e626c5003aadd2fd5bff71299706dea9a27772832e8be2fe50e5b38",
+ "diff_sha256": "631b73951e626c5003aadd2fd5bff71299706dea9a27772832e8be2fe50e5b38",
+ "duration_s": 66.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"MassLowerBoundOn|massForm_self\" code/TauCeti/Analysis/PDE/LowerOrder.lean` shows the new namespace has `mu_pos`, `lower_bound`, and `nonnegMassPointwiseOn` at lines 351-365, while only `NonnegMassPointwiseOn.massForm_self_nonneg` and `NonnegMassOn.massForm_self_nonneg` exist at lines 319 and 424.",
+   "file": "TauCeti/Analysis/PDE/LowerOrder.lean",
+   "fix": "Add a lemma such as `@[grind =>] lemma MassLowerBoundOn.massForm_self_lower_bound ... : mu * u ^ 2 \u2264 massForm (c x) u u` (and/or the exact normal form used by `energyIntegrand`) analogous to the existing `NonnegMassOn.massForm_self_nonneg`.",
+   "issue": "`MassLowerBoundOn` exposes only coefficient eliminators, but no characteristic interaction with the mass form; downstream energy proofs must unfold `massForm` or route through weaker nonnegativity.",
+   "line": 332
+  },
+  {
+   "evidence": "`CoerciveEnergy.lean` exports `energyIntegrand_self_lower_bound_of_bounds`, `isCoercive_energyIntegrand_of_bounds`, `isCoercive_energyIntegrand_of_bounds_on`, and `UniformlyEllipticOn.isCoercive_energyIntegrand` at lines 76, 99, 128, and 145; `roadmap/TauCetiRoadmap/PDE/Targets.lean:28-29` names the current Lane D target as the zero-drift `\u2212\u0394u = f` problem.",
+   "file": "TauCeti/Analysis/PDE/CoerciveEnergy.lean",
+   "fix": "Keep the zero-drift bundled theorem public and make the raw/general-drift lower-bound lemmas private or defer them to the PR that actually develops the bounded-drift coercive operator API.",
+   "issue": "The file publicly exports raw-bound and general-drift coercivity lemmas, but the named target is the zero-drift `\u2212\u0394u = f` Lane D milestone; this broadens the public API for future general lower-order theory rather than the current consumer.",
+   "line": 99
+  }
+ ],
+ "head_sha": "efbb8d4e842433132a7d6e2d0d4db6031bff0c05",
+ "merge_base_sha": "d2af393b4d1b8faedd426e534c318ff09a9f7b49",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 321,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7213c6532b48af1d0a8f8bcad7e3504cba297c1c589a82e2179d5c5bc0f80c73",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T133054Z-321-api-design-e32775",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T13:30:54Z",
+ "submitted_by": "kim-em",
+ "summary": "The new mass-lower-bound predicate is missing the operation-level API needed to use it without unfolding, and the coercivity file exports broader helper/general-drift lemmas than the stated downstream target needs.",
+ "transcript_blob": "41823700ce34f1bec05f82cb2b388128204b0f417ab263109bd11acb6f0fc505",
+ "usage": {
+  "cached_input_tokens": 39552,
+  "input_tokens": 90117,
+  "output_tokens": 3226,
+  "reasoning_output_tokens": 2053
+ },
+ "verdict": "request_changes"
+}
