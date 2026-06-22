@@ -1,0 +1,124 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.4091874999999999,
+   "returncode": 0,
+   "secs": 102.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 18384,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 18384,
+    "cache_read_input_tokens": 158063,
+    "inference_geo": "not_available",
+    "input_tokens": 453,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4943,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4943,
+      "cache_read_input_tokens": 30142,
+      "input_tokens": 2,
+      "output_tokens": 2212,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8259,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "035c433200e94bfd798df1705c37fd0986a8e86c",
+ "cost_usd": 0.409187,
+ "dedupe_key": "FormalFrontier/TauCeti|335|055df8bfda542cb350d96c0d4863980ed951b362|api-design|claude-opus-4-8|9e504cd6459fc954|production|1",
+ "diff_blob": "9332c5c1b961add60d9dacbc8cf95fe3a350a0a025c5f85c8a3ac45004aea309",
+ "diff_sha256": "9332c5c1b961add60d9dacbc8cf95fe3a350a0a025c5f85c8a3ac45004aea309",
+ "duration_s": 102.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Rubric: require dual/parallel forms only when the file develops both sides or the target needs them. README Layer 1 states the change as the squarefree `d\u2c7c` times square units; only the right form appears.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/LegendreSquareClass.lean",
+   "fix": "Drop the four `_sq_mul` lemmas; add a left form only when a consumer needs `u^2 * d`.",
+   "issue": "Left-handed duals `not_dvd_sq_mul_iff` (51), `legendreSym_sq_mul` (67), `legendreSym_sq_mul_eq_one_iff` (78), `legendreSym_eq_of_eq_sq_mul` (95) parallel the `*_mul_sq` forms, but the square-class change is always `d * u^2` (right form) and no consumer or roadmap target multiplies on the left.",
+   "line": "51"
+  },
+  {
+   "evidence": "Bodies are `rw [hb, legendreSym_mul_sq hu]` etc. (lines 90-93); no characterization beyond the base lemma.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/LegendreSquareClass.lean",
+   "fix": "Remove these pointwise `_of_eq_mul_sq` singletons; a caller substitutes its own `b = a * u^2` and applies `legendreSym_mul_sq`/`not_dvd_mul_sq_iff`. Keep the `forall_*_of_forall_eq_mul_sq` family forms the description names.",
+   "issue": "Equality-hypothesis wrappers `legendreSym_eq_one_iff_of_eq_mul_sq` (83), `legendreSym_eq_of_eq_mul_sq` (89), `not_dvd_iff_of_eq_mul_sq` (101) add no content over the base lemmas \u2014 each is just `rw [hb]` then the corresponding `*_mul_sq` lemma.",
+   "line": "83"
+  },
+  {
+   "evidence": "Bodies are `rw [legendreSym_mul_sq hu]` / `simp_rw [legendreSym_mul_sq_eq_one_iff ...]` (lines 75, 110); the `_eq` lemma already gives the iff in one step.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/LegendreSquareClass.lean",
+   "fix": "Keep one residue-condition restatement (e.g. `forall_legendreSym_mul_sq_eq_one_iff`) since `=1` is the meaningful predicate; drop the pointwise/left duplicates, derivable via `rw [legendreSym_mul_sq]`.",
+   "issue": "`=1 \u2194 =1` restatements `legendreSym_mul_sq_eq_one_iff` (73), `legendreSym_sq_mul_eq_one_iff` (78), `forall_legendreSym_mul_sq_eq_one_iff` (108) and `forall_legendreSym_eq_one_iff_of_forall_eq_mul_sq` (129) are each a single rewrite of the stronger symbol-equality lemma; the residue predicate is duplicated across pointwise+family+left+right.",
+   "line": "73"
+  }
+ ],
+ "head_sha": "055df8bfda542cb350d96c0d4863980ed951b362",
+ "merge_base_sha": "792701c40ec3a6afa5d2e1208ec8037f1f6cb8c8",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 335,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5e4c0e0aa86cc3f7b46a5fe6736c0ecfab4d9da4758ce66f18bc9f022af43a33",
+ "provider": "claude",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T192647Z-335-api-design-843566",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T19:26:47Z",
+ "submitted_by": "kim-em",
+ "summary": "The file exposes 18 public lemmas where the named splitting-law target needs about four; the surplus is unmotivated left/right duals, content-free equality-hypothesis wrappers, and `=1 \u2194 =1` restatements that are one rewrite from the symbol-equality lemmas. Trim the surface to the forms a consumer actually uses and make pure proof helpers private.",
+ "transcript_blob": "6372caf18c47a1a7294da8db9e4e38b71307b32368f3bdba9781a80f3dff120f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 18384,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 18384,
+  "cache_read_input_tokens": 158063,
+  "inference_geo": "not_available",
+  "input_tokens": 453,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4943,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4943,
+    "cache_read_input_tokens": 30142,
+    "input_tokens": 2,
+    "output_tokens": 2212,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8259,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
