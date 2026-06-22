@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.373022,
+   "returncode": 0,
+   "secs": 66.6,
+   "usage": {
+    "cached_input_tokens": 125824,
+    "input_tokens": 169084,
+    "output_tokens": 3127,
+    "reasoning_output_tokens": 1422
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a0345ce987be3cda1a90c16140763bf3e50bae93",
+ "cost_estimated": true,
+ "cost_usd": 0.373022,
+ "dedupe_key": "FormalFrontier/TauCeti|315|47928ef61a200ad532557c2db71c89001f55c3fa|reuse|gpt-5.5|9e504cd6459fc954|production|2",
+ "diff_blob": "31818a99509da18932cb194be2c98b886fa5fd1be0dc3c44fa282ee1dbe41a7b",
+ "diff_sha256": "31818a99509da18932cb194be2c98b886fa5fd1be0dc3c44fa282ee1dbe41a7b",
+ "duration_s": 66.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib has `mathlib/Mathlib/Data/Set/Finite/Basic.lean:566 theorem Finite.image` and `:571 lemma Finite.of_surjOn`; the PR proof at `code/TauCeti/FieldTheory/IntermediateField/Card.lean:47` is `(hT.image _).subset (subset_image_adjoin_simple h)`.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Card.lean",
+   "fix": "Remove this public theorem and use `Set.Finite.of_surjOn`/`hT.image` plus the local subset/surjOn proof at the bounded-root call site.",
+   "issue": "`finite_of_forall_exists_mem_eq_adjoin_simple` is just finiteness of a surjective image specialized to `x \u21a6 K\u27eex\u27ef`, creating parallel API for existing Set finiteness lemmas.",
+   "line": 45
+  },
+  {
+   "evidence": "Mathlib has `mathlib/Mathlib/Data/Set/Card.lean:670 theorem ncard_le_ncard` and `:826 theorem ncard_image_le`; the PR proof at `code/TauCeti/FieldTheory/IntermediateField/Card.lean:54` is exactly their transitive composition.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Card.lean",
+   "fix": "Do the two-line `Set.ncard_le_ncard`/`Set.ncard_image_le` argument locally in `SimpleGenerators.lean`, or factor a genuinely general Set lemma rather than an IntermediateField-specific wrapper.",
+   "issue": "`ncard_le_of_forall_exists_mem_eq_adjoin_simple` is the generic bound `S.ncard \u2264 (f '' T).ncard \u2264 T.ncard` with `f := fun x => K\u27eex\u27ef`, so it is a thin parallel wrapper over Set cardinality API.",
+   "line": 52
+  }
+ ],
+ "head_sha": "47928ef61a200ad532557c2db71c89001f55c3fa",
+ "merge_base_sha": "a0345ce987be3cda1a90c16140763bf3e50bae93",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 315,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "35cf99ad90beb35adb126bd48d760ea6cdfe6b23f9f3f98bfb86c56c4b39976f",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T095242Z-315-reuse-93ae11",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T09:52:42Z",
+ "submitted_by": "kim-em",
+ "summary": "The bounded-root specialization is new, but the new public intermediate-field helpers package existing Set image/cardinality API under a parallel field-specific namespace. Keep the bounded result and inline these generic Set steps instead of adding reusable TauCeti declarations for them.",
+ "transcript_blob": "8ae5f34328ffd1dc80070ea7f5cefe05d0e03e413a35b7ce80e25399ed85c04b",
+ "usage": {
+  "cached_input_tokens": 125824,
+  "input_tokens": 169084,
+  "output_tokens": 3127,
+  "reasoning_output_tokens": 1422
+ },
+ "verdict": "request_changes"
+}
