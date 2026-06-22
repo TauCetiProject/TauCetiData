@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.439578,
+   "returncode": 0,
+   "secs": 68.0,
+   "usage": {
+    "cached_input_tokens": 141056,
+    "input_tokens": 195330,
+    "output_tokens": 3256,
+    "reasoning_output_tokens": 1184
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8c583a93c2cd5c48ca2bfa2ccb2e479a9d252079",
+ "cost_estimated": true,
+ "cost_usd": 0.439578,
+ "dedupe_key": "FormalFrontier/TauCeti|289|63301f72d4e6ee2c79314cdf28b29455ac4186cc|api-design|gpt-5.5|9e504cd6459fc954|production|2",
+ "diff_blob": "6af2059620335d0262191d60f251100de855b02eb598dba0a024cc803043cb7d",
+ "diff_sha256": "6af2059620335d0262191d60f251100de855b02eb598dba0a024cc803043cb7d",
+ "duration_s": 68.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`nl -ba code/TauCeti/Analysis/PositiveDefinite/Kernel.lean` shows `abbrev IsPositiveDefiniteKernel` at lines 63-64; the file itself then uses raw `PosSemidef` projections at lines 75 and 80.",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Make it an opaque `def` predicate and keep `isPositiveDefiniteKernel_def` as the explicit bridge for the rare proofs that need to move to matrices.",
+   "issue": "`IsPositiveDefiniteKernel` is an `abbrev`, so users can depend definitionally on the raw `(Matrix.of ...).PosSemidef` representation instead of the kernel API.",
+   "line": 63
+  },
+  {
+   "evidence": "`rg -n \"isPositiveDefiniteKernel_(add|smul|mul)|isPositiveDefiniteKernel.*add|isPositiveDefiniteKernel.*smul|isPositiveDefiniteKernel.*mul\" code/TauCeti mathlib/Mathlib` finds only `isPositiveDefiniteKernel_conj_mul`; roadmap lines 211 and 216-217 request closure properties and the PD-kernel API.",
+   "file": "TauCeti/Analysis/PositiveDefinite/Kernel.lean",
+   "fix": "Add public lemmas such as `isPositiveDefiniteKernel_add`, a nonnegative-scalar `smul` lemma, and `isPositiveDefiniteKernel_mul`/Schur product, using `Matrix.PosSemidef.add` and `Matrix.PosSemidef.hadamard` behind the kernel abstraction.",
+   "issue": "The characteristic operation API is incomplete: the docstring says nonnegative mixtures and Schur products generate new kernels, but there are no public closure lemmas for sums, nonnegative scalar multiples, or pointwise/Schur products.",
+   "line": 116
+  }
+ ],
+ "head_sha": "63301f72d4e6ee2c79314cdf28b29455ac4186cc",
+ "merge_base_sha": "d0eaa122d2c1d82f74f0c695ba20699e717cd095",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 289,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "28e8441d0ce5d19c008f82692a8d57ca233c7f5b24fff41f2585dac30adbc67e",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T065207Z-289-api-design-9db8b2",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T06:52:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The kernel predicate has the basic eliminators, pullback, rank-one, and quadratic-form characterization, but the public surface still exposes the representation and omits the advertised closure API needed downstream.",
+ "transcript_blob": "01f93147d4a75f99c623f52d50b95b2da5ed34554172b856e4342f974b53d52c",
+ "usage": {
+  "cached_input_tokens": 141056,
+  "input_tokens": 195330,
+  "output_tokens": 3256,
+  "reasoning_output_tokens": 1184
+ },
+ "verdict": "request_changes"
+}
