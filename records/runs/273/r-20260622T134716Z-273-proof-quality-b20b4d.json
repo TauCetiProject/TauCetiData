@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.256203,
+   "returncode": 0,
+   "secs": 32.9,
+   "usage": {
+    "cached_input_tokens": 41216,
+    "input_tokens": 80013,
+    "output_tokens": 1387,
+    "reasoning_output_tokens": 536
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "14fa13b8a85ec3e3edd279166fb59a7671702952",
+ "cost_estimated": true,
+ "cost_usd": 0.256203,
+ "dedupe_key": "FormalFrontier/TauCeti|273|a1a536f0f1122fce54c8dd91d10a62921cd42beb|proof-quality|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "2e37665031c52f9296ea002b0b8622fcde5408567db8a7cc5872e7d31dd31c83",
+ "diff_sha256": "2e37665031c52f9296ea002b0b8622fcde5408567db8a7cc5872e7d31dd31c83",
+ "duration_s": 32.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` hit: line 677 `change Continuous (Set.piecewise (Set.Ici 0) f (fun _ => x))`; no comment explains why this defeq coercion is unavoidable.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Define `g` directly as `Set.piecewise (Set.Ici 0) f (fun _ => x)`, or add an explicit local lemma for the equality and rewrite by that lemma before applying `continuous_piecewise`.",
+   "issue": "`tendsto_average_resolvent_integrand` uses `change Continuous (Set.piecewise (Set.Ici 0) f (fun _ => x))` to turn the local `if` definition of `g` into `Set.piecewise`, relying on the exact definitional shape of `Set.piecewise`.",
+   "line": 677
+  },
+  {
+   "evidence": "`rg` hit: line 548 `rw [show (fun t => M * \u2016x\u2016 * Real.exp (-(lambda - \u03c9) * t)) = ...`; this is an undocumented `show` rewrite in a theorem proof.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Factor this scalar-integral normalization into a small helper lemma, or use the existing scalar integral API directly so the main bound does not contain a fragile `show` function equality.",
+   "issue": "The resolvent norm proof rewrites a whole integrand function with `rw [show (fun t => ...) = ... from by ext t; simp ...]`, making the proof depend on an ad hoc function-extensional defeq/simp shape inside a long argument.",
+   "line": 548
+  },
+  {
+   "evidence": "`rg` hits: line 829 `rw [show x = (1 : \u211d) \u2022 x ...]`, line 830 `simp_rw [show \u2200 t, ...]`, and line 832 nested `show 1 / t * Real.exp ... = ...`; none documents why the goal cannot be reached otherwise.",
+   "file": "TauCeti/Analysis/Semigroups/Basic.lean",
+   "fix": "Replace these with a small algebra helper lemma for the averaged-integral scaling, or use `convert`/`simpa [mul_smul, smul_smul]` with a documented reason if the exact target shape is forced by `Filter.Tendsto.smul`.",
+   "issue": "`resolvent_generator_tendsto` uses multiple undocumented `show` rewrites for scalar algebra (`x = 1 \u2022 x`, commuting factors before `mul_smul`) inside the key generator-limit proof.",
+   "line": 829
+  }
+ ],
+ "head_sha": "a1a536f0f1122fce54c8dd91d10a62921cd42beb",
+ "merge_base_sha": "a8c3cf89a8e8e14ce645548ace42bd229ba83ace",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 273,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e861e8ddd34e0bf62d890b4e528de5c8d82b808ea44b31995eb558fb8b4eca34",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T134716Z-273-proof-quality-b20b4d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T13:47:16Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs compile, but several substantial steps rely on undocumented definitional-shape rewrites that the proof-quality rubric asks to avoid or justify.",
+ "transcript_blob": "5f1a6cf52f7ae825ac3d69aecc6e4e83edf6520e8c650e62fdc6c9925b535efa",
+ "usage": {
+  "cached_input_tokens": 41216,
+  "input_tokens": 80013,
+  "output_tokens": 1387,
+  "reasoning_output_tokens": 536
+ },
+ "verdict": "request_changes"
+}
