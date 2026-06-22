@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.566254,
+   "returncode": 0,
+   "secs": 66.5,
+   "usage": {
+    "cached_input_tokens": 144768,
+    "input_tokens": 224024,
+    "output_tokens": 3253,
+    "reasoning_output_tokens": 1210
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b989297267b826aa5f4f65b97514d2173d998e5d",
+ "cost_estimated": true,
+ "cost_usd": 0.566254,
+ "dedupe_key": "FormalFrontier/TauCeti|342|b4053ee4ad2b15e53fa23e5ce9ed9d8e9311ded6|reuse|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "334bf57a8c09e9775dce89dabb763037ea5586d1962e46bb0e55acfd3bf85c6f",
+ "diff_sha256": "334bf57a8c09e9775dce89dabb763037ea5586d1962e46bb0e55acfd3bf85c6f",
+ "duration_s": 66.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PR line 62 defines `adicOrd`; Mathlib has `FractionalIdeal.count` at `Mathlib/RingTheory/DedekindDomain/Factorization.lean:318`, additivity at lines 372-374, principal ideals via `toPrincipalIdeal` at `Mathlib/RingTheory/ClassGroup/Basic.lean:48`, and factorization reconstruction at `Factorization.lean:568-570`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Dedekind.lean",
+   "fix": "Define it through, or at least prove a simp/bridge theorem to, `FractionalIdeal.count K v (toPrincipalIdeal R K u : FractionalIdeal R\u2070 K)` so downstream code can reuse Mathlib factorization lemmas.",
+   "issue": "`adicOrd` reimplements the exponent of a principal fractional ideal from the raw `HeightOneSpectrum.valuation`/`WithZero.log` API instead of connecting to Mathlib\u2019s existing fractional-ideal exponent API.",
+   "line": "62"
+  },
+  {
+   "evidence": "PR line 135 defines `DivisorClassGroup`; Mathlib already defines the ideal class group as `ClassGroup R` at `Mathlib/RingTheory/ClassGroup/Basic.lean:86-89`, with quotient map `ClassGroup.mk` at lines 102-105 and `ClassGroup.mk0` at lines 253-255.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Dedekind.lean",
+   "fix": "Either use `ClassGroup R` for the exported Dedekind-domain class group, or add a canonical equivalence between `(OrderSystem.ofDedekindDomain R K).ClassGroup` and Mathlib\u2019s `ClassGroup R` and name the new abbrev so it is clearly the Weil-divisor presentation.",
+   "issue": "`DivisorClassGroup R K` is introduced as a second public class-group type for a Dedekind domain, parallel to Mathlib\u2019s existing `ClassGroup R`, with no equivalence or reuse point.",
+   "line": "135"
+  }
+ ],
+ "head_sha": "b4053ee4ad2b15e53fa23e5ce9ed9d8e9311ded6",
+ "merge_base_sha": "d6019f7b2333a8b582c509728f350b8ed32fd8f9",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 342,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9446dd29d23089362f689c253616dd5278658fe88cfdc6459bc955c06a191586",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T234127Z-342-reuse-4d621e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T23:41:27Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR adds the intended TauCeti order-system instance, but it exposes parallel Dedekind divisor/class-group APIs without tying them to Mathlib\u2019s existing fractional-ideal valuation and class-group APIs.",
+ "transcript_blob": "7d450c0f2c7a826c07b2105436ddf73af01bd576619af3e9894416ad4fa11720",
+ "usage": {
+  "cached_input_tokens": 144768,
+  "input_tokens": 224024,
+  "output_tokens": 3253,
+  "reasoning_output_tokens": 1210
+ },
+ "verdict": "request_changes"
+}
