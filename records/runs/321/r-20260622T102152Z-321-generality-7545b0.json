@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.342873,
+   "returncode": 0,
+   "secs": 56.7,
+   "usage": {
+    "cached_input_tokens": 88576,
+    "input_tokens": 132663,
+    "output_tokens": 2605,
+    "reasoning_output_tokens": 1225
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d2af393b4d1b8faedd426e534c318ff09a9f7b49",
+ "cost_estimated": true,
+ "cost_usd": 0.342873,
+ "dedupe_key": "FormalFrontier/TauCeti|321|bea1cb801875ea62953ec011d88703994d139e1f|generality|gpt-5.5|9e504cd6459fc954|production|1",
+ "diff_blob": "5dfbc23c69b6cabfdeb1a030d3233c4e5d406de03dc5b1b4b461779d89ff6af1",
+ "diff_sha256": "5dfbc23c69b6cabfdeb1a030d3233c4e5d406de03dc5b1b4b461779d89ff6af1",
+ "duration_s": 56.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`TauCeti/Analysis/PDE/EnergyForm.lean:214` proves `garding_energyIntegrand_self_of_bounds` for `energyIntegrand (a x) (b x) (c x)` with bounded drift, while this PR concludes only `IsCoercive (energyIntegrand A 0 c\u2080)` at `TauCeti/Analysis/PDE/CoerciveEnergy.lean:139`.",
+   "file": "TauCeti/Analysis/PDE/CoerciveEnergy.lean",
+   "fix": "Prove the general pointwise theorem first, e.g. with `hb : \u2016b\u2080\u2016 \u2264 beta` and `beta ^ 2 / (2 * lam) < mu`, giving coercivity constant `min (lam / 2) (mu - beta ^ 2 / (2 * lam))`; derive the current zero-drift lemma as the `b\u2080 = 0`, `beta = 0` corollary.",
+   "issue": "`isCoercive_energyIntegrand_zero_drift_of_lower_bounds` specializes the drift coefficient to `0`, but the natural theorem for `energyIntegrand A b c\u2080` allows bounded drift when the mass floor dominates the G\u00e5rding defect.",
+   "line": 135
+  },
+  {
+   "evidence": "`TauCeti/Analysis/PDE/EnergyForm.lean:264` already has the bundled drift-aware lower bound `garding_energyIntegrand_self (he) (hb : DriftBoundedOn \u03a9 b beta) ...`, but `TauCeti/Analysis/PDE/CoerciveEnergy.lean:152` fixes the integrand to zero drift.",
+   "file": "TauCeti/Analysis/PDE/CoerciveEnergy.lean",
+   "fix": "Add the bundled general corollary `UniformlyEllipticOn.isCoercive_energyIntegrand` taking `hb : DriftBoundedOn \u03a9 b beta`, `hc : MassLowerBoundOn \u03a9 c mu`, and `beta ^ 2 / (2 * lam) < mu`, then keep `isCoercive_energyIntegrand_zero_drift` as a specialization if desired.",
+   "issue": "The bundled corollary also exposes only `energyIntegrand (a x) 0 (c x)`, leaving out the existing `DriftBoundedOn \u03a9 b beta` hypothesis used by the rest of the PDE energy stack.",
+   "line": 150
+  }
+ ],
+ "head_sha": "bea1cb801875ea62953ec011d88703994d139e1f",
+ "merge_base_sha": "d2af393b4d1b8faedd426e534c318ff09a9f7b49",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 321,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3c16bb88ca4c1e758b9e000d4fb834cc303031725ec165037b1556d7c5b11e74",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "e71e7ab018181fee18d7f3d100ebd91fb84d092d",
+ "rubrics_version": "9e504cd6459fc954",
+ "run_id": "r-20260622T102152Z-321-generality-7545b0",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-22T10:21:52Z",
+ "submitted_by": "kim-em",
+ "summary": "The coercivity API is under-generalized: it only proves the zero-drift case even though the surrounding energy-form API already treats bounded drift and supplies the estimate needed for the natural massive coercive statement.",
+ "transcript_blob": "af17e55b6e6468ee098b404c8f6aff55f07522767aa59378ab39e1a56d36ec8f",
+ "usage": {
+  "cached_input_tokens": 88576,
+  "input_tokens": 132663,
+  "output_tokens": 2605,
+  "reasoning_output_tokens": 1225
+ },
+ "verdict": "request_changes"
+}
