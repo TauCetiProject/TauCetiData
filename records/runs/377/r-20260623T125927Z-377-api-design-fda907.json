@@ -1,0 +1,64 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.426318,
+   "returncode": 0,
+   "secs": 86.1,
+   "usage": {
+    "cached_input_tokens": 184576,
+    "input_tokens": 230100,
+    "output_tokens": 3547,
+    "reasoning_output_tokens": 1606
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "496f854738c711e38ba7db9197cc93dc37fdc5f6",
+ "cost_estimated": true,
+ "cost_usd": 0.426318,
+ "dedupe_key": "FormalFrontier/TauCeti|377|835bb5c9353c4b5549919e2a53fa359cfc4e8f45|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "60aa2379e9205db02b1a9ee34cf0c0caa2da1416518c2b8f3407c400f94b8a5e",
+ "diff_sha256": "60aa2379e9205db02b1a9ee34cf0c0caa2da1416518c2b8f3407c400f94b8a5e",
+ "duration_s": 86.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 89-103 provide `contMDiff`, `isSmoothEmbedding`, `isImmersion`, and `isEmbedding`; Mathlib defines the source predicate at `mathlib/Mathlib/Geometry/Manifold/SmoothEmbedding.lean:73` and the roadmap names smooth embeddings as `IsSmoothEmbedding` at `roadmap/TauCetiRoadmap/GeometricTopology/README.md:423`, but `rg -n \"ofIsSmoothEmbedding|of_isSmoothEmbedding|coeFn_mk|mk_apply\" code/TauCeti/Geometry/Manifold/SmoothEmbedding.lean` has no such intro/restatement API.",
+   "file": "TauCeti/Geometry/Manifold/SmoothEmbedding.lean",
+   "fix": "Add a named constructor such as `SmoothEmbedding.ofIsSmoothEmbedding (f : M \u2192 N) (hf : Manifold.IsSmoothEmbedding I J n f)` using `\u27e8f, hf.contMDiff\u27e9`, with `@[simp]` apply/coercion lemmas so downstream code can bundle and use predicate-level embeddings without unfolding fields.",
+   "issue": "`SmoothEmbedding` has eliminators back to `ContMDiff`/`Manifold.IsSmoothEmbedding`, but no public constructor from a bare function plus `Manifold.IsSmoothEmbedding I J n f`, which is the predicate API named by the roadmap and Mathlib.",
+   "line": 62
+  }
+ ],
+ "head_sha": "835bb5c9353c4b5549919e2a53fa359cfc4e8f45",
+ "merge_base_sha": "b0ec113cb485579dec44fe01c619bd1ea03d2633",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 377,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e68b59663d71745741a4e5777cf8dc2ce4617b9e125dae263666e8654596ae5d",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260623T125927Z-377-api-design-fda907",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-23T12:59:27Z",
+ "submitted_by": "kim-em",
+ "summary": "The bundle exposes the expected eliminators, but its introduction API is incomplete: users starting from Mathlib's standard `Manifold.IsSmoothEmbedding` hypothesis cannot bundle it without manually assembling the internal `ContMDiffMap` field.",
+ "transcript_blob": "64c254df9e11c690146c78303dc00870cd84f0122c1502fbf153915c8d1c47f9",
+ "usage": {
+  "cached_input_tokens": 184576,
+  "input_tokens": 230100,
+  "output_tokens": 3547,
+  "reasoning_output_tokens": 1606
+ },
+ "verdict": "request_changes"
+}
