@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.326657,
+   "returncode": 0,
+   "secs": 52.6,
+   "usage": {
+    "cached_input_tokens": 60544,
+    "input_tokens": 105079,
+    "output_tokens": 2457,
+    "reasoning_output_tokens": 1143
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2eacd68cf525f35ba8d3986d7a7588cc97bbd579",
+ "cost_estimated": true,
+ "cost_usd": 0.326657,
+ "dedupe_key": "FormalFrontier/TauCeti|383|f72c0da1165784d7f3bc07785c768b5eb1d0bc5d|generality|gpt-5.5|fce2f7d7e1b0bbad|production|6",
+ "diff_blob": "79e76f925e3f016495d91ab3d865c9cab3d6cbd7b9206707fb30dec0abf642c0",
+ "diff_sha256": "79e76f925e3f016495d91ab3d865c9cab3d6cbd7b9206707fb30dec0abf642c0",
+ "duration_s": 52.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 86-129 show repeated copies of `Function.Surjective f`; the proofs use only membership lemmas, and all copies are the same proposition.",
+   "file": "TauCeti/Algebra/HopfAlgebra/HopfIdeal/Comap.lean",
+   "fix": "State these with one `hf : Function.Surjective f`, e.g. `I.comap f hf \u2264 J.comap f hf`, `(\u22a5).comap f hf = ker f hf`, and `(I \u2294 J).comap f hf = I.comap f hf \u2294 J.comap f hf`.",
+   "issue": "`comap_mono`, the reflection/equality lemmas, `comap_bot`, and `comap_sup_of_surjective` carry multiple hypotheses `hfI hfJ` or `hf hfker` for the same proposition `Function.Surjective f`, giving proof-term generality with no mathematical content.",
+   "line": "86"
+  },
+  {
+   "evidence": "Lines 152-155 and 207-210 introduce indexed surjectivity only to pass `hfI i`/`hfS I` to `comap`; line 162 uses the single `hf` for the actual surjectivity argument.",
+   "file": "TauCeti/Algebra/HopfAlgebra/HopfIdeal/Comap.lean",
+   "fix": "Use the single `hf` on every summand: `(\u2a06 i, I i).comap f hf = \u2a06 i, (I i).comap f hf` and `(sSup S).comap f hf = sSup ((fun I => I.comap f hf) '' S)`.",
+   "issue": "`comap_iSup_of_surjective` and `comap_sSup_of_surjective` abstract over `hfI : \u2200 _, Function.Surjective f` / `hfS : \u2200 _, Function.Surjective f`, but the predicate is independent of the index or set element.",
+   "line": "152"
+  },
+  {
+   "evidence": "Lines 217-229 expose `hf` for `BialgHom.id` and `hgf` for `g.comp f`; both are proof arguments needed only to form the proof-dependent `comap`, not extra mathematical assumptions.",
+   "file": "TauCeti/Algebra/HopfAlgebra/HopfIdeal/Comap.lean",
+   "fix": "State `comap_id` using the canonical identity-surjectivity proof internally, and state composition as `(I.comap g hg).comap f hf = I.comap (g.comp f) (hg.comp hf)` or the local equivalent.",
+   "issue": "`comap_id` asks callers for a surjectivity proof of the identity map, and `comap_comap` asks for `hgf : Function.Surjective (g.comp f)` even though these proofs are canonical or derived from existing hypotheses.",
+   "line": "217"
+  }
+ ],
+ "head_sha": "f72c0da1165784d7f3bc07785c768b5eb1d0bc5d",
+ "merge_base_sha": "2eacd68cf525f35ba8d3986d7a7588cc97bbd579",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 383,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "e119375ffbad05cf3763814a99ee3bdabcc7d2563bd17382f6dc391c8c720e1d",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 6,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260623T214325Z-383-generality-842e6f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-23T21:43:25Z",
+ "submitted_by": "kim-em",
+ "summary": "The comap construction is at the intended surjective level, but several API lemmas quantify redundant copies of the same surjectivity assumption. These should be stated with the single proof needed to form the comaps, or with the canonical derived proof for identity/composition.",
+ "transcript_blob": "59930b4bf464bc810e9a38b6dd4da535aa9c9fcaeec403a033b2727872e71c25",
+ "usage": {
+  "cached_input_tokens": 60544,
+  "input_tokens": 105079,
+  "output_tokens": 2457,
+  "reasoning_output_tokens": 1143
+ },
+ "verdict": "request_changes"
+}
