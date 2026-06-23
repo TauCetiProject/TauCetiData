@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.374793,
+   "returncode": 0,
+   "secs": 48.4,
+   "usage": {
+    "cached_input_tokens": 45696,
+    "input_tokens": 103029,
+    "output_tokens": 2176,
+    "reasoning_output_tokens": 913
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a7cbf9ef7036084b2a3a0d5f7a31ecb3648e2996",
+ "cost_estimated": true,
+ "cost_usd": 0.374793,
+ "dedupe_key": "FormalFrontier/TauCeti|382|3d8bdb93f43df4429be0bf74eb13d01a61064cea|generality|gpt-5.5|fce2f7d7e1b0bbad|production|3",
+ "diff_blob": "652beb395da8e692591d858ace540fe4b5174e34f105cf5b66b47d8aa53a8385",
+ "diff_sha256": "652beb395da8e692591d858ace540fe4b5174e34f105cf5b66b47d8aa53a8385",
+ "duration_s": 48.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` shows only `EnergyForm.lean:145` and `:199` for these public boundedness estimates, both with `\u2200 \u2983x\u2984, x \u2208 \u03a9` hypotheses and conclusion about `energyIntegrand (a x) (b x) (c x)`.",
+   "file": "TauCeti/Analysis/PDE/EnergyForm.lean",
+   "fix": "Prove the finite-dimensional lemma first with `{A : Matrix n n \u211d} {b\u2080 : EuclideanSpace \u211d n} {c\u2080 : \u211d}` and assumptions `\u2200 \u03b7 \u03be, |\u03b7 \u2b1d\u1d65 (A *\u1d65 \u03be)| \u2264 Lam * \u2016\u03b7\u2016 * \u2016\u03be\u2016`, `\u2016b\u2080\u2016 \u2264 beta`, `\u2016c\u2080\u2016 \u2264 gamma`; derive an `_on` wrapper if needed.",
+   "issue": "`norm_energyIntegrand_apply_le_of_bounds` and its op-norm corollary are pointwise estimates but require `\u03a9`, coefficient fields `a b c`, and `x \u2208 \u03a9`; a caller with a single `A b\u2080 c\u2080` must package constant fields over a dummy domain.",
+   "line": 145
+  },
+  {
+   "evidence": "`EnergyForm.lean:217-224` takes `hQ hb hc` as `\u2200 \u2983x\u2984, x \u2208 \u03a9 \u2192 ...`; `CoerciveEnergy.lean:85-88` calls it with `(\u03a9 := Set.univ : Set Unit)` and constant coefficient functions.",
+   "file": "TauCeti/Analysis/PDE/EnergyForm.lean",
+   "fix": "Introduce a pointwise theorem with `{A : Matrix n n \u211d} {b\u2080 : EuclideanSpace \u211d n} {c\u2080 : \u211d}`, assumptions `\u2200 \u03be, lam * \u2016\u03be\u2016 ^ 2 \u2264 A.toQuadraticForm' \u03be`, `\u2016b\u2080\u2016 \u2264 beta`, and `0 \u2264 c\u2080`, then make the current domain version a thin `_on` corollary.",
+   "issue": "`garding_energyIntegrand_self_of_bounds` is also a pointwise finite-dimensional inequality but is only available in the domain-shaped form, which already forces `CoerciveEnergy.lean` to instantiate it over `Set.univ : Set Unit`.",
+   "line": 217
+  }
+ ],
+ "head_sha": "3d8bdb93f43df4429be0bf74eb13d01a61064cea",
+ "merge_base_sha": "a7cbf9ef7036084b2a3a0d5f7a31ecb3648e2996",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 382,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a0b5b4a334b50b28eb914d696e87e16a0739dc1eb605072623754ebe2078211e",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260623T174123Z-382-generality-d820d1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-23T17:41:23Z",
+ "submitted_by": "kim-em",
+ "summary": "The coefficient predicates are gone and the coercivity theorem is now exposed at the natural pointwise level, but the boundedness and G\u00e5rding APIs still force a domain-shaped coefficient field for inherently finite-dimensional statements.",
+ "transcript_blob": "ba14f36e8eed7641a4c1589d43c45b0eedcba69e4024fc78f572638a84cb6fca",
+ "usage": {
+  "cached_input_tokens": 45696,
+  "input_tokens": 103029,
+  "output_tokens": 2176,
+  "reasoning_output_tokens": 913
+ },
+ "verdict": "request_changes"
+}
