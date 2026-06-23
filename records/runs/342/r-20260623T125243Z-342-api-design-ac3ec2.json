@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.468367,
+   "returncode": 0,
+   "secs": 61.4,
+   "usage": {
+    "cached_input_tokens": 253184,
+    "input_tokens": 306845,
+    "output_tokens": 2449,
+    "reasoning_output_tokens": 946
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d31f71ce986fc469fb68b13516e70aa2571e0504",
+ "cost_estimated": true,
+ "cost_usd": 0.468367,
+ "dedupe_key": "FormalFrontier/TauCeti|342|588c4d195a39e6bae7fb1e654b987e9939673de4|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|5",
+ "diff_blob": "4d1c2adac86605477f43f3c20b24e6132de8fc56a8561627c158ee9e439eb7a5",
+ "diff_sha256": "4d1c2adac86605477f43f3c20b24e6132de8fc56a8561627c158ee9e439eb7a5",
+ "duration_s": 61.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`nl` shows `@[expose] noncomputable def OrderSystem.ofDedekindDomain` at lines 231-241, followed immediately by `@[simp] lemma OrderSystem.ofDedekindDomain_ord` at lines 245-248 and coefficient/support characterizations at lines 252-280.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/Dedekind.lean",
+   "fix": "Remove `@[expose]` from `OrderSystem.ofDedekindDomain`; keep consumers on `OrderSystem.ofDedekindDomain_ord`, `coeff_principalDivisor_eq_neg_log_valuation`, and the support lemmas instead of unfolding the definition.",
+   "issue": "`OrderSystem.ofDedekindDomain` is marked `@[expose]`, exposing the structure body and finiteness proof even though the public API already characterizes it via `OrderSystem.ofDedekindDomain_ord` and the principal-divisor coefficient/support lemmas.",
+   "line": 231
+  },
+  {
+   "evidence": "`TauCeti/AlgebraicGeometry/WeilDivisor.lean:81` defines `lemma mem_support_iff ... \u2194 coeff D x \u2260 0`; Mathlib has `@[simp, grind =] theorem mem_support_iff` in `Mathlib/Data/Finsupp/Defs.lean:155-156`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor.lean",
+   "fix": "Tag this wrapper `@[simp, grind =]` so automation uses the public `coeff` API instead of requiring users to unfold or name `Finsupp.mem_support_iff`.",
+   "issue": "`WeilDivisor.mem_support_iff` is the TauCeti-facing normal form for divisor support in terms of `coeff`, but it lacks the `@[simp, grind =]` attributes of the `Finsupp.mem_support_iff` theorem it restates.",
+   "line": 81
+  }
+ ],
+ "head_sha": "588c4d195a39e6bae7fb1e654b987e9939673de4",
+ "merge_base_sha": "d31f71ce986fc469fb68b13516e70aa2571e0504",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 342,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "4ffbff35061b461c307652f93facabb92e671d1840db5cb1da813dfa587883a4",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 5,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260623T125243Z-342-api-design-ac3ec2",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-23T12:52:43Z",
+ "submitted_by": "kim-em",
+ "summary": "The Dedekind order-system API has the needed characteristic lemmas, but it still exposes an implementation body that downstream users should not depend on. The support restatement also misses the automation attributes carried by the Mathlib theorem it wraps.",
+ "transcript_blob": "e7af0a48810bb25f997ab4b8d3ac0ef10a017fcd40d82fa014af67954424bf75",
+ "usage": {
+  "cached_input_tokens": 253184,
+  "input_tokens": 306845,
+  "output_tokens": 2449,
+  "reasoning_output_tokens": 946
+ },
+ "verdict": "request_changes"
+}
