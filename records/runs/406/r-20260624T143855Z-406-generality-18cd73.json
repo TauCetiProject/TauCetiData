@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.48821,
+   "returncode": 0,
+   "secs": 91.9,
+   "usage": {
+    "cached_input_tokens": 172160,
+    "input_tokens": 227386,
+    "output_tokens": 4200,
+    "reasoning_output_tokens": 1662
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "cost_estimated": true,
+ "cost_usd": 0.48821,
+ "dedupe_key": "FormalFrontier/TauCeti|406|715514c6bd3a1621e4d177339b9a289102690317|generality|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "044629718b4c06a8f68cac26cccd12a91559415181549e61f3109a19ca921711",
+ "diff_sha256": "044629718b4c06a8f68cac26cccd12a91559415181549e61f3109a19ca921711",
+ "duration_s": 91.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PR line 66 has `{r : \u211d}`; Mathlib `RCLike.nonneg_iff_exists_ofReal` in `Mathlib/Analysis/RCLike/Basic.lean` shows nonnegative `RCLike` scalars are the natural real-valued constants, and existing `isPositiveDefinite_const` uses `{k : \u2102} (hk : 0 \u2264 k)` at `TauCeti/Analysis/PositiveDefinite/Basic.lean:282`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/KernelClosure.lean",
+   "fix": "State the main theorem as `{c : \ud835\udd5c} (hc : 0 \u2264 c) : IsPositiveDefiniteKernel (fun _ _ : \u03b1 => c)` and derive the real-coercion form if needed.",
+   "issue": "`isPositiveDefiniteKernel_const_of_nonneg` only accepts `{r : \u211d}` coerced to `\ud835\udd5c`, so users with a natural hypothesis `{c : \ud835\udd5c} (hc : 0 \u2264 c)` cannot apply the constant-kernel theorem directly.",
+   "line": 66
+  },
+  {
+   "evidence": "PR lines 97-100 use `{r : \u03b9 \u2192 \u211d}`; Mathlib `Matrix.PosSemidef.smul` is polymorphic in the nonnegative scalar semiring (`Mathlib/LinearAlgebra/Matrix/PosDef.lean:107`), and `RCLike.toStarOrderedRing` supplies the needed scoped order instance (`Mathlib/Analysis/RCLike/Basic.lean:931`).",
+   "file": "TauCeti/Analysis/PositiveDefinite/KernelClosure.lean",
+   "fix": "Generalize the weighted theorem to `{r : \u03b9 \u2192 \ud835\udd5c} (hr : \u2200 i \u2208 s, 0 \u2264 r i)` using a correspondingly generalized scalar-multiple lemma, and keep the real-weight version only as a derived convenience if desired.",
+   "issue": "`isPositiveDefiniteKernel_sum_smul` restricts finite mixture weights to `\u03b9 \u2192 \u211d`, but the natural scalar closure for `RCLike` kernels is by nonnegative `\ud835\udd5c` scalars.",
+   "line": 97
+  }
+ ],
+ "head_sha": "715514c6bd3a1621e4d177339b9a289102690317",
+ "merge_base_sha": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 406,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0e4807199873c6a01667a6c83574e88ce29040cc0d15b72c70f61bef19355839",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T143855Z-406-generality-18cd73",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T14:38:55Z",
+ "submitted_by": "kim-em",
+ "summary": "The finite closure API is under-generalized: it exposes real constants and real weights where the surrounding `RCLike`/PSD matrix API supports nonnegative `\ud835\udd5c` scalars.",
+ "transcript_blob": "93a462612224dae144694cb2ef8bc148f241936fcaf450122c4e1f4296b65f57",
+ "usage": {
+  "cached_input_tokens": 172160,
+  "input_tokens": 227386,
+  "output_tokens": 4200,
+  "reasoning_output_tokens": 1662
+ },
+ "verdict": "request_changes"
+}
