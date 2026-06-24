@@ -1,0 +1,145 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.63754975,
+   "returncode": 0,
+   "secs": 133.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 28185,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 28185,
+    "cache_read_input_tokens": 468621,
+    "inference_geo": "not_available",
+    "input_tokens": 2188,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 221,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 221,
+      "cache_read_input_tokens": 44665,
+      "input_tokens": 2,
+      "output_tokens": 2973,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8315,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "cost_usd": 0.63755,
+ "dedupe_key": "FormalFrontier/TauCeti|404|582444f63f7ae37cdf56152b47b611050ea297c6|proof-quality|claude-opus-4-8|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "6af2f7bba33b5d08da65ddc65460a88bcbb12583dc71cd2e3c0af1e0eac899b3",
+ "diff_sha256": "6af2f7bba33b5d08da65ddc65460a88bcbb12583dc71cd2e3c0af1e0eac899b3",
+ "duration_s": 133.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 113 `change S.divisorClass (pointDifference y\u2080 x\u2080) = -S.divisorClass (pointDifference x\u2080 y\u2080)`; `coe_weightedBasepointChangeClass := rfl` at line 98.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/BasepointChange.lean",
+   "fix": "Drop `change`; use `simp only [coe_weightedBasepointChangeClass, NegMemClass.coe_neg]` (or rw with them) then `rw [\u2190 map_neg, \u2190 pointDifference_swap]`.",
+   "issue": "Uncommented `change` rewrites `\u2191(weightedBasepointChangeClass \u2026)` and `\u2191(-\u2026)` into `divisorClass \u2026`/`-divisorClass \u2026` by defeq across the subtype coercion and the subgroup negation. This relies on accidental wrapper/coercion defeq, the exact smell the rubric flags, and explicit lemmas exist (`coe_weightedBasepointChangeClass`, `NegMemClass.coe_neg`).",
+   "line": "113"
+  },
+  {
+   "evidence": "Lines 123\u2013126.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/BasepointChange.lean",
+   "fix": "Replace `change \u2026` with `simp only [coe_weightedBasepointChangeClass, AddMemClass.coe_add]` before `rw [\u2190 map_add, pointDifference_add_pointDifference]`.",
+   "issue": "Same uncommented-`change`-by-defeq pattern for the additive composition lemma; pushes coe through the subgroup `+` definitionally instead of via the coe lemma.",
+   "line": "124"
+  },
+  {
+   "evidence": "Lines 135\u2013140; `coe_weightedAbelJacobiClass := rfl` (AbelJacobi.lean:65).",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/BasepointChange.lean",
+   "fix": "Use the coe lemmas on both sides (e.g. `simp only [coe_weightedAbelJacobiClass, coe_weightedBasepointChangeClass]`) then the `map_zsmul`/`map_add` rewrites; drop `change`.",
+   "issue": "`change` unfolds the LHS coe by defeq while the RHS is then handled by `rw [coe_weightedAbelJacobiClass, coe_weightedBasepointChangeClass]` \u2014 inconsistent: one coercion via defeq, the same kind via the explicit lemma. The defeq half is undocumented.",
+   "line": "136"
+  },
+  {
+   "evidence": "Lines 176\u2013177; `coe_unweightedBasepointChangeClass := rfl` at line 164.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/BasepointChange.lean",
+   "fix": "Same as line 113, using `coe_unweightedBasepointChangeClass` and `NegMemClass.coe_neg`.",
+   "issue": "Unweighted swap repeats the uncommented `change`-across-coercion/negation defeq pattern.",
+   "line": "176"
+  },
+  {
+   "evidence": "Lines 184\u2013187.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/BasepointChange.lean",
+   "fix": "Replace with `simp only [coe_unweightedBasepointChangeClass, AddMemClass.coe_add]` then `rw [\u2190 map_add, pointDifference_add_pointDifference]`.",
+   "issue": "Unweighted composition repeats the `change`-by-defeq pattern (coe through subgroup `+`).",
+   "line": "185"
+  },
+  {
+   "evidence": "Lines 196\u2013201.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/BasepointChange.lean",
+   "fix": "Rewrite the coercions on both sides with `coe_unweightedAbelJacobiClass`/`coe_unweightedBasepointChangeClass` and finish with `abel` instead of `change` + AC-`simp`.",
+   "issue": "`change` is used mid-proof to restate the goal in `divisorClass` form after a partial `rw [coe_unweightedAbelJacobiClass]`, again leaning on coercion defeq; the `change` is undocumented and avoidable given the coe lemmas.",
+   "line": "197"
+  }
+ ],
+ "head_sha": "582444f63f7ae37cdf56152b47b611050ea297c6",
+ "merge_base_sha": "5fd4f6e55a87349e3fd94b7bbcfcc48f13176892",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 404,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e10a41f48aba231bf420283fd0798da3510848b9b06e0aa51f80d0452033cd6e",
+ "provider": "claude",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T142020Z-404-proof-quality-234823",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T14:20:20Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are organized and reuse the right API, but repeatedly use uncommented `change` to traverse the subtype coercion and the subgroup neg/add/zsmul by definitional equality, when explicit `@[simp]` rfl coe-lemmas already exist for that step. Replace the `change` calls with rewrites through those lemmas.",
+ "transcript_blob": "9f2ac54bfeab386679329ae369c8858b657adec9c47a7b7ab08dbb979bb47181",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 28185,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 28185,
+  "cache_read_input_tokens": 468621,
+  "inference_geo": "not_available",
+  "input_tokens": 2188,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 221,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 221,
+    "cache_read_input_tokens": 44665,
+    "input_tokens": 2,
+    "output_tokens": 2973,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8315,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
