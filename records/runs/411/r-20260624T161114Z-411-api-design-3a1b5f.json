@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.371353,
+   "returncode": 0,
+   "secs": 65.1,
+   "usage": {
+    "cached_input_tokens": 90496,
+    "input_tokens": 139355,
+    "output_tokens": 2727,
+    "reasoning_output_tokens": 1383
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e2f2e57669739b311df28c0b73067804e50aaf28",
+ "cost_estimated": true,
+ "cost_usd": 0.371353,
+ "dedupe_key": "FormalFrontier/TauCeti|411|25a1e8bd3c9ba7cf6b19bb0bf7041d93e0858b73|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "bcc2d5b737bace09e3779771d9f6d536ab8d7c91ce09b7be272dbf546cf16aea",
+ "diff_sha256": "bcc2d5b737bace09e3779771d9f6d536ab8d7c91ce09b7be272dbf546cf16aea",
+ "duration_s": 65.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"hermiteCountBound|_def\" code/TauCeti/NumberTheory/EffectiveBounds` shows the definition at line 43 and uses of `[hermiteCountBound]`, but no `hermiteCountBound_def` declaration.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/HermiteCountMonotone.lean",
+   "fix": "Add a characteristic theorem, preferably `@[simp] theorem hermiteCountBound_def (D C : \u2115) : hermiteCountBound D C = (2 * C + 1) ^ (D + 1) * D := rfl`, and use it in the expanded count theorem instead of relying on unfolding.",
+   "issue": "`hermiteCountBound` is exposed as a public definition, but the file provides no `hermiteCountBound_def` theorem, so downstream users must unfold the definition to recover `(2 * C + 1) ^ (D + 1) * D`.",
+   "line": 43
+  },
+  {
+   "evidence": "The theorem is declared at lines 56-57 without an attribute, while the proof itself uses `gcongr`, and Mathlib registers comparable monotonicity lemmas with `@[gcongr]`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/HermiteCountMonotone.lean",
+   "fix": "Add the appropriate monotonicity attribute, e.g. `@[gcongr] theorem hermiteCountBound_mono ...`, after confirming it has the shape accepted by `gcongr`.",
+   "issue": "`hermiteCountBound_mono` is the central monotonicity API but is not registered for monotonicity automation, so `gcongr` will not use the new abstraction in later coarse-bound proofs.",
+   "line": 56
+  }
+ ],
+ "head_sha": "25a1e8bd3c9ba7cf6b19bb0bf7041d93e0858b73",
+ "merge_base_sha": "e2f2e57669739b311df28c0b73067804e50aaf28",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 411,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "855797156704764d7a99285e18c15e6e42bc208f78c434c6b8f1b97c9841ecfc",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T161114Z-411-api-design-3a1b5f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T16:11:14Z",
+ "submitted_by": "kim-em",
+ "summary": "The monotone count theorem is in scope for the target, but the new public bound expression is missing characteristic and automation API needed by downstream arithmetic.",
+ "transcript_blob": "dcf491f82a55f7e9034a6d0f11c7bf38137ba6ad8d79745f5d8148674578f8e7",
+ "usage": {
+  "cached_input_tokens": 90496,
+  "input_tokens": 139355,
+  "output_tokens": 2727,
+  "reasoning_output_tokens": 1383
+ },
+ "verdict": "request_changes"
+}
