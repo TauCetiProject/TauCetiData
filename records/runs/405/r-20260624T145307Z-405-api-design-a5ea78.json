@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.329449,
+   "returncode": 0,
+   "secs": 87.6,
+   "usage": {
+    "cached_input_tokens": 137088,
+    "input_tokens": 174065,
+    "output_tokens": 2534,
+    "reasoning_output_tokens": 837
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "cost_estimated": true,
+ "cost_usd": 0.329449,
+ "dedupe_key": "FormalFrontier/TauCeti|405|07e34041ad33f0412ce9de3b4ab98c0931beb637|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|3",
+ "diff_blob": "58dc53ae377caf6bbce1e118a83b7479deaa60f754be3e670e3af8d2cbbe2b55",
+ "diff_sha256": "58dc53ae377caf6bbce1e118a83b7479deaa60f754be3e670e3af8d2cbbe2b55",
+ "duration_s": 87.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`nl -ba ...Relative.lean` shows `@[expose]` at lines 50 and 67; the file already has `fixedOnSubgroup_def`, `boundaryFixingSubgroup_def`, and `@[simp]` membership iff lemmas, so unfolding the bodies is not needed.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "Remove `@[expose]` from both definitions and provide the needed public lemmas instead of requiring unfolding.",
+   "issue": "`fixedOnSubgroup` and `boundaryFixingSubgroup` are marked `@[expose]`, exposing implementation bodies even though users only need the characteristic lemmas and specialization lemmas.",
+   "line": 50
+  },
+  {
+   "evidence": "`rg -n \"fixedOnSubgroup_(empty|union|iUnion|antitone)\" code/TauCeti` returns no hits, while Mathlib has `fixingSubgroup_empty`, `fixingSubgroup_antitone`, `fixingSubgroup_union`, and `fixingSubgroup_iUnion` in `Mathlib/GroupTheory/GroupAction/FixingSubgroup.lean:140-160`.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "Add wrapper lemmas such as `fixedOnSubgroup_empty`, `fixedOnSubgroup_union`, `fixedOnSubgroup_iUnion`, and `fixedOnSubgroup_antitone` (with appropriate simp attributes, e.g. empty) proved from Mathlib\u2019s generic lemmas.",
+   "issue": "The public wrapper `fixedOnSubgroup` lacks the inherited set-operation/order API, so users cannot state the empty/union/iUnion/antitone behavior under the new name without unfolding to `fixingSubgroup`.",
+   "line": 51
+  }
+ ],
+ "head_sha": "07e34041ad33f0412ce9de3b4ab98c0931beb637",
+ "merge_base_sha": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 405,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "d4cc30a9987f9501326308d61688c64c6c4bccdb72cb3ce18d86eb06ea33b8be",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T145307Z-405-api-design-a5ea78",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T14:53:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The membership API is now simplified correctly, but the new public subgroup wrapper relies on exposed bodies instead of providing the wrapper-level fixing-subgroup API promised for downstream use.",
+ "transcript_blob": "7e143f50a66e900c4c34bdc02b5c82268ed00acf2f6a1e55ee11af4eda77a51f",
+ "usage": {
+  "cached_input_tokens": 137088,
+  "input_tokens": 174065,
+  "output_tokens": 2534,
+  "reasoning_output_tokens": 837
+ },
+ "verdict": "request_changes"
+}
