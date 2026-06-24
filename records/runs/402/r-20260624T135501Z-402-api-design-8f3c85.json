@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.504534,
+   "returncode": 0,
+   "secs": 81.0,
+   "usage": {
+    "cached_input_tokens": 93568,
+    "input_tokens": 162534,
+    "output_tokens": 3764,
+    "reasoning_output_tokens": 1949
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5fd4f6e55a87349e3fd94b7bbcfcc48f13176892",
+ "cost_estimated": true,
+ "cost_usd": 0.504534,
+ "dedupe_key": "FormalFrontier/TauCeti|402|c1843ef81370b7085138c55aaf4b3ac815d5eea9|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "f7f60d53572db9176e9d92a4cd219bcbd020947631016cba8ed3b3243dff4b7c",
+ "diff_sha256": "f7f60d53572db9176e9d92a4cd219bcbd020947631016cba8ed3b3243dff4b7c",
+ "duration_s": 81.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "line 52 has `@[expose, implicit_reducible] noncomputable def fiberTorsor`; lines 65-160 provide the public characteristic API.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/RegularTorsor.lean",
+   "fix": "Remove `@[expose, implicit_reducible]`; keep clients using `fiber_sdiv_eq`, `fiber_sdiv_smul`, and the `deckEquivFiber_*` lemmas instead of unfolding the structure.",
+   "issue": "`fiberTorsor` exposes its body with `@[expose, implicit_reducible]`, making the chosen `sdiv` implementation part of the public interface even though the file provides characteristic lemmas for it.",
+   "line": 52
+  },
+  {
+   "evidence": "line 65 marks `fiber_sdiv_eq` as simp; line 118 marks `deckEquivFiber_symm_eq_sdiv` as simp with the reverse equality.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/RegularTorsor.lean",
+   "fix": "Choose one simp normal form, preferably keep `deckEquivFiber_symm_eq_sdiv` as the old-API-to-torsor rewrite and remove `[simp]` from `fiber_sdiv_eq`.",
+   "issue": "`fiber_sdiv_eq` and `deckEquivFiber_symm_eq_sdiv` are both `@[simp]` but rewrite the same expression in opposite directions: `e\u2081 /\u209b e\u2082` to `(deckEquivFiber ... e\u2082).symm e\u2081` and back.",
+   "line": 65
+  }
+ ],
+ "head_sha": "c1843ef81370b7085138c55aaf4b3ac815d5eea9",
+ "merge_base_sha": "5fd4f6e55a87349e3fd94b7bbcfcc48f13176892",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 402,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9dfb89b2f68d387ae2c6337d46ad4e2c30dc8885446d062e368154d5130e766d",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T135501Z-402-api-design-8f3c85",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T13:55:01Z",
+ "submitted_by": "kim-em",
+ "summary": "The torsor API is mostly present, but the public surface leaks the implementation and installs conflicting simp normal forms.",
+ "transcript_blob": "ab921397dcd28c1c9e5ec58dbd6534cdc297e7c96db1b944872660ca0f235383",
+ "usage": {
+  "cached_input_tokens": 93568,
+  "input_tokens": 162534,
+  "output_tokens": 3764,
+  "reasoning_output_tokens": 1949
+ },
+ "verdict": "request_changes"
+}
