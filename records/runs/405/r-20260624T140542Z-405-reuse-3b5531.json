@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.30263,
+   "returncode": 0,
+   "secs": 40.4,
+   "usage": {
+    "cached_input_tokens": 54400,
+    "input_tokens": 98608,
+    "output_tokens": 1813,
+    "reasoning_output_tokens": 457
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "cost_estimated": true,
+ "cost_usd": 0.30263,
+ "dedupe_key": "FormalFrontier/TauCeti|405|585b73f6a943c80f9b0844eb62993faa3aeda286|reuse|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "0788fe5e5ea371f0013b8b733c5c7b7706d472b926f28beaeffdf1606902d712",
+ "diff_sha256": "0788fe5e5ea371f0013b8b733c5c7b7706d472b926f28beaeffdf1606902d712",
+ "duration_s": 40.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PR line 53 defines `abbrev fixedOnSubgroup ... := fixingSubgroup (M \u2243\u2098^n\u27eeI, I\u27ef M) s`; Mathlib has `def fixingSubgroup (s : Set \u03b1) : Subgroup M` at `mathlib/Mathlib/GroupTheory/GroupAction/FixingSubgroup.lean:113`.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "Use `fixingSubgroup (M \u2243\u2098^n\u27eeI, I\u27ef M) s` directly, or keep only the boundary-specialized abbreviation if a roadmap-facing name is needed.",
+   "issue": "`fixedOnSubgroup` is an exact wrapper around Mathlib's existing `fixingSubgroup`, creating a parallel API for the same subgroup.",
+   "line": 53
+  },
+  {
+   "evidence": "PR line 58 states membership in `fixedOnSubgroup`; Mathlib already provides `theorem mem_fixingSubgroup_iff ... : m \u2208 fixingSubgroup M s \u2194 \u2200 y \u2208 s, m \u2022 y = y` at `mathlib/Mathlib/GroupTheory/GroupAction/FixingSubgroup.lean:117`.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "Replace uses with `mem_fixingSubgroup_iff` plus `Diffeomorph.smul_def` instead of adding a new theorem name.",
+   "issue": "`mem_fixedOnSubgroup_iff` duplicates the generic membership theorem after unfolding the alias.",
+   "line": 58
+  },
+  {
+   "evidence": "PR lines 64, 84, 89, and 94 add the specialized lemmas; Mathlib has `fixingSubgroup_empty` at `FixingSubgroup.lean:140`, `fixingSubgroup_antitone` at `:144`, `fixingSubgroup_union` at `:153`, and `mem_fixingSubgroup_union_iff` at `SubMulAction/OfFixingSubgroup.lean:299`.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "Delete these parallel lemmas and use `fixingSubgroup_empty`, `fixingSubgroup_antitone`, `fixingSubgroup_union`, and `mem_fixingSubgroup_union_iff` directly.",
+   "issue": "The empty/antitone/union/membership-union lemmas restate existing `fixingSubgroup` API for the alias.",
+   "line": 64
+  }
+ ],
+ "head_sha": "585b73f6a943c80f9b0844eb62993faa3aeda286",
+ "merge_base_sha": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 405,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "544b568d566c9a8d15a3eccb9f1b40add5393f12292ba407926a5a76cb2fe59d",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T140542Z-405-reuse-3b5531",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T14:05:42Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR adds a diffeomorphism-specific fixing-subgroup API that is mostly a direct alias/specialization of Mathlib's existing `fixingSubgroup` API. The boundary abbreviation can remain, but the generic `fixedOnSubgroup` layer and its duplicated lemmas should be removed or reduced to using the existing API directly.",
+ "transcript_blob": "bc5dccc7f6a23d251799b366b36ca57621901f94933a1d3d76d986406a1ec8c4",
+ "usage": {
+  "cached_input_tokens": 54400,
+  "input_tokens": 98608,
+  "output_tokens": 1813,
+  "reasoning_output_tokens": 457
+ },
+ "verdict": "block"
+}
