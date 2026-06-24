@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.371732,
+   "returncode": 0,
+   "secs": 64.1,
+   "usage": {
+    "cached_input_tokens": 115584,
+    "input_tokens": 160318,
+    "output_tokens": 3009,
+    "reasoning_output_tokens": 1426
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "cost_estimated": true,
+ "cost_usd": 0.371732,
+ "dedupe_key": "FormalFrontier/TauCeti|405|d51317a1ca77252dff67e7b14f23b32170f34311|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|2",
+ "diff_blob": "1b93247d0ec8d9ba42f33888d9893bb574c7143e28488a3f39de966c379145f8",
+ "diff_sha256": "1b93247d0ec8d9ba42f33888d9893bb574c7143e28488a3f39de966c379145f8",
+ "duration_s": 64.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 48-49 define `abbrev boundaryFixingSubgroup := fixingSubgroup ...`; Mathlib has generic `fixingSubgroup_empty`, `fixingSubgroup_antitone`, and `fixingSubgroup_union` in `Mathlib/GroupTheory/GroupAction/FixingSubgroup.lean`, but no boundary-facing Tau Ceti wrappers.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "Make it a `def` and add a public `boundaryFixingSubgroup_def` plus the needed specialized transport/empty/antitone lemmas instead of requiring users to unfold the body.",
+   "issue": "`boundaryFixingSubgroup` is an `abbrev`, so downstream users get the Mathlib `fixingSubgroup` body by unfolding rather than through a small characterized API.",
+   "line": 48
+  },
+  {
+   "evidence": "Line 53 declares `theorem mem_boundaryFixingSubgroup_iff`; Mathlib\u2019s analogous domain-specific Galois wrapper is `@[simp] lemma mem_fixingSubgroup_iff` at `Mathlib/FieldTheory/Galois/Basic.lean:251`, while the generic `mem_fixingSubgroup_iff` is intentionally not simp.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "Annotate `mem_boundaryFixingSubgroup_iff` with `@[simp]` after checking it rewrites only from subgroup membership to the pointwise predicate.",
+   "issue": "The characteristic membership lemma is not marked `@[simp]`, so `simp` will not normalize membership in the new public subgroup to pointwise boundary fixing.",
+   "line": 53
+  }
+ ],
+ "head_sha": "d51317a1ca77252dff67e7b14f23b32170f34311",
+ "merge_base_sha": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 405,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6b5111fb95040d0df343ba8a1c941a3b35bbf035b76b9aa5a9e7c7bbcf4fad50",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T143018Z-405-api-design-b78dac",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T14:30:18Z",
+ "submitted_by": "kim-em",
+ "summary": "The boundary-fixing subgroup name is useful, but its public API currently relies on reducible unfolding and its main membership normal form is not registered for automation.",
+ "transcript_blob": "16d5c33a83cb7bd496c000ac8785a1a0b108684e3cf9274dd0709cf7692aa4d8",
+ "usage": {
+  "cached_input_tokens": 115584,
+  "input_tokens": 160318,
+  "output_tokens": 3009,
+  "reasoning_output_tokens": 1426
+ },
+ "verdict": "request_changes"
+}
