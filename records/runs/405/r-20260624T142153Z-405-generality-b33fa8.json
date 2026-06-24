@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.888296,
+   "returncode": 0,
+   "secs": 66.5,
+   "usage": {
+    "cached_input_tokens": 271872,
+    "input_tokens": 405286,
+    "output_tokens": 2843,
+    "reasoning_output_tokens": 1008
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "cost_estimated": true,
+ "cost_usd": 0.888296,
+ "dedupe_key": "FormalFrontier/TauCeti|405|d51317a1ca77252dff67e7b14f23b32170f34311|generality|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "1b93247d0ec8d9ba42f33888d9893bb574c7143e28488a3f39de966c379145f8",
+ "diff_sha256": "1b93247d0ec8d9ba42f33888d9893bb574c7143e28488a3f39de966c379145f8",
+ "duration_s": 66.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 49 is exactly `fixingSubgroup (M \u2243\u2098^n\u27eeI, I\u27ef M) (I.boundary M)`; `rg` finds no existing `fixedOnSubgroup`/set-relative wrapper in `code/TauCeti`, while Mathlib exposes the generic `mem_fixingSubgroup_iff` used at line 55.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "Introduce `Diffeomorph.fixedOnSubgroup (I) (n) (s : Set M) : Subgroup (M \u2243\u2098^n\u27eeI, I\u27ef M) := fixingSubgroup _ s`, prove `mem_fixedOnSubgroup_iff`, and define `boundaryFixingSubgroup I n := fixedOnSubgroup I n (I.boundary M)`.",
+   "issue": "`boundaryFixingSubgroup` hard-codes `I.boundary M`, but the same construction is the relative subgroup fixing any `s : Set M`; the boundary case is only a specialization.",
+   "line": 48
+  },
+  {
+   "evidence": "Lines 60-64 target `fixingSubgroup (M \u2243\u209c M) (I.boundary M)` and prove it by `mem_fixingSubgroup_iff` plus `toHomeomorphHom_apply`; no line uses `ModelWithCorners.boundary` beyond the chosen set.",
+   "file": "TauCeti/Geometry/Diffeomorphism/Relative.lean",
+   "fix": "State the theorem for arbitrary `s : Set M`, e.g. `toHomeomorphHom_mem_fixedOnSubgroup {s} {f} (hf : f \u2208 fixedOnSubgroup I n s) : toHomeomorphHom f \u2208 fixingSubgroup (M \u2243\u209c M) s`, then derive the boundary corollary if desired.",
+   "issue": "`toHomeomorphHom_mem_boundaryFixingSubgroup` is also a boundary-only theorem, but its proof uses only pointwise fixing of a subset, not any boundary fact.",
+   "line": 58
+  }
+ ],
+ "head_sha": "d51317a1ca77252dff67e7b14f23b32170f34311",
+ "merge_base_sha": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 405,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3e06f92a4f97fc8b2fb378d6300a8c88b2376b215749f5124f89f8afd340cdd9",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T142153Z-405-generality-b33fa8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T14:21:53Z",
+ "submitted_by": "kim-em",
+ "summary": "The new API is boundary-specialized even though the construction and forgetful compatibility are naturally set-relative. Add the general fixed-on-subset subgroup and derive the boundary names from it.",
+ "transcript_blob": "5eddd8d20f996b57aa551dda63e268f53f03322b0ba036212bb42b7076179feb",
+ "usage": {
+  "cached_input_tokens": 271872,
+  "input_tokens": 405286,
+  "output_tokens": 2843,
+  "reasoning_output_tokens": 1008
+ },
+ "verdict": "request_changes"
+}
