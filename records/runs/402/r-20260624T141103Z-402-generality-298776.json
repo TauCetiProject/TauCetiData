@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.323156,
+   "returncode": 0,
+   "secs": 54.1,
+   "usage": {
+    "cached_input_tokens": 92672,
+    "input_tokens": 133570,
+    "output_tokens": 2411,
+    "reasoning_output_tokens": 919
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5fd4f6e55a87349e3fd94b7bbcfcc48f13176892",
+ "cost_estimated": true,
+ "cost_usd": 0.323156,
+ "dedupe_key": "FormalFrontier/TauCeti|402|b49a32ef8deffc91c02c7f9136feb257275f9293|generality|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "640d7989b82b920f86a9dc2e8133af2fde104210e3d8c3f9939af218834a3941",
+ "diff_sha256": "640d7989b82b920f86a9dc2e8133af2fde104210e3d8c3f9939af218834a3941",
+ "duration_s": 54.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Connected.lean:128` defines `deckEquivFiberOfSurjective`; `Connected.lean:137` has the local apply lemma, while the new regular-only lemmas are at `Regular.lean:175`, `Regular.lean:183`, and `Regular.lean:207`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/Regular.lean",
+   "fix": "Add local lemmas for `deckEquivFiberOfSurjective`, e.g. `deckEquivFiberOfSurjective_one`, `deckEquivFiberOfSurjective_mul`, and `deckEquivFiberOfSurjective_symm_apply_smul` with `hsurj : Function.Surjective fun \u03c6 : Deck p => \u03c6 \u2022 e`, then make the regular lemmas wrappers or remove the duplicate special cases if unused.",
+   "issue": "`deckEquivFiber_one`, `deckEquivFiber_mul`, and `deckEquivFiber_symm_apply_smul` are stated with `hreg : IsRegular p`, but their proofs use only that `deckEquivFiber` is evaluation at a point; the nearby local API already has `deckEquivFiberOfSurjective hp e hsurj` for exactly this level.",
+   "line": "175"
+  },
+  {
+   "evidence": "`RegularTorsor.lean:50` defines `fiberTorsorOfPretransitive`; `RegularTorsor.lean:86` proves `fiber_sdiv_eq_ofPretransitive`; the simp lemma at `RegularTorsor.lean:102` drops back to `hreg : IsRegular p`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/RegularTorsor.lean",
+   "fix": "Prove a pretransitive/local simp lemma using `fiberTorsorOfPretransitive hp b`, such as `(deckEquivFiberOfSurjective hp e (MulAction.surjective_smul (Deck p) e)).symm e' = e' /\u209b e`, and derive the regular `deckEquivFiber` version from it.",
+   "issue": "`deckEquivFiber_symm_eq_sdiv` is only available under `IsRegular p`, although this file already defines the local torsor `fiberTorsorOfPretransitive` and proves the corresponding local quotient characterization.",
+   "line": "102"
+  }
+ ],
+ "head_sha": "b49a32ef8deffc91c02c7f9136feb257275f9293",
+ "merge_base_sha": "5fd4f6e55a87349e3fd94b7bbcfcc48f13176892",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 402,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6352fe0508ead37f9ba0eb329da7b245efe7e8a794f87fa974fc9c914191c25f",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T141103Z-402-generality-298776",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T14:11:03Z",
+ "submitted_by": "kim-em",
+ "summary": "Some new API is regular-cover-specific even though the same statements only need the existing local surjective-orbit/pretransitive hypotheses. Generalize those lemmas first and derive the regular versions as special cases.",
+ "transcript_blob": "297f59a05e8635d527725eab5741742e18c54cd2948f539b73af3c0d99b30fb8",
+ "usage": {
+  "cached_input_tokens": 92672,
+  "input_tokens": 133570,
+  "output_tokens": 2411,
+  "reasoning_output_tokens": 919
+ },
+ "verdict": "request_changes"
+}
