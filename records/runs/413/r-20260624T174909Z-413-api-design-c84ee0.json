@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.461105,
+   "returncode": 0,
+   "secs": 64.5,
+   "usage": {
+    "cached_input_tokens": 56320,
+    "input_tokens": 125899,
+    "output_tokens": 2835,
+    "reasoning_output_tokens": 1126
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "db33c78852ef9bc5e66ec0ad2d3b71e54ca31619",
+ "cost_estimated": true,
+ "cost_usd": 0.461105,
+ "dedupe_key": "FormalFrontier/TauCeti|413|83594feb5e9a371e31bafe4b5d03c915fd20935f|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|2",
+ "diff_blob": "0164065c3620dedec78a5f62d9c87f62fdb7a5f33c8d85e95de70803d907d74a",
+ "diff_sha256": "0164065c3620dedec78a5f62d9c87f62fdb7a5f33c8d85e95de70803d907d74a",
+ "duration_s": 64.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"characteristicWeightNumerator_def|characteristicWeightNumerator \\(k x\"` shows the public def at Weight.lean:62 but the only general expanded restatement at Weight.lean:66 is `private theorem characteristicWeightNumerator_def`.",
+   "file": "TauCeti/LowDimTopology/Plumbing/Weight.lean",
+   "fix": "Make a public `_def`/expanded-form theorem for `characteristicWeightNumerator`, without `@[expose]`, and use that as the characterization lemma.",
+   "issue": "`characteristicWeightNumerator_def` is private, so downstream lattice-homology code cannot rewrite the numerator to the advertised pairing-plus-self-intersection formula except through special cases.",
+   "line": 66
+  },
+  {
+   "evidence": "`rg -n \"characteristicWeight_def|two_mul_characteristicWeight|characteristicWeight \\(k x\"` shows `characteristicWeight (k x : V \u2192 \u2124)` at Weight.lean:94, but the only direct restatement at Weight.lean:98 is private and the public equation at Weight.lean:103 requires `hk : P.IsCharacteristicVector k`.",
+   "file": "TauCeti/LowDimTopology/Plumbing/Weight.lean",
+   "fix": "Add a public `_def` theorem, or narrow/rename the arbitrary integer-division definition and expose a characteristic-facing wrapper with its defining equation.",
+   "issue": "`characteristicWeight_def` is private, leaving no public exact restatement of the integer-division meaning of `characteristicWeight` for the arbitrary-`k` API exposed at line 94.",
+   "line": 98
+  },
+  {
+   "evidence": "`rg -n \"covector_eval_single\" code/TauCeti/LowDimTopology/Plumbing` shows the public theorem at Characteristic.lean:106 and only proof uses at Characteristic.lean:180 and Weight.lean:150.",
+   "file": "TauCeti/LowDimTopology/Plumbing/Characteristic.lean",
+   "fix": "Keep this helper private to the file that needs it, or replace its downstream use with a public characteristic/numerator single-basis theorem rather than exposing the raw covector-evaluation sum.",
+   "issue": "`covector_eval_single` was promoted from private even though it is just the representation-level sum calculation needed to prove the public single-basis lemmas.",
+   "line": 106
+  }
+ ],
+ "head_sha": "83594feb5e9a371e31bafe4b5d03c915fd20935f",
+ "merge_base_sha": "db33c78852ef9bc5e66ec0ad2d3b71e54ca31619",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 413,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5b66d02c5e5ed6203a3cf2d467567455bd5b71483f4ec84201b99add79ecda5b",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T174909Z-413-api-design-c84ee0",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T17:49:09Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR still leaves the new weight API under-characterized while exposing one proof helper that is not part of the named downstream surface. Make the characteristic definitions usable through public characteristic lemmas, and keep representation-only helpers private.",
+ "transcript_blob": "bfbc12d5db16b3e04be46d06e0c50d3ba83273ea181ecfc85f29e4a9f9b6e95b",
+ "usage": {
+  "cached_input_tokens": 56320,
+  "input_tokens": 125899,
+  "output_tokens": 2835,
+  "reasoning_output_tokens": 1126
+ },
+ "verdict": "request_changes"
+}
