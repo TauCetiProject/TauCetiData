@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.373273,
+   "returncode": 0,
+   "secs": 51.1,
+   "usage": {
+    "cached_input_tokens": 101376,
+    "input_tokens": 152321,
+    "output_tokens": 2262,
+    "reasoning_output_tokens": 917
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "db33c78852ef9bc5e66ec0ad2d3b71e54ca31619",
+ "cost_estimated": true,
+ "cost_usd": 0.373273,
+ "dedupe_key": "FormalFrontier/TauCeti|412|ffcb8860c33daf6c6874815b9358cf5cec323913|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "9bda5549bfde280e20213c05629a58c317cfbb85075087c8ca83785d35db17f5",
+ "diff_sha256": "9bda5549bfde280e20213c05629a58c317cfbb85075087c8ca83785d35db17f5",
+ "duration_s": 51.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"mem_.*completeLinearSystem.*degree_zero|completeLinearSystem.*mem.*degree_zero\" code/TauCeti/AlgebraicGeometry/WeilDivisor` shows only existing generic membership lemmas in `LinearSystem.lean`; the new file exposes `eq_zero_of_mem...` at line 46, `zero_mem...` at line 63, and `nonempty...` at line 74, but no degree-zero `mem_*_iff`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/LinearSystemDegreeZero.lean",
+   "fix": "Add weighted and unweighted membership iff lemmas, e.g. `E \u2208 S.completeLinearSystem D \u2194 E = 0 \u2227 S.divisorClass D = 0` and/or the linearly-equivalent-zero variant, with the unweighted specialization if that is part of the advertised surface.",
+   "issue": "The degree-zero API lacks a `mem_completeLinearSystem_iff...` theorem characterizing members of `|D|`; users only get `eq_zero_of_mem...`, `zero_mem...`, and `Nonempty`, so rewriting a membership goal `E \u2208 S.completeLinearSystem D` under `weightedDegree w D = 0` is not directly supported.",
+   "line": 74
+  },
+  {
+   "evidence": "Existing `completeLinearSystem` membership is `@[simp]` at `LinearSystem.lean:58`, while the new specific membership restatement at `LinearSystemDegreeZero.lean:63` has no annotation.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/LinearSystemDegreeZero.lean",
+   "fix": "Mark this theorem `@[simp]` unless there is a concrete loop; it rewrites a special membership statement to the class condition and should not unfold `completeLinearSystem`.",
+   "issue": "`zero_mem_completeLinearSystem_iff_divisorClass_eq_zero` is the normal-form membership simplification for `0 \u2208 |D|`, but it is not marked `[simp]`, unlike the existing membership normal forms for this API.",
+   "line": 63
+  }
+ ],
+ "head_sha": "ffcb8860c33daf6c6874815b9358cf5cec323913",
+ "merge_base_sha": "db33c78852ef9bc5e66ec0ad2d3b71e54ca31619",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 412,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "387d485a52f6de9451500d0302a94ddaad9cd1b64311d4152445bbe5013f7b9d",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T173039Z-412-api-design-775c50",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T17:30:39Z",
+ "submitted_by": "kim-em",
+ "summary": "The new public surface proves rigidity, but it does not expose the membership characterization needed to use degree-zero complete linear systems as an API without stitching together elimination and existence lemmas manually.",
+ "transcript_blob": "b38ae8ed7e33adac0041406f42b12dd61c0f90d196f4292b0bd83cd312ba0cf2",
+ "usage": {
+  "cached_input_tokens": 101376,
+  "input_tokens": 152321,
+  "output_tokens": 2262,
+  "reasoning_output_tokens": 917
+ },
+ "verdict": "request_changes"
+}
