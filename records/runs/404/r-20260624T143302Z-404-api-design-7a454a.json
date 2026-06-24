@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.354049,
+   "returncode": 0,
+   "secs": 61.4,
+   "usage": {
+    "cached_input_tokens": 112128,
+    "input_tokens": 154499,
+    "output_tokens": 2871,
+    "reasoning_output_tokens": 1373
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b9f560e89b41ddd6bd826283b808d0e6828eddc4",
+ "cost_estimated": true,
+ "cost_usd": 0.354049,
+ "dedupe_key": "FormalFrontier/TauCeti|404|96c83104b2ba3afe665c425c07618eef5bcc92a3|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "6c652d097e6ba39b6de2af74a2ccc3a1106917e71c03aca95a006c91624a6dee",
+ "diff_sha256": "6c652d097e6ba39b6de2af74a2ccc3a1106917e71c03aca95a006c91624a6dee",
+ "duration_s": 61.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"@\\[expose\\] public section\" code/TauCeti/AlgebraicGeometry/WeilDivisor/BasepointChange.lean` hits line 34, while lines 56-63, 93-101, and 137-142 provide public characterization lemmas.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/BasepointChange.lean",
+   "fix": "Use a plain `public section` here, or put `@[expose]` only on a declaration whose body a downstream target demonstrably must unfold; otherwise add any missing characterization lemma instead.",
+   "issue": "The new file puts all declarations in an `@[expose] public section`, exposing bodies such as `weightedBasepointChangeClass` and `unweightedBasepointChangeClass` even though the API already provides coercion and change-base lemmas for consumers.",
+   "line": 34
+  },
+  {
+   "evidence": "Line 522 defines `weightedPointBaseDifference_eq_pointDifference_of_weight_eq_one`; the analogous constant-weight normal form at lines 515-518 is already `@[simp]`.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor.lean",
+   "fix": "Add `@[simp]` to this lemma so downstream basepoint-change proofs with a weight-one point can normalize without unfolding `weightedPointBaseDifference`.",
+   "issue": "`weightedPointBaseDifference_eq_pointDifference_of_weight_eq_one` is the normal-form specialization from weighted point-base divisors to `pointDifference` under `w x = 1`, but it is not tagged for `simp`.",
+   "line": 522
+  }
+ ],
+ "head_sha": "96c83104b2ba3afe665c425c07618eef5bcc92a3",
+ "merge_base_sha": "5fd4f6e55a87349e3fd94b7bbcfcc48f13176892",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 404,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "aef873f9c39234d6c51d382a7d2382f89cfed3bfcd06055f2b8250f6340dbce6",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260624T143302Z-404-api-design-7a454a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-24T14:33:02Z",
+ "submitted_by": "kim-em",
+ "summary": "The basepoint-change API exposes more implementation than the stated downstream use needs, and one normal-form lemma is missing the expected automation annotation.",
+ "transcript_blob": "f95afb211289eb838e9fe3066dcec5a95a9eee93f524bb4b869e8a3c00130741",
+ "usage": {
+  "cached_input_tokens": 112128,
+  "input_tokens": 154499,
+  "output_tokens": 2871,
+  "reasoning_output_tokens": 1373
+ },
+ "verdict": "request_changes"
+}
