@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.502105,
+   "returncode": 0,
+   "secs": 65.6,
+   "usage": {
+    "cached_input_tokens": 186240,
+    "input_tokens": 249623,
+    "output_tokens": 3069,
+    "reasoning_output_tokens": 1162
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "275d67a2e43e28f9af2e2d65975ecc8ebf4a279e",
+ "cost_estimated": true,
+ "cost_usd": 0.502105,
+ "dedupe_key": "FormalFrontier/TauCeti|428|f815d7290fcb442f019d0277d62f6f468bbfd98c|reuse|gpt-5.5|fce2f7d7e1b0bbad|production|3",
+ "diff_blob": "ebc911536f28a591cda57c494e123e14ab4733e263d26b474c3764b9cc8b63f9",
+ "diff_sha256": "ebc911536f28a591cda57c494e123e14ab4733e263d26b474c3764b9cc8b63f9",
+ "duration_s": 65.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PR lines 49-54 define `point := Algebra.ofId R A` and prove `point r = algebraMap R A r`; Mathlib has `mathlib/Mathlib/Algebra/Algebra/Hom.lean:458: theorem ofId_apply (r) : ofId R A r = algebraMap R A r := rfl`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Trivial.lean",
+   "fix": "Use `Algebra.ofId R A` and `Algebra.ofId_apply` directly instead of exporting `TrivialGroup.point` and `point_apply`.",
+   "issue": "`point`/`point_apply` repackage Mathlib's canonical terminal algebra map and its simp theorem under a new namespace.",
+   "line": 49
+  },
+  {
+   "evidence": "Mathlib provides `mathlib/Mathlib/Algebra/Algebra/Hom.lean:463: instance subsingleton_id : Subsingleton (R \u2192\u2090[R] A)` and `mathlib/Mathlib/Logic/Equiv/Basic.lean:1038: noncomputable def Equiv.punitOfNonemptyOfSubsingleton [h : Nonempty \u03b1] [Subsingleton \u03b1] : \u03b1 \u2243 PUnit`; `Algebra.ofId R A` supplies the nonempty witness.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Trivial.lean",
+   "fix": "Drop `pointEquiv` and its simp lemmas, or build local proofs from `Equiv.punitOfNonemptyOfSubsingleton`/`Equiv.equivPUnit` when needed.",
+   "issue": "`pointEquiv` is just the generic equivalence from a nonempty subsingleton type to `PUnit` applied to `(R \u2192\u2090[R] A)`.",
+   "line": 57
+  },
+  {
+   "evidence": "PR lines 133-135 prove `\u03c6.comp point = point`; Mathlib has `mathlib/Mathlib/Algebra/Algebra/Hom.lean:471: theorem comp_ofId (\u03c6 : A \u2192\u2090[R] B) : \u03c6.comp (Algebra.ofId R A) = Algebra.ofId R B := by ext`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Trivial.lean",
+   "fix": "Remove `comp_point` and use `Algebra.comp_ofId` after unfolding/replacing `point` by `Algebra.ofId`.",
+   "issue": "`comp_point` restates Mathlib's existing post-composition theorem for `Algebra.ofId`.",
+   "line": 133
+  }
+ ],
+ "head_sha": "f815d7290fcb442f019d0277d62f6f468bbfd98c",
+ "merge_base_sha": "275d67a2e43e28f9af2e2d65975ecc8ebf4a279e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 428,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "b288b00407af6bd1d497ea9280180932230e87d7aba51792cdaebac3e618e594",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T050816Z-428-reuse-321652",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T05:08:16Z",
+ "submitted_by": "kim-em",
+ "summary": "The convolution-group calculation is local to TauCeti, but the file still exports plain terminal algebra-map API that Mathlib already provides generically. Remove the duplicate wrappers and state only the convolution-specific facts using Mathlib's existing terminal `AlgHom` lemmas directly.",
+ "transcript_blob": "96b9eb65cced397856ef7472f4cb9f4c220200ce5fdc351ca3d925b541cc7ae9",
+ "usage": {
+  "cached_input_tokens": 186240,
+  "input_tokens": 249623,
+  "output_tokens": 3069,
+  "reasoning_output_tokens": 1162
+ },
+ "verdict": "block"
+}
