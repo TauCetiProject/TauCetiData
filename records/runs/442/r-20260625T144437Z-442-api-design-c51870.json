@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.304966,
+   "returncode": 0,
+   "secs": 52.0,
+   "usage": {
+    "cached_input_tokens": 105472,
+    "input_tokens": 141500,
+    "output_tokens": 2403,
+    "reasoning_output_tokens": 1010
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "83dd332dea8706b37f99406b2ea8f95c87cb864c",
+ "cost_estimated": true,
+ "cost_usd": 0.304966,
+ "dedupe_key": "FormalFrontier/TauCeti|442|2691e2a4550f5c00104761b5c447e263d9a353b9|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|4",
+ "diff_blob": "616cadc6d7004483ba3eebc9244dac3cf9f8ff9db69ef1cd8afea2328cf3255b",
+ "diff_sha256": "616cadc6d7004483ba3eebc9244dac3cf9f8ff9db69ef1cd8afea2328cf3255b",
+ "duration_s": 52.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"toNormalizerOfNormal\" code/TauCeti -g '*.lean'` finds only lines 111, 118, 124, and the inverse representative lemma at 186 in this new file.",
+   "file": "TauCeti/Algebra/Group/NormalizerQuotient.lean",
+   "fix": "Inline this construction in `normalizerQuotientEquivQuotientOfNormal_symm_mk` or keep only a private helper; expose only quotient/equivalence lemmas needed by consumers.",
+   "issue": "`toNormalizerOfNormal` and `toNormalizerOfNormal_surjective` are public helper API for putting `G` into its normalizer under `[H.Normal]`, not part of the named `N(H)/H` surface.",
+   "line": 111
+  },
+  {
+   "evidence": "Mathlib provides `QuotientGroup.mk'_surjective` and `[simp] theorem range_mk'` in `mathlib/Mathlib/GroupTheory/QuotientGroup/Defs.lean:99` and `:131`, while `rg -n \"normalizerQuotientMk.*surjective|normalizerQuotientMk.*range\" code/TauCeti/Algebra/Group/NormalizerQuotient.lean` has no hits.",
+   "file": "TauCeti/Algebra/Group/NormalizerQuotient.lean",
+   "fix": "Add `normalizerQuotientMk_surjective` and preferably a `[simp]` `normalizerQuotientMk_range` lemma, restating the existing `QuotientGroup` facts for this API.",
+   "issue": "The public quotient map has no named surjectivity/range lemma, so users of the stable wrapper must unfold to `QuotientGroup.mk'_surjective`/`range_mk'` to eliminate arbitrary elements of `normalizerQuotient H`.",
+   "line": 55
+  }
+ ],
+ "head_sha": "2691e2a4550f5c00104761b5c447e263d9a353b9",
+ "merge_base_sha": "83dd332dea8706b37f99406b2ea8f95c87cb864c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 442,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "48cc302d4549b72446e39d3e19daeda6b0fb448a6e169e5ac10cdfa69f02b45d",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T144437Z-442-api-design-c51870",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T14:44:37Z",
+ "submitted_by": "kim-em",
+ "summary": "The quotient wrapper exposes avoidable normal-case scaffolding and is missing a named representative/surjectivity fact for the canonical quotient map, so downstream users still have to lean on the underlying `QuotientGroup` implementation.",
+ "transcript_blob": "a3da7a921cc28c1de010ff0de93f08a091ea4322b135d52f0368a03e0d49b804",
+ "usage": {
+  "cached_input_tokens": 105472,
+  "input_tokens": 141500,
+  "output_tokens": 2403,
+  "reasoning_output_tokens": 1010
+ },
+ "verdict": "request_changes"
+}
