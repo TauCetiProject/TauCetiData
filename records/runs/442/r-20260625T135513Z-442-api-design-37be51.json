@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.514322,
+   "returncode": 0,
+   "secs": 59.1,
+   "usage": {
+    "cached_input_tokens": 118784,
+    "input_tokens": 193534,
+    "output_tokens": 2706,
+    "reasoning_output_tokens": 1050
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "83dd332dea8706b37f99406b2ea8f95c87cb864c",
+ "cost_estimated": true,
+ "cost_usd": 0.514322,
+ "dedupe_key": "FormalFrontier/TauCeti|442|4387e865e0fa53f5d325fd0b1137d0b43a7d6e9b|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|2",
+ "diff_blob": "3d60c00344853269a8b3e073969f2cdaa0a39a2e3b230c30a45a826bbcac0176",
+ "diff_sha256": "3d60c00344853269a8b3e073969f2cdaa0a39a2e3b230c30a45a826bbcac0176",
+ "duration_s": 59.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` hits: lines 55, 97, 117, and 173 all have `@[expose]`; the rubric allows this only when consumers must unfold or compute.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotient.lean",
+   "fix": "Remove the `@[expose]` attributes and keep the API usable via explicit `[simp]`/characteristic lemmas instead of cross-module unfolding.",
+   "issue": "Several public definitions expose their bodies (`normalizerQuotientMk`, `toNormalizerOfNormal`, `normalizerQuotientToQuotientOfNormal`, `normalizerQuotientEquivQuotientOfNormal`) even though representative lemmas are already provided or should be added.",
+   "line": 55
+  },
+  {
+   "evidence": "Line 182 gives only `normalizerQuotientEquivQuotientOfNormal_mk`; `rg -n \"symm.*normalizerQuotientEquivQuotientOfNormal|normalizerQuotientEquivQuotientOfNormal.*symm\"` finds no inverse representative lemma.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotient.lean",
+   "fix": "Add a `[simp]` lemma such as `(normalizerQuotientEquivQuotientOfNormal H).symm (QuotientGroup.mk' H g) = normalizerQuotientMk H (toNormalizerOfNormal H g)`, and analogous inverse/comp lemmas if needed by the target.",
+   "issue": "The normal-case equivalence is only characterized in the forward direction on normalizer representatives; consumers cannot rewrite an ordinary quotient representative through `.symm` without unfolding `MulEquiv.ofBijective`.",
+   "line": 173
+  },
+  {
+   "evidence": "Line 55 introduces `normalizerQuotientMk`, line 69 proves only `normalizerQuotientMk_eq_one_iff`; `rg -n \"normalizerQuotientMk.*ker|ker.*normalizerQuotientMk\"` finds no kernel lemma.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotient.lean",
+   "fix": "Add a characteristic lemma for the homomorphism kernel, e.g. `(normalizerQuotientMk H).ker = H.subgroupOf (Subgroup.normalizer (H : Set G))`, preferably `[simp]` if it normalizes well.",
+   "issue": "The quotient map lacks a kernel lemma, so the advertised kernel API is only available as the pointwise identity criterion at line 69.",
+   "line": 55
+  }
+ ],
+ "head_sha": "4387e865e0fa53f5d325fd0b1137d0b43a7d6e9b",
+ "merge_base_sha": "83dd332dea8706b37f99406b2ea8f95c87cb864c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 442,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f5a1f179fb920d6f9357aca91907051ae7c7b32f3cd6a492d0a7da23b0085782",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T135513Z-442-api-design-37be51",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T13:55:13Z",
+ "submitted_by": "kim-em",
+ "summary": "The named quotient is useful, but the public surface is relying on exposed bodies and is missing characteristic lemmas needed to use the normal-case comparison without unfolding implementation definitions.",
+ "transcript_blob": "840d02d2a6ca0547ab6f1985c758b7b84e47eac7210e7c532941d7f44d4b990c",
+ "usage": {
+  "cached_input_tokens": 118784,
+  "input_tokens": 193534,
+  "output_tokens": 2706,
+  "reasoning_output_tokens": 1050
+ },
+ "verdict": "request_changes"
+}
