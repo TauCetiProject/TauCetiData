@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.134615,
+   "returncode": 0,
+   "secs": 26.9,
+   "usage": {
+    "cached_input_tokens": 21760,
+    "input_tokens": 39853,
+    "output_tokens": 1109,
+    "reasoning_output_tokens": 343
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f2a68ec41d9289d01b6e68c3dd0d56b3215e184b",
+ "cost_estimated": true,
+ "cost_usd": 0.134615,
+ "dedupe_key": "FormalFrontier/TauCeti|436|3ee858dee13d3bbdea3e7cbfa7ae9ee121d209f4|reuse|gpt-5.5|fce2f7d7e1b0bbad|production|4",
+ "diff_blob": "43d1a5d1792bb838c24407f744043b2bb81d046e9f9cf9994c1068befee9bdec",
+ "diff_sha256": "43d1a5d1792bb838c24407f744043b2bb81d046e9f9cf9994c1068befee9bdec",
+ "duration_s": 26.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`code/TauCeti/Topology/Homotopy/Covering.lean:66-71` states the same conclusion and proves it by `hp.existsUnique_continuousMap_lifts_of_range_le he hcond`; `mathlib/Mathlib/Topology/Homotopy/Lifting.lean:490-493` has the existing theorem with hypothesis `(map f a\u2080).range \u2264 (mapOfEq \u27e8p, cov.continuous\u27e9 he).range`.",
+   "file": "TauCeti/Topology/Homotopy/Covering.lean",
+   "fix": "Remove this theorem and use `hp.existsUnique_continuousMap_lifts_of_range_le he hcond` directly at call sites.",
+   "issue": "`existsUnique_continuousMap_lifts_of_liftCondition` is a direct wrapper for Mathlib\u2019s `IsCoveringMap.existsUnique_continuousMap_lifts_of_range_le` with no changed conclusion or added specialization.",
+   "line": 66
+  },
+  {
+   "evidence": "`code/TauCeti/Topology/Homotopy/Covering.lean:49-58` defines `LiftCondition` as `(FundamentalGroup.map f a\u2080).range \u2264 (FundamentalGroup.mapOfEq q he).range` and unfolds it by `Iff.rfl`; `mathlib/Mathlib/Topology/Homotopy/Lifting.lean:490-493` already uses that same inclusion as the named lifting criterion hypothesis.",
+   "file": "TauCeti/Topology/Homotopy/Covering.lean",
+   "fix": "Do not add a parallel predicate unless it supports a genuinely new local specialization; state the Mathlib hypothesis directly or prove a downstream theorem that needs this abbreviation.",
+   "issue": "`LiftCondition` only renames the exact subgroup-inclusion hypothesis already exposed by Mathlib\u2019s lifting criterion, and `liftCondition_iff_range_le` is `Iff.rfl` for that rename.",
+   "line": 49
+  }
+ ],
+ "head_sha": "3ee858dee13d3bbdea3e7cbfa7ae9ee121d209f4",
+ "merge_base_sha": "f2a68ec41d9289d01b6e68c3dd0d56b3215e184b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 436,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "0f9d3a067f772e3ebab721faf3cdb2788fee2ec857444a2f457fe3c8782faaab",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T094418Z-436-reuse-6a0746",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T09:44:18Z",
+ "submitted_by": "kim-em",
+ "summary": "The new lifting API is only a TauCeti wrapper around Mathlib\u2019s existing covering lifting criterion and its exact subgroup hypothesis. Existing Mathlib declarations directly replace the added theorem, so this PR duplicates API rather than consuming it in a new downstream result.",
+ "transcript_blob": "f13c730194374b1d87ff0316c4d49c312333ee87cd0967df664868a5224a5dba",
+ "usage": {
+  "cached_input_tokens": 21760,
+  "input_tokens": 39853,
+  "output_tokens": 1109,
+  "reasoning_output_tokens": 343
+ },
+ "verdict": "block"
+}
