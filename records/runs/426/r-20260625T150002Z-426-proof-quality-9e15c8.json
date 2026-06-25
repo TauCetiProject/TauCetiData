@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.60426,
+   "returncode": 0,
+   "secs": 52.0,
+   "usage": {
+    "cached_input_tokens": 128000,
+    "input_tokens": 222462,
+    "output_tokens": 2265,
+    "reasoning_output_tokens": 402
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "723b1b255df9aabf82daf9b6f7d3b61dddd63856",
+ "cost_estimated": true,
+ "cost_usd": 0.60426,
+ "dedupe_key": "FormalFrontier/TauCeti|426|ba6055339066486c92a4f40ef54bf6a8d10217c5|proof-quality|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "7c2e65eda30765db4ed623a30c79226279bdae309e27ad36fdb316677b325a23",
+ "diff_sha256": "7c2e65eda30765db4ed623a30c79226279bdae309e27ad36fdb316677b325a23",
+ "duration_s": 52.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 319-323: `have hval : g' t = deriv g t := by ... rw [show m + 2 = (m + 1) + 1 from rfl, iteratedDerivWithin_succ, ...]`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Factor a small lemma stating the derivative of `iteratedDerivWithin (m+1) f (Ici 0)` on `Ioi 0`, and use it here instead of the local `hval`/`show ... from rfl` rewrite.",
+   "issue": "`chafaiDensity_ibp_identity` proves the derivative relation by unfolding local `set`s and rewriting through `show m + 2 = (m + 1) + 1 from rfl`; this rests on undocumented definitional equality of the iterated-derivative successor shape.",
+   "line": 319
+  },
+  {
+   "evidence": "Lines 341-353 define `hF'_eq` with `simp only [chafaiDensity, show m + 2 \u2260 0 ..., show m + 2 - 1 = m + 1 ..., g, g', c]` and then `field_simp; ring`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Extract this as a named lemma for the derivative integrand identity, using `chafaiDensity_of_ne_zero` and explicit factorial/power lemmas before the final ring step.",
+   "issue": "The core algebra identifying the derivative of the IBP boundary term with `\u03c1_{m+2}-\u03c1_{m+1}` is hidden in a long `simp only` list with multiple inline `show ... by omega`, followed by `field_simp; ring`; it is not reusable and will be fragile under density-definition or coercion changes.",
+   "line": 344
+  },
+  {
+   "evidence": "Lines 399-413 and 450-466 duplicate the same `\u03bd = \u03c3 + dirac (-1)` expansion; lines 415-433 and 469-489 duplicate the same set-integral split with cutoff vanishing.",
+   "file": "TauCeti/MeasureTheory/Measure/Prokhorov.lean",
+   "fix": "Factor the repeated cutoff facts into private lemmas, e.g. a lemma that integrating `g * \u03c7` against `\u03c3 + dirac (-1)` equals integrating `g` against `\u03c3` under `hsupp`, and a lemma splitting the `\u03bd\u2080m` integral over `Ici 0`/`Iio 0`.",
+   "issue": "`finite_measure_subseq_limit` repeats the same cutoff/support transfer proof inline for `\u03c7` and `g\u03c7`, with raw `show ((\u03bd ...) : Measure \u211d) = \u03c3 ... + Measure.dirac (-1) from rfl` and `change` steps depending on local `let` bodies.",
+   "line": 450
+  }
+ ],
+ "head_sha": "ba6055339066486c92a4f40ef54bf6a8d10217c5",
+ "merge_base_sha": "54895e9dcd668aaddd9b90c0784b450614fa4c20",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 426,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6b6378dee4223685823755d92493124da7dc292fc38cbf9780ceb16d091aad38",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T150002Z-426-proof-quality-9e15c8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T15:00:02Z",
+ "submitted_by": "kim-em",
+ "summary": "The new proofs elaborate, but several central arguments are too brittle for this API layer: they rely on undocumented definitional equality and repeat substantial cutoff-transfer reasoning inline. Please factor the reusable proof steps into named lemmas and replace raw `change`/`show ... from rfl` normalization with explicit rewrites or documented helper lemmas.",
+ "transcript_blob": "5ca81b762066b9a3ee061b8ca3931e6afdb87bf19f4fa5f8b0f2578aaf211021",
+ "usage": {
+  "cached_input_tokens": 128000,
+  "input_tokens": 222462,
+  "output_tokens": 2265,
+  "reasoning_output_tokens": 402
+ },
+ "verdict": "request_changes"
+}
