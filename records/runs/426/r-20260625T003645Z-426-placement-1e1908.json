@@ -1,0 +1,85 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.928174,
+   "returncode": 0,
+   "secs": 75.1,
+   "usage": {
+    "cached_input_tokens": 152448,
+    "input_tokens": 301178,
+    "output_tokens": 3610,
+    "reasoning_output_tokens": 1550
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "10533ab2333f81f7f69df746b37889749c84f030",
+ "cost_estimated": true,
+ "cost_usd": 0.928174,
+ "dedupe_key": "FormalFrontier/TauCeti|426|372a745307d55d5b50ab873e044d39e89f084dbc|placement|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "4d95867300bc342fd564721ffc0da97010170288d41d50266faa0cc3af4c2b6e",
+ "diff_sha256": "4d95867300bc342fd564721ffc0da97010170288d41d50266faa0cc3af4c2b6e",
+ "duration_s": 75.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`BernsteinProkhorov.lean:19` states the facts are about general measures; declarations are at `BernsteinProkhorov.lean:86` and `:495`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinProkhorov.lean",
+   "fix": "Move this file/declarations to a measure-theory location such as `TauCeti/MeasureTheory/Measure/Prokhorov.lean` or a similarly general TauCeti measure file, and import it from the Bernstein development.",
+   "issue": "`finite_measure_subseq_limit` and `tendsto_exp_integral` are general finite-measure/weak-convergence lemmas but live under `Analysis/CompletelyMonotone`; the file itself says they \"do not mention complete monotonicity\".",
+   "line": 86
+  },
+  {
+   "evidence": "`Basic.lean:147` has `nonneg` and `Basic.lean:169` has `antitoneOn`; the new general lemmas are introduced only in `BernsteinAux.lean:54` and `:59`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinAux.lean",
+   "fix": "Move these general API lemmas to `CompletelyMonotone/Basic.lean` near `nonneg` and `antitoneOn`, or to an earlier generic limits file imported by the Bernstein files.",
+   "issue": "`IsCompletelyMonotone.bounded` and `IsCompletelyMonotone.tendsto_atTop` are basic object API following from `nonneg`/`antitoneOn`, not Bernstein/Taylor auxiliary material.",
+   "line": 54
+  },
+  {
+   "evidence": "`BernsteinMeasures.lean:126`, `:150`, and `:416` use `IntegrableOn`/improper interval-integral machinery; `BernsteinAux.lean` only contains finite interval identities and Taylor remainder lemmas.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinAux.lean",
+   "fix": "Remove this import from `BernsteinAux.lean` and import `Mathlib.MeasureTheory.Integral.IntegralEqImproper` directly in `BernsteinMeasures.lean`.",
+   "issue": "`BernsteinAux` imports `Mathlib.MeasureTheory.Integral.IntegralEqImproper`, but the improper-integral lemmas are used in `BernsteinMeasures`, not in this auxiliary file.",
+   "line": 8
+  },
+  {
+   "evidence": "`rg` shows the only `Beta`/`Gamma` hit in `BernsteinMeasures.lean` is the import at line 7, while `Real.tendsto_one_add_div_pow_exp` is used in `BernsteinMeasures.lean:220`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Replace it with direct narrower imports for the actual dependencies, in particular the module providing `Real.tendsto_one_add_div_pow_exp` plus the measure/improper-integral imports used in this file.",
+   "issue": "`Mathlib.Analysis.SpecialFunctions.Gamma.Beta` is an evidently broad topic import; this file uses no Beta/Gamma declarations.",
+   "line": 7
+  }
+ ],
+ "head_sha": "372a745307d55d5b50ab873e044d39e89f084dbc",
+ "merge_base_sha": "54895e9dcd668aaddd9b90c0784b450614fa4c20",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 426,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6b44bb7fa9af5acee08abbd09748e8809925d26b4f9c27d14392169e2fe55be9",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T003645Z-426-placement-1e1908",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T00:36:45Z",
+ "submitted_by": "kim-em",
+ "summary": "Several declarations and imports are placed under Bernstein-specific files even though their dependency/topic level is broader or belongs in a different file. Move the general material to canonical homes and make the imports direct and narrow.",
+ "transcript_blob": "17dc1ec2938c826af927e0b0a343f66018421d154a458bd1b2eff92a9a38f777",
+ "usage": {
+  "cached_input_tokens": 152448,
+  "input_tokens": 301178,
+  "output_tokens": 3610,
+  "reasoning_output_tokens": 1550
+ },
+ "verdict": "request_changes"
+}

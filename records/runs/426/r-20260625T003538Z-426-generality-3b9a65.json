@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.646772,
+   "returncode": 0,
+   "secs": 66.3,
+   "usage": {
+    "cached_input_tokens": 202624,
+    "input_tokens": 293404,
+    "output_tokens": 3052,
+    "reasoning_output_tokens": 1617
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "10533ab2333f81f7f69df746b37889749c84f030",
+ "cost_estimated": true,
+ "cost_usd": 0.646772,
+ "dedupe_key": "FormalFrontier/TauCeti|426|372a745307d55d5b50ab873e044d39e89f084dbc|generality|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "4d95867300bc342fd564721ffc0da97010170288d41d50266faa0cc3af4c2b6e",
+ "diff_sha256": "4d95867300bc342fd564721ffc0da97010170288d41d50266faa0cc3af4c2b6e",
+ "duration_s": 66.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"hfin|hmass\" BernsteinProkhorov.lean` shows `hfin` only in the signature, while `hmass` is used at lines 118 and 436 and implies finite total mass.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinProkhorov.lean",
+   "fix": "Remove `hfin` and derive finiteness from `hmass n : (\u03c3 n) univ \u2264 ENNReal.ofReal C` using `ENNReal.ofReal_lt_top` where the `FiniteMeasure` wrapper is built.",
+   "issue": "`finite_measure_subseq_limit` assumes `hfin : \u2200 n, IsFiniteMeasure (\u03c3 n)`, but the mass bound already implies this and `hfin` has no explicit use.",
+   "line": 88
+  },
+  {
+   "evidence": "The signature names the assumptions `_hx` and `_hp`; the proof only uses `Real.tendsto_one_add_div_pow_exp (-(x * p))` and the eventual inequality at lines 220-235.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "State `lemma bernstein_kernel_tendsto (x p : \u211d) : ...` and keep the existing eventual bound via `Nat.ceil (x * p) + 2`.",
+   "issue": "`bernstein_kernel_tendsto` requires `0 \u2264 x` and `0 \u2264 p`, but the convergence proof is valid for arbitrary real `x p` and the hypotheses are intentionally unused.",
+   "line": 218
+  },
+  {
+   "evidence": "The proof\u2019s `density_le` is stated for `\u2200 j, 1 \u2264 j` at lines 394-405, and the final call only needs `density_le n (by omega : 1 \u2264 n)` at line 414.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Relax `hn : 2 \u2264 n` to `hn : 1 \u2264 n`; the existing base case proves `n = 1`, and the induction/bound already works from `1 \u2264 n`.",
+   "issue": "`cm_measure_finite_mass` is stated only for `2 \u2264 n`, but the theorem is just finiteness and total mass of `cm_measure`; the natural hypothesis is `1 \u2264 n`.",
+   "line": 376
+  }
+ ],
+ "head_sha": "372a745307d55d5b50ab873e044d39e89f084dbc",
+ "merge_base_sha": "54895e9dcd668aaddd9b90c0784b450614fa4c20",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 426,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a944f2ad3cbc0bf9ccf348f81e6e27cb87b5b19186923971f0dc598c69ae0d3e",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T003538Z-426-generality-3b9a65",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T00:35:38Z",
+ "submitted_by": "kim-em",
+ "summary": "Several public lemmas carry hypotheses stronger than their stated mathematical content needs. Relax these signatures so downstream Bernstein work can use the natural positive-index and pointwise forms.",
+ "transcript_blob": "04199ad55e76d6b928c276822a59f3651727f2fb4c5373babef78f5f5c665315",
+ "usage": {
+  "cached_input_tokens": 202624,
+  "input_tokens": 293404,
+  "output_tokens": 3052,
+  "reasoning_output_tokens": 1617
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.485667,
+   "returncode": 0,
+   "secs": 39.1,
+   "usage": {
+    "cached_input_tokens": 70784,
+    "input_tokens": 150519,
+    "output_tokens": 1720,
+    "reasoning_output_tokens": 454
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "10533ab2333f81f7f69df746b37889749c84f030",
+ "cost_estimated": true,
+ "cost_usd": 0.485667,
+ "dedupe_key": "FormalFrontier/TauCeti|426|372a745307d55d5b50ab873e044d39e89f084dbc|proof-quality|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "4d95867300bc342fd564721ffc0da97010170288d41d50266faa0cc3af4c2b6e",
+ "diff_sha256": "4d95867300bc342fd564721ffc0da97010170288d41d50266faa0cc3af4c2b6e",
+ "duration_s": 39.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"change|show\" BernsteinProkhorov.lean` hits lines 101, 112, 135, 147, 222, 224, 234, 236, 308, 325, 390, 398, 449, 483, 487; these are inside the same proof starting at line 96.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinProkhorov.lean",
+   "fix": "Factor named helper lemmas for the mass of `\u03bd`, its tail/left support, the integral under `\u03bd.normalize`, and the integral split after restricting to `Ici 0`; then use those lemmas instead of local `change`/`show` defeq steps.",
+   "issue": "`finite_measure_subseq_limit` repeatedly unfolds the auxiliary finite measure and normalization through raw `change`/`show ... from rfl` steps, so the proof depends on implementation details of `FiniteMeasure`, `ProbabilityMeasure.normalize`, and the `\u03bd = \u03c3 + \u03b4_-1` wrapper.",
+   "line": 96
+  },
+  {
+   "evidence": "Lines 303-337 contain `show m + 2 = ... from rfl`, `change ContinuousOn ...`, and a dense `simp only [cm_density, show ..., show ...]`/`field_simp; ring` block for the main derivative equality.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Extract lemmas such as continuity of `cm_density f k` for `k \u2260 0` and the derivative identity for `t^(m+1) * ((-1)^(m+2)/(m+1)! * f^(m+1))`; prove the arithmetic in those lemmas with explicit hypotheses and reuse them in the IBP proof.",
+   "issue": "`cm_density_ibp_identity` hides the core reusable derivative/density calculation inside a local `hF'_eq` proved by `simp only` with several inline `show` facts followed by `field_simp; ring`, making the IBP proof fragile to notation or definition changes.",
+   "line": 286
+  }
+ ],
+ "head_sha": "372a745307d55d5b50ab873e044d39e89f084dbc",
+ "merge_base_sha": "54895e9dcd668aaddd9b90c0784b450614fa4c20",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 426,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1bd086098d36bf3e1476720781cbbb3d98186e02d01c5ecf8735e4d0ab32c1d3",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T003912Z-426-proof-quality-9904b0",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T00:39:12Z",
+ "submitted_by": "kim-em",
+ "summary": "The new proofs elaborate, but two substantial proofs rely on undocumented definitional equality and brittle local algebra instead of reusable lemmas. These should be refactored before the infrastructure becomes a dependency for the next Bernstein PR.",
+ "transcript_blob": "a5a40ad27aec34ac66ff7bbd72db4d6365798a3b0f947f0dab7aef1062c2b550",
+ "usage": {
+  "cached_input_tokens": 70784,
+  "input_tokens": 150519,
+  "output_tokens": 1720,
+  "reasoning_output_tokens": 454
+ },
+ "verdict": "request_changes"
+}

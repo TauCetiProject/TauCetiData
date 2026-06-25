@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.660636,
+   "returncode": 0,
+   "secs": 53.6,
+   "usage": {
+    "cached_input_tokens": 164352,
+    "input_tokens": 265656,
+    "output_tokens": 2398,
+    "reasoning_output_tokens": 1065
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "10533ab2333f81f7f69df746b37889749c84f030",
+ "cost_estimated": true,
+ "cost_usd": 0.660636,
+ "dedupe_key": "FormalFrontier/TauCeti|426|372a745307d55d5b50ab873e044d39e89f084dbc|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "4d95867300bc342fd564721ffc0da97010170288d41d50266faa0cc3af4c2b6e",
+ "diff_sha256": "4d95867300bc342fd564721ffc0da97010170288d41d50266faa0cc3af4c2b6e",
+ "duration_s": 53.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep hits: `@[expose] noncomputable def cm_density` at line 67, `cm_measure` at line 74, `bernstein_kernel` at line 213, and `cm_rescaled` at line 243.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Remove these `@[expose]` attributes and add explicit characteristic lemmas for the intended uses, e.g. density formula for `n \u2260 0`, measure `withDensity` application/integration, kernel formula for `2 \u2264 n`, and rescaled map application/integration.",
+   "issue": "`cm_density`, `cm_measure`, `bernstein_kernel`, and `cm_rescaled` are all marked `@[expose]`, exporting implementation bodies for density/withDensity/kernel/map instead of a stable API.",
+   "line": 67
+  },
+  {
+   "evidence": "The only public `cm_measure` API found by grep is support/mass: `cm_measure_compl_Ioi` line 252, `cm_rescaled_mass_eq` line 279, `cm_measure_finite_mass` line 375; there is no `cm_measure_apply`, `mem_*_iff`, or integral characterization.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Add lemmas such as `cm_measure_apply` for measurable sets and an integral/lintegral characterization over `Ioi 0`; use those in later proofs instead of relying on `unfold cm_measure`.",
+   "issue": "`cm_measure` is public but has no apply/integral characterization, so downstream code cannot compute `(cm_measure f n) s` or integrals against it without unfolding the exposed `withDensity` body.",
+   "line": 74
+  },
+  {
+   "evidence": "`lemma cm_density_one` appears at line 93 with no attribute; `bernstein_kernel` is defined by an `if n \u2264 1 then 0 else ...` at lines 213-214, but grep finds only `bernstein_kernel_tendsto` as public API.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Mark `cm_density_one` as `[simp]` and add appropriately oriented `[simp]` lemmas for `bernstein_kernel` in the degenerate and nondegenerate cases, avoiding downstream unfolding of the definitions.",
+   "issue": "The normal-form lemma `cm_density_one` is not tagged `[simp]`, and the kernel has no `[simp]` normal forms for the `n \u2264 1`/`2 \u2264 n` cases.",
+   "line": 93
+  }
+ ],
+ "head_sha": "372a745307d55d5b50ab873e044d39e89f084dbc",
+ "merge_base_sha": "54895e9dcd668aaddd9b90c0784b450614fa4c20",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 426,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d534e1e2874698ca6da617eb56b10a448662ec7cbc33d7f2bb9c0d371715d922",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T003445Z-426-api-design-277360",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T00:34:45Z",
+ "submitted_by": "kim-em",
+ "summary": "The new Bernstein infrastructure exposes implementation bodies and lacks the characteristic API needed to use the new measures and kernel abstractly. Tighten the public surface by hiding bodies and adding normal-form/apply/integral lemmas with appropriate simp annotations.",
+ "transcript_blob": "11850f176beea067277f557839bf8efc5c49f9f13d11f2699595525b4aa2709f",
+ "usage": {
+  "cached_input_tokens": 164352,
+  "input_tokens": 265656,
+  "output_tokens": 2398,
+  "reasoning_output_tokens": 1065
+ },
+ "verdict": "request_changes"
+}
