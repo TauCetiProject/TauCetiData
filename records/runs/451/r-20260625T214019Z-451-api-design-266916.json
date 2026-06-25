@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.442893,
+   "returncode": 0,
+   "secs": 42.4,
+   "usage": {
+    "cached_input_tokens": 98816,
+    "input_tokens": 165573,
+    "output_tokens": 1990,
+    "reasoning_output_tokens": 773
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "cost_estimated": true,
+ "cost_usd": 0.442893,
+ "dedupe_key": "FormalFrontier/TauCeti|451|86b3fd531a183e24d2978f22af2f08b9fbde7162|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|2",
+ "diff_blob": "da7d53818d7670666f4f639c66e4256cf880a07a9fd00ead9e422804623b90b5",
+ "diff_sha256": "da7d53818d7670666f4f639c66e4256cf880a07a9fd00ead9e422804623b90b5",
+ "duration_s": 42.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"@\\[expose\\]\" code/TauCeti/Probability/Exchangeability` returns only the nine definitions at Basic.lean:39,44,49,54,59,64,70,75,81; characteristic lemmas already exist at Basic.lean:85-108 and 152-164 plus Contractability.lean:28-62.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Remove `@[expose]` from these definitions and add any missing named theorem needed by downstream code instead of making bodies reducible.",
+   "issue": "Every new definition body is exposed with `@[expose]`, including `blockLaw`, `prefixLaw`, `pathLaw`, `prefixProj`, `shift`, and the symmetry predicates, even though the file supplies simp/eliminator API for using them without unfolding.",
+   "line": 39
+  },
+  {
+   "evidence": "Basic.lean:33 declares arbitrary `{\u03b9 : Type*}` and Basic.lean:40 defines `blockLaw ... (k : \u03b9 \u2192 \u2115) : Measure (\u03b9 \u2192 \u03b1)`, while the roadmap target states finite laws over `Fin n` and a separate `pathLaw` at roadmap/TauCetiRoadmap/Exchangeability/Targets.lean:53-87.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Keep the arbitrary-index helper private, or narrow the public API to the finite selections actually used downstream, e.g. `Fin m \u2192 \u2115`, with separate named path-law lemmas for the `\u2115` case.",
+   "issue": "`blockLaw` is public over an arbitrary index type `\u03b9`, so the public surface is larger than the Layer 0 finite-prefix/path-law target and overlaps `pathLaw` when `\u03b9 = \u2115`.",
+   "line": 40
+  }
+ ],
+ "head_sha": "86b3fd531a183e24d2978f22af2f08b9fbde7162",
+ "merge_base_sha": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 451,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "9b519f09696e6195428f1277a115f38ca8c2df1b4eae2a1cf1f1f2ca5713b522",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T214019Z-451-api-design-266916",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T21:40:19Z",
+ "submitted_by": "kim-em",
+ "summary": "The new exchangeability API still exposes implementation bodies and exports an over-general block-law primitive beyond the finite/path-law surface needed by the roadmap target.",
+ "transcript_blob": "4722cad3d84919fc04ee8675930e952a07ea1f97d41cac441a01a3bad4fe62a5",
+ "usage": {
+  "cached_input_tokens": 98816,
+  "input_tokens": 165573,
+  "output_tokens": 1990,
+  "reasoning_output_tokens": 773
+ },
+ "verdict": "request_changes"
+}
