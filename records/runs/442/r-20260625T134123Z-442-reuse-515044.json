@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.472769,
+   "returncode": 0,
+   "secs": 89.5,
+   "usage": {
+    "cached_input_tokens": 223488,
+    "input_tokens": 271465,
+    "output_tokens": 4038,
+    "reasoning_output_tokens": 2131
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "83dd332dea8706b37f99406b2ea8f95c87cb864c",
+ "cost_estimated": true,
+ "cost_usd": 0.472769,
+ "dedupe_key": "FormalFrontier/TauCeti|442|58b54e263be653a15fef8fed4e14c3cf8fe039cd|reuse|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "01e08651b27efa1158f20a1511593d560dc83016f8abe4a1194a3484e516a072",
+ "diff_sha256": "01e08651b27efa1158f20a1511593d560dc83016f8abe4a1194a3484e516a072",
+ "duration_s": 89.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PR line 50 defines `abbrev subgroupNormalizer (H : Subgroup G) := _root_.Subgroup.normalizer (H : Set G)`; Mathlib already uses this API, e.g. `normalizer_eq_top : normalizer (H : Set G) = \u22a4` at `mathlib/Mathlib/Algebra/Group/Subgroup/Basic.lean:365-367` and `normal_in_normalizer : (H.subgroupOf <| normalizer H).Normal` at lines 440-442.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotient.lean",
+   "fix": "Delete `subgroupNormalizer` and use `_root_.Subgroup.normalizer (H : Set G)` or `normalizer H` directly in the quotient abbreviation and lemmas.",
+   "issue": "`subgroupNormalizer` is a public direct alias for Mathlib's existing `Subgroup.normalizer`; this creates a parallel normalizer API.",
+   "line": 50
+  },
+  {
+   "evidence": "The proofs are exactly the Mathlib lemmas at PR lines 70-79 and 91-94; Mathlib provides `mk'_surjective`, `ker_mk'`, and `eq_iff_div_mem` at `mathlib/Mathlib/GroupTheory/QuotientGroup/Defs.lean:99-101`, `140-146`.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotient.lean",
+   "fix": "Avoid exposing parallel theorem names unless downstream code needs exactly these statements; otherwise use the Mathlib lemmas directly after unfolding `normalizerQuotientMk`.",
+   "issue": "The quotient-map facts `normalizerQuotientMk_surjective`, `_ker`, and `_eq_iff` are parallel wrappers around `QuotientGroup.mk'_surjective`, `QuotientGroup.ker_mk'`, and `QuotientGroup.eq_iff_div_mem`.",
+   "line": 70
+  },
+  {
+   "evidence": "PR lines 134-141 use `QuotientGroup.lift`; Mathlib's intended API is `QuotientGroup.map`, documented and defined at `mathlib/Mathlib/GroupTheory/QuotientGroup/Defs.lean:305-323`, with `map_mk'` giving the representative formula.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotient.lean",
+   "fix": "Define this comparison by `QuotientGroup.map (H.subgroupOf (normalizer H)) H (normalizer H).subtype ...` and keep only the local name/simp lemma if needed.",
+   "issue": "`normalizerQuotientToQuotientOfNormal` manually rebuilds the quotient map induced by the normalizer subtype using `QuotientGroup.lift`, duplicating `QuotientGroup.map`.",
+   "line": 134
+  }
+ ],
+ "head_sha": "58b54e263be653a15fef8fed4e14c3cf8fe039cd",
+ "merge_base_sha": "83dd332dea8706b37f99406b2ea8f95c87cb864c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 442,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "157fb362a508e983f81bd7048d0ce643d19861be155e302deb485b1a42dbf25f",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T134123Z-442-reuse-515044",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T13:41:23Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR adds a useful named quotient, but it also exposes direct aliases/specializations of existing Mathlib normalizer and quotient-group APIs instead of reusing them.",
+ "transcript_blob": "7a12089bbb17a8f2d0bc0cce60ec1b6dc7a22238da0bd027ca4eae1f9a3c36bc",
+ "usage": {
+  "cached_input_tokens": 223488,
+  "input_tokens": 271465,
+  "output_tokens": 4038,
+  "reasoning_output_tokens": 2131
+ },
+ "verdict": "block"
+}
