@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.632892,
+   "returncode": 0,
+   "secs": 67.8,
+   "usage": {
+    "cached_input_tokens": 102144,
+    "input_tokens": 199734,
+    "output_tokens": 3129,
+    "reasoning_output_tokens": 1283
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d0ed2327a7a19e90d031c85e33ea466c8562ed7c",
+ "cost_estimated": true,
+ "cost_usd": 0.632892,
+ "dedupe_key": "FormalFrontier/TauCeti|422|d7fcd8b582de4bf6b017f3f2adf8af74b59a71c8|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "55fbaccd89a005eca20709c5becfe193d1c475873db71218bea51e2ad8d0a3cd",
+ "diff_sha256": "55fbaccd89a005eca20709c5becfe193d1c475873db71218bea51e2ad8d0a3cd",
+ "duration_s": 67.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` shows line 141: `@[expose] def IsNegativeDefinite : Prop :=`; the PR description says the exposure is to read it as positive-definiteness, which should be API rather than an exposed body.",
+   "file": "TauCeti/LowDimTopology/Plumbing/IntersectionForm.lean",
+   "fix": "Remove `@[expose]` and add a public characterization theorem, e.g. `isNegativeDefinite_iff : P.IsNegativeDefinite \u2194 (-P.intersectionMatrix).PosDef` or a method lemma returning the `PosDef` hypothesis.",
+   "issue": "`PlumbingGraph.IsNegativeDefinite` is marked `@[expose]`, exposing the definition body just so downstream code can use `Matrix.PosDef` API.",
+   "line": 141
+  },
+  {
+   "evidence": "Line 92 declares `theorem IsNegativeDefinite.intersectionForm_self_eq_zero_iff ... : P.intersectionForm x x = 0 \u2194 x = 0` with no attribute.",
+   "file": "TauCeti/LowDimTopology/Plumbing/NegativeDefinite.lean",
+   "fix": "Mark `IsNegativeDefinite.intersectionForm_self_eq_zero_iff` as `@[simp]`, unless there is a demonstrated loop, so `simp` can reduce `P.intersectionForm x x = 0` to `x = 0`.",
+   "issue": "The characteristic vanishing criterion is not tagged for automation: `h.intersectionForm_self_eq_zero_iff x` is the normal form for isotropic side conditions under negative-definiteness.",
+   "line": 92
+  }
+ ],
+ "head_sha": "d7fcd8b582de4bf6b017f3f2adf8af74b59a71c8",
+ "merge_base_sha": "599957481f43020db2fc7bebebaf5f36cc63cafc",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 422,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "297965f80ec7f44718d8065c9770975884035561b4385aeb8650d53e2008e7c9",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T000342Z-422-api-design-880e86",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T00:03:42Z",
+ "submitted_by": "kim-em",
+ "summary": "The form-level API is mostly present, but the PR exposes the predicate body instead of adding a public characteristic lemma, and it misses a simp annotation on the zero criterion.",
+ "transcript_blob": "e5c16ec7a42e134e350f7f01cfa8fe4f5abd13b21b1f7178ce7f143dc1b6c454",
+ "usage": {
+  "cached_input_tokens": 102144,
+  "input_tokens": 199734,
+  "output_tokens": 3129,
+  "reasoning_output_tokens": 1283
+ },
+ "verdict": "request_changes"
+}
