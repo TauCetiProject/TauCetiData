@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.623854,
+   "returncode": 0,
+   "secs": 71.5,
+   "usage": {
+    "cached_input_tokens": 130048,
+    "input_tokens": 220256,
+    "output_tokens": 3593,
+    "reasoning_output_tokens": 1925
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "175a2a42f0494530428902bcbe7217e4eb89fbd1",
+ "cost_estimated": true,
+ "cost_usd": 0.623854,
+ "dedupe_key": "FormalFrontier/TauCeti|426|75fc42ba8595be051c737e1c48f74bf89ff397b5|generality|gpt-5.5|fce2f7d7e1b0bbad|production|2",
+ "diff_blob": "b6cffae47da13b20dce60bb02aab88d29868d331ce0db490d138cb5d8a03a80f",
+ "diff_sha256": "b6cffae47da13b20dce60bb02aab88d29868d331ce0db490d138cb5d8a03a80f",
+ "duration_s": 71.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 108-113 state `(ht : 0 < t)` and immediately weaken it to `ht.le` for `neg_one_pow_mul_iteratedDerivWithin_nonneg`; the remaining use is `pow_nonneg ht.le _`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Change the hypothesis to `(ht : 0 \u2264 t)` and use it directly in the sign and `pow_nonneg` steps.",
+   "issue": "`cm_density_nonneg` requires `0 < t`, but `cm_density` is a density on `[0,\u221e)` and the proof only needs nonnegativity of `t`; the endpoint `t = 0` is a natural supported point.",
+   "line": 108
+  },
+  {
+   "evidence": "Lines 156-158 prove `IsCompletelyMonotone.neg_deriv_integrableOn` from `(hcm)` and `(hL)`, while lines 180-183 require the same inputs plus the derived `IntegrableOn` assumption.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Remove `hint` from the public signature and set `have hint := hcm.neg_deriv_integrableOn hL` inside, or provide this as the primary no-extra-assumption theorem.",
+   "issue": "`integral_Ioi_neg_deriv` asks callers for `hint`, although the preceding public theorem proves exactly this integrability from `hcm` and `hL`.",
+   "line": 180
+  },
+  {
+   "evidence": "Lines 318-326 only use `2 \u2264 n` to derive strict positivity of `(n : \u211d) - 1`; nonnegativity suffices to contradict membership in `Iio 0`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Relax the signature to `(hn : 1 \u2264 n)` and prove nonnegativity of `((n : \u211d) - 1) / t` for `0 < t` using `0 \u2264 (n : \u211d) - 1` instead of `div_pos`.",
+   "issue": "`cm_rescaled_Iio_zero` requires `2 \u2264 n`, but support on `[0,\u221e)` only needs the positive-index condition `1 \u2264 n`; for `n = 1` the map is constantly `0` on `(0,\u221e)`.",
+   "line": 314
+  }
+ ],
+ "head_sha": "75fc42ba8595be051c737e1c48f74bf89ff397b5",
+ "merge_base_sha": "54895e9dcd668aaddd9b90c0784b450614fa4c20",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 426,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a2ae2694c98e0f44b1b40f64535fb8185429bb4a73fa36d22437eea2910d49f0",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T032958Z-426-generality-65e68c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T03:29:58Z",
+ "submitted_by": "kim-em",
+ "summary": "Several public lemmas still expose assumptions stronger than the natural Bernstein-measure API needs. Relax the signatures so downstream code can use the zero/positive-index cases without re-proving wrapper lemmas.",
+ "transcript_blob": "03602d18fb5ee3f1d4661e03b04d2497123da3111bac31fa27b737028a4cdb80",
+ "usage": {
+  "cached_input_tokens": 130048,
+  "input_tokens": 220256,
+  "output_tokens": 3593,
+  "reasoning_output_tokens": 1925
+ },
+ "verdict": "request_changes"
+}
