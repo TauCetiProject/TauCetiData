@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.678557,
+   "returncode": 0,
+   "secs": 80.6,
+   "usage": {
+    "cached_input_tokens": 110464,
+    "input_tokens": 211381,
+    "output_tokens": 3958,
+    "reasoning_output_tokens": 2348
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e2b450ee4739c8629b56b700965587325e01df9e",
+ "cost_estimated": true,
+ "cost_usd": 0.678557,
+ "dedupe_key": "FormalFrontier/TauCeti|452|b3f86a8e753364b6c5fd87c7189d0c9b56b84349|generality|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "2b5246713d7f0db2ddbc43cfc5ec001f5c5dcd48cda8418040c6d47a3322fec3",
+ "diff_sha256": "2b5246713d7f0db2ddbc43cfc5ec001f5c5dcd48cda8418040c6d47a3322fec3",
+ "duration_s": 80.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Basic.lean:73-81` defines `IsPositiveDefinite F` generically on `[AddMonoid M] [StarAddMonoid M]`; `FunctionKernel.lean:101-127` already gives the kernel equivalence and the subtraction-form bridge under `star a = -a`, while this file only exposes `isSemigroupGroupPD_def` to the specialized kernel at lines 68-70.",
+   "file": "TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean",
+   "fix": "Add the natural equivalence to `IsPositiveDefinite` for the product involution, using an explicit/local negation-star hypothesis or wrapper if a global instance would conflict, and derive this predicate/API from that bridge where possible.",
+   "issue": "`IsSemigroupGroupPD` is defined only as a hand-coded kernel predicate, with no bridge to the existing generic `IsPositiveDefinite` on involutive additive monoids; this duplicates the generic API level and prevents downstream use of generic PD-function theorems.",
+   "line": 63
+  },
+  {
+   "evidence": "The proof at lines 124-126 just instantiates the arbitrary finite kernel characterization; `Kernel.lean:210-214` already states that characterization for every `IsPositiveDefiniteKernel K`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean",
+   "fix": "Add a general `IsPositiveDefiniteKernel.quadForm_two_nonneg` lemma and make this BCR statement a thin specialization of `hF.isPositiveDefiniteKernel`.",
+   "issue": "`quadForm_two_nonneg` is a `2 \u00d7 2` positive-definite-kernel fact proved directly for this special BCR kernel, rather than at the general kernel level first.",
+   "line": 119
+  }
+ ],
+ "head_sha": "b3f86a8e753364b6c5fd87c7189d0c9b56b84349",
+ "merge_base_sha": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 452,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "39d4930eb6d3d5416796bb918ac0cc08a3bf30b247009091e6a946b4ae9322c4",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T235535Z-452-generality-804541",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T23:55:35Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR introduces the intended BCR predicate, but it sits parallel to existing generic positive-definite APIs instead of connecting to them, and one finite-form lemma is proved only at the BCR special case.",
+ "transcript_blob": "82e128a8a137c737e739bd5eb47b1ef360787e5aaf6dae28c868a70ce43d2cd5",
+ "usage": {
+  "cached_input_tokens": 110464,
+  "input_tokens": 211381,
+  "output_tokens": 3958,
+  "reasoning_output_tokens": 2348
+ },
+ "verdict": "request_changes"
+}
