@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.622131,
+   "returncode": 0,
+   "secs": 101.5,
+   "usage": {
+    "cached_input_tokens": 219392,
+    "input_tokens": 293607,
+    "output_tokens": 4712,
+    "reasoning_output_tokens": 2680
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "cost_estimated": true,
+ "cost_usd": 0.622131,
+ "dedupe_key": "FormalFrontier/TauCeti|451|af8071becc78bb634f61b6596f0f3165b50e0dec|generality|gpt-5.5|fce2f7d7e1b0bbad|production|3",
+ "diff_blob": "4be83c739c9fe753831d6aa282537adc9a9bfac208af6a493a9e0cc2a633eac4",
+ "diff_sha256": "4be83c739c9fe753831d6aa282537adc9a9bfac208af6a493a9e0cc2a633eac4",
+ "duration_s": 101.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib uses this level for the same path-law projection: `Probability/Process/FiniteDimensionalLaws.lean:53-56` has `isProjectiveLimit_map (hX : AEMeasurable (fun \u03c9 \u21a6 (X \u00b7 \u03c9)) P)` and rewrites with `AEMeasurable.map_map_of_aemeasurable`; `Measure/Map.lean:90` defines `map` by a.e. measurability.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Restate with `hX : AEMeasurable (fun \u03c9 => fun i => X i \u03c9) \u03bc` (or derive that from `\u2200 i, AEMeasurable (X i) \u03bc`) and prove via `AEMeasurable.map_map_of_aemeasurable`.",
+   "issue": "`map_prefixProj_pathLaw` assumes `hX : \u2200 i, Measurable (X i)`, but the natural `Measure.map` composition hypothesis is a.e. measurability of the path map.",
+   "line": "119"
+  },
+  {
+   "evidence": "`Basic.lean:135` only needs map composition; Mathlib\u2019s corresponding finite-dimensional laws use `hX : \u2200 t, AEMeasurable (X t) P` at `Probability/Process/FiniteDimensionalLaws.lean:43-49`.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Weaken `hXk` to `\u2200 i : Fin m, AEMeasurable (X (k i)) \u03bc` (and `map_prefixLaw` to `\u2200 i : Fin n, AEMeasurable (X i.val) \u03bc`), using `aemeasurable_pi_lambda` plus `AEMeasurable.map_map_of_aemeasurable`.",
+   "issue": "`map_blockLaw` and the derived `map_prefixLaw` require each selected coordinate to be `Measurable`, stronger than the a.e.-measurable hypotheses used by Mathlib\u2019s finite-dimensional-law API.",
+   "line": "129"
+  }
+ ],
+ "head_sha": "af8071becc78bb634f61b6596f0f3165b50e0dec",
+ "merge_base_sha": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 451,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5ef9712391ceba08fe8fb501d8015a9c801c9c2a8aa1ccf4c851a8af78904cde",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T220328Z-451-generality-c1a87e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T22:03:28Z",
+ "submitted_by": "kim-em",
+ "summary": "The definitions are at the roadmap level, but the map/composition lemmas use globally measurable process hypotheses where Mathlib\u2019s process-law API works a.e. This makes the new API unnecessarily unusable for standard a.e.-measurable stochastic processes.",
+ "transcript_blob": "9e090394d56c90a9ff2b97e90f49823075d51642a922b01695557d25998db71d",
+ "usage": {
+  "cached_input_tokens": 219392,
+  "input_tokens": 293607,
+  "output_tokens": 4712,
+  "reasoning_output_tokens": 2680
+ },
+ "verdict": "request_changes"
+}
