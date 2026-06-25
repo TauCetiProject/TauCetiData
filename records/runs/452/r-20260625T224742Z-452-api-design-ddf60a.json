@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.437522,
+   "returncode": 0,
+   "secs": 61.8,
+   "usage": {
+    "cached_input_tokens": 103424,
+    "input_tokens": 163096,
+    "output_tokens": 2915,
+    "reasoning_output_tokens": 1373
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e2b450ee4739c8629b56b700965587325e01df9e",
+ "cost_estimated": true,
+ "cost_usd": 0.437522,
+ "dedupe_key": "FormalFrontier/TauCeti|452|cb6bb38a5b797e88a903a080b74f0de371335812|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|2",
+ "diff_blob": "ae75afc67335c1e2a3e2397facb17fd317cde0ea06836a36a507c3631a9168ca",
+ "diff_sha256": "ae75afc67335c1e2a3e2397facb17fd317cde0ea06836a36a507c3631a9168ca",
+ "duration_s": 61.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` shows `@[expose] def IsSemigroupGroupPD` at line 59 and only `IsSemigroupGroupPD.sum_nonneg` at lines 65-67; the existing kernel API has the analogous constructor/eliminator `isPositiveDefiniteKernel_iff` in `PositiveDefinite/Kernel.lean`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean",
+   "fix": "Remove `@[expose]` and add a public characteristic theorem, e.g. `isSemigroupGroupPD_iff`/`of_sum_nonneg`, plus a named bridge to the underlying `IsPositiveDefiniteKernel` if later proofs need that view.",
+   "issue": "`IsSemigroupGroupPD` is marked `@[expose]`, making the implementation kernel part of the public surface while only the elimination lemma `sum_nonneg` is provided.",
+   "line": 59
+  },
+  {
+   "evidence": "Roadmap line 211 asks for closure under sums, products, and Schur pointwise products; `rg` confirms `isPositiveDefiniteKernel_mul` exists in `PositiveDefinite/Kernel.lean:135` and `isPositiveDefiniteKernel_prod` in `KernelClosure.lean:63`, while this file only defines `add`, `const_mul`, and `sum` at lines 104-127.",
+   "file": "TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean",
+   "fix": "Add direct `IsSemigroupGroupPD.mul` and finite `prod`/`pow` wrappers, mirroring the existing `IsPositiveDefinite.mul` and `isPositiveDefiniteKernel_prod` API.",
+   "issue": "The closure API stops at finite sums and nonnegative scalar multiples, but the target positive-definite API includes Schur/pointwise products, so users must unfold to `isPositiveDefiniteKernel_mul` to prove product closure.",
+   "line": 119
+  }
+ ],
+ "head_sha": "cb6bb38a5b797e88a903a080b74f0de371335812",
+ "merge_base_sha": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 452,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4a6b0285a3dd1f453ba545358f8e1363b695cfe18fada324bc8a97087cab7827",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T224742Z-452-api-design-ddf60a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T22:47:42Z",
+ "submitted_by": "kim-em",
+ "summary": "The new predicate exposes its implementation and leaves users to unfold it for core constructors and closure lemmas. The public API should characterize and use `IsSemigroupGroupPD` directly instead of exporting the kernel body as the interface.",
+ "transcript_blob": "134e181035f718467b34471794190d71486c77e8da2775f37fe23b865cd233ef",
+ "usage": {
+  "cached_input_tokens": 103424,
+  "input_tokens": 163096,
+  "output_tokens": 2915,
+  "reasoning_output_tokens": 1373
+ },
+ "verdict": "request_changes"
+}
