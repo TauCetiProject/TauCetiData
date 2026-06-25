@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.417987,
+   "returncode": 0,
+   "secs": 67.7,
+   "usage": {
+    "cached_input_tokens": 108544,
+    "input_tokens": 164877,
+    "output_tokens": 2735,
+    "reasoning_output_tokens": 1133
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e2b450ee4739c8629b56b700965587325e01df9e",
+ "cost_estimated": true,
+ "cost_usd": 0.417987,
+ "dedupe_key": "FormalFrontier/TauCeti|452|fc715aecfe3a526694a7fd0c1a89e77e76a554d7|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|4",
+ "diff_blob": "7215acfd5a7b64105349462467e0bd2b97582d1a032f1ff21125aebd2a82f6cd",
+ "diff_sha256": "7215acfd5a7b64105349462467e0bd2b97582d1a032f1ff21125aebd2a82f6cd",
+ "duration_s": 67.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"theorem (sum_nonneg|conj_symm|map_zero)\" code/TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean code/TauCeti/Analysis/PositiveDefinite/Basic.lean` finds these APIs in `Basic.lean:88,124,129,133,138,157` but none in `SemigroupGroup.lean` after the namespace opens at line 103.",
+   "file": "TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean",
+   "fix": "Add namespace lemmas such as `sum_nonneg`, `@[simp] conj_symm`, `map_zero_nonneg`, `@[simp] map_zero_im`, `map_zero_re_nonneg`, and `map_zero_eq_ofReal_re` for `(0,0)`.",
+   "issue": "`IsSemigroupGroupPD` lacks the basic named eliminators/consequences analogous to `IsPositiveDefinite`: no `sum_nonneg`, `conj_symm`, or origin reality/nonnegativity lemmas, so normalization/continuity users must destruct `isSemigroupGroupPD_iff` or use the hidden kernel manually.",
+   "line": 103
+  },
+  {
+   "evidence": "`rg -n \"theorem (add|const_mul|sum|mul|prod)|def IsSemigroupGroupPD\" code/TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean code/TauCeti/Analysis/PositiveDefinite/Basic.lean` shows only `def IsSemigroupGroupPD` in the new file, while the generic API has `add`, `const_mul`, `mul`, `sum`, and `prod` at `Basic.lean:226,236,266,302,311`; the roadmap API asks for closure under sums/products at `roadmap/TauCetiRoadmap/OneParameterSemigroups/README.md:208-210`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean",
+   "fix": "Add direct closure lemmas in `IsSemigroupGroupPD`, at least `add`, `const_mul`/`smul_of_nonneg`, `sum`, and the pointwise `mul`/`prod` forms if `KernelClosure` remains imported.",
+   "issue": "The file imports the kernel closure API but does not wrap it for `IsSemigroupGroupPD`, leaving the roadmap/stated operations under addition, nonnegative scalar multiplication, finite sums, and products unavailable at the named predicate level.",
+   "line": 7
+  }
+ ],
+ "head_sha": "fc715aecfe3a526694a7fd0c1a89e77e76a554d7",
+ "merge_base_sha": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 452,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "761f678d09f577ecf1fc8e71b36faa884bbd66141dafc35399952a24677d2aea",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T232146Z-452-api-design-ac8d3b",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T23:21:46Z",
+ "submitted_by": "kim-em",
+ "summary": "The hidden-kernel bridge is now present, but the public API is still too thin for the named semigroup-group predicate: downstream users must keep dropping to the kernel API for standard consequences and closures.",
+ "transcript_blob": "c8c0954cbb2500972c201cc107fb5cf2a15968815bd41117e8e3d222b58d56a6",
+ "usage": {
+  "cached_input_tokens": 108544,
+  "input_tokens": 164877,
+  "output_tokens": 2735,
+  "reasoning_output_tokens": 1133
+ },
+ "verdict": "request_changes"
+}
