@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.438217,
+   "returncode": 0,
+   "secs": 67.4,
+   "usage": {
+    "cached_input_tokens": 115584,
+    "input_tokens": 171719,
+    "output_tokens": 3325,
+    "reasoning_output_tokens": 1684
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "fc3b0284ffce3282f2dcb2a96702f0319d3618fb",
+ "cost_estimated": true,
+ "cost_usd": 0.438217,
+ "dedupe_key": "FormalFrontier/TauCeti|434|e76fbfb26ea5da84a93aec973b081e6d600c6948|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "eb3934b7a4dcc9632706ae1d46df23e2fa1eee5855c2b95d12a7ea16f60fde41",
+ "diff_sha256": "eb3934b7a4dcc9632706ae1d46df23e2fa1eee5855c2b95d12a7ea16f60fde41",
+ "duration_s": 67.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep hits: line 57 `@[expose]`; lines 63-69 provide `[simp]` computation/coercion lemmas; lines 73-82 provide injectivity.",
+   "file": "TauCeti/Geometry/Manifold/SmoothEmbedding/AmbientIsotopy.lean",
+   "fix": "Remove `@[expose]`; keep `toContinuousMap_apply`, `coe_toContinuousMap`, and `toContinuousMap_inj` as the public interface.",
+   "issue": "`SmoothEmbedding.toContinuousMap` is marked `@[expose]`, exposing the constructor body even though the public API already gives the needed computation and extensionality lemmas.",
+   "line": 57
+  },
+  {
+   "evidence": "New line 88 exposes the def; line 93 only states equivalence to `TauCeti.AmbientIsotopic f.toContinuousMap g.toContinuousMap`, while the existing base API at `TauCeti/Topology/Homotopy/AmbientIsotopic.lean:63-64` characterizes the relation by the existential ambient-isotopy endpoint equation.",
+   "file": "TauCeti/Geometry/Manifold/SmoothEmbedding/AmbientIsotopy.lean",
+   "fix": "Remove `@[expose]` and add the direct characteristic lemma `AmbientIsotopic f g \u2194 \u2203 \u03a6 : TauCeti.AmbientIsotopy N, \u03a6.final.comp f.toContinuousMap = g.toContinuousMap` (or an equivalent eliminator).",
+   "issue": "`SmoothEmbedding.AmbientIsotopic` exposes its body, but its `_def` lemma only restates it as `TauCeti.AmbientIsotopic ...` rather than the actual witness condition, so users must unfold or chain through the continuous-map relation to eliminate it.",
+   "line": 88
+  }
+ ],
+ "head_sha": "e76fbfb26ea5da84a93aec973b081e6d600c6948",
+ "merge_base_sha": "fc3b0284ffce3282f2dcb2a96702f0319d3618fb",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 434,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "acd42333d2f1c778cb73267f48bd70b254e13c4970fac0d319a7f1c374c7ee04",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T053116Z-434-api-design-e8824c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T05:31:16Z",
+ "submitted_by": "kim-em",
+ "summary": "The bridge is in the right scope, but it exposes bodies where characteristic lemmas should carry the interface, and the bundled ambient-isotopy relation is missing the direct existential characterization users need without unfolding.",
+ "transcript_blob": "48f7b914f4339c4da6b364498438c27d2f7bd0fc59dc488c76732a6d74f9a7d6",
+ "usage": {
+  "cached_input_tokens": 115584,
+  "input_tokens": 171719,
+  "output_tokens": 3325,
+  "reasoning_output_tokens": 1684
+ },
+ "verdict": "request_changes"
+}
