@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.246489,
+   "returncode": 0,
+   "secs": 37.0,
+   "usage": {
+    "cached_input_tokens": 50688,
+    "input_tokens": 85107,
+    "output_tokens": 1635,
+    "reasoning_output_tokens": 569
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f2a68ec41d9289d01b6e68c3dd0d56b3215e184b",
+ "cost_estimated": true,
+ "cost_usd": 0.246489,
+ "dedupe_key": "FormalFrontier/TauCeti|436|0f7815c5e173d94859c390a89e06546f3b7582f6|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|3",
+ "diff_blob": "7a841a709823f0a0081252971cdb6dd43fc1349c9914e4011a184cedb1a8ad61",
+ "diff_sha256": "7a841a709823f0a0081252971cdb6dd43fc1349c9914e4011a184cedb1a8ad61",
+ "duration_s": 37.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"LiftCondition|liftCondition_iff_range_le\"` shows `@[expose] def LiftCondition` at line 59 and an `Iff.rfl` restatement at lines 66-71.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/LiftingCriterion.lean",
+   "fix": "Remove `@[expose]`; keep the body opaque and make the characterization lemma the public way to rewrite/use the condition, adding automation there if desired.",
+   "issue": "`LiftCondition` is marked `@[expose]`, exposing the body even though line 66 already provides the range-inclusion characterization.",
+   "line": 59
+  },
+  {
+   "evidence": "Roadmap lines 100-106 ask to consume `IsCoveringMap.existsUnique_continuousMap_lifts_of_range_le` and note the simply-connected case; Mathlib has those theorems at `Mathlib/Topology/Homotopy/Lifting.lean:469` and `:490`, while this file only defines the predicate and iff.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/LiftingCriterion.lean",
+   "fix": "Add theorem wrappers such as `hp.existsUnique_continuousMap_lifts_of_liftCondition he hcond` and the simply-connected `hp.existsUnique_continuousMap_lifts ...`, so consumers can apply the criterion without restating the raw subgroup inclusion.",
+   "issue": "The API stops at `liftCondition_iff_range_le`; it does not state the actual lifting criterion using `LiftCondition`, nor the simply-connected specialization noted by the roadmap.",
+   "line": 66
+  }
+ ],
+ "head_sha": "0f7815c5e173d94859c390a89e06546f3b7582f6",
+ "merge_base_sha": "f2a68ec41d9289d01b6e68c3dd0d56b3215e184b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 436,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2049922d7facdb14b8fbc5dcf3cb810925f984a6d0f6b2847643b27da3ea0a31",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T090914Z-436-api-design-faf569",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T09:09:14Z",
+ "submitted_by": "kim-em",
+ "summary": "The public API exposes the predicate body and does not provide the characteristic lifting theorems needed by the roadmap target. Downstream users still have to unfold/translate the condition into Mathlib\u2019s raw hypothesis instead of using a TauCeti lifting-criterion API.",
+ "transcript_blob": "952f5a9776fcc5f730667d5a85ce15c8eadde5be3dc3565c3521629cd1be3830",
+ "usage": {
+  "cached_input_tokens": 50688,
+  "input_tokens": 85107,
+  "output_tokens": 1635,
+  "reasoning_output_tokens": 569
+ },
+ "verdict": "request_changes"
+}
