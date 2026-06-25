@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.317395,
+   "returncode": 0,
+   "secs": 55.6,
+   "usage": {
+    "cached_input_tokens": 94720,
+    "input_tokens": 134285,
+    "output_tokens": 2407,
+    "reasoning_output_tokens": 950
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "cost_estimated": true,
+ "cost_usd": 0.317395,
+ "dedupe_key": "FormalFrontier/TauCeti|451|f972a253e1d97b44cdf5c2fa4c0326f4a43f5649|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "ea4ee37afa1934579d7294b24580aed0e93e848fd108e029e117ce4add29db84",
+ "diff_sha256": "ea4ee37afa1934579d7294b24580aed0e93e848fd108e029e117ce4add29db84",
+ "duration_s": 55.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 18 applies `@[expose]` to the whole section, while lines 68-146 already add API lemmas for most definitions.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Use `public section` and expose only declarations that downstream code genuinely must unfold; add characteristic lemmas instead of making bodies part of the public interface.",
+   "issue": "`@[expose] public section` exposes every definition body in this file, including `ExchangeableAt`, `FullyExchangeable`, `Contractable`, `pathLaw`, and helper maps.",
+   "line": 18
+  },
+  {
+   "evidence": "`rg` shows only the definition at lines 60-61; the file has `ExchangeableAt.permute` at lines 138-141 and `Contractable.map` at lines 143-146 but no `FullyExchangeable.*` theorem.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Add a characteristic theorem such as `FullyExchangeable.permute : h -> finiteBlockLaw \u03bc X \u03c0 = pathLaw \u03bc X` and, if bodies are hidden, an iff/restatement for the defining law.",
+   "issue": "`FullyExchangeable` has no named eliminator/restatement analogous to `ExchangeableAt.permute` or `Contractable.map`, so users need the exposed body to use a hypothesis.",
+   "line": 60
+  },
+  {
+   "evidence": "Line 28 declares arbitrary `{\u03b9 : Type*}` and line 31 defines `finiteBlockLaw ... (k : \u03b9 -> \u2115) : Measure (\u03b9 -> \u03b1)` with no finiteness assumption, while the roadmap describes finite-dimensional laws under permutations of `Fin n`.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Either restrict the public finite-law primitive to `Fin n`/finite index data, or rename this generic helper to a non-finite `blockLaw` and keep the finite `prefixLaw`/finite API as the advertised surface.",
+   "issue": "`finiteBlockLaw` is public but is indexed by arbitrary `\u03b9`, so it is not actually finite and overlaps the separate `pathLaw` case when `\u03b9 = \u2115`.",
+   "line": 31
+  }
+ ],
+ "head_sha": "f972a253e1d97b44cdf5c2fa4c0326f4a43f5649",
+ "merge_base_sha": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 451,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0652aa36b786246b4c94e469124d90641f613654c12ac6473c58a432accf9bc2",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T212641Z-451-api-design-bb2394",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T21:26:41Z",
+ "submitted_by": "kim-em",
+ "summary": "The new exchangeability surface is close, but it currently relies on exposing all bodies and leaves a misleading over-general finite-law primitive public. Add the missing characteristic API and narrow or rename the public block-law interface.",
+ "transcript_blob": "14bf41bd91294f7b3f312df5223a945469f86e2a9c37d191a1abb5f0f6c84921",
+ "usage": {
+  "cached_input_tokens": 94720,
+  "input_tokens": 134285,
+  "output_tokens": 2407,
+  "reasoning_output_tokens": 950
+ },
+ "verdict": "request_changes"
+}
