@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.340846,
+   "returncode": 0,
+   "secs": 49.2,
+   "usage": {
+    "cached_input_tokens": 72192,
+    "input_tokens": 120338,
+    "output_tokens": 2134,
+    "reasoning_output_tokens": 747
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7fe5eacb3d4c1cafd147383efd388eb8ad7a09b2",
+ "cost_estimated": true,
+ "cost_usd": 0.340846,
+ "dedupe_key": "FormalFrontier/TauCeti|439|d5727681840630cf6abcd577d2a923d01b45700d|generality|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "46fe6ae1e8eb77348151b167893295658d0b2c82a637ed20396ab545cd9d78d7",
+ "diff_sha256": "46fe6ae1e8eb77348151b167893295658d0b2c82a637ed20396ab545cd9d78d7",
+ "duration_s": 49.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 124-127: signature includes `UniformlyEllipticOn \u03a9 a lam Lam`, while the proof is exactly `lt_min (half_pos h.pos) (sub_pos.mpr hmu)`.",
+   "file": "TauCeti/Analysis/PDE/GardingMass.lean",
+   "fix": "State the natural scalar lemma as `lemma min_coercivityConstant_pos (hlam : 0 < lam) (hmu : beta ^ 2 / (2 * lam) < mu) : 0 < min ...` and let the `UniformlyEllipticOn` use pass `h.pos` if needed.",
+   "issue": "`min_coercivityConstant_pos` takes `h : UniformlyEllipticOn \u03a9 a lam Lam`, but the statement is only about the scalars `lam beta mu` and the proof uses only `h.pos`; the domain, coefficient field, and upper bound `Lam` are unused API burden.",
+   "line": 124
+  },
+  {
+   "evidence": "Lines 138-142 use only `h.pos` and `h.energyIntegrand_self_lower_bound hx hb hc U`; the analogous existing coercivity API is raw first at `CoerciveEnergy.lean:96-107` via `isCoercive_energyIntegrand_of_bounds`.",
+   "file": "TauCeti/Analysis/PDE/GardingMass.lean",
+   "fix": "Prove a raw public theorem first, with signature like `(hlam : 0 < lam) (hA : \u2200 \u03be, lam * \u2016\u03be\u2016 ^ 2 \u2264 A.toQuadraticForm' \u03be) (hb : \u2016b\u2080\u2016 \u2264 beta) (hc : mu \u2264 c\u2080) (hmu : beta ^ 2 / (2 * lam) < mu) (U) : min ... * \u2016U\u2016 ^ 2 \u2264 energyIntegrand A b\u2080 c\u2080 U U`, then derive the `UniformlyEllipticOn` and `_on` wrappers.",
+   "issue": "The explicit diagonal estimate is only exposed as a `UniformlyEllipticOn` theorem, but it uses no upper ellipticity bound and no domain-level structure beyond the pointwise lower quadratic bound at `x`.",
+   "line": 132
+  }
+ ],
+ "head_sha": "d5727681840630cf6abcd577d2a923d01b45700d",
+ "merge_base_sha": "7fe5eacb3d4c1cafd147383efd388eb8ad7a09b2",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 439,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0c1f5963a5e5edd890da8f7cdb7c14a7649744630f63729b4cd7d48f1f0d8e70",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T104039Z-439-generality-34adc5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T10:40:39Z",
+ "submitted_by": "kim-em",
+ "summary": "The new mass-floor estimates are mathematically at the right shape, but two public APIs are specialized to `UniformlyEllipticOn` where only the raw lower ellipticity floor is used. Expose the raw constant/diagonal lemmas first and derive the bundled wrappers from them.",
+ "transcript_blob": "67d2b51af73fa00bf2a09ddb1968ff252bbc71984db722f73bdff4ab83e4b574",
+ "usage": {
+  "cached_input_tokens": 72192,
+  "input_tokens": 120338,
+  "output_tokens": 2134,
+  "reasoning_output_tokens": 747
+ },
+ "verdict": "request_changes"
+}

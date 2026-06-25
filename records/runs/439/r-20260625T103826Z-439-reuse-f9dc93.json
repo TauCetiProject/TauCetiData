@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.311299,
+   "returncode": 0,
+   "secs": 37.4,
+   "usage": {
+    "cached_input_tokens": 38528,
+    "input_tokens": 88085,
+    "output_tokens": 1475,
+    "reasoning_output_tokens": 398
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7fe5eacb3d4c1cafd147383efd388eb8ad7a09b2",
+ "cost_estimated": true,
+ "cost_usd": 0.311299,
+ "dedupe_key": "FormalFrontier/TauCeti|439|d5727681840630cf6abcd577d2a923d01b45700d|reuse|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "46fe6ae1e8eb77348151b167893295658d0b2c82a637ed20396ab545cd9d78d7",
+ "diff_sha256": "46fe6ae1e8eb77348151b167893295658d0b2c82a637ed20396ab545cd9d78d7",
+ "duration_s": 37.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"energyIntegrand_self_lower_bound_of_bounds\" code/TauCeti/Analysis/PDE/*.lean` shows the new lemma at `GardingMass.lean:62` and the existing private lemma at `CoerciveEnergy.lean:76`, with the same hypotheses and conclusion.",
+   "file": "TauCeti/Analysis/PDE/GardingMass.lean",
+   "fix": "Make the existing private lemma in `CoerciveEnergy.lean` public or move it to the shared file, then have both the coercivity theorem and any wrappers use that single declaration.",
+   "issue": "`energyIntegrand_self_lower_bound_of_bounds` duplicates the private lemma with the same name and statement already in `TauCeti/Analysis/PDE/CoerciveEnergy.lean`.",
+   "line": 62
+  },
+  {
+   "evidence": "`CoerciveEnergy.lean:101-107` proves the same `min (lam / 2) (mu - beta ^ 2 / (2 * lam))` lower bound via `min_mul_prod_norm_sq_le_add` and the private lower-bound lemma; `GardingMass.lean:136-142` repeats that proof shape.",
+   "file": "TauCeti/Analysis/PDE/GardingMass.lean",
+   "fix": "Extract a raw explicit constant lemma from `CoerciveEnergy.lean` using the now-public lower-bound lemma, and derive both `isCoercive_energyIntegrand_of_bounds` and the `UniformlyEllipticOn` wrapper from it.",
+   "issue": "`min_coercivityConstant_mul_norm_sq_le_energyIntegrand_self` repeats the explicit diagonal-bound proof already embedded in `isCoercive_energyIntegrand_of_bounds` instead of factoring it for reuse.",
+   "line": 131
+  }
+ ],
+ "head_sha": "d5727681840630cf6abcd577d2a923d01b45700d",
+ "merge_base_sha": "7fe5eacb3d4c1cafd147383efd388eb8ad7a09b2",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 439,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "50d9a9439df51f81362a9bc8ad02b3ae1e3d955fc6f89290cf06bf023e5ed0c5",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T103826Z-439-reuse-f9dc93",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T10:38:26Z",
+ "submitted_by": "kim-em",
+ "summary": "The new public mass-floor lower bound is genuine as API, but it is implemented by duplicating the same theorem and coercivity-constant proof already present privately in `CoerciveEnergy.lean`. Factor the existing code instead of adding a parallel copy.",
+ "transcript_blob": "f0f1e2056c33a3a8dc18a0217c7f832a41e1139fcbdbb89bd8e5807636c6591a",
+ "usage": {
+  "cached_input_tokens": 38528,
+  "input_tokens": 88085,
+  "output_tokens": 1475,
+  "reasoning_output_tokens": 398
+ },
+ "verdict": "request_changes"
+}
