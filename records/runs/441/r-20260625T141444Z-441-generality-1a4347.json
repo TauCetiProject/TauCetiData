@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.189196,
+   "returncode": 0,
+   "secs": 28.1,
+   "usage": {
+    "cached_input_tokens": 14592,
+    "input_tokens": 43394,
+    "output_tokens": 1263,
+    "reasoning_output_tokens": 554
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "83dd332dea8706b37f99406b2ea8f95c87cb864c",
+ "cost_estimated": true,
+ "cost_usd": 0.189196,
+ "dedupe_key": "FormalFrontier/TauCeti|441|26eb2b518026bd616e0b522c0f30dfb5ffcaf91d|generality|gpt-5.5|fce2f7d7e1b0bbad|production|6",
+ "diff_blob": "1233e556199694b1b50693b64fdea86b6cc08f1fbba78ee5a43fbc3c25dbe834",
+ "diff_sha256": "1233e556199694b1b50693b64fdea86b6cc08f1fbba78ee5a43fbc3c25dbe834",
+ "duration_s": 28.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 74 has `_hv : v \u2208 S`; line 76 proves the theorem by `P.characteristicCubeWeight_mono k (Finset.erase_subset v S) x`, which does not use `_hv`.",
+   "file": "TauCeti/LowDimTopology/Plumbing/CubeFace.lean",
+   "fix": "Remove the `v \u2208 S` argument from `characteristicLowerFaceWeight_le` and prove `P.characteristicCubeWeight k x (S.erase v) \u2264 P.characteristicCubeWeight k x S` directly.",
+   "issue": "`characteristicLowerFaceWeight_le` assumes `_hv : v \u2208 S`, but the proof ignores it and uses only `Finset.erase_subset v S`, so the bound holds for every `v`.",
+   "line": "74"
+  },
+  {
+   "evidence": "Lines 88-91 define the exponent with unused `_hv`; lines 99-100 use `characteristicLowerFaceWeight_le k hv`, whose only current need for `hv` comes from the over-specialized lemma above.",
+   "file": "TauCeti/LowDimTopology/Plumbing/CubeFace.lean",
+   "fix": "Define `characteristicLowerFaceExponent k x S v` without a membership proof, and likewise drop `hv` from `characteristicLowerFaceExponent_intCast` and `characteristicLowerFaceExponent_eq_zero_iff`; use the generalized lower weight inequality for nonnegativity.",
+   "issue": "`characteristicLowerFaceExponent` and its lower-face API require `_hv : v \u2208 S` even though the lower difference is nonnegative without that assumption, unlike the upper-face case.",
+   "line": "88"
+  }
+ ],
+ "head_sha": "26eb2b518026bd616e0b522c0f30dfb5ffcaf91d",
+ "merge_base_sha": "83dd332dea8706b37f99406b2ea8f95c87cb864c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 441,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "63da613881c7ff35cb1c6c4407f0ba1888df94a70d433df6cececa6c598aca91",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 6,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260625T141444Z-441-generality-1a4347",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-25T14:14:44Z",
+ "submitted_by": "kim-em",
+ "summary": "The lower-face API carries a direction-membership proof that is not needed for the stated inequalities or exponents. This is a stronger-than-natural signature and should be generalized before downstream boundary code depends on it.",
+ "transcript_blob": "e3fe46fbe06d1679bc39f990edaa4729e48c442d9460993233e8dacb8127bb28",
+ "usage": {
+  "cached_input_tokens": 14592,
+  "input_tokens": 43394,
+  "output_tokens": 1263,
+  "reasoning_output_tokens": 554
+ },
+ "verdict": "request_changes"
+}
