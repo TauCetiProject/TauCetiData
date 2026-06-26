@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.575155,
+   "returncode": 0,
+   "secs": 67.9,
+   "usage": {
+    "cached_input_tokens": 120320,
+    "input_tokens": 203681,
+    "output_tokens": 3273,
+    "reasoning_output_tokens": 1554
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8ab528a97774cd66061e5add0e3bf352650ac66c",
+ "cost_estimated": true,
+ "cost_usd": 0.575155,
+ "dedupe_key": "FormalFrontier/TauCeti|475|e992fe208da8e22660908030f03061d5bbe6ba5b|generality|gpt-5.5|079bb5332abb73d8|production|2",
+ "diff_blob": "7cab5693e36a1a6b2b278d50901febeff417d57ea8673aee0c325db540a84ad6",
+ "diff_sha256": "7cab5693e36a1a6b2b278d50901febeff417d57ea8673aee0c325db540a84ad6",
+ "duration_s": 67.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Grep hit: `Basic.lean:197-205` states `(hT : 0 < T)` and then uses `max_eq_left hT.le`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Basic.lean",
+   "fix": "Change the hypothesis to `(hT : 0 \u2264 T)`; the existing proof already only uses `max_eq_left hT`.",
+   "issue": "`IsCompletelyMonotone.le_of_tendsto_atTop` requires `0 < T`, but a completely monotone function lies above its atTop limit at every `T \u2208 Ici 0`, including `T = 0`.",
+   "line": 198
+  },
+  {
+   "evidence": "Grep hit: `Integral.lean:126-129` has `(hT : 0 < T)` for equality of `\u222b t in 0..T` integrals.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Integral.lean",
+   "fix": "State `(hT : 0 \u2264 T)` and split the proof into `T = 0` by `simp` and `0 < T` by the current argument.",
+   "issue": "`IsCompletelyMonotone.integral_neg_deriv_Ici` requires `0 < T`, but the natural interval-integral transfer is valid for `0 \u2264 T`; when `T = 0` both integrals are over a degenerate interval.",
+   "line": 127
+  },
+  {
+   "evidence": "Grep hit: `BernsteinMeasures.lean:321-323` states `(hT : 0 < T)` for an inequality between `\u222b t in 0..T` interval integrals.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Weaken to `(hT : 0 \u2264 T)` and handle the zero endpoint separately before using the existing IBP proof for `0 < T`.",
+   "issue": "`integral_chafaiDensity_le_pred` requires `0 < T`, but the natural finite-interval inequality includes `T = 0`, where both interval integrals are zero.",
+   "line": 322
+  }
+ ],
+ "head_sha": "e992fe208da8e22660908030f03061d5bbe6ba5b",
+ "merge_base_sha": "8ab528a97774cd66061e5add0e3bf352650ac66c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 475,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "2eed8a73c4631ed5b13c786638ad2ccc82dbccf676a096da3bfbbc06b22c3c6a",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "451de24d5268f8cd256618501e169c32d9241c94",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T180934Z-475-generality-7c29c1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T18:09:34Z",
+ "submitted_by": "kim-em",
+ "summary": "Several exported lemmas still carry strict positivity hypotheses where the natural completely-monotone or interval-integral statement includes the endpoint case. These should be weakened to the closed half-line/degenerate-interval form and the strict versions derived only where needed.",
+ "transcript_blob": "f17b13f3012de6fc791647d2be1a833b96fe80766737f8dadbc2cb1745cb0c63",
+ "usage": {
+  "cached_input_tokens": 120320,
+  "input_tokens": 203681,
+  "output_tokens": 3273,
+  "reasoning_output_tokens": 1554
+ },
+ "verdict": "request_changes"
+}
