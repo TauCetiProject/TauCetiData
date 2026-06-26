@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.39401,
+   "returncode": 0,
+   "secs": 50.7,
+   "usage": {
+    "cached_input_tokens": 62080,
+    "input_tokens": 119344,
+    "output_tokens": 2555,
+    "reasoning_output_tokens": 1580
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f7c19f6ff6ccf5bc8d102eb347acf58b2883472b",
+ "cost_estimated": true,
+ "cost_usd": 0.39401,
+ "dedupe_key": "FormalFrontier/TauCeti|443|9d3fd9ac601d08bbcf619e7c1936efb873539ea2|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|13",
+ "diff_blob": "3fe3ac6b5991951669df1bc38c54881fa9fb392cdd1fdad8ab73de16cd433e55",
+ "diff_sha256": "3fe3ac6b5991951669df1bc38c54881fa9fb392cdd1fdad8ab73de16cd433e55",
+ "duration_s": 50.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"def tensorProduct|tensorProduct_coact\"` shows `@[expose, reducible] noncomputable def tensorProduct` at line 185 and the public `[simp] theorem tensorProduct_coact` at lines 193-196.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorProduct.lean",
+   "fix": "Remove `@[expose, reducible]`; keep `tensorProduct_coact` as the public characterization, adding any missing projection lemma instead of exposing the body.",
+   "issue": "`Comodule.tensorProduct` is marked `@[expose, reducible]`, exposing the structure body even though `tensorProduct_coact`, coassociativity, and counit lemmas provide the intended API.",
+   "line": 185
+  },
+  {
+   "evidence": "`rg -n \"tensorProductHom\"` shows `@[expose] def tensorProductHom` at line 218 and characteristic simp lemmas `tensorProductHom_toLinearMap`, `tensorProductHom_apply`, `tensorProductHom_id`, and `tensorProductHom_comp` at lines 234, 247, 260, and 276.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorProduct.lean",
+   "fix": "Remove `@[expose]` from `tensorProductHom`; if downstream code needs reduction, provide or expose only the specific characteristic theorem such as `tensorProductHom_toLinearMap`/`tensorProductHom_apply`.",
+   "issue": "`Comodule.tensorProductHom` is marked `@[expose]`, exposing the constructor body although the public API already states its underlying linear map, application rule, identity, and composition laws.",
+   "line": 218
+  }
+ ],
+ "head_sha": "9d3fd9ac601d08bbcf619e7c1936efb873539ea2",
+ "merge_base_sha": "f7c19f6ff6ccf5bc8d102eb347acf58b2883472b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 443,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "b650bf95ae9e5ed466ec167034eec35630d26367119b6c2d2cb1f9757fbbb32c",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 13,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260626T034942Z-443-api-design-f02c81",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T03:49:42Z",
+ "submitted_by": "kim-em",
+ "summary": "The characteristic lemmas cover the tensor-product coaction and morphism behavior, but two public definitions still expose their implementation bodies without a demonstrated downstream need to unfold them.",
+ "transcript_blob": "1cd14fb349e2419e3ad9420ae0db47fc4b09b9067498edad688697ce4e303b55",
+ "usage": {
+  "cached_input_tokens": 62080,
+  "input_tokens": 119344,
+  "output_tokens": 2555,
+  "reasoning_output_tokens": 1580
+ },
+ "verdict": "request_changes"
+}
