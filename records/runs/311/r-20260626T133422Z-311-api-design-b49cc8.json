@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.284668,
+   "returncode": 0,
+   "secs": 61.8,
+   "usage": {
+    "cached_input_tokens": 63616,
+    "input_tokens": 95822,
+    "output_tokens": 3061,
+    "reasoning_output_tokens": 1916
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e58c62375bc5d6d1bdefc4620662850c3671c079",
+ "cost_estimated": true,
+ "cost_usd": 0.284668,
+ "dedupe_key": "FormalFrontier/TauCeti|311|6387c6f7798f045812ec7b71effaee05be83736f|api-design|gpt-5.5|079bb5332abb73d8|production|5",
+ "diff_blob": "65db4c1bc026c80e23db6fba9abf32c681f632aeb36848882b733460cd2d3b75",
+ "diff_sha256": "65db4c1bc026c80e23db6fba9abf32c681f632aeb36848882b733460cd2d3b75",
+ "duration_s": 61.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"@\\[expose\\]\"` hits `weightedDegreeZeroClassHom` at line 66, `weightedDegreeZeroQuotientEquivPicZero` at line 125, `degreeZeroClassHom` at line 172, `degreeZeroQuotientEquivWeightedDegreeZeroOne` at line 248, and `degreeZeroQuotientEquivUnweightedPicZero` at line 273; lines 80-152 and 179-305 already provide the intended normal-form API.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/PicZeroQuotient.lean",
+   "fix": "Keep these bodies opaque and refactor the exported API around the supplied apply, kernel, surjectivity, and mk lemmas; if Lean currently forces unfolding for those proofs, introduce an implementation wrapper rather than exposing the user-facing constants.",
+   "issue": "The public homs and quotient equivalences are marked `@[expose]`, so downstream code can depend on the chosen subtype transport and first-isomorphism implementation rather than only on the quotient/class API.",
+   "line": 66
+  },
+  {
+   "evidence": "`rg -n \"@\\[expose\\]\" TauCeti/AlgebraicGeometry/WeilDivisor.lean` hits the new equivalence at line 491, while lines 510-524 give the public behavior by simp lemmas.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor.lean",
+   "fix": "Remove `@[expose]` from the equivalence and keep consumers on the coercion/apply simp lemmas, or hide the transport behind an implementation wrapper used to prove those lemmas.",
+   "issue": "`degreeZeroSubgroupEquivWeightedDegreeZeroOne` is exposed even though its purpose is only to transport between two degree-zero subgroup presentations, making the concrete subtype construction public API.",
+   "line": 491
+  }
+ ],
+ "head_sha": "6387c6f7798f045812ec7b71effaee05be83736f",
+ "merge_base_sha": "e58c62375bc5d6d1bdefc4620662850c3671c079",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 311,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7c1840f6566682522d500f59f5b596d1edf695528f2073147f867dd3f0a2db8b",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 5,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "451de24d5268f8cd256618501e169c32d9241c94",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T133422Z-311-api-design-b49cc8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T13:34:22Z",
+ "submitted_by": "kim-em",
+ "summary": "The quotient-model API has the expected characteristic lemmas, but it still exposes implementation bodies for the homs and equivalences. The module-opacity objection explains the current proof shape, not a downstream need to unfold these definitions.",
+ "transcript_blob": "0378f5a14a63194a8309a7ac858ed7434182bcb72d234217b6593c2e0a166de1",
+ "usage": {
+  "cached_input_tokens": 63616,
+  "input_tokens": 95822,
+  "output_tokens": 3061,
+  "reasoning_output_tokens": 1916
+ },
+ "verdict": "request_changes"
+}
