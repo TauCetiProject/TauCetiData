@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.37806,
+   "returncode": 0,
+   "secs": 74.9,
+   "usage": {
+    "cached_input_tokens": 32000,
+    "input_tokens": 81720,
+    "output_tokens": 3782,
+    "reasoning_output_tokens": 2540
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8ab528a97774cd66061e5add0e3bf352650ac66c",
+ "cost_estimated": true,
+ "cost_usd": 0.37806,
+ "dedupe_key": "FormalFrontier/TauCeti|475|efcf3d19563f5dff221b2c2a283ac54fa62a24f9|generality|gpt-5.5|079bb5332abb73d8|production|1",
+ "diff_blob": "e9ae27696d4afd301aeb8b74972ff627e403a4088021147c2c3f9c0b4b3e70de",
+ "diff_sha256": "e9ae27696d4afd301aeb8b74972ff627e403a4088021147c2c3f9c0b4b3e70de",
+ "duration_s": 74.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep hit `Basic.lean:195:lemma hasDerivAt_iteratedDerivWithin_succ`; proof calls `hcm.contDiffOn.differentiableOn_iteratedDerivWithin` and never uses `neg_one_pow_mul_iteratedDerivWithin_nonneg`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Basic.lean",
+   "fix": "State the general smoothness lemma first, e.g. from `ContDiffOn \u211d (k+1) f (Ici 0)` or at least `ContDiffOn \u211d \u221e f (Ici 0)`, and derive the CM method as a wrapper if desired.",
+   "issue": "`IsCompletelyMonotone.hasDerivAt_iteratedDerivWithin_succ` assumes complete monotonicity, but the proof only uses `hcm.contDiffOn`; the sign condition is unused.",
+   "line": 195
+  },
+  {
+   "evidence": "grep hit `Integral.lean:57:lemma iteratedDerivWithin_Icc_eq_Ici`; proof uses `hf.contDiffOn.contDiffAt ...` only to get `hcda`, then rewrites both sides with `iteratedDerivWithin_eq_iteratedDeriv`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Integral.lean",
+   "fix": "Generalize to a lemma with `ContDiffAt \u211d (n : WithTop \u2115\u221e) f t` (or an appropriate `ContDiffOn` hypothesis) and use it inside the CM Taylor-sign lemma.",
+   "issue": "`IsCompletelyMonotone.iteratedDerivWithin_Icc_eq_Ici` assumes complete monotonicity, but the equality only needs local smoothness at `t` plus the set memberships/unique-differentiability facts.",
+   "line": 57
+  },
+  {
+   "evidence": "grep hit `BernsteinMeasures.lean:73:lemma continuousOn_chafaiDensity`; proof only uses `hcm.contDiffOn.continuousOn_iteratedDerivWithin` after unfolding the density.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Change the hypothesis to `ContDiffOn \u211d \u221e f (Ici 0)` or the finite differentiability level needed for `n`, and pass `hcm.contDiffOn` at CM call sites.",
+   "issue": "`continuousOn_chafaiDensity` assumes `IsCompletelyMonotone f`, but continuity of the density only uses smoothness of `f`; nonnegativity/sign alternation is irrelevant.",
+   "line": 73
+  }
+ ],
+ "head_sha": "efcf3d19563f5dff221b2c2a283ac54fa62a24f9",
+ "merge_base_sha": "8ab528a97774cd66061e5add0e3bf352650ac66c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 475,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f1adf94befd55ebbbb03e79628644b9aa9bb98d1aee80511a52b3236de4401e7",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "451de24d5268f8cd256618501e169c32d9241c94",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T174638Z-475-generality-2ba0ea",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T17:46:38Z",
+ "submitted_by": "kim-em",
+ "summary": "Several public lemmas are stated as completely-monotone facts even though their proofs use only smoothness, making the API less reusable than the natural Mathlib level.",
+ "transcript_blob": "8c94e44bbf2389844d8a95d963bb273833db8f0dd384c00f3fc9918c04c05733",
+ "usage": {
+  "cached_input_tokens": 32000,
+  "input_tokens": 81720,
+  "output_tokens": 3782,
+  "reasoning_output_tokens": 2540
+ },
+ "verdict": "request_changes"
+}
