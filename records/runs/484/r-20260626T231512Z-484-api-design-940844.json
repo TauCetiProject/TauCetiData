@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.598181,
+   "returncode": 0,
+   "secs": 65.9,
+   "usage": {
+    "cached_input_tokens": 179072,
+    "input_tokens": 261019,
+    "output_tokens": 3297,
+    "reasoning_output_tokens": 1558
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "60f6f69405b1a0f16ef447000f7255f90c31af27",
+ "cost_estimated": true,
+ "cost_usd": 0.598181,
+ "dedupe_key": "FormalFrontier/TauCeti|484|9056d2750b7091c80dbf37a2369b2e79f35d9257|api-design|gpt-5.5|079bb5332abb73d8|production|1",
+ "diff_blob": "3df35a608f83eb7596efc17ea660a6d2710214e33d15c9c6d2c57b63dde0e755",
+ "diff_sha256": "3df35a608f83eb7596efc17ea660a6d2710214e33d15c9c6d2c57b63dde0e755",
+ "duration_s": 65.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 60 defines `positiveDefiniteKernelFinsuppForm`; `rg positiveDefiniteKernelFinsuppForm_def` finds no theorem, and lines 78-82 only provide private `positiveDefiniteKernelFinsuppForm_eq_posSemidef_sum` for `x x`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/KernelFinsupp.lean",
+   "fix": "Add a public `positiveDefiniteKernelFinsuppForm_def` (or equivalently named theorem) stating `positiveDefiniteKernelFinsuppForm K x y = x.sum ... y.sum ...`, leaving the definition body unexposed.",
+   "issue": "`positiveDefiniteKernelFinsuppForm` has no public `*_def`/sum theorem for the actual finitely supported Gram expression, while its only sum restatement is the private diagonal helper.",
+   "line": 60
+  },
+  {
+   "evidence": "Lines 93-138 are only `_add_left`, `_add_right`, `_smul_left`, `_smul_right`; existing kernel operations are public at `Kernel.lean:107`, `Kernel.lean:117`, and `KernelClosure.lean:53`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/KernelFinsupp.lean",
+   "fix": "Add public lemmas such as form-zero/add/smul/sum in the `K` argument, at least for the kernel operations already exposed by `Kernel.lean`/`KernelClosure.lean`.",
+   "issue": "The API proves additivity/scalar rules only in the finitely supported arguments, but not in the kernel argument, so it does not interact with the existing positive-definite-kernel closure operations.",
+   "line": 93
+  }
+ ],
+ "head_sha": "9056d2750b7091c80dbf37a2369b2e79f35d9257",
+ "merge_base_sha": "60f6f69405b1a0f16ef447000f7255f90c31af27",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 484,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "dbca6aeafc799f1b294032a19c28da2f68733099df4f8348e4103793fa0b4014",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "451de24d5268f8cd256618501e169c32d9241c94",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T231512Z-484-api-design-940844",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T23:15:12Z",
+ "submitted_by": "kim-em",
+ "summary": "The new form is exposed without the characteristic API needed to use it while keeping its body hidden. Downstream users would have to unfold or reprove basic facts about the Gram sum and kernel operations.",
+ "transcript_blob": "a993bb9f17fd41ddfec4457675f713388c053247943893d0db9f6f3e728e7cf0",
+ "usage": {
+  "cached_input_tokens": 179072,
+  "input_tokens": 261019,
+  "output_tokens": 3297,
+  "reasoning_output_tokens": 1558
+ },
+ "verdict": "request_changes"
+}
