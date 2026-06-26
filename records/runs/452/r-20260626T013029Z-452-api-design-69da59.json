@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.461371,
+   "returncode": 0,
+   "secs": 64.9,
+   "usage": {
+    "cached_input_tokens": 105472,
+    "input_tokens": 168713,
+    "output_tokens": 3081,
+    "reasoning_output_tokens": 1700
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e2b450ee4739c8629b56b700965587325e01df9e",
+ "cost_estimated": true,
+ "cost_usd": 0.461371,
+ "dedupe_key": "FormalFrontier/TauCeti|452|0cc696fb4a93bf4397ae59e48607d1b8eb7d21ea|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|4",
+ "diff_blob": "6ef58912bbd8ac5493837e86e5db3a33eb53898a3fa474cb7fb28c8d335ba78f",
+ "diff_sha256": "6ef58912bbd8ac5493837e86e5db3a33eb53898a3fa474cb7fb28c8d335ba78f",
+ "duration_s": 64.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"\\bBCRPoint\\b|isSemigroupGroupPD_iff_isPositiveDefinite\" code/TauCeti mathlib/Mathlib roadmap` finds `BCRPoint` only in this new file, while roadmap lines 200-205 specify the public object as `IsSemigroupGroupPD` on `\u211d\u22650 \u00d7 V`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean",
+   "fix": "Define `IsSemigroupGroupPD` directly via the product kernel or finite quadratic form, or otherwise keep the wrapper internal and expose only product-level bridges such as the kernel/finite-form iff lemmas.",
+   "issue": "`BCRPoint` and its instances/field lemmas are exported even though the downstream target is the product-level `IsSemigroupGroupPD`; `isSemigroupGroupPD_iff_isPositiveDefinite` also exposes this implementation wrapper as public API.",
+   "line": 66
+  },
+  {
+   "evidence": "`rg -n \"isSemigroupGroupPD_(zero|one|const)|IsSemigroupGroupPD\\.(zero|one|const|const_of)\" code/TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean` has no hits; existing APIs provide `isPositiveDefinite_const` in `Basic.lean:281` and `isPositiveDefiniteKernel_const_of_nonneg` in `Kernel.lean:198`.",
+   "file": "TauCeti/Analysis/PositiveDefinite/SemigroupGroup.lean",
+   "fix": "Add product-level lemmas such as `isSemigroupGroupPD_const_of_nonneg`, `isSemigroupGroupPD_zero`, and `isSemigroupGroupPD_one` (or namespace equivalents), mirroring `isPositiveDefinite_const` and the kernel constant lemmas.",
+   "issue": "The closure API exposes `sum`/`prod` but no direct semigroup-group constructors for nonnegative constants, zero, or one, leaving the product identity/basic examples available only indirectly through kernel API or empty finsets.",
+   "line": 318
+  }
+ ],
+ "head_sha": "0cc696fb4a93bf4397ae59e48607d1b8eb7d21ea",
+ "merge_base_sha": "c484d4cf76ea5e2186672da58a5ced7acacdb6c8",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 452,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7819279f470628f9509742dfe22d486b34a86b97034f75f432817ede3557f150",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260626T013029Z-452-api-design-69da59",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T01:30:29Z",
+ "submitted_by": "kim-em",
+ "summary": "The product-level predicate has useful kernel and finite-form API, but the public surface leaks the wrapper used to implement the BCR involution and omits the semigroup-specific constant constructors parallel to the existing PD APIs.",
+ "transcript_blob": "71d71a484c82479d968913bccefe9cc184382111235d2f6373f4de4fed785f1d",
+ "usage": {
+  "cached_input_tokens": 105472,
+  "input_tokens": 168713,
+  "output_tokens": 3081,
+  "reasoning_output_tokens": 1700
+ },
+ "verdict": "request_changes"
+}
