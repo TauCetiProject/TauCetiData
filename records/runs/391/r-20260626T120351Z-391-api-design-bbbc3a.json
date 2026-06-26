@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.474773,
+   "returncode": 0,
+   "secs": 96.6,
+   "usage": {
+    "cached_input_tokens": 212736,
+    "input_tokens": 259495,
+    "output_tokens": 4487,
+    "reasoning_output_tokens": 2545
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e58c62375bc5d6d1bdefc4620662850c3671c079",
+ "cost_estimated": true,
+ "cost_usd": 0.474773,
+ "dedupe_key": "FormalFrontier/TauCeti|391|463027afa1508cc3efcc5a2548c0f0291a302f14|api-design|gpt-5.5|0145c421168c4fc2|production|7",
+ "diff_blob": "724bb9821004365697d57306f84cb6499d6324150b1c79f9a94989d6bd3f5da4",
+ "diff_sha256": "724bb9821004365697d57306f84cb6499d6324150b1c79f9a94989d6bd3f5da4",
+ "duration_s": 96.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` shows `@[expose] public section` at `Rectangle.lean:63`, `def swapSides` at `Rectangle.lean:765`, and public characteristic lemmas at lines 775, 780, 785, 790, 796, 803, and 808.",
+   "file": "TauCeti/KnotTheory/Grid/Rectangle.lean",
+   "fix": "Keep `swapSides` public but unexposed, e.g. move it to a non-`@[expose]` public section/module, and rely on `swapSides_left/right/bottom/top`, `swapSides_toGridRectangle`, and `swapSides_swapSides` for downstream use.",
+   "issue": "`GridRectangleBetween.swapSides` is added inside the file-wide `@[expose] public section`, so its body becomes part of the public interface even though the API already provides projection, involution, and inequality lemmas.",
+   "line": 765
+  },
+  {
+   "evidence": "The file has `public import TauCeti.KnotTheory.Grid.RectangleCount` and `public import TauCeti.KnotTheory.Grid.RectangleSwap` at lines 9-10; the added public statements at lines 100 and 117 mention only `fullyBlockedRectangles`, cardinality, and `GridState.swapColumns`, while `GridRectangleBetween.card_le_two` and `target_eq_swapColumns` are proof dependencies.",
+   "file": "TauCeti/KnotTheory/Grid/BlockedRectangle.lean",
+   "fix": "Restore the minimal re-export, e.g. `public import TauCeti.KnotTheory.Grid.Rectangle` plus non-public imports of `RectangleCount` and `RectangleSwap` for the proofs.",
+   "issue": "`BlockedRectangle` publicly imports and re-exports `RectangleCount` and `RectangleSwap`, although the new public declarations only need those modules for proofs, not for their statement surface.",
+   "line": 9
+  }
+ ],
+ "head_sha": "463027afa1508cc3efcc5a2548c0f0291a302f14",
+ "merge_base_sha": "e58c62375bc5d6d1bdefc4620662850c3671c079",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 391,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8ab2b3311740e53fc5f6590bac9dc70ff81426fe5f65baf97d83206023f3a106",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 7,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "d1bbbe5e3c3951f28877cd30508c3b3bbf834d61",
+ "rubrics_version": "0145c421168c4fc2",
+ "run_id": "r-20260626T120351Z-391-api-design-bbbc3a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T12:03:51Z",
+ "submitted_by": "kim-em",
+ "summary": "The new characteristic lemmas are generally present, but the PR exposes more public surface than the downstream count/support API needs. In particular, `swapSides` inherits body exposure and `BlockedRectangle` re-exports proof-only rectangle-count/swap modules.",
+ "transcript_blob": "c56b6b8c70635dbe8d89490aa7f4d5edf5140302f5b4b2adb30464a57910c712",
+ "usage": {
+  "cached_input_tokens": 212736,
+  "input_tokens": 259495,
+  "output_tokens": 4487,
+  "reasoning_output_tokens": 2545
+ },
+ "verdict": "request_changes"
+}
