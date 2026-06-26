@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.252069,
+   "returncode": 0,
+   "secs": 54.3,
+   "usage": {
+    "cached_input_tokens": 53888,
+    "input_tokens": 84687,
+    "output_tokens": 2371,
+    "reasoning_output_tokens": 1327
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e58c62375bc5d6d1bdefc4620662850c3671c079",
+ "cost_estimated": true,
+ "cost_usd": 0.252069,
+ "dedupe_key": "FormalFrontier/TauCeti|311|f135a56bd64a219baaef8e84414084968b8b4f6e|api-design|gpt-5.5|079bb5332abb73d8|production|4",
+ "diff_blob": "df15ba2c492a659bd990c55d4d69d0989e562fcdb90d00d8a57486b929e7ddaf",
+ "diff_sha256": "df15ba2c492a659bd990c55d4d69d0989e562fcdb90d00d8a57486b929e7ddaf",
+ "duration_s": 54.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"@\\[expose\\]\"` hits `weightedDegreeZeroClassHom` at line 66, `weightedDegreeZeroQuotientEquivPicZero` at line 125, `degreeZeroClassHom` at line 172, `degreeZeroQuotientEquivWeightedDegreeZeroOne` at line 246, and `degreeZeroQuotientEquivUnweightedPicZero` at line 271; lines 81-93, 135-153, 180-192, 257-267, and 280-302 already provide the public normal-form API.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/PicZeroQuotient.lean",
+   "fix": "Keep the characteristic lemmas public but restructure the definitions/proofs so these bodies are not exposed, or reduce the exposed surface to declarations whose computation is genuinely intended API.",
+   "issue": "The public homs and quotient equivalences are marked `@[expose]`, so downstream code can depend on the chosen transport/first-isomorphism implementation despite the supplied apply and mk lemmas.",
+   "line": 66
+  },
+  {
+   "evidence": "`rg -n \"@\\[expose\\]\" TauCeti/AlgebraicGeometry/WeilDivisor.lean` hits the new equivalence at line 491; lines 510-520 give the intended public behavior by simp lemmas.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor.lean",
+   "fix": "Hide the equivalence body and rely on the coercion/apply lemmas, exposing only if a downstream target actually needs definitional unfolding of this transport.",
+   "issue": "`degreeZeroSubgroupEquivWeightedDegreeZeroOne` is also exposed even though consumers are given coercion simp lemmas, making the concrete subtype-transport body public API.",
+   "line": 491
+  }
+ ],
+ "head_sha": "f135a56bd64a219baaef8e84414084968b8b4f6e",
+ "merge_base_sha": "e58c62375bc5d6d1bdefc4620662850c3671c079",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 311,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "c829e8de64b8a0017cb6f52677b736c8022f52ca570289b21e1f83d43ce9c0d1",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "4201e48f5df52c33be9b98acb0cd8c61eff9333e",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T130834Z-311-api-design-836f56",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T13:08:34Z",
+ "submitted_by": "kim-em",
+ "summary": "The quotient model has the expected characteristic lemmas, but it still makes implementation bodies part of the public API. The author\u2019s module-opacity objection explains why the current proofs use unfolding, but it does not establish that downstream consumers must unfold these definitions.",
+ "transcript_blob": "77d0a61ca777d8765a14b187b950f2f27783d490cc1062644ef34275bcd55581",
+ "usage": {
+  "cached_input_tokens": 53888,
+  "input_tokens": 84687,
+  "output_tokens": 2371,
+  "reasoning_output_tokens": 1327
+ },
+ "verdict": "request_changes"
+}
