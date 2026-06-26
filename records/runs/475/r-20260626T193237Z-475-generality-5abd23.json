@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.412888,
+   "returncode": 0,
+   "secs": 55.6,
+   "usage": {
+    "cached_input_tokens": 45696,
+    "input_tokens": 108230,
+    "output_tokens": 2579,
+    "reasoning_output_tokens": 1128
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1d97fc27f45b10f9610386500b1cc09a5a3a1645",
+ "cost_estimated": true,
+ "cost_usd": 0.412888,
+ "dedupe_key": "FormalFrontier/TauCeti|475|2b8eadfff1de66a4fe5a5bbd35eda740db22e8ca|generality|gpt-5.5|079bb5332abb73d8|production|2",
+ "diff_blob": "89beedc7ea6e10d9fbf8eb08a57483c9ee1a35a151e68636106c678a56d4ed11",
+ "diff_sha256": "89beedc7ea6e10d9fbf8eb08a57483c9ee1a35a151e68636106c678a56d4ed11",
+ "duration_s": 55.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep hit `Integral.lean:55:lemma iteratedDerivWithin_Icc_eq_Ici`; the proof only builds `hcda` from `hf.contDiffOn.contDiffAt` and rewrites both sides with `iteratedDerivWithin_eq_iteratedDeriv`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Integral.lean",
+   "fix": "State a general lemma from `ContDiffAt \u211d (n : WithTop \u2115\u221e) f t` (or a `ContDiffOn` hypothesis) and derive the CM wrapper from `hf.contDiffOn` if desired.",
+   "issue": "`IsCompletelyMonotone.iteratedDerivWithin_Icc_eq_Ici` assumes complete monotonicity, but only local smoothness at `t` is used.",
+   "line": 55
+  },
+  {
+   "evidence": "grep hit `Integral.lean:95:lemma integral_neg_deriv`; proof uses `hf.contDiffOn.mono ...` to call Mathlib `intervalIntegral.integral_derivWithin_Icc_of_contDiffOn_Icc`, with no sign or higher CM condition.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Integral.lean",
+   "fix": "Prove the general `ContDiffOn` FTC form first, e.g. from `ContDiffOn \u211d 1 f (Ici 0)` plus `0 \u2264 x \u2264 T`, and keep the CM versions as wrappers if useful.",
+   "issue": "`IsCompletelyMonotone.integral_neg_deriv` and its `integral_mass` corollary assume complete monotonicity, but the FTC identity uses only `ContDiffOn \u211d 1 f` on the interval.",
+   "line": 95
+  },
+  {
+   "evidence": "grep hit `BernsteinMeasures.lean:74:lemma continuousOn_chafaiDensity`; after unfolding the density, the proof only calls `hcm.contDiffOn.continuousOn_iteratedDerivWithin`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Generalize the lemma to take `ContDiffOn \u211d \u221e f (Ici 0)` and derive the current CM specialization from `hcm.contDiffOn`.",
+   "issue": "`continuousOn_chafaiDensity` assumes `IsCompletelyMonotone f`, but continuity of the density only needs smoothness of `f` on `[0, \u221e)`.",
+   "line": 74
+  }
+ ],
+ "head_sha": "2b8eadfff1de66a4fe5a5bbd35eda740db22e8ca",
+ "merge_base_sha": "d23d61874d5edfd82dc684153a96717b4ed4244c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 475,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "b8fc21f15bd140b1c7131e5b4bcf7091d88ba9160decd508e8ee5bf95e9ac942",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "451de24d5268f8cd256618501e169c32d9241c94",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T193237Z-475-generality-5abd23",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T19:32:37Z",
+ "submitted_by": "kim-em",
+ "summary": "Some exported lemmas are still stated at the completely-monotone level even though their proofs only use smoothness, so the API is less reusable than the natural Mathlib level.",
+ "transcript_blob": "f64c372b992b1cd4feace4049afeaf219e37ba6146e1e2cba1cf77a8e5c062f8",
+ "usage": {
+  "cached_input_tokens": 45696,
+  "input_tokens": 108230,
+  "output_tokens": 2579,
+  "reasoning_output_tokens": 1128
+ },
+ "verdict": "request_changes"
+}
