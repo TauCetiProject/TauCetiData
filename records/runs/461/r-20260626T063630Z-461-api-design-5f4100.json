@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.597771,
+   "returncode": 0,
+   "secs": 62.6,
+   "usage": {
+    "cached_input_tokens": 275072,
+    "input_tokens": 349965,
+    "output_tokens": 2859,
+    "reasoning_output_tokens": 954
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "95d10f0462cea17a44ac137cd1de0c1c98053e4e",
+ "cost_estimated": true,
+ "cost_usd": 0.597771,
+ "dedupe_key": "FormalFrontier/TauCeti|461|1d50ee88f47bcb384310086077e8f52a5d325d2b|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|1",
+ "diff_blob": "f3f0c073d916c3aba5b51a42ac927d98f94c9542b739715456554e7fd18547e4",
+ "diff_sha256": "f3f0c073d916c3aba5b51a42ac927d98f94c9542b739715456554e7fd18547e4",
+ "duration_s": 62.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep hit: `SubgroupFiberOrbitQuotientGroup.lean:55:@[expose] noncomputable def regularSubgroupFiberOrbitQuotientEquivQuotientGroup`, with representative API at lines 65, 103, 116, and 128.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/SubgroupFiberOrbitQuotientGroup.lean",
+   "fix": "Remove `@[expose]`; keep the equivalence opaque and add any needed characterization lemmas instead of requiring consumers to unfold it.",
+   "issue": "`regularSubgroupFiberOrbitQuotientEquivQuotientGroup` is marked `@[expose]`, exposing the body of a noncomputable equivalence even though the file provides simp lemmas for its intended use.",
+   "line": 55
+  },
+  {
+   "evidence": "Existing API exposes inclusion maps at `SubgroupFiberOrbit.lean:79` and their class rule at `SubgroupFiberOrbit.lean:88`; the new file only has representative lemmas for fixed `H` (`apply_smul` at line 128 and equality iff at line 140), with no `hHK : H \u2264 K` compatibility.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/SubgroupFiberOrbitQuotientGroup.lean",
+   "fix": "Add a characteristic naturality lemma saying the square with `subgroupFiberOrbitMapOfLE hHK` and the induced map `Deck p \u29f8 H \u2192 Deck p \u29f8 K` on left cosets commutes, with a `@[simp]` representative form on `subgroupFiberOrbitClass H (\u03c6 \u2022 e)`.",
+   "issue": "The new equivalence is not related to `subgroupFiberOrbitMapOfLE`, so users comparing subgroup covers cannot move an inclusion `H \u2264 K` across the deck-coset identification without unfolding or reproving naturality.",
+   "line": 55
+  }
+ ],
+ "head_sha": "1d50ee88f47bcb384310086077e8f52a5d325d2b",
+ "merge_base_sha": "95d10f0462cea17a44ac137cd1de0c1c98053e4e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 461,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "56833650cd5d588b639b06168ad6fdcc76d962a0f6cfef017e91b2cc0e86c9bf",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260626T063630Z-461-api-design-5f4100",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T06:36:30Z",
+ "submitted_by": "kim-em",
+ "summary": "The quotient equivalence has useful representative lemmas, but the public interface is over-exposed and missing compatibility with the already-public subgroup-inclusion quotient map.",
+ "transcript_blob": "a3c3b04facae8ff92fe25cae8300f886fba94f6fd273e4e80da05dab11c15893",
+ "usage": {
+  "cached_input_tokens": 275072,
+  "input_tokens": 349965,
+  "output_tokens": 2859,
+  "reasoning_output_tokens": 954
+ },
+ "verdict": "request_changes"
+}
