@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.446162,
+   "returncode": 0,
+   "secs": 56.6,
+   "usage": {
+    "cached_input_tokens": 120704,
+    "input_tokens": 181360,
+    "output_tokens": 2751,
+    "reasoning_output_tokens": 1128
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f7c19f6ff6ccf5bc8d102eb347acf58b2883472b",
+ "cost_estimated": true,
+ "cost_usd": 0.446162,
+ "dedupe_key": "FormalFrontier/TauCeti|443|9d3fd9ac601d08bbcf619e7c1936efb873539ea2|api-design|gpt-5.5|fce2f7d7e1b0bbad|production|14",
+ "diff_blob": "3fe3ac6b5991951669df1bc38c54881fa9fb392cdd1fdad8ab73de16cd433e55",
+ "diff_sha256": "3fe3ac6b5991951669df1bc38c54881fa9fb392cdd1fdad8ab73de16cd433e55",
+ "duration_s": 56.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"def tensorProduct|tensorProduct_coact\" code/TauCeti/Algebra/Coalgebra/Comodule/TensorProduct.lean` shows `@[expose, reducible] noncomputable def tensorProduct` at line 185 and the public `[simp] theorem tensorProduct_coact` at lines 192-196.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorProduct.lean",
+   "fix": "Keep only the reducibility needed for typeclass search, and avoid exporting the constructor body; downstream users should use the characteristic coaction/coassoc/counit lemmas instead of unfolding the structure.",
+   "issue": "`Comodule.tensorProduct` is marked `@[expose, reducible]`, exposing the structure body even though the public API already provides `tensorProduct_coact` plus the coassociativity and counit lemmas.",
+   "line": 185
+  },
+  {
+   "evidence": "`rg -n \"tensorProductHom\" code/TauCeti/Algebra/Coalgebra/Comodule/TensorProduct.lean` shows `@[expose] def tensorProductHom` at line 218 and characteristic lemmas `tensorProductHom_toLinearMap`, `tensorProductHom_apply`, `tensorProductHom_id`, and `tensorProductHom_comp` at lines 233, 246, 259, and 275.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/TensorProduct.lean",
+   "fix": "Remove body exposure from `tensorProductHom` and keep the morphism usable through the existing characteristic simp lemmas, adding any missing non-unfolding lemma needed by downstream code.",
+   "issue": "`Comodule.tensorProductHom` is marked `@[expose]`, exposing the constructor body although the intended public behavior is already stated by its linear-map/application, identity, composition, and naturality lemmas.",
+   "line": 218
+  }
+ ],
+ "head_sha": "9d3fd9ac601d08bbcf619e7c1936efb873539ea2",
+ "merge_base_sha": "f7c19f6ff6ccf5bc8d102eb347acf58b2883472b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 443,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "b35a77695f4aec3978b7aedab31b9c2feded65204c9ef2d45d8cbaf23c3f7349",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 14,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260626T044140Z-443-api-design-931db8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T04:41:40Z",
+ "submitted_by": "kim-em",
+ "summary": "The characteristic API is present, but two new exported constructors still expose implementation bodies without a demonstrated downstream need to unfold them.",
+ "transcript_blob": "4b59ba43ca5ece3d325199a4ef2f5c4f3998e372a598206a94212051354de8ea",
+ "usage": {
+  "cached_input_tokens": 120704,
+  "input_tokens": 181360,
+  "output_tokens": 2751,
+  "reasoning_output_tokens": 1128
+ },
+ "verdict": "request_changes"
+}
