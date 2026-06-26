@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.502864,
+   "returncode": 0,
+   "secs": 51.8,
+   "usage": {
+    "cached_input_tokens": 56448,
+    "input_tokens": 136460,
+    "output_tokens": 2486,
+    "reasoning_output_tokens": 1300
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "65fee8c0a7025d4ffb83b544c2b441a883ad1804",
+ "cost_estimated": true,
+ "cost_usd": 0.502864,
+ "dedupe_key": "FormalFrontier/TauCeti|273|16a79d403d6d68f1f5c52d393b726b7149d219be|api-design|gpt-5.5|079bb5332abb73d8|production|2",
+ "diff_blob": "1302deae086d19ba01b96a8096d8f5514d03d06839789e78d63a52f1ca141db4",
+ "diff_sha256": "1302deae086d19ba01b96a8096d8f5514d03d06839789e78d63a52f1ca141db4",
+ "duration_s": 51.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` shows `@[expose] public section` at `Basic.lean:23`, `Generator.lean:24`, `GrowthBound.lean:21`, and `Resolvent.lean:25`; `generator` is defined at `Generator.lean:113` and `resolvent` at `Resolvent.lean:84` inside those exposed sections.",
+   "file": "",
+   "fix": "Use plain `public section` and expose only declarations that genuinely need computation by downstream consumers, if any.",
+   "issue": "The PR exposes bodies for the whole semigroup API with `@[expose] public section`, including noncomputable definitions such as `domain`, `generator`, and `resolvent`; downstream users should rely on characteristic lemmas, not unfold these implementations.",
+   "line": 0
+  },
+  {
+   "evidence": "`mem_domain_iff` at lines 155-159 and `mem_domain_iff_tendsto` at lines 169-173 both state `x \u2208 S.domain \u2194 \u2203 y, Filter.Tendsto ...` and both are proved by `Iff.rfl`.",
+   "file": "TauCeti/Analysis/Semigroups/Generator.lean",
+   "fix": "Keep one public domain-membership theorem, preferably the `mem_domain_iff` restatement, and make the other private or remove it.",
+   "issue": "`mem_domain_iff` and `mem_domain_iff_tendsto` are public duplicate APIs with identical statements and `Iff.rfl` proofs, giving two canonical names for the same generator-domain characterization.",
+   "line": 169
+  }
+ ],
+ "head_sha": "16a79d403d6d68f1f5c52d393b726b7149d219be",
+ "merge_base_sha": "0c97cecac41e1fe5d59b30a8f86ecc5a898b2d62",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 273,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a8300af27a180df85128c51af16e4c8a176aa12537de4ad98d59b1d2e8f929c7",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "451de24d5268f8cd256618501e169c32d9241c94",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T140354Z-273-api-design-c634db",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T14:03:54Z",
+ "submitted_by": "kim-em",
+ "summary": "The main generator/resolvent characteristic API is now present, but the exposed public surface is still too large for this slice. Tighten the body exposure and remove duplicate domain-characterization names before merging.",
+ "transcript_blob": "a371fa66b67173e692b9197fd99075c6d4341e6b37cb4d39c6c2345eb5d9627e",
+ "usage": {
+  "cached_input_tokens": 56448,
+  "input_tokens": 136460,
+  "output_tokens": 2486,
+  "reasoning_output_tokens": 1300
+ },
+ "verdict": "request_changes"
+}
