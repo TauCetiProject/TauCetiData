@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.287288,
+   "returncode": 0,
+   "secs": 48.2,
+   "usage": {
+    "cached_input_tokens": 40576,
+    "input_tokens": 80350,
+    "output_tokens": 2271,
+    "reasoning_output_tokens": 1003
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "95d10f0462cea17a44ac137cd1de0c1c98053e4e",
+ "cost_estimated": true,
+ "cost_usd": 0.287288,
+ "dedupe_key": "FormalFrontier/TauCeti|462|a96a80173122349b10101cfd538cb506c43eca9f|reuse|gpt-5.5|fce2f7d7e1b0bbad|production|4",
+ "diff_blob": "65e28d52a4c90282444b7662f3f2b053cb8d0efccb568a48be8f7916ee1a9578",
+ "diff_sha256": "65e28d52a4c90282444b7662f3f2b053cb8d0efccb568a48be8f7916ee1a9578",
+ "duration_s": 48.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` shows `Regulator.lean:49: theorem regulator_eq_one_of_rank_eq_zero (h : rank K = 0) : regulator K = 1` and `Regulator.lean:58-59: theorem one_le_regulator_of_rank_eq_zero ... := (regulator_eq_one_of_rank_eq_zero K h).ge`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/Regulator.lean",
+   "fix": "Remove this declaration; callers can use `(regulator_eq_one_of_rank_eq_zero K h).ge`.",
+   "issue": "`one_le_regulator_of_rank_eq_zero` is a direct projection of the existing exact theorem `regulator_eq_one_of_rank_eq_zero`.",
+   "line": 58
+  },
+  {
+   "evidence": "`rg` shows rank criteria at `Regulator.lean:63`, `Regulator.lean:86`, `Regulator.lean:109` and lower-bound wrappers at `Regulator.lean:71`, `78`, `93`, `98`, `105` that only feed those criteria into `one_le_regulator_of_rank_eq_zero`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/Regulator.lean",
+   "fix": "Remove these wrappers or provide exact same-hypothesis evaluations instead; downstream proofs can compose `rank_eq_zero_of_card_infinitePlace_eq_one`/`rank_eq_zero_of_finrank_eq_one` with `regulator_eq_one_of_rank_eq_zero` and `.ge`.",
+   "issue": "The infinite-place and finrank lower-bound wrappers are parallel API for results obtained by the existing rank-zero criteria followed by the exact regulator theorem.",
+   "line": 71
+  },
+  {
+   "evidence": "`rg` shows exact evaluations at `Regulator.lean:120` and `Regulator.lean:129-131`, while the lower bounds at `Regulator.lean:124-125` and `Regulator.lean:134-136` are exactly those evaluations followed by `.ge`.",
+   "file": "TauCeti/NumberTheory/EffectiveBounds/Regulator.lean",
+   "fix": "Remove these declarations; callers can use `regulator_rat_eq_one.ge` and `(regulator_eq_one_of_isTotallyComplex_of_finrank_eq_two K h).ge`.",
+   "issue": "`one_le_regulator_rat` and `one_le_regulator_of_isTotallyComplex_of_finrank_eq_two` duplicate exact same-hypothesis regulator evaluations by applying `.ge`.",
+   "line": 124
+  }
+ ],
+ "head_sha": "a96a80173122349b10101cfd538cb506c43eca9f",
+ "merge_base_sha": "95d10f0462cea17a44ac137cd1de0c1c98053e4e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 462,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "86ac4a33e8dd430a051038c433c23cb559b66edef7fc5e8517105e8874c333f0",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "05c3a5a476efb1f14a7e47c0c13960ce014aa7e1",
+ "rubrics_version": "fce2f7d7e1b0bbad",
+ "run_id": "r-20260626T090019Z-462-reuse-ca68c1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T09:00:19Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR adds lower-bound declarations that duplicate the existing exact rank-zero regulator evaluations, mostly by applying `.ge`. These wrappers should be removed and callers should use the exact theorem plus the existing rank-zero criteria.",
+ "transcript_blob": "5555f74f878ee76f00ec0fa6052c80c18549e93260850c16ffe78a55ec82b02d",
+ "usage": {
+  "cached_input_tokens": 40576,
+  "input_tokens": 80350,
+  "output_tokens": 2271,
+  "reasoning_output_tokens": 1003
+ },
+ "verdict": "block"
+}
