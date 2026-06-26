@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.287819,
+   "returncode": 0,
+   "secs": 53.8,
+   "usage": {
+    "cached_input_tokens": 68608,
+    "input_tokens": 103975,
+    "output_tokens": 2556,
+    "reasoning_output_tokens": 1130
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "231de90f49a2bd51391a95a26ff34655b1457944",
+ "cost_estimated": true,
+ "cost_usd": 0.287819,
+ "dedupe_key": "FormalFrontier/TauCeti|487|431bd4356e9142347d7b7bc25adf4c4c3715d40a|api-design|gpt-5.5|079bb5332abb73d8|production|1",
+ "diff_blob": "1f853f46d15e9064575d46f29951b214c8fb1fcd243678f873e9baaa680870d0",
+ "diff_sha256": "1f853f46d15e9064575d46f29951b214c8fb1fcd243678f873e9baaa680870d0",
+ "duration_s": 53.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 64 exports `theorem card_univ_offDiag_fin`; the only grep hit using it is the proof at line 76.",
+   "file": "TauCeti/KnotTheory/Grid/DifferentialSupportCardinality.lean",
+   "fix": "Make it `private` or keep the calculation inline in `card_columnSwapNeighbors_le`; only expose the grid-neighbor cardinality theorem.",
+   "issue": "`GridState.card_univ_offDiag_fin` is a public generic Finset lemma, not grid-state API needed by the downstream target.",
+   "line": 64
+  },
+  {
+   "evidence": "Existing generator API has `fullyBlockedDifferentialOnGenerator_apply_eq_zero_of_notMem_columnSwapNeighbors` at `DifferentialSupport.lean:81`, while grep finds no chain-level `fullyBlockedDifferential.*notMem` lemma.",
+   "file": "TauCeti/KnotTheory/Grid/DifferentialSupportCardinality.lean",
+   "fix": "Add a public theorem such as `fullyBlockedDifferential_apply_eq_zero_of_notMem_support_biUnion` deriving `G.fullyBlockedDifferential c y = 0` from `y \u2209 c.support.biUnion (fun x => x.columnSwapNeighbors)`.",
+   "issue": "The chain-level support theorem lacks the pointwise elimination form matching the existing generator API, so users must manually go through `support` to prove coefficients vanish off the union.",
+   "line": 140
+  },
+  {
+   "evidence": "Lines 126 and 133 tag the generator zero lemmas with `@[simp]`, but the full linear-map zero lemmas at lines 160 and 172 have no annotation.",
+   "file": "TauCeti/KnotTheory/Grid/DifferentialSupportCardinality.lean",
+   "fix": "Add `@[simp]` to `fullyBlockedDifferential_eq_zero_of_zero` and `fullyBlockedDifferential_eq_zero_of_one`.",
+   "issue": "The normal-form lemmas saying the full differential is zero in grid sizes `0` and `1` are not tagged for automation.",
+   "line": 160
+  }
+ ],
+ "head_sha": "431bd4356e9142347d7b7bc25adf4c4c3715d40a",
+ "merge_base_sha": "231de90f49a2bd51391a95a26ff34655b1457944",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 487,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a14148bf41ba75280b7a44567666f0cfefaae2d0a920d9b8925eab9a810f334d",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "451de24d5268f8cd256618501e169c32d9241c94",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T235053Z-487-api-design-3a4a21",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T23:50:53Z",
+ "submitted_by": "kim-em",
+ "summary": "The quantitative bounds are useful, but the public surface exports an implementation helper and is missing the pointwise/automation API needed to use the new support theorem smoothly.",
+ "transcript_blob": "42fd310cc5645cc9e005bbd4020576b4779c73633fbe4cea11fc552abe311a31",
+ "usage": {
+  "cached_input_tokens": 68608,
+  "input_tokens": 103975,
+  "output_tokens": 2556,
+  "reasoning_output_tokens": 1130
+ },
+ "verdict": "request_changes"
+}
