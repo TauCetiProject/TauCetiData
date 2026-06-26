@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.391513,
+   "returncode": 0,
+   "secs": 52.0,
+   "usage": {
+    "cached_input_tokens": 132096,
+    "input_tokens": 182327,
+    "output_tokens": 2477,
+    "reasoning_output_tokens": 1016
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1d97fc27f45b10f9610386500b1cc09a5a3a1645",
+ "cost_estimated": true,
+ "cost_usd": 0.391513,
+ "dedupe_key": "FormalFrontier/TauCeti|273|6a28e900f7333bf947d37e13178a0191e66152f3|api-design|gpt-5.5|079bb5332abb73d8|production|3",
+ "diff_blob": "1302deae086d19ba01b96a8096d8f5514d03d06839789e78d63a52f1ca141db4",
+ "diff_sha256": "1302deae086d19ba01b96a8096d8f5514d03d06839789e78d63a52f1ca141db4",
+ "duration_s": 52.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` shows `@[expose] public section` at `Basic.lean:23`, `Generator.lean:24`, `GrowthBound.lean:21`, and `Resolvent.lean:25`; `domain` is defined at `Generator.lean:77`, `generator` at `Generator.lean:113`, and `resolvent` at `Resolvent.lean:84` inside those sections.",
+   "file": "",
+   "fix": "Remove the file-wide `@[expose]` sections and expose only a body that a named consumer must compute/unfold, if any; otherwise keep `domain`, `generator`, and `resolvent` opaque behind their API lemmas.",
+   "issue": "The PR exposes implementation bodies for the entire semigroup development with `@[expose] public section`, including noncomputable bodies for `domain`, `generator`, and `resolvent`; downstream users should depend on the characteristic lemmas rather than unfolding these implementations.",
+   "line": 0
+  },
+  {
+   "evidence": "`mem_domain_iff` at lines 155-159 and `mem_domain_iff_tendsto` at lines 169-173 both state `x \u2208 S.domain \u2194 \u2203 y, Filter.Tendsto ...` and both are proved by `Iff.rfl`; line 339 uses the duplicate name.",
+   "file": "TauCeti/Analysis/Semigroups/Generator.lean",
+   "fix": "Keep one public name, remove the duplicate, and update internal references such as `integral_orbit_mem_domain` to use the retained lemma.",
+   "issue": "`mem_domain_iff` and `mem_domain_iff_tendsto` are duplicate public characteristic lemmas with identical statements and `Iff.rfl` proofs, giving users two canonical names for the same generator-domain API.",
+   "line": 169
+  }
+ ],
+ "head_sha": "6a28e900f7333bf947d37e13178a0191e66152f3",
+ "merge_base_sha": "d23d61874d5edfd82dc684153a96717b4ed4244c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 273,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "155f7228dbf43bb807215ceab20da02fd44984030b0c231dd5fae28d523a9213",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "451de24d5268f8cd256618501e169c32d9241c94",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260626T194633Z-273-api-design-ea3319",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-26T19:46:33Z",
+ "submitted_by": "kim-em",
+ "summary": "The characteristic generator/resolvent lemmas are present, but the public surface is still too broad. The API also still carries duplicate public names for the same generator-domain criterion.",
+ "transcript_blob": "5f2b749c3abdaf622bbd8dff31c9693628562e23d2990296bf3fd9bf746eef44",
+ "usage": {
+  "cached_input_tokens": 132096,
+  "input_tokens": 182327,
+  "output_tokens": 2477,
+  "reasoning_output_tokens": 1016
+ },
+ "verdict": "request_changes"
+}
