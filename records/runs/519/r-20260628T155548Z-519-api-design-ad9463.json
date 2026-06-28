@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.098297,
+   "returncode": 0,
+   "secs": 60.0,
+   "usage": {
+    "cached_input_tokens": 30464,
+    "input_tokens": 38041,
+    "output_tokens": 1506,
+    "reasoning_output_tokens": 516
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6d74633d91bedc6378207e6ed723d91de5777971",
+ "cost_estimated": true,
+ "cost_usd": 0.098297,
+ "dedupe_key": "FormalFrontier/TauCeti|519|99c78738d9ce56f01d5087456a0d4fbed0cd8841|api-design|gpt-5.5|a3ee771b4b5cc783|production|6",
+ "diff_blob": "b641406ec61be0974887d9e6849ffbbf24284ab51aaffe8ec4026943202025b3",
+ "diff_sha256": "b641406ec61be0974887d9e6849ffbbf24284ab51aaffe8ec4026943202025b3",
+ "duration_s": 60.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep finds only `shift_iterate_apply` and `prefixProj_shift_iterate_apply` in `PathSpace/Shift.lean:33,44`; no `measurable_shift_iterate` declaration exists in `code/TauCeti/Probability`.",
+   "file": "TauCeti/Probability/PathSpace/Shift.lean",
+   "fix": "Add a public theorem such as `measurable_shift_iterate (r : \u2115) : Measurable ((shift \u03b1)^[r])` and the corresponding prefix-composition theorem if it is part of the target API.",
+   "issue": "The new path-space shift API lacks the public measurability theorem for the roadmap target `shift_iterate_measurable`; users must know to write `(measurable_shift.iterate r)` themselves.",
+   "line": 33
+  },
+  {
+   "evidence": "`Basic.lean:130` declares `theorem map_reindex_pathLaw ... (\u03c6 : \u2115 \u2192 \u2115)`, while `rg` shows no use of it in the added `PathSpace/Shift.lean` API.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Make this helper private or replace it with a public shift-specialized theorem for `\u03c6 k = k + r` if consumers need that form.",
+   "issue": "`map_reindex_pathLaw` exposes arbitrary coordinate reindexing `\u03c6 : \u2115 \u2192 \u2115`, which is broader than the named shift-iterate path-space target and is not used as public shift API.",
+   "line": 130
+  },
+  {
+   "evidence": "`Basic.lean:143` declares `theorem map_reindex_prefixProj_pathLaw ... (\u03c6 : \u2115 \u2192 \u2115)`, and `Contractability.lean:144` uses it only as proof infrastructure for an existing public theorem.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Keep the arbitrary helper private for proofs, or export a shift-specific block-law theorem characterizing `prefixProj \u03b1 n ((shift \u03b1)^[r] x)`.",
+   "issue": "`map_reindex_prefixProj_pathLaw` likewise exposes arbitrary finite-prefix reindexing, although the PR's shift target only needs consecutive blocks after an iterate.",
+   "line": 143
+  }
+ ],
+ "head_sha": "99c78738d9ce56f01d5087456a0d4fbed0cd8841",
+ "merge_base_sha": "6d74633d91bedc6378207e6ed723d91de5777971",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 519,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "060d0163c00d439ffc1a5000f916b532feca8c4f660248717a444bf73f81997c",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 6,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260628T155548Z-519-api-design-ad9463",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T15:55:48Z",
+ "submitted_by": "kim-em",
+ "summary": "The shift-iterate surface is incomplete for the named `shift_iterate_measurable` target, and the PR compensates by exposing generic reindexing helpers broader than the path-space shift API. Keep the generic proof helpers private unless they are a documented downstream API, and export the shift-specific characteristic lemmas instead.",
+ "transcript_blob": "d37be025d0e98b42d2770d352d0a000b06e4b94538ff32e46a3d51f2017c39a7",
+ "usage": {
+  "cached_input_tokens": 30464,
+  "input_tokens": 38041,
+  "output_tokens": 1506,
+  "reasoning_output_tokens": 516
+ },
+ "verdict": "request_changes"
+}
