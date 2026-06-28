@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.343754,
+   "returncode": 0,
+   "secs": 48.6,
+   "usage": {
+    "cached_input_tokens": 83968,
+    "input_tokens": 131104,
+    "output_tokens": 2203,
+    "reasoning_output_tokens": 810
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6d74633d91bedc6378207e6ed723d91de5777971",
+ "cost_estimated": true,
+ "cost_usd": 0.343754,
+ "dedupe_key": "FormalFrontier/TauCeti|519|f4e3f56422f352757dfcec6870352b9bc01e9e14|reuse|gpt-5.5|a3ee771b4b5cc783|production|3",
+ "diff_blob": "18f4ca98468e183f000961705cbc583ccd77978b8f59fe7c075815b4da8ae037",
+ "diff_sha256": "18f4ca98468e183f000961705cbc583ccd77978b8f59fe7c075815b4da8ae037",
+ "duration_s": 48.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`code/TauCeti/Probability/PathSpace/Shift.lean:48-54` proves exactly `measurable_shift.iterate r` and its composition; existing hits are `code/TauCeti/Probability/Exchangeability/Basic.lean:115: theorem measurable_shift`, `code/TauCeti/Probability/Exchangeability/Basic.lean:110: theorem measurable_prefixProj`, and `mathlib/Mathlib/MeasureTheory/MeasurableSpace/Basic.lean:290: theorem Measurable.iterate`.",
+   "file": "TauCeti/Probability/PathSpace/Shift.lean",
+   "fix": "Remove these declarations and use `measurable_shift.iterate r` and `(measurable_prefixProj n).comp (measurable_shift.iterate r)` at call sites, or keep them private if only local proof abbreviations are needed.",
+   "issue": "`measurable_shift_iterate` and `measurable_prefixProj_shift_iterate` are public wrappers for existing measurability combinators, creating duplicate API for iterates and prefix composition.",
+   "line": 48
+  },
+  {
+   "evidence": "`code/TauCeti/Probability/PathSpace/Shift.lean:57-77` rewrites `(shift \u03b1)^[r]` to `fun x n => x (n + r)` and then calls `map_reindex_pathLaw`/`map_reindex_prefixProj_pathLaw`; the general APIs are `code/TauCeti/Probability/Exchangeability/Basic.lean:130` and `code/TauCeti/Probability/Exchangeability/Basic.lean:143`.",
+   "file": "TauCeti/Probability/PathSpace/Shift.lean",
+   "fix": "Prefer the general `map_reindex_pathLaw` and `map_reindex_prefixProj_pathLaw` directly after rewriting by `shift_iterate_apply`, or make these local/private abbreviations only if a proof needs them internally.",
+   "issue": "`map_shift_iterate_pathLaw` and `map_prefixProj_shift_iterate_pathLaw` are special cases of the newly public reindexing path-law lemmas with `\u03c6 := fun n => n + r`, giving a parallel shift-specific API for the same pushforward facts.",
+   "line": 57
+  }
+ ],
+ "head_sha": "f4e3f56422f352757dfcec6870352b9bc01e9e14",
+ "merge_base_sha": "6d74633d91bedc6378207e6ed723d91de5777971",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 519,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "61f0d7b5f8462edd7c34a404ed0981d6aba8f28621914c2cd32ddaf1f6668b94",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260628T144228Z-519-reuse-dd9c74",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T14:42:28Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR still introduces public shift-iterate lemmas that are direct specializations of existing Mathlib/TauCeti compositional API. The old private reindex-prefix duplication has been consolidated, but the new path-space file keeps parallel special-case wrappers.",
+ "transcript_blob": "dcb67e2502e0269caf5738d888bd6f877ec9941c039e7b254430598875081d15",
+ "usage": {
+  "cached_input_tokens": 83968,
+  "input_tokens": 131104,
+  "output_tokens": 2203,
+  "reasoning_output_tokens": 810
+ },
+ "verdict": "block"
+}
