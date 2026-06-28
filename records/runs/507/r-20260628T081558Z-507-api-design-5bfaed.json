@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.489958,
+   "returncode": 0,
+   "secs": 42.9,
+   "usage": {
+    "cached_input_tokens": 132096,
+    "input_tokens": 205358,
+    "output_tokens": 1920,
+    "reasoning_output_tokens": 531
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a06e6573993c9a56082caa461a221561215b104e",
+ "cost_estimated": true,
+ "cost_usd": 0.489958,
+ "dedupe_key": "FormalFrontier/TauCeti|507|779dd64a522bdd1becacd1f80d32749fca229a61|api-design|gpt-5.5|079bb5332abb73d8|production|4",
+ "diff_blob": "1b0629ddd0f12fc8a4b837c67c447dea843bb920def820f7bfbad24eb9c5eb02",
+ "diff_sha256": "1b0629ddd0f12fc8a4b837c67c447dea843bb920def820f7bfbad24eb9c5eb02",
+ "duration_s": 42.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"@\\[expose\\] def ofFinset\" code/TauCeti/AlgebraicGeometry/WeilDivisor/FiniteSum.lean` reports lines 175 and 408; the named API is present at lines 317, 357, 364, 370, 377, 542, 559, 565, 571, and 577.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/FiniteSum.lean",
+   "fix": "Remove `@[expose]` from both constructors and prove downstream facts through the named characteristic lemmas instead.",
+   "issue": "`ofFinsetWithMultiplicity` and `ofFinset` are marked `@[expose]` even though the file provides coefficient, support, degree, weighted-degree, and pushforward characterization lemmas, so consumers are encouraged to unfold to the `Finsupp.indicator` body.",
+   "line": 175
+  },
+  {
+   "evidence": "`rg -n \"indicator_nat|indicator_one|ofFinset.*_eq_indicator\" code/TauCeti/AlgebraicGeometry/WeilDivisor/FiniteSum.lean` finds public raw lemmas at lines 180-300 and 413-501 plus `ofFinsetWithMultiplicity_eq_indicator` at line 310 and `ofFinset_eq_indicator` at line 522.",
+   "file": "TauCeti/AlgebraicGeometry/WeilDivisor/FiniteSum.lean",
+   "fix": "Make the raw indicator lemmas private/internal and remove the public simp body restatements; keep `ofFinsetWithMultiplicity_*` and `ofFinset_*` as the public normal forms.",
+   "issue": "`@[simp]` lemmas rewrite the named constructors to raw `Finsupp.indicator` terms, and the file publicly exports parallel `indicator_nat`/`indicator_one` APIs for the same facts, making the implementation detail part of the public surface.",
+   "line": 310
+  }
+ ],
+ "head_sha": "779dd64a522bdd1becacd1f80d32749fca229a61",
+ "merge_base_sha": "a06e6573993c9a56082caa461a221561215b104e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 507,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5632492fa64853306e8bdb113f40988db6ae16dd95283c71bc3b3830978755c9",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "4bb1d34e2b3314fc6630b45f2be9200091ae4911",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260628T081558Z-507-api-design-5bfaed",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T08:15:58Z",
+ "submitted_by": "kim-em",
+ "summary": "The named constructors now exist, but the public API still exposes their `Finsupp.indicator` implementation and makes that raw term the simp normal form.",
+ "transcript_blob": "66123550bc55f97f25918ec7316cbc4345041193eb17f8acc4ea53b7b9527af6",
+ "usage": {
+  "cached_input_tokens": 132096,
+  "input_tokens": 205358,
+  "output_tokens": 1920,
+  "reasoning_output_tokens": 531
+ },
+ "verdict": "request_changes"
+}
