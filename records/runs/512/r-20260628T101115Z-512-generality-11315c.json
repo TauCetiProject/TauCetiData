@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.353188,
+   "returncode": 0,
+   "secs": 59.4,
+   "usage": {
+    "cached_input_tokens": 93696,
+    "input_tokens": 137594,
+    "output_tokens": 2895,
+    "reasoning_output_tokens": 1353
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bcea55cb4214a8f43aa000a3a06c351a64ab5aad",
+ "cost_estimated": true,
+ "cost_usd": 0.353188,
+ "dedupe_key": "FormalFrontier/TauCeti|512|d4bf099ef4688b7b373fd565ec5e102726c4174c|generality|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "2d4d8289d8c97f4a11fcfda2014ba1b3eed3f388cbaa897d159dbd52e33fd0e3",
+ "diff_sha256": "2d4d8289d8c97f4a11fcfda2014ba1b3eed3f388cbaa897d159dbd52e33fd0e3",
+ "duration_s": 59.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Nearby APIs expose the scalar coefficient: `DiagonalizableGroup.baseChangePointsMulEquiv_symm_apply_tmul_single` has `(g : G) (r : k)` in `code/TauCeti/Algebra/AlgebraicGroup/DiagonalizableGroupBaseChange.lean:113`, and `RootsOfUnityGroup.baseChangePointsMulEquiv_symm_apply_tmul_single_generator` has `(r : k)` in `code/TauCeti/Algebra/AlgebraicGroup/RootsOfUnityBaseChange.lean:92`; Mathlib has `LaurentPolynomial.single_eq_C_mul_T` at `mathlib/Mathlib/Algebra/Polynomial/Laurent.lean:181`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/MultiplicativeGroupBaseChange.lean",
+   "fix": "State the primary lemma with an extra `(r : k)`, e.g. on `s \u2297\u209c[k] (LaurentPolynomial.C r * LaurentPolynomial.T n)` (or `AddMonoidAlgebra.single n r`), giving `s \u2022 (r \u2022 ((u ^ n : A\u02e3) : A))`, and derive the current `T` lemma as the `r = 1` specialization.",
+   "issue": "`baseChangePointsMulEquiv_symm_apply_tmul_T` fixes the Laurent coefficient to `1`, so users cannot rewrite the natural pure tensors `s \u2297 C r * T n` / `single n r` directly.",
+   "line": 83
+  },
+  {
+   "evidence": "The theorem evaluates only `(s \u2297\u209c[k] LaurentPolynomial.T n)` at lines 131-134, while the base inverse formula should match the coefficient-bearing form above.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/MultiplicativeGroupBaseChange.lean",
+   "fix": "Generalize it in parallel to the coefficient-bearing Laurent monomial form, and recover the existing statement by specializing `r = 1`.",
+   "issue": "`mapValue_baseChangePointsMulEquiv_symm_apply_tmul_T` repeats the same coefficient-one specialization for the naturality evaluation lemma.",
+   "line": 129
+  }
+ ],
+ "head_sha": "d4bf099ef4688b7b373fd565ec5e102726c4174c",
+ "merge_base_sha": "bcea55cb4214a8f43aa000a3a06c351a64ab5aad",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 512,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3c80cff6576f56d0777e90fbe6828af28e1c4a8f3fdff1c82b670bce7eee2dda",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260628T101115Z-512-generality-11315c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T10:11:15Z",
+ "submitted_by": "kim-em",
+ "summary": "The main equivalence is at the expected level, but the inverse evaluation API is under-generalized compared with the existing monoid-algebra base-change APIs: it only exposes coefficient-one Laurent monomials.",
+ "transcript_blob": "e13ccc927d53ae205bb073dc625b1eb8d53fcabb966f2f9d5aac4382fafb9db1",
+ "usage": {
+  "cached_input_tokens": 93696,
+  "input_tokens": 137594,
+  "output_tokens": 2895,
+  "reasoning_output_tokens": 1353
+ },
+ "verdict": "request_changes"
+}
