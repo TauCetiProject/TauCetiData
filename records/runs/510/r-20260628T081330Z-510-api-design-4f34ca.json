@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.417641,
+   "returncode": 0,
+   "secs": 59.1,
+   "usage": {
+    "cached_input_tokens": 49792,
+    "input_tokens": 110509,
+    "output_tokens": 2972,
+    "reasoning_output_tokens": 1607
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "254d927d48e1df481ba8c8e3e1dccf244569d19b",
+ "cost_estimated": true,
+ "cost_usd": 0.417641,
+ "dedupe_key": "FormalFrontier/TauCeti|510|ae02326f53576e3d2bbced3b11e61949ab529cbd|api-design|gpt-5.5|079bb5332abb73d8|production|2",
+ "diff_blob": "32024a9a87cbc5d50f8710db471ec5adca9dce42f64ead7dc5fcd8ae175c0c41",
+ "diff_sha256": "32024a9a87cbc5d50f8710db471ec5adca9dce42f64ead7dc5fcd8ae175c0c41",
+ "duration_s": 59.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"normalizerQuotientEquivMap_trans|conjMulEquivTrans|subgroup_map_conj_trans\"` shows only `normalizerQuotientEquivMap_trans_mk` at line 150, while the existing deck API has full composite lemmas at `Deck/Conjugation.lean:165` and `:181`.",
+   "file": "TauCeti/Algebra/Group/NormalizerQuotientConjugation.lean",
+   "fix": "Add characteristic composition and identity lemmas, preferably also deck-specialized versions using `Deck.conjMulEquivTrans`, `subgroup_map_conj_trans`, and `subgroup_map_conj_refl`, so users can rewrite transports to the composite/refl transport without unfolding.",
+   "issue": "`normalizerQuotientEquivMap_trans_mk` only rewrites to the iterated target `normalizerQuotient ((H.map e).map f)` and never characterizes it against transport by `e.trans f`; downstream conjugacy bookkeeping must still unfold/cast through `Subgroup.map_map`.",
+   "line": 150
+  },
+  {
+   "evidence": "`rg -n \"normalizerQuotientEquivMap_mk|normalizerQuotientEquivMap_mk_coe|normalizerQuotientConjEquiv_mk|normalizerQuotientConjEquiv_mk_coe\"` reports duplicate simp LHS pairs at lines 123/170 and deck lines 55/123.",
+   "file": "TauCeti/Algebra/Group/NormalizerQuotientConjugation.lean",
+   "fix": "Keep one simp normal form; make the `_coe` restatement non-simp, or replace the abstract `_mk` simp lemma if the raw-coe representative is intended as the canonical form. Do the same for the deck `_mk_coe` overlap.",
+   "issue": "`@[simp] normalizerQuotientEquivMap_mk_coe` has the same left-hand side as `@[simp] normalizerQuotientEquivMap_mk`, giving two competing normal forms and letting `simp` expose constructor/proof details instead of the stable `normalizerEquivMap` representative.",
+   "line": 170
+  }
+ ],
+ "head_sha": "ae02326f53576e3d2bbced3b11e61949ab529cbd",
+ "merge_base_sha": "254d927d48e1df481ba8c8e3e1dccf244569d19b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 510,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "51fdc4b02a6f769df5dcc0c202dd110db10ce1052d4786ff114625bba5cb7772",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "4bb1d34e2b3314fc6630b45f2be9200091ae4911",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260628T081330Z-510-api-design-4f34ca",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T08:13:30Z",
+ "submitted_by": "kim-em",
+ "summary": "The transport maps expose representative formulas, but the characteristic API still does not identify identity/composite transports with the canonical identity/composite maps, and the simp surface has overlapping normal forms.",
+ "transcript_blob": "74b923548e1d25d1738b9b915aa95f5443e292d1bdf98e6f119947675d33a9ec",
+ "usage": {
+  "cached_input_tokens": 49792,
+  "input_tokens": 110509,
+  "output_tokens": 2972,
+  "reasoning_output_tokens": 1607
+ },
+ "verdict": "request_changes"
+}
