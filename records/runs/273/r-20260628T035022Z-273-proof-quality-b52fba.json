@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.501681,
+   "returncode": 0,
+   "secs": 58.6,
+   "usage": {
+    "cached_input_tokens": 153472,
+    "input_tokens": 222561,
+    "output_tokens": 2650,
+    "reasoning_output_tokens": 1224
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "13e4212996ac32486db6c7e2ef821d82d27e35ba",
+ "cost_estimated": true,
+ "cost_usd": 0.501681,
+ "dedupe_key": "FormalFrontier/TauCeti|273|955173219aa30e14f8a8c8d51d83d9f9612c4e21|proof-quality|gpt-5.5|079bb5332abb73d8|production|3",
+ "diff_blob": "7f58f6cf0fe5af286653e30c398b6962a255b34eebc8d87a70df5ee292a59b39",
+ "diff_sha256": "7f58f6cf0fe5af286653e30c398b6962a255b34eebc8d87a70df5ee292a59b39",
+ "duration_s": 58.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"\\bchange\\b|\\bshow\\b\" code/TauCeti/Analysis/Semigroups` reports `Basic.lean:258`, `Basic.lean:189`, `Basic.lean:332`, and `Resolvent.lean:56,186,300,301,303`; none document why `show` is needed.",
+   "file": "",
+   "fix": "Replace these with named `have`/lemma rewrites or add local comments explaining why the goal cannot be reached by `rw`/`simp`/`ring_nf` without the type ascription.",
+   "issue": "Undocumented `show` uses remain in proof scripts, including nontrivial target reshaping in `strongContWithinAt` and nested scalar rewrites in `resolvent_generator_tendsto`.",
+   "line": 0
+  },
+  {
+   "evidence": "`rg -n \"genQuot_tendsto_add|genQuot_tendsto_smul|genQuot\" .../Generator.lean` shows the helper lemmas only at lines 52 and 66, while the duplicated quotient rewrites appear again at lines 85-107 and 124-150.",
+   "file": "TauCeti/Analysis/Semigroups/Generator.lean",
+   "fix": "Define `domain` via `IsInGeneratorDomain`/`genQuot` and reuse these helper lemmas in `add_mem'`, `smul_mem'`, `map_add'`, and `map_smul'`.",
+   "issue": "`genQuot_tendsto_add` and `genQuot_tendsto_smul` are proved but then the domain and generator linearity proofs repeat the same raw quotient algebra inline.",
+   "line": 52
+  }
+ ],
+ "head_sha": "955173219aa30e14f8a8c8d51d83d9f9612c4e21",
+ "merge_base_sha": "13e4212996ac32486db6c7e2ef821d82d27e35ba",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 273,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "2d99463c92bf7613bea6fdbd3cdf7e95f847a97c693e73df8bd8520ef969d4f9",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "4bb1d34e2b3314fc6630b45f2be9200091ae4911",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260628T035022Z-273-proof-quality-b52fba",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T03:50:22Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs still contain undocumented `show` target-shaping rewrites, and the generator proof repeats difference-quotient linearity instead of using the helper lemmas already introduced for it.",
+ "transcript_blob": "5f215dbc1d34b84eeef95d69701ecf34aedbf98bb55164d1b7d9d617d1ae71ac",
+ "usage": {
+  "cached_input_tokens": 153472,
+  "input_tokens": 222561,
+  "output_tokens": 2650,
+  "reasoning_output_tokens": 1224
+ },
+ "verdict": "request_changes"
+}
