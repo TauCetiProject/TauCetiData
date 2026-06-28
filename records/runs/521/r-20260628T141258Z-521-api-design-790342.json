@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.427013,
+   "returncode": 0,
+   "secs": 56.2,
+   "usage": {
+    "cached_input_tokens": 47616,
+    "input_tokens": 111823,
+    "output_tokens": 2739,
+    "reasoning_output_tokens": 1404
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ef9799d37b9ee976ed386da23a1ae3e18ecdc67b",
+ "cost_estimated": true,
+ "cost_usd": 0.427013,
+ "dedupe_key": "FormalFrontier/TauCeti|521|fc7e1d22f54745f328085cc08e068d65c8c5ed32|api-design|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "8d1c078dfa610c396d37d852c534faed6701baff09da34d560957666de8de529",
+ "diff_sha256": "8d1c078dfa610c396d37d852c534faed6701baff09da34d560957666de8de529",
+ "duration_s": 56.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The only pointwise API found is `chebyshevCosine_zero` at lines 26-28, `chebyshevCosine_one` at lines 30-31, and `eval_T_real_cos_eq_chebyshevCosine` at lines 34-36; `rg chebyshevCosine_def code/TauCeti mathlib/Mathlib` has no hit.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Trigonometric/Chebyshev/CosineTransfer.lean",
+   "fix": "Add a public characteristic lemma such as `chebyshevCosine_def (n \u03b8) : chebyshevCosine n \u03b8 = Real.cos (n * \u03b8)` and use that lemma rather than requiring consumers to unfold the definition.",
+   "issue": "`chebyshevCosine` exposes a new public definition but has no `chebyshevCosine_def` lemma, so downstream cosine-basis code must unfold the body to recover `Real.cos (n * \u03b8)` for arbitrary `n`.",
+   "line": 23
+  },
+  {
+   "evidence": "Line 26 tags `chebyshevCosine_zero` with `@[simp]`, while line 30 declares `lemma chebyshevCosine_one ...` with no attribute.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Trigonometric/Chebyshev/CosineTransfer.lean",
+   "fix": "Mark `chebyshevCosine_one` with `@[simp]` so `simp` reduces the first cosine mode without manual lemma names.",
+   "issue": "`chebyshevCosine_one` is a normal-form lemma for the named representative but is not tagged `@[simp]`, unlike `chebyshevCosine_zero`.",
+   "line": 30
+  }
+ ],
+ "head_sha": "fc7e1d22f54745f328085cc08e068d65c8c5ed32",
+ "merge_base_sha": "afc6e955c1d58a981f15387b280849765712cac5",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 521,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e8fb70fa15bacb2e205eb021441dc81ce155d7c197e35d6c618750ce481d1df2",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260628T141258Z-521-api-design-790342",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T14:12:58Z",
+ "submitted_by": "kim-em",
+ "summary": "The new transfer lemmas are present, but the public API for the new named cosine representative is incomplete: consumers still need to unfold the definition for the basic arbitrary-degree characterization, and the degree-one normal form is not in simp.",
+ "transcript_blob": "1eed027242eda69112865987af19b4db7d79a32f82dc1ae6232f5b47fee09bcd",
+ "usage": {
+  "cached_input_tokens": 47616,
+  "input_tokens": 111823,
+  "output_tokens": 2739,
+  "reasoning_output_tokens": 1404
+ },
+ "verdict": "request_changes"
+}
