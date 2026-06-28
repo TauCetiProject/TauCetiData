@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.716996,
+   "returncode": 0,
+   "secs": 73.2,
+   "usage": {
+    "cached_input_tokens": 202112,
+    "input_tokens": 304540,
+    "output_tokens": 3460,
+    "reasoning_output_tokens": 1688
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "17dc8c1231c8aebe20e1f4a2fe8ceb93afdab7ea",
+ "cost_estimated": true,
+ "cost_usd": 0.716996,
+ "dedupe_key": "FormalFrontier/TauCeti|475|ab5a3075fab9d2c5995d6b8b3b0f8b6dc7a7f182|generality|gpt-5.5|079bb5332abb73d8|production|3",
+ "diff_blob": "a836134c36d366e2489a16a02d394e56f8403657c09eb5f630de582c9672828d",
+ "diff_sha256": "a836134c36d366e2489a16a02d394e56f8403657c09eb5f630de582c9672828d",
+ "duration_s": 73.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep hit `Basic.lean:214:theorem ContDiffOn.hasDerivAt_iteratedDerivWithin`; the proof calls Mathlib `hf.differentiableOn_iteratedDerivWithin`, whose signature only requires `m < n`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Basic.lean",
+   "fix": "State the lemma with finite smoothness, e.g. `hf : ContDiffOn \u211d (k + 1 : \u2115) f s`, and use `differentiableOn_iteratedDerivWithin` with `k < k+1`.",
+   "issue": "`ContDiffOn.hasDerivAt_iteratedDerivWithin` assumes `ContDiffOn \u211d \u221e f s`, but the fixed `k` statement only needs one more derivative.",
+   "line": 214
+  },
+  {
+   "evidence": "grep hit `BernsteinMeasures.lean:74:lemma continuousOn_chafaiDensity`; after unfolding, the proof only calls `hcm.contDiffOn.continuousOn_iteratedDerivWithin` and does not use sign alternation.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinMeasures.lean",
+   "fix": "Generalize the exported lemma to a `ContDiffOn` hypothesis such as `ContDiffOn \u211d (n : WithTop \u2115\u221e) f (Ici 0)`; keep a CM wrapper only if call sites benefit from it.",
+   "issue": "`continuousOn_chafaiDensity` assumes `IsCompletelyMonotone f`, but continuity of this density uses only smoothness up to order `n` on `[0, \u221e)`.",
+   "line": 74
+  }
+ ],
+ "head_sha": "ab5a3075fab9d2c5995d6b8b3b0f8b6dc7a7f182",
+ "merge_base_sha": "17dc8c1231c8aebe20e1f4a2fe8ceb93afdab7ea",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 475,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "6cddc880edff994c547d4725951a8d16c98aaaf4c7d61413a9f9a07cfde01b5a",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "4bb1d34e2b3314fc6630b45f2be9200091ae4911",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260628T034143Z-475-generality-169585",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T03:41:43Z",
+ "submitted_by": "kim-em",
+ "summary": "Two exported lemmas still require substantially stronger hypotheses than their proofs need, so the API is not at the natural Mathlib level.",
+ "transcript_blob": "a1466e9506d7738ea137651279589dc3861c8cd80ebf2d87db0a5bdc85248ae5",
+ "usage": {
+  "cached_input_tokens": 202112,
+  "input_tokens": 304540,
+  "output_tokens": 3460,
+  "reasoning_output_tokens": 1688
+ },
+ "verdict": "request_changes"
+}
