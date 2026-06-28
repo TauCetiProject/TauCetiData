@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.430613,
+   "returncode": 0,
+   "secs": 95.7,
+   "usage": {
+    "cached_input_tokens": 209536,
+    "input_tokens": 250741,
+    "output_tokens": 3994,
+    "reasoning_output_tokens": 1762
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6d74633d91bedc6378207e6ed723d91de5777971",
+ "cost_estimated": true,
+ "cost_usd": 0.430613,
+ "dedupe_key": "FormalFrontier/TauCeti|519|f4e3f56422f352757dfcec6870352b9bc01e9e14|api-design|gpt-5.5|a3ee771b4b5cc783|production|4",
+ "diff_blob": "18f4ca98468e183f000961705cbc583ccd77978b8f59fe7c075815b4da8ae037",
+ "diff_sha256": "18f4ca98468e183f000961705cbc583ccd77978b8f59fe7c075815b4da8ae037",
+ "duration_s": 95.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Basic.lean:130` declares `theorem map_reindex_pathLaw ... (\u03c6 : \u2115 \u2192 \u2115)`, while `PathSpace/Shift.lean:57-64` uses it only with `fun n => n + r`.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Keep the arbitrary reindex lemma private/internal, or move it to a separately justified reindexing API; expose only `map_shift_iterate_pathLaw` for this target.",
+   "issue": "`map_reindex_pathLaw` exposes arbitrary coordinate reindexing `\u03c6 : \u2115 \u2192 \u2115`, although the new public consumer API only needs the shift-specialized case `\u03c6 n = n + r`.",
+   "line": 130
+  },
+  {
+   "evidence": "`Basic.lean:143` declares `theorem map_reindex_prefixProj_pathLaw ... (\u03c6 : \u2115 \u2192 \u2115)`, and the PR uses it at `PathSpace/Shift.lean:77` only for `fun k => k + r` and at `Contractability.lean:144` as proof infrastructure.",
+   "file": "TauCeti/Probability/Exchangeability/Basic.lean",
+   "fix": "Keep the arbitrary helper private/internal and expose the existing shift-specialized `map_prefixProj_shift_iterate_pathLaw`; if `Contractability` needs it, use a private helper there rather than adding it to `Basic`'s public surface.",
+   "issue": "`map_reindex_prefixProj_pathLaw` likewise exposes arbitrary finite-prefix reindexing, exceeding the shift-iterate block API this PR is meant to add.",
+   "line": 143
+  }
+ ],
+ "head_sha": "f4e3f56422f352757dfcec6870352b9bc01e9e14",
+ "merge_base_sha": "6d74633d91bedc6378207e6ed723d91de5777971",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 519,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "54fdadcc9ddb066f93eeeab74a0196d272e0f1102d478a9989bea75f19e4fa3b",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260628T144447Z-519-api-design-03319f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T14:44:47Z",
+ "submitted_by": "kim-em",
+ "summary": "The shift-iterate API itself is narrow, but the PR also makes arbitrary path-law reindexing lemmas public in `Basic.lean`. Those are broader than the named downstream shift-iterate target and are currently just support lemmas for the exported shift-specific statements.",
+ "transcript_blob": "a7be5a05f2a87d35a01d36a5ece7ad22c967b84a005145c3095a311df04f8387",
+ "usage": {
+  "cached_input_tokens": 209536,
+  "input_tokens": 250741,
+  "output_tokens": 3994,
+  "reasoning_output_tokens": 1762
+ },
+ "verdict": "request_changes"
+}
