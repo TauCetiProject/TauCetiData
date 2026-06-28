@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.538335,
+   "returncode": 0,
+   "secs": 69.1,
+   "usage": {
+    "cached_input_tokens": 53120,
+    "input_tokens": 135045,
+    "output_tokens": 3405,
+    "reasoning_output_tokens": 1876
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9c46b4ac2dd60b6835cd470edc346ce6f072af76",
+ "cost_estimated": true,
+ "cost_usd": 0.538335,
+ "dedupe_key": "FormalFrontier/TauCeti|527|1301d3b6d5f7e6c5af1615ee0bb4b000b0d39260|api-design|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "777debb51a87dbd0c0d7bd6628eaeadf9bb2fb8706bbbf0a76756037c9440d92",
+ "diff_sha256": "777debb51a87dbd0c0d7bd6628eaeadf9bb2fb8706bbbf0a76756037c9440d92",
+ "duration_s": 69.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` hit: `ProductKernel.lean:123 theorem bind_probabilityMeasure_pi_apply`; Mathlib's underlying normal form is tagged `@[simp]` at `Mathlib/MeasureTheory/Measure/GiryMonad.lean:235 theorem bind_apply`.",
+   "file": "TauCeti/MeasureTheory/Measure/ProductKernel.lean",
+   "fix": "Add `@[simp]` to `bind_probabilityMeasure_pi_apply` unless it demonstrably creates a simp loop; it rewrites from a bind application to a lintegral and matches Mathlib's bind API.",
+   "issue": "`bind_probabilityMeasure_pi_apply` is the specialized normal form for evaluating this `Measure.bind`, but it is exposed without `@[simp]`, so users with `h\u03bd` and `hs` in context still have to name the adapter manually.",
+   "line": 123
+  },
+  {
+   "evidence": "`rg` hit: `ProductKernel.lean:143 theorem bind_probabilityMeasure_pi_const_apply`; the roadmap target uses `\u03bd : \u03a9 \u2192 ProbabilityMeasure \u03b1` in `TauCetiRoadmap/Exchangeability/Targets.lean:94-99`, so this is the downstream-facing form.",
+   "file": "TauCeti/MeasureTheory/Measure/ProductKernel.lean",
+   "fix": "Add `@[simp]` to `bind_probabilityMeasure_pi_const_apply` as the finite-block specialization of the bind-evaluation normal form.",
+   "issue": "`bind_probabilityMeasure_pi_const_apply` repeats the same public normal form for the `Fin m` downstream case without `@[simp]`, leaving the target-facing specialization less usable than the general bind API.",
+   "line": 143
+  }
+ ],
+ "head_sha": "1301d3b6d5f7e6c5af1615ee0bb4b000b0d39260",
+ "merge_base_sha": "f917d544f12c4a451bf65bda58fb2642d1abad3b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 527,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0bfd601c593fc646f5ed1d9042ad83850bfb1a50ba5c73adbb71c5749f7c358c",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260628T235204Z-527-api-design-97c592",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T23:52:04Z",
+ "submitted_by": "kim-em",
+ "summary": "The exposed bind-evaluation API is the right shape, but its normal-form apply lemmas are missing the automation annotation that makes them usable as public adapters.",
+ "transcript_blob": "ce20b99b504f192ddf48f13bd168ce8f778e9c61f2224da5e53b310267c64358",
+ "usage": {
+  "cached_input_tokens": 53120,
+  "input_tokens": 135045,
+  "output_tokens": 3405,
+  "reasoning_output_tokens": 1876
+ },
+ "verdict": "request_changes"
+}
