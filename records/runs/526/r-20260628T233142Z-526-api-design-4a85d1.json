@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.247869,
+   "returncode": 0,
+   "secs": 48.4,
+   "usage": {
+    "cached_input_tokens": 113408,
+    "input_tokens": 138819,
+    "output_tokens": 2137,
+    "reasoning_output_tokens": 853
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9c46b4ac2dd60b6835cd470edc346ce6f072af76",
+ "cost_estimated": true,
+ "cost_usd": 0.247869,
+ "dedupe_key": "FormalFrontier/TauCeti|526|61f9660f44841c45c9856ee613523839265caf6e|api-design|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "b2952d65a07f9d3b4195a33e0d4e49fc567c56ffa7a7a2403639ce8fad124a24",
+ "diff_sha256": "b2952d65a07f9d3b4195a33e0d4e49fc567c56ffa7a7a2403639ce8fad124a24",
+ "duration_s": 48.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"\\@\\[reducible, expose\\]|\\@\\[expose\\]\" code/TauCeti/Probability/Process/Tail.lean` hits lines 28, 33, and 89.",
+   "file": "TauCeti/Probability/Process/Tail.lean",
+   "fix": "Remove `expose`/`reducible` from these definitions and route consumers through the characteristic lemmas instead; add any missing lemma rather than requiring unfolding.",
+   "issue": "`tailFamily`, `tailProcess`, and `futureFiltration` expose their bodies (`@[reducible, expose]` at lines 28/33 and `@[expose]` at line 89), making the implementation part of the public surface even though users have `tailFamily_eq_iSup_comap`, `tailProcess_eq_iInf_tailFamily`, and `futureFiltration_apply`.",
+   "line": 28
+  },
+  {
+   "evidence": "Lines 37-46 define the two normal-form lemmas without attributes; only `futureFiltration_apply` at line 98 is tagged `@[simp]`.",
+   "file": "TauCeti/Probability/Process/Tail.lean",
+   "fix": "Mark the appropriate normal-form restatements with `@[simp]` (or provide separate simp-normal-form lemmas if these names should remain untagged).",
+   "issue": "The normal-form lemmas `tailFamily_eq_iSup_comap` and `tailProcess_eq_iInf_tailFamily` are documented as normal forms but lack `@[simp]`, so the public API does not give simp the canonical expansions once the bodies are hidden.",
+   "line": 38
+  }
+ ],
+ "head_sha": "61f9660f44841c45c9856ee613523839265caf6e",
+ "merge_base_sha": "9c46b4ac2dd60b6835cd470edc346ce6f072af76",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 526,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "87d31b4a33ad8820b8b71c4062e059aab16a89398269c5061e64d38e099ec570",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260628T233142Z-526-api-design-4a85d1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T23:31:42Z",
+ "submitted_by": "kim-em",
+ "summary": "The public interface exposes implementation bodies where characteristic lemmas already exist, and its stated normal-form lemmas are not registered for simplification. These are fixable API-surface issues.",
+ "transcript_blob": "c328ebbd147234dcbdb3783014ad168b92965335072015572c19f7ec4199ab18",
+ "usage": {
+  "cached_input_tokens": 113408,
+  "input_tokens": 138819,
+  "output_tokens": 2137,
+  "reasoning_output_tokens": 853
+ },
+ "verdict": "request_changes"
+}
