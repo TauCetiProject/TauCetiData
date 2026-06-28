@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.328369,
+   "returncode": 0,
+   "secs": 53.8,
+   "usage": {
+    "cached_input_tokens": 91648,
+    "input_tokens": 132521,
+    "output_tokens": 2606,
+    "reasoning_output_tokens": 1216
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e4fdd9163a0fa93932f9ccfc1da093442fdc39ff",
+ "cost_estimated": true,
+ "cost_usd": 0.328369,
+ "dedupe_key": "FormalFrontier/TauCeti|509|9f94367e1bb16112d3bf8d63fd7359414511a036|api-design|gpt-5.5|079bb5332abb73d8|production|1",
+ "diff_blob": "506918bb613a821ce41e23b385d6c50e581de7d3dc2590399954f101f92fa86c",
+ "diff_sha256": "506918bb613a821ce41e23b385d6c50e581de7d3dc2590399954f101f92fa86c",
+ "duration_s": 53.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"@\\[expose\\]\" code/TauCeti/LowDimTopology/Plumbing/CubeGenerator.lean` hits lines 66, 71, 77, 104, and 139.",
+   "file": "TauCeti/LowDimTopology/Plumbing/CubeGenerator.lean",
+   "fix": "Remove these `@[expose]` attributes and add explicit public restatement lemmas for any operation that still needs rewriting instead of making consumers unfold definitions.",
+   "issue": "Several public definitions expose their bodies (`dimension`, `lowerFace`, `upperFace`, `vertices`, `characteristicWeight`) even though the file already provides projection/simp lemmas for the faces and mk restatements for vertices/weight.",
+   "line": 66
+  },
+  {
+   "evidence": "The unbundled API has `PlumbingGraph.mem_cubeVertices` at `CubeWeight.lean:101`; the bundled file only has `vertices_mk` and subset lemmas (`CubeGenerator.lean:107`, `114`, `120`).",
+   "file": "TauCeti/LowDimTopology/Plumbing/CubeGenerator.lean",
+   "fix": "Add a bundled theorem such as `mem_vertices : y \u2208 C.vertices \u2194 \u2203 T \u2286 C.directions, PlumbingGraph.cubeVertex C.base T = y`, plus any obvious simp corollaries like base membership if intended.",
+   "issue": "`vertices` has no bundled membership characterization, so users must unfold or drop to `PlumbingGraph.mem_cubeVertices` to introduce/eliminate vertices of `C.vertices`.",
+   "line": 104
+  },
+  {
+   "evidence": "Underlying zero-iff lemmas exist at `CubeFace.lean:91` and `CubeFace.lean:122`; `CubeGenerator.lean:163-186` defines the bundled exponents and only exposes the natCast lemmas.",
+   "file": "TauCeti/LowDimTopology/Plumbing/CubeGenerator.lean",
+   "fix": "Add `[simp]` mk lemmas for `characteristicLowerFaceExponent` and `characteristicUpperFaceExponent`, and bundled `characteristicLowerFaceExponent_eq_zero_iff` / `characteristicUpperFaceExponent_eq_zero_iff` mirroring the existing `PlumbingGraph` lemmas.",
+   "issue": "The bundled face exponent API lacks the `_mk`/zero-iff restatements needed to use existing unbundled exponent lemmas without unfolding the new definitions.",
+   "line": 163
+  }
+ ],
+ "head_sha": "9f94367e1bb16112d3bf8d63fd7359414511a036",
+ "merge_base_sha": "e4fdd9163a0fa93932f9ccfc1da093442fdc39ff",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 509,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3b149a505ac61dd42bc55baf7f94104cbea48d1845acf275c582288639740454",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "4bb1d34e2b3314fc6630b45f2be9200091ae4911",
+ "rubrics_version": "079bb5332abb73d8",
+ "run_id": "r-20260628T065812Z-509-api-design-280927",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-28T06:58:12Z",
+ "submitted_by": "kim-em",
+ "summary": "The bundled surface is useful, but it relies on exposed bodies and omits characteristic restatements that downstream differential code should be able to use without unfolding.",
+ "transcript_blob": "45128d9b2ad3184efb66ff4c7163902c184f22daf991abe2b66f7d9ed64ba78b",
+ "usage": {
+  "cached_input_tokens": 91648,
+  "input_tokens": 132521,
+  "output_tokens": 2606,
+  "reasoning_output_tokens": 1216
+ },
+ "verdict": "request_changes"
+}
