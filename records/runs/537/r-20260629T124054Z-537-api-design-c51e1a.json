@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.369363,
+   "returncode": 0,
+   "secs": 78.6,
+   "usage": {
+    "cached_input_tokens": 141056,
+    "input_tokens": 179277,
+    "output_tokens": 3591,
+    "reasoning_output_tokens": 1727
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "52d17d95608163838d4d5cf926741abb295f73c6",
+ "cost_estimated": true,
+ "cost_usd": 0.369363,
+ "dedupe_key": "FormalFrontier/TauCeti|537|4d1b7667ffcb7a97c4889a631ea98052ec7fef15|api-design|gpt-5.5|a3ee771b4b5cc783|production|5",
+ "diff_blob": "46bd48085804801000f56fa309280f03bf96373c9fd4bea9e9d731de16d9ebe4",
+ "diff_sha256": "46bd48085804801000f56fa309280f03bf96373c9fd4bea9e9d731de16d9ebe4",
+ "duration_s": 78.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"IsCoercive\\.mono|TauCeti\\.IsCoercive\\.mono\" code/TauCeti mathlib/Mathlib` shows the only use is `CoercivePerturbation.lean:71`, inside the proof body.",
+   "file": "TauCeti/Analysis/InnerProductSpace/Coercivity.lean",
+   "fix": "Keep this lemma private/local to `CoercivePerturbation` or expose only the PDE-facing perturbation API that downstream weak-form code will import.",
+   "issue": "`TauCeti.IsCoercive.mono` is a new public, general-purpose helper even though the PR target only needs it to prove the PDE perturbation theorem.",
+   "line": 31
+  },
+  {
+   "evidence": "`CoercivePerturbation.lean:49` and `:67` are the only new PDE declarations; `rg -n \"add_principal_mass|UniformlyEllipticOn.*add|isCoercive_energyIntegrand_add\" code/TauCeti` finds no wrappers, while `UniformEllipticEnergy.lean:140-213` exposes point and `_on` forms for the corresponding unperturbed estimates.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Add public lemmas for the perturbed raw-bound estimate and `UniformlyEllipticOn.isCoercive_energyIntegrand_add_principal_mass` plus an `_on` coefficient-field version, with appropriate `grind_pattern`s.",
+   "issue": "The public perturbation API stops at the raw pointwise preservation lemma and lacks the matching explicit diagonal estimate and `UniformlyEllipticOn` point/domain wrappers used by the existing energy API.",
+   "line": 67
+  }
+ ],
+ "head_sha": "4d1b7667ffcb7a97c4889a631ea98052ec7fef15",
+ "merge_base_sha": "f8ee125aff597ca04224dbb89657ee83b647a24c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 537,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "df7333311f5d2f3e4268958b85a180666100e91aa227c667b3917bb8c6b379ba",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 5,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T124054Z-537-api-design-c51e1a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T12:40:54Z",
+ "submitted_by": "kim-em",
+ "summary": "The previous broad Lax--Milgram reexport has been fixed, but the current public surface is still not the right one for the named PDE consumer. The PR exposes an internal generic helper while omitting the perturbation wrappers and explicit estimate that match the surrounding energy API.",
+ "transcript_blob": "e207ce65a8d50ba7ab3c0cf1d9757384cbd3f64a45466360c75864daacd0b410",
+ "usage": {
+  "cached_input_tokens": 141056,
+  "input_tokens": 179277,
+  "output_tokens": 3591,
+  "reasoning_output_tokens": 1727
+ },
+ "verdict": "request_changes"
+}
