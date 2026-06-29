@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.302589,
+   "returncode": 0,
+   "secs": 50.3,
+   "usage": {
+    "cached_input_tokens": 86528,
+    "input_tokens": 124641,
+    "output_tokens": 2292,
+    "reasoning_output_tokens": 892
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8b50298f056cd406098fcd1de55aa6824e1ad11e",
+ "cost_estimated": true,
+ "cost_usd": 0.302589,
+ "dedupe_key": "FormalFrontier/TauCeti|543|c8addda69276adfdfe0b1717a3e7fd6f6b32e5e2|reuse|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "2ca4a9c7acf1f3189da52c98e2add186df116b94c6e9af6f286897069701c110",
+ "diff_sha256": "2ca4a9c7acf1f3189da52c98e2add186df116b94c6e9af6f286897069701c110",
+ "duration_s": 50.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `mathlib/Mathlib/Analysis/Fourier/FourierTransform.lean:378: theorem vector_fourierIntegral_eq_integral_exp_smul ... VectorFourier.fourierIntegral fourierChar \u03bc L f w = \u222b v, Complex.exp (\u2191(-2 * \u03c0 * L v w) * Complex.I) \u2022 f v \u2202\u03bc`.",
+   "file": "TauCeti/Analysis/Bochner/FourierConvention.lean",
+   "fix": "Use `Real.vector_fourierIntegral_eq_integral_exp_smul` specialized to `inner\u2097 E`, `f := 1`, plus `real_inner_comm`/simp, instead of adding a parallel pointwise expansion.",
+   "issue": "`fourierIntegral_one_apply` is a special case of Mathlib's integral-exp form for Fourier integrals.",
+   "line": 60
+  },
+  {
+   "evidence": "grep: `mathlib/Mathlib/MeasureTheory/Measure/CharacteristicFunction/Basic.lean:161: lemma charFun_eq_fourierIntegral' (t : E) : charFun \u03bc t = VectorFourier.fourierIntegral fourierChar \u03bc (inner\u2097 E) 1 (-(2 * \u03c0)\u207b\u00b9 \u2022 t)`; the PR proof starts with `rw [charFun_eq_fourierIntegral']`.",
+   "file": "TauCeti/Analysis/Bochner/FourierConvention.lean",
+   "fix": "Avoid a new TauCeti theorem unless the roadmap truly needs this exact orientation; otherwise use `charFun_eq_fourierIntegral'` directly, or keep only one minimal orientation lemma with documentation that it is the Mathlib lemma specialized.",
+   "issue": "`fourierIntegral_one_eq_charFun` is just the existing Mathlib `charFun_eq_fourierIntegral'` with `t = -(2 * \u03c0) \u2022 a` and scalar simplification, so it creates a parallel conversion API.",
+   "line": 76
+  }
+ ],
+ "head_sha": "c8addda69276adfdfe0b1717a3e7fd6f6b32e5e2",
+ "merge_base_sha": "160fbce2172ddb97cbbcc664bd773416f6971c6e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 543,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5231e1a19914ff22a86963b448d16af6bd849c3df750603be965cee66e361804",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T143448Z-543-reuse-6e4663",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T14:34:48Z",
+ "submitted_by": "kim-em",
+ "summary": "The new bridge mostly repackages existing Mathlib Fourier/characteristic-function API. Replace the parallel TauCeti statements with direct use of the existing lemmas or justify only a minimal orientation wrapper.",
+ "transcript_blob": "fe3e8fdc8fa716835f3bd03b10901c45b3f8c4e86accffee037643116e776559",
+ "usage": {
+  "cached_input_tokens": 86528,
+  "input_tokens": 124641,
+  "output_tokens": 2292,
+  "reasoning_output_tokens": 892
+ },
+ "verdict": "request_changes"
+}
