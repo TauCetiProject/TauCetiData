@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.256281,
+   "returncode": 0,
+   "secs": 50.0,
+   "usage": {
+    "cached_input_tokens": 54912,
+    "input_tokens": 86883,
+    "output_tokens": 2299,
+    "reasoning_output_tokens": 1054
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "807b06fb65aaa8f19113e66d28e6a3adaf18bfa9",
+ "cost_estimated": true,
+ "cost_usd": 0.256281,
+ "dedupe_key": "FormalFrontier/TauCeti|549|d9e78be48b41e965c7392d73e8b35f61fa89fbad|api-design|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "a65dce545fc9f091602c710fc4fe8c696cb57d122c34ac5da77ba8a05cc02be4",
+ "diff_sha256": "a65dce545fc9f091602c710fc4fe8c696cb57d122c34ac5da77ba8a05cc02be4",
+ "duration_s": 50.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 32 has `@[expose, implicit_reducible]`; lines 38-45 already expose the characteristic set iff and `shiftInvariantSigma_le`.",
+   "file": "TauCeti/Probability/Ergodic/ShiftInvariantSigma.lean",
+   "fix": "Remove `@[expose]`; if unfolding is needed, add a named `shiftInvariantSigma_def` theorem instead of making the definition reducible to consumers.",
+   "issue": "`shiftInvariantSigma` is marked `@[expose]`, exposing the body `MeasurableSpace.invariants (shift \u03b1)` even though the file provides containment and measurable-set API.",
+   "line": 32
+  },
+  {
+   "evidence": "Roadmap lines 372-377 list `isShiftInvariant`, `shiftInvariantSigma`, `shiftInvariantSigma_le`, `mem_shiftInvariantSigma_iff`, `shiftInvariantSigma_measurable_shift_eq`, and `shiftInvariant_implies_shiftInvariantMeasurable`; `rg` finds only `measurableSet_shiftInvariantSigma_iff`, `measurable_shift_shiftInvariantSigma`, and `comp_shift_eq_of_measurable_shiftInvariantSigma` in this PR.",
+   "file": "TauCeti/Probability/Ergodic/ShiftInvariantSigma.lean",
+   "fix": "Rename or add aliases with the roadmap names, preserving the existing theorem bodies if desired.",
+   "issue": "The characteristic API is published under different names from the roadmap target, so downstream code looking for `mem_shiftInvariantSigma_iff`, `shiftInvariantSigma_measurable_shift_eq`, or `shiftInvariant_implies_shiftInvariantMeasurable` cannot use the promised interface.",
+   "line": 38
+  },
+  {
+   "evidence": "Line 38 proves `MeasurableSet[shiftInvariantSigma \u03b1] s \u2194 MeasurableSet s \u2227 IsShiftInvariant s` with no attribute; the public-API rubric requires normal-form characteristic lemmas to be annotated.",
+   "file": "TauCeti/Probability/Ergodic/ShiftInvariantSigma.lean",
+   "fix": "Put `@[simp]` on the final `mem_shiftInvariantSigma_iff`/`measurableSet_shiftInvariantSigma_iff` characteristic lemma, or provide a simp-normal-form alias with that statement.",
+   "issue": "The main measurable-set characterization lacks a normal-form automation annotation, so `simp` will not reduce `MeasurableSet[shiftInvariantSigma \u03b1] s` to ambient measurability plus shift invariance.",
+   "line": 38
+  }
+ ],
+ "head_sha": "d9e78be48b41e965c7392d73e8b35f61fa89fbad",
+ "merge_base_sha": "807b06fb65aaa8f19113e66d28e6a3adaf18bfa9",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 549,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2ef35611fce6c1cfbe827b803fe2d16204b4e631a753c80c42fcf38eb138a15c",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T193046Z-549-api-design-92c820",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T19:30:46Z",
+ "submitted_by": "kim-em",
+ "summary": "The adapter exposes the definition body even though it provides characteristic lemmas, and it misses the public names/automation that the roadmap target says downstream code should consume.",
+ "transcript_blob": "dac77e77c6f84c910e0b28c4bfdcd1ca7155e3885019218c28636137d6553795",
+ "usage": {
+  "cached_input_tokens": 54912,
+  "input_tokens": 86883,
+  "output_tokens": 2299,
+  "reasoning_output_tokens": 1054
+ },
+ "verdict": "request_changes"
+}
