@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.326817,
+   "returncode": 0,
+   "secs": 58.0,
+   "usage": {
+    "cached_input_tokens": 105984,
+    "input_tokens": 144633,
+    "output_tokens": 2686,
+    "reasoning_output_tokens": 1036
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "13e4212996ac32486db6c7e2ef821d82d27e35ba",
+ "cost_estimated": true,
+ "cost_usd": 0.326817,
+ "dedupe_key": "FormalFrontier/TauCeti|499|818b31a16a76bdd78343771854b6fa3eeed2e843|api-design|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "513c5307799095d74fb08219588721da7c8f84c2f270b00632f8718557027779",
+ "diff_sha256": "513c5307799095d74fb08219588721da7c8f84c2f270b00632f8718557027779",
+ "duration_s": 58.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` finds the target only in `roadmap/TauCetiRoadmap/OrthogonalL2Bases/Targets.lean:79`; the PR exposes `integrable_eval_mul_gaussian` at line 78 and `integrable_aeval_mul_hermite_mul_gaussian` at line 93 instead.",
+   "file": "TauCeti/Analysis/SpecialFunctions/HermiteGaussian.lean",
+   "fix": "Add the direct public theorem `integrable_aeval_mul_gaussian (p : \u2124[X]) : Integrable (fun x : \u211d => aeval x p * Real.exp (-(x ^ 2 / 2)))`, proved from the real-polynomial lemma, and keep any real-polynomial helper private unless separately needed.",
+   "issue": "The public integrability API is the internal `\u211d[X]`/`eval` lemma, not the roadmap target `integrable_aeval_mul_gaussian (p : \u2124[X])`; consumers with `p : \u2124[X]` must know the map-to-`\u211d[X]` implementation path.",
+   "line": 78
+  },
+  {
+   "evidence": "Section-level annotations are at `TauCeti/Analysis/SpecialFunctions/HermiteGaussian.lean:41` and `TauCeti/RingTheory/Polynomial/Hermite/Derivative.lean:25`; the roadmap A1 API names derivative, Gaussian integrability, one-step recursion, and the two orthogonality forms, not the auxiliary construction/proof lemmas.",
+   "file": "",
+   "fix": "Remove `@[expose]` from the public sections, make implementation helpers private or move them outside the public surface, and apply `@[expose]` only to a declaration whose body a downstream consumer must compute with.",
+   "issue": "Both new files use section-level `@[expose]`, body-exposing every public declaration, including helper facts such as `hermiteReal`, `eval_map_intCast`, `integrable_pow_mul_gaussian`, `hasDerivAt_hermite_mul_gaussian`, `integral_aeval_mul_hermite`, and `integral_gaussian_half`; the roadmap consumer only needs the stated lemmas, not unfoldable bodies for the proof scaffolding.",
+   "line": 0
+  }
+ ],
+ "head_sha": "818b31a16a76bdd78343771854b6fa3eeed2e843",
+ "merge_base_sha": "17dc8c1231c8aebe20e1f4a2fe8ceb93afdab7ea",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 499,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7f6b3ac454c387e25d5f5155a7335876973f05c7335b6124b59b727a0dd8dba8",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T203707Z-499-api-design-44e256",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T20:37:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR proves the target facts, but the public interface is not yet the small characteristic A1 API: it exposes implementation scaffolding and omits the direct integrability lemma the roadmap names for consumers.",
+ "transcript_blob": "0d63fbda31d0e26cc045f1582a260b07511b61d7b314ecd70d95b52fbec8ceab",
+ "usage": {
+  "cached_input_tokens": 105984,
+  "input_tokens": 144633,
+  "output_tokens": 2686,
+  "reasoning_output_tokens": 1036
+ },
+ "verdict": "request_changes"
+}
