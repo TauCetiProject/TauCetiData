@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.333361,
+   "returncode": 0,
+   "secs": 42.6,
+   "usage": {
+    "cached_input_tokens": 49792,
+    "input_tokens": 99299,
+    "output_tokens": 2031,
+    "reasoning_output_tokens": 801
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3f2cdeb4adc1e33ca9313e378e265a0340591625",
+ "cost_estimated": true,
+ "cost_usd": 0.333361,
+ "dedupe_key": "FormalFrontier/TauCeti|533|5b0c87ac098b914b70379fc530a1c11ef15a12a9|api-design|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "7959e1182965a9d0620012b2316e0e70af124da808af2d55fea18b221776d6f4",
+ "diff_sha256": "7959e1182965a9d0620012b2316e0e70af124da808af2d55fea18b221776d6f4",
+ "duration_s": 42.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"prodMulEquiv|piMulEquiv\"` shows `@[expose] def` at lines 53 and 86, with `prodMulEquiv_apply`, `prodMulEquiv_symm_apply`, `piMulEquiv_apply`, and `piMulEquiv_symm_apply` at lines 67, 75, 95, and 101.",
+   "file": "TauCeti/AlgebraicTopology/FundamentalGroupProduct.lean",
+   "fix": "Remove `@[expose]` from both definitions; if any consumer needs more than the existing apply/symm_apply lemmas, add that lemma instead of exposing the body.",
+   "issue": "`FundamentalGroup.prodMulEquiv` and `FundamentalGroup.piMulEquiv` are marked `@[expose]`, exposing their bodies even though their forward and inverse behavior is already provided by public simp lemmas.",
+   "line": 53
+  },
+  {
+   "evidence": "`rg` finds only the two torus defs at lines 41 and 50; the underlying circle computation has characterization lemmas `fundamentalGroupMulEquiv_zero_apply_eq_iff`, `..._symm_monodromy`, and `..._eq_one_iff` at lines 249, 258, and 267.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/TorusFundamentalGroup.lean",
+   "fix": "Add characteristic lemmas, marked `[simp]` where they are normal forms, for the binary first/second projections and the indexed coordinate of the forward map, plus inverse/monodromy characterizations matching the circle API.",
+   "issue": "`AddCircle.prodFundamentalGroupMulEquiv` and `AddCircle.piFundamentalGroupMulEquiv` are public equivalences but have no API describing their coordinates or inverse, so users must unfold composed `MulEquiv.trans` definitions to use the torus computation.",
+   "line": 41
+  }
+ ],
+ "head_sha": "5b0c87ac098b914b70379fc530a1c11ef15a12a9",
+ "merge_base_sha": "028075b46ea6abe62a96963d74f482052f41a8fe",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 533,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "99f70e128ec90be6683795695dbb9fcac80f8ceaf9414ff5b81450ba2e7fffab",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T044234Z-533-api-design-6d48d4",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T04:42:34Z",
+ "submitted_by": "kim-em",
+ "summary": "The product equivalences expose implementation bodies unnecessarily, and the torus-facing equivalences are published without the characterization lemmas consumers need to use them without unfolding.",
+ "transcript_blob": "064ef01d7dd807a78303ff4da787c94a9a0cb61fc71df9336efc22022d436f3f",
+ "usage": {
+  "cached_input_tokens": 49792,
+  "input_tokens": 99299,
+  "output_tokens": 2031,
+  "reasoning_output_tokens": 801
+ },
+ "verdict": "request_changes"
+}
