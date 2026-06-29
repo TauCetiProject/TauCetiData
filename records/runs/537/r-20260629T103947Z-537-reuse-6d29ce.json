@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.343463,
+   "returncode": 0,
+   "secs": 62.4,
+   "usage": {
+    "cached_input_tokens": 141696,
+    "input_tokens": 178819,
+    "output_tokens": 2900,
+    "reasoning_output_tokens": 1066
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "52d17d95608163838d4d5cf926741abb295f73c6",
+ "cost_estimated": true,
+ "cost_usd": 0.343463,
+ "dedupe_key": "FormalFrontier/TauCeti|537|3120bf6d25646ba026ee686bf5ffa831d11a4e7d|reuse|gpt-5.5|a3ee771b4b5cc783|production|2",
+ "diff_blob": "1e2b03444aac923b51303f9ac0be8143fa0d639c00937b50f5bc7e04fe7cc6e4",
+ "diff_sha256": "1e2b03444aac923b51303f9ac0be8143fa0d639c00937b50f5bc7e04fe7cc6e4",
+ "duration_s": 62.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `CoerciveEnergy.lean:126: lemma min_coercivityConstant_mul_norm_sq_le_energyIntegrand_self`; `UniformEllipticity.lean:317: lemma lower_bound_toQuadraticForm'_add`; new lines 95-96 only trans the existing bound through the perturbation inequality.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Use `min_coercivityConstant_mul_norm_sq_le_energyIntegrand_self` with `lower_bound_toQuadraticForm'_add hA hB` and `hc.trans (le_add_of_nonneg_right hd)`, or keep only the lower-level monotonicity lemma.",
+   "issue": "`min_coercivityConstant_mul_norm_sq_le_energyIntegrand_add_principal_mass_self` is a special case of the existing raw bound for `(A + B, c\u2080 + d)`.",
+   "line": 87
+  },
+  {
+   "evidence": "grep: `CoerciveEnergy.lean:167: lemma min_lam_mass_mul_norm_sq_le_energyIntegrand_zero_drift_self`; new lines 106-113 perform exactly that call after proving `min lam c \u2264 min lam (c + d)`.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Use `min_lam_mass_mul_norm_sq_le_energyIntegrand_zero_drift_self hlam (lower_bound_toQuadraticForm'_add hA hB) (add_nonneg hc hd)` and the existing `min` monotonicity step at call sites.",
+   "issue": "`min_lam_mass_mul_norm_sq_le_energyIntegrand_add_principal_mass_zero_drift_self` is a weaker reproof of the existing zero-drift estimate after the same perturbation rewrite.",
+   "line": 100
+  },
+  {
+   "evidence": "grep: `UniformEllipticity.lean:414: lemma lower_bound`; `CoerciveEnergy.lean:126: lemma min_coercivityConstant_mul_norm_sq_le_energyIntegrand_self`; new lines 130-131 call the duplicate point lemma, and lines 151-152 just specialize that wrapper to fields.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Remove `min_coercivityConstant_mul_norm_sq_le_energyIntegrand_add_principal_mass_self` and `_self_on`, or replace their uses with the raw `PDE.min_coercivityConstant...` plus `h.lower_bound hx` and `lower_bound_toQuadraticForm'_add`.",
+   "issue": "The `UniformlyEllipticOn` point and field wrappers repeat the same raw-bound specialization through `h.lower_bound` and the duplicate point lemma.",
+   "line": 122
+  }
+ ],
+ "head_sha": "3120bf6d25646ba026ee686bf5ffa831d11a4e7d",
+ "merge_base_sha": "f8ee125aff597ca04224dbb89657ee83b647a24c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 537,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "daf043f17654463451a0b929e9bb74207d9f98f79d14fdc6920d4184bc807464",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T103947Z-537-reuse-6d29ce",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T10:39:47Z",
+ "submitted_by": "kim-em",
+ "summary": "The generic monotonicity lemma is not a direct duplicate, but the explicit perturbed lower-bound wrappers are parallel specializations of existing raw-bound estimates plus `lower_bound_toQuadraticForm'_add`. Remove those wrappers or restate them as local uses of the existing estimates rather than adding new API names.",
+ "transcript_blob": "5b002a9b25f53a71c0b5c87fb6b167b6d73259fbdb612605ac62c623b5ceafd3",
+ "usage": {
+  "cached_input_tokens": 141696,
+  "input_tokens": 178819,
+  "output_tokens": 2900,
+  "reasoning_output_tokens": 1066
+ },
+ "verdict": "request_changes"
+}
