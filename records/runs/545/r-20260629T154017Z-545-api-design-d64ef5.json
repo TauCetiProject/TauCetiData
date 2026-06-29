@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.176733,
+   "returncode": 0,
+   "secs": 40.6,
+   "usage": {
+    "cached_input_tokens": 48256,
+    "input_tokens": 67539,
+    "output_tokens": 1873,
+    "reasoning_output_tokens": 727
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2878d07f3f972ba8be417a63ba2452d54fb34a7e",
+ "cost_estimated": true,
+ "cost_usd": 0.176733,
+ "dedupe_key": "FormalFrontier/TauCeti|545|25d155c36709378bacaeda8a9e87dd243ac87a53|api-design|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "10abe8e8e612dd2f5c5c9a7744d37f8c171e199a09b29d26b2c696f75868fc1c",
+ "diff_sha256": "10abe8e8e612dd2f5c5c9a7744d37f8c171e199a09b29d26b2c696f75868fc1c",
+ "duration_s": 40.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`nl -ba` shows `@[expose]` at lines 90, 95, and 100; `rg -n \"\\.eq_def\"` shows the only new uses are `Rescale.lean:134`, `:147`, and `:160`.",
+   "file": "TauCeti/Geometry/Symplectic/Lagrangian.lean",
+   "fix": "Remove these `@[expose]` annotations and prove the rescale lemmas through existing characteristic lemmas such as `isIsotropic_iff`, `isCoisotropic_iff`, and `isLagrangian_iff`, or add named non-exposing restatements if needed.",
+   "issue": "`IsIsotropic`, `IsCoisotropic`, and `IsLagrangian` are newly marked `@[expose]`, leaking their bodies as public `eq_def` API just so the rescale proofs can unfold them.",
+   "line": 90
+  },
+  {
+   "evidence": "`Rescale.lean:53` declares `@[simp] lemma orthogonal_smul {c : R} ... : (c \u2022 B).orthogonal L = B.orthogonal L`, and its only grep hit as a consumer is the proof of `orthogonal_rescale` at `Rescale.lean:128`.",
+   "file": "TauCeti/Geometry/Symplectic/Rescale.lean",
+   "fix": "Make this helper `private`/local to the proof, or move it to a deliberate bilinear-form API file only if Tau Ceti intends to expose that general Mathlib-facing surface.",
+   "issue": "`TauCeti.LinearMap.BilinForm.orthogonal_smul` is a fully public generic bilinear-form lemma in a symplectic rescale file, broader than the Lagrangian-boundary rescale API named by the PR.",
+   "line": 53
+  }
+ ],
+ "head_sha": "25d155c36709378bacaeda8a9e87dd243ac87a53",
+ "merge_base_sha": "2878d07f3f972ba8be417a63ba2452d54fb34a7e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 545,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "701b80e334f0f0b0285aa8848a7191bee1da6a929efa045c267458946fe70eab",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T154017Z-545-api-design-d64ef5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T15:40:17Z",
+ "submitted_by": "kim-em",
+ "summary": "The rescale lemmas are the right public API, but the PR exposes implementation details beyond the roadmap target. Keep the predicate bodies and generic bilinear-form helper out of the public surface.",
+ "transcript_blob": "f405b93ddf83f8c19b00f019f5174f0c5996f915f61cdf3188e5b7a5a7316637",
+ "usage": {
+  "cached_input_tokens": 48256,
+  "input_tokens": 67539,
+  "output_tokens": 1873,
+  "reasoning_output_tokens": 727
+ },
+ "verdict": "request_changes"
+}
