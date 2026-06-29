@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.342482,
+   "returncode": 0,
+   "secs": 62.0,
+   "usage": {
+    "cached_input_tokens": 166144,
+    "input_tokens": 202078,
+    "output_tokens": 2658,
+    "reasoning_output_tokens": 842
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "52d17d95608163838d4d5cf926741abb295f73c6",
+ "cost_estimated": true,
+ "cost_usd": 0.342482,
+ "dedupe_key": "FormalFrontier/TauCeti|537|5b1d1907482fba66cad025609c6c2c3cf330ce81|api-design|gpt-5.5|a3ee771b4b5cc783|production|4",
+ "diff_blob": "ccceac70452400d7b76b78949feac9476be43aab9ed9e8ce6ce1f0670bfdf407",
+ "diff_sha256": "ccceac70452400d7b76b78949feac9476be43aab9ed9e8ce6ce1f0670bfdf407",
+ "duration_s": 62.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`CoerciveEnergy.lean:126` and `UniformEllipticEnergy.lean:165` expose explicit lower-bound lemmas; `rg -n \"add_principal_mass|min_coercivityConstant.*add\" code/TauCeti/Analysis/PDE` finds only `CoercivePerturbation.lean:48` and `:66`, no explicit perturbed lower-bound lemma.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Add a perturbed version of `min_coercivityConstant_mul_norm_sq_le_energyIntegrand_self`, with the same constant and perturbed right-hand side, and annotate it consistently with the existing coercive-energy API.",
+   "issue": "`isCoercive_energyIntegrand_add_principal_mass_of_isCoercive` gives only existential `IsCoercive`, so downstream Lax--Milgram/G\u00e5rding code cannot retain the explicit coercivity constant after the nonnegative perturbation.",
+   "line": 66
+  },
+  {
+   "evidence": "`UniformEllipticEnergy.lean:165`, `:177`, `:194`, and `:207` provide the existing explicit point/domain wrappers; `rg -n \"UniformlyEllipticOn.*add.*energyIntegrand|isCoercive_energyIntegrand.*add\" code/TauCeti/Analysis/PDE` has no perturbed wrapper hits beyond `CoercivePerturbation.lean:66`.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Add `UniformlyEllipticOn` point and coefficient-field `_on` wrappers for the perturbed coercivity/lower-bound statements, mirroring `UniformEllipticEnergy.lean`.",
+   "issue": "The new perturbation API has no `UniformlyEllipticOn` point or `_on` wrappers, forcing roadmap callers with the named ellipticity hypothesis to manually unpack `h.lower_bound` and rebuild the raw theorem.",
+   "line": 66
+  }
+ ],
+ "head_sha": "5b1d1907482fba66cad025609c6c2c3cf330ce81",
+ "merge_base_sha": "f8ee125aff597ca04224dbb89657ee83b647a24c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 537,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "3acbd98beaebe15d564032e08dd376ef5e5cd4904e4a5e1b524adc94990b391e",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T111704Z-537-api-design-7b6851",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T11:17:04Z",
+ "submitted_by": "kim-em",
+ "summary": "The perturbation surface is too thin for the stated PDE consumers: it only transfers existential coercivity and leaves callers without the explicit estimate and bundled ellipticity wrappers used by the surrounding API.",
+ "transcript_blob": "ab82df9c0275f4d5236a3c98ed2ececfaf4f670369147cf298feb707eae89e78",
+ "usage": {
+  "cached_input_tokens": 166144,
+  "input_tokens": 202078,
+  "output_tokens": 2658,
+  "reasoning_output_tokens": 842
+ },
+ "verdict": "request_changes"
+}
