@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.955172,
+   "returncode": 0,
+   "secs": 98.4,
+   "usage": {
+    "cached_input_tokens": 511104,
+    "input_tokens": 623698,
+    "output_tokens": 4555,
+    "reasoning_output_tokens": 1820
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f8ee125aff597ca04224dbb89657ee83b647a24c",
+ "cost_estimated": true,
+ "cost_usd": 0.955172,
+ "dedupe_key": "FormalFrontier/TauCeti|475|55029bf751a1a497fb3ab6dd7c5f3e0938573063|generality|gpt-5.5|a3ee771b4b5cc783|production|8",
+ "diff_blob": "d990812d90ccc43d66bd2737ab0ac45d7d8a3fecbfdb77ebd9b041577c6c7a78",
+ "diff_sha256": "d990812d90ccc43d66bd2737ab0ac45d7d8a3fecbfdb77ebd9b041577c6c7a78",
+ "duration_s": 98.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Basic.lean:209-225` fixes `variable {f : \u211d \u2192 \u211d}`; Mathlib has `iteratedDerivWithin (f : \ud835\udd5c \u2192 F)` at `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean:58-60` and `ContDiffOn.differentiableOn_iteratedDerivWithin` at `Defs.lean:162-165` with the same generic `\ud835\udd5c,F` parameters.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Basic.lean",
+   "fix": "State it with `{\ud835\udd5c} [NontriviallyNormedField \ud835\udd5c] {F} [NormedAddCommGroup F] [NormedSpace \ud835\udd5c F] {f : \ud835\udd5c \u2192 F}` and specialize only in the CM wrapper.",
+   "issue": "`ContDiffOn.hasDerivAt_iteratedDerivWithin` is exported as a theorem only for `f : \u211d \u2192 \u211d`, although its proof uses generic Mathlib APIs and does not need either restriction.",
+   "line": 214
+  },
+  {
+   "evidence": "`Integral.lean:52-64` fixes `variable {f : \u211d \u2192 \u211d}` and rewrites only with `iteratedDerivWithin_eq_iteratedDeriv`; Mathlib's theorem is generic in the codomain at `IteratedDeriv/Defs.lean:70-72`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Integral.lean",
+   "fix": "Generalize the file-level variable for this lemma to `{F} [NormedAddCommGroup F] [NormedSpace \u211d F] {f : \u211d \u2192 F}`; keep the CM wrapper real-valued.",
+   "issue": "The exported smooth comparison `ContDiffAt.iteratedDerivWithin_Icc_eq_Ici` is also fixed to `f : \u211d \u2192 \u211d`, but the argument only compares iterated derivatives and works for `f : \u211d \u2192 F`.",
+   "line": 56
+  },
+  {
+   "evidence": "`Integral.lean:68-107` uses only `intervalIntegral.integral_derivWithin_Icc_of_contDiffOn_Icc` and integral congruence; Mathlib states that FTC for `{f : \u211d \u2192 E}` with `[CompleteSpace E]` at `Mathlib/MeasureTheory/Integral/IntervalIntegral/ContDiff.lean:21-54`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/Integral.lean",
+   "fix": "State these smooth `ContDiffOn` lemmas for `{E} [NormedAddCommGroup E] [NormedSpace \u211d E] [CompleteSpace E] {f : \u211d \u2192 E}` where integrals are used; leave the completely-monotone wrappers specialized to `\u211d`.",
+   "issue": "The exported FTC helpers `ContDiffOn.integral_neg_derivWithin_Icc`, `..._zero_left`, `..._eq_Ici`, and `ContDiffOn.tendsto_total_mass` are stated only for real-valued functions, while Mathlib's interval-integral FTC already supports vector-valued `f : \u211d \u2192 E`.",
+   "line": 68
+  }
+ ],
+ "head_sha": "55029bf751a1a497fb3ab6dd7c5f3e0938573063",
+ "merge_base_sha": "f8ee125aff597ca04224dbb89657ee83b647a24c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 475,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "509f207533040304e0e7145182d898efec6b59804ff4ef75d6cd0a26f03f82c8",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 8,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T145813Z-475-generality-5c8b83",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T14:58:13Z",
+ "submitted_by": "kim-em",
+ "summary": "Some exported smooth-analysis helper APIs are still stated below Mathlib's natural level by hard-coding real-valued functions where the underlying iterated-derivative and FTC APIs already support vector-valued codomains, and in one case arbitrary scalar fields.",
+ "transcript_blob": "1de3ac17fdcd8a547a925e260b9d94434ff97d50615182fc6b6923ec420e457c",
+ "usage": {
+  "cached_input_tokens": 511104,
+  "input_tokens": 623698,
+  "output_tokens": 4555,
+  "reasoning_output_tokens": 1820
+ },
+ "verdict": "request_changes"
+}
