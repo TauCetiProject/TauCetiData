@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.242248,
+   "returncode": 0,
+   "secs": 40.9,
+   "usage": {
+    "cached_input_tokens": 48256,
+    "input_tokens": 80504,
+    "output_tokens": 1896,
+    "reasoning_output_tokens": 713
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9c46b4ac2dd60b6835cd470edc346ce6f072af76",
+ "cost_estimated": true,
+ "cost_usd": 0.242248,
+ "dedupe_key": "FormalFrontier/TauCeti|528|fca6104ac79a25ade9936d643ee98d3167685f8f|placement|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "d9aa935635c871b47e6dabda53e43505ef7a8a5ad151a2b9f715ca9bb28c5814",
+ "diff_sha256": "d9aa935635c871b47e6dabda53e43505ef7a8a5ad151a2b9f715ca9bb28c5814",
+ "duration_s": 40.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Grep hits: `PathSpace/Shift.lean:32:theorem measurable_reindex`, `:37:theorem map_reindex_pathLaw`, `:48:theorem map_reindex_prefixProj_pathLaw`; `Basic.lean:120` defines `map_prefixProj_pathLaw`, `:150` defines `map_pathLaw`, and `:164` defines `map_blockLaw_reindex`.",
+   "file": "TauCeti/Probability/Exchangeability/PathSpace/Shift.lean",
+   "fix": "Move these three declarations to `TauCeti/Probability/Exchangeability/Basic.lean` near `map_prefixProj_pathLaw`, `map_pathLaw`, and `map_blockLaw_reindex`, then let `PathSpace/Shift.lean` use them from there.",
+   "issue": "`measurable_reindex`, `map_reindex_pathLaw`, and `map_reindex_prefixProj_pathLaw` are generic path-law/reindex lemmas, not shift-iterate API, yet they live in the shift-specific file.",
+   "line": 32
+  },
+  {
+   "evidence": "`Contractability.lean:3:public import TauCeti.Probability.Exchangeability.PathSpace.Shift`; the file doc says this is the Layer 0 home for contractability-specific API, while the added helper use is `Contractability.lean:141:rw [map_reindex_prefixProj_pathLaw ...]`.",
+   "file": "TauCeti/Probability/Exchangeability/Contractability.lean",
+   "fix": "After moving the generic reindex lemmas to `Basic.lean`, change this import back to `public import TauCeti.Probability.Exchangeability.Basic`.",
+   "issue": "`Contractability.lean` now publicly imports the shift-specific `PathSpace.Shift` file just to use the generic reindex-prefix path-law lemma, making the Layer 0 contractability file depend on later path-space shift API.",
+   "line": 3
+  }
+ ],
+ "head_sha": "fca6104ac79a25ade9936d643ee98d3167685f8f",
+ "merge_base_sha": "9c46b4ac2dd60b6835cd470edc346ce6f072af76",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 528,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7282072fac5678c7e8c20ecd201c5750e96f4c7fd52f826db5102f47d3258391",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T000759Z-528-placement-168e18",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T00:07:59Z",
+ "submitted_by": "kim-em",
+ "summary": "The shift-iterate material has a natural home in the new path-space shift file, but the generic reindexing path-law API is misplaced there and creates a wrong dependency from Layer 0 contractability to the shift file.",
+ "transcript_blob": "c87d9f516bc491d1a81848cf7125cb0886a97ece7e4858184ff0f58822836035",
+ "usage": {
+  "cached_input_tokens": 48256,
+  "input_tokens": 80504,
+  "output_tokens": 1896,
+  "reasoning_output_tokens": 713
+ },
+ "verdict": "request_changes"
+}
