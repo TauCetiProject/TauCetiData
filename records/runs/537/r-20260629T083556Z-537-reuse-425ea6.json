@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.367114,
+   "returncode": 0,
+   "secs": 51.5,
+   "usage": {
+    "cached_input_tokens": 91648,
+    "input_tokens": 141452,
+    "output_tokens": 2409,
+    "reasoning_output_tokens": 811
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "52d17d95608163838d4d5cf926741abb295f73c6",
+ "cost_estimated": true,
+ "cost_usd": 0.367114,
+ "dedupe_key": "FormalFrontier/TauCeti|537|bdee41fd61dfd0c14f78beb951ef37454a994c12|reuse|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "6afe91dd2058ba053386771c8c70b0224a0b09ec15efeb9e31522798c9f3f3d3",
+ "diff_sha256": "6afe91dd2058ba053386771c8c70b0224a0b09ec15efeb9e31522798c9f3f3d3",
+ "duration_s": 51.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `CoerciveEnergy.lean:144: lemma isCoercive_energyIntegrand_of_bounds`; `UniformEllipticity.lean:317: lemma lower_bound_toQuadraticForm'_add`; new line 80 is exactly `isCoercive_energyIntegrand_of_bounds hlam (lower_bound_toQuadraticForm'_add hA hB) ...`.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Use the existing `isCoercive_energyIntegrand_of_bounds` plus `lower_bound_toQuadraticForm'_add` at call sites, or justify a single canonical wrapper by removing the overlapping point/domain variants.",
+   "issue": "`isCoercive_energyIntegrand_add_principal_mass_of_bounds` is a parallel special case of existing `isCoercive_energyIntegrand_of_bounds` after `lower_bound_toQuadraticForm'_add` and `hc.trans (le_add_of_nonneg_right hd)`.",
+   "line": 75
+  },
+  {
+   "evidence": "grep: `UniformEllipticEnergy.lean:194: lemma isCoercive_energyIntegrand`; `UniformEllipticity.lean:429: lemma lower_bound`; new lines 105-106 just call the raw-bound duplicate from the existing lower bound.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Replace it by applying `h.isCoercive_energyIntegrand` with lower bound `lower_bound_toQuadraticForm'_add (h.lower_bound hx) hB` if a wrapper is needed locally, rather than adding a parallel exported API.",
+   "issue": "`UniformlyEllipticOn.isCoercive_energyIntegrand_add_principal_mass` duplicates the existing `UniformlyEllipticOn.isCoercive_energyIntegrand` wrapper with only the same lower-bound rewrite for `a x + B` and `c\u2080 + d`.",
+   "line": 100
+  },
+  {
+   "evidence": "grep: `CoerciveEnergy.lean:196: lemma isCoercive_energyIntegrand_of_bounds_on`; new lines 119-123 only specialize `p` and `q` through the point wrapper.",
+   "file": "TauCeti/Analysis/PDE/CoercivePerturbation.lean",
+   "fix": "Use `isCoercive_energyIntegrand_of_bounds_on` with `a := fun x => a x + p x`, `c := fun x => c x + q x`, and lower bound from `lower_bound_toQuadraticForm'_add (h.lower_bound hx) (hp hx)`.",
+   "issue": "`UniformlyEllipticOn.isCoercive_energyIntegrand_add_principal_mass_on` is the domain-level version of the same overlap; existing `isCoercive_energyIntegrand_of_bounds_on` already handles arbitrary coefficient fields once the perturbed lower bound is supplied.",
+   "line": 115
+  }
+ ],
+ "head_sha": "bdee41fd61dfd0c14f78beb951ef37454a994c12",
+ "merge_base_sha": "f8ee125aff597ca04224dbb89657ee83b647a24c",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 537,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b87662c4331a9f63f2872acabd4e9c7717b117a00b1dd9d326612901a68db58c",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T083556Z-537-reuse-425ea6",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T08:35:56Z",
+ "submitted_by": "kim-em",
+ "summary": "The perturbation wrappers overlap with existing raw-bound coercivity and quadratic-form perturbation APIs; keep the generic monotonicity lemma, but avoid adding parallel coercivity APIs that are just one-line rewrites of existing ones.",
+ "transcript_blob": "30e796425658cbb26a047a7d86ded61e09dcba0a90fe4d6c62fbd10d9a93c51f",
+ "usage": {
+  "cached_input_tokens": 91648,
+  "input_tokens": 141452,
+  "output_tokens": 2409,
+  "reasoning_output_tokens": 811
+ },
+ "verdict": "request_changes"
+}
