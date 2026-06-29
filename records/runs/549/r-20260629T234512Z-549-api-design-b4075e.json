@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.281762,
+   "returncode": 0,
+   "secs": 61.0,
+   "usage": {
+    "cached_input_tokens": 65024,
+    "input_tokens": 96394,
+    "output_tokens": 3080,
+    "reasoning_output_tokens": 1634
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "807b06fb65aaa8f19113e66d28e6a3adaf18bfa9",
+ "cost_estimated": true,
+ "cost_usd": 0.281762,
+ "dedupe_key": "FormalFrontier/TauCeti|549|233a50b2c262de66f65614f4e6c80f032a85bfb3|api-design|gpt-5.5|a3ee771b4b5cc783|production|5",
+ "diff_blob": "1422e8369739e1ee171efa6eb5789bece838327aa1f37281bb642db17dc32443",
+ "diff_sha256": "1422e8369739e1ee171efa6eb5789bece838327aa1f37281bb642db17dc32443",
+ "duration_s": 61.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`roadmap/TauCetiRoadmap/Exchangeability/README.md:376-377` lists those declaration names; `rg` in the new file finds only `measurable_shiftInvariantSigma_of_comp_shift_eq` and `comp_shift_eq_of_measurable_shiftInvariantSigma`.",
+   "file": "TauCeti/Probability/Ergodic/ShiftInvariantSigma.lean",
+   "fix": "Add public alias theorems with the exact roadmap names, reusing `measurable_shiftInvariantSigma_of_comp_shift_eq` and `comp_shift_eq_of_measurable_shiftInvariantSigma` as appropriate.",
+   "issue": "The two roadmap-facing names `shiftInvariantSigma_measurable_shift_eq` and `shiftInvariant_implies_shiftInvariantMeasurable` are not exported; only differently named lemmas at lines 81 and 88 exist, so downstream code targeting the roadmap API cannot refer to the advertised declarations.",
+   "line": 81
+  },
+  {
+   "evidence": "`ShiftInvariantSigma.lean:73-77` proves only `Measurable (shift \u03b1)` on `shiftInvariantSigma`; `rg -n \"iterate|preimage\" code/TauCeti/Probability/Ergodic/ShiftInvariantSigma.lean` has no iterate/preimage API, while Mathlib exposes the needed generic `MeasurableSpace.le_invariants_iterate`.",
+   "file": "TauCeti/Probability/Ergodic/ShiftInvariantSigma.lean",
+   "fix": "Import the path-space shift-iterate API and add public lemmas such as invariant-sigma measurability of `(shift \u03b1)^[n]` and a `[simp]`/normal-form theorem for `(shift \u03b1)^[n] \u207b\u00b9' s = s` when `s` is `shiftInvariantSigma`-measurable.",
+   "issue": "The invariant sigma-algebra API only characterizes the one-step shift; it lacks the iterate measurability and iterate preimage normal forms claimed for this adapter, forcing consumers back to generic `MeasurableSpace.invariants` lemmas instead of TauCeti shift API.",
+   "line": 73
+  }
+ ],
+ "head_sha": "233a50b2c262de66f65614f4e6c80f032a85bfb3",
+ "merge_base_sha": "807b06fb65aaa8f19113e66d28e6a3adaf18bfa9",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 549,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "d85a6ebcc0f1729deb85dfed468d785eb8838fda2adb4a4e0fd14d94a4d9d3bd",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 5,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T234512Z-549-api-design-b4075e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T23:45:12Z",
+ "submitted_by": "kim-em",
+ "summary": "The construction is minimal, but the exported API does not yet match the roadmap-facing surface and omits the shift-iterate interaction promised for the invariant sigma algebra.",
+ "transcript_blob": "a6809930777a11195874c8cd1d82c9cd111a009f5a8fb0e8534ac21345285a33",
+ "usage": {
+  "cached_input_tokens": 65024,
+  "input_tokens": 96394,
+  "output_tokens": 3080,
+  "reasoning_output_tokens": 1634
+ },
+ "verdict": "request_changes"
+}
