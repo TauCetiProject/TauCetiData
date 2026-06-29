@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.270496,
+   "returncode": 0,
+   "secs": 45.3,
+   "usage": {
+    "cached_input_tokens": 72192,
+    "input_tokens": 106388,
+    "output_tokens": 2114,
+    "reasoning_output_tokens": 814
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "807b06fb65aaa8f19113e66d28e6a3adaf18bfa9",
+ "cost_estimated": true,
+ "cost_usd": 0.270496,
+ "dedupe_key": "FormalFrontier/TauCeti|549|2b5c8f0562262bada6e4b80776f016ece4d93d4b|generality|gpt-5.5|a3ee771b4b5cc783|production|3",
+ "diff_blob": "0eb837efef2391b38f468bfe1eaebb940c2b4f36828b13b65fbe14764953b996",
+ "diff_sha256": "0eb837efef2391b38f468bfe1eaebb940c2b4f36828b13b65fbe14764953b996",
+ "duration_s": 45.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` confirms Mathlib already has `Function.IsFixedPt.preimage_iterate` at `mathlib/Mathlib/Dynamics/FixedPoints/Basic.lean:69`; this PR restates it for `((shift \u03b1)^[n]) \u207b\u00b9' s = s` at lines 75-83.",
+   "file": "TauCeti/Probability/Ergodic/ShiftInvariantSigma.lean",
+   "fix": "Drop these exported special cases, or first add/use a general invariant-set iterate lemma and keep only a necessary roadmap-facing shift alias if downstream code needs the name.",
+   "issue": "`isShiftInvariant.preimage_shift_iterate_eq` and its `MeasurableSet` wrapper at line 81 specialize the general fixed-point iterate theorem to `shift \u03b1` without adding a more general API.",
+   "line": 75
+  },
+  {
+   "evidence": "The proof at lines 90-94 is entirely `MeasurableSpace.le_invariants_iterate (shift \u03b1) n` plus `measurableSet_invariants`; `rg` shows the general input theorem at `mathlib/Mathlib/MeasureTheory/MeasurableSpace/Invariants.lean:55`.",
+   "file": "TauCeti/Probability/Ergodic/ShiftInvariantSigma.lean",
+   "fix": "Prove the general theorem `@Measurable \u03b3 \u03b3 (MeasurableSpace.invariants f) (MeasurableSpace.invariants f) (f^[n])` first, then derive the `shiftInvariantSigma` adapter and its shift special case from it.",
+   "issue": "`measurable_shift_iterate_shiftInvariantSigma` and the `n = 1` theorem at line 97 prove measurability of iterates only for the path-space shift, but the proof uses only `MeasurableSpace.invariants` and works for every self-map `f : \u03b3 \u2192 \u03b3`.",
+   "line": 87
+  }
+ ],
+ "head_sha": "2b5c8f0562262bada6e4b80776f016ece4d93d4b",
+ "merge_base_sha": "807b06fb65aaa8f19113e66d28e6a3adaf18bfa9",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 549,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "17be1baafd97073de85e30db36e9f7af1ba8cbf0eae52943776cc7a227a4a618",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 3,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260629T225214Z-549-generality-f73c0c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-29T22:52:14Z",
+ "submitted_by": "kim-em",
+ "summary": "The roadmap-facing sigma-algebra adapters are at the expected shift-specific level, but the extra iterate API is exported only for `shift \u03b1` where the natural statements are already general or readily general over any self-map.",
+ "transcript_blob": "4ae5d5a8bbcfceef33772c01b8c0fa433f38308430339e225ee15029291dbd7f",
+ "usage": {
+  "cached_input_tokens": 72192,
+  "input_tokens": 106388,
+  "output_tokens": 2114,
+  "reasoning_output_tokens": 814
+ },
+ "verdict": "request_changes"
+}
