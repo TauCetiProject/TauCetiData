@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.830761,
+   "returncode": 0,
+   "secs": 89.7,
+   "usage": {
+    "cached_input_tokens": 298752,
+    "input_tokens": 411695,
+    "output_tokens": 3889,
+    "reasoning_output_tokens": 1485
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0daae37fa59c4eb16bd5787a99632c07ecda6c03",
+ "cost_estimated": true,
+ "cost_usd": 0.830761,
+ "dedupe_key": "FormalFrontier/TauCeti|560|e42cb0ead7a836a54a2a185524111bee73114e10|reuse|gpt-5.5|a3ee771b4b5cc783|production|2",
+ "diff_blob": "7f8e830be68ee63fa443576639285c9bf30f18d52164777c8ac013172367fa8a",
+ "diff_sha256": "7f8e830be68ee63fa443576639285c9bf30f18d52164777c8ac013172367fa8a",
+ "duration_s": 89.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "New bodies at ProcessShift.lean:58-60 and 75 match Mathlib: `def Stream' (\u03b1) := \u2115 \u2192 \u03b1`, `def cons ... | 0 => a | n + 1 => s n`, and `def tail ... := fun i => s.get (i + 1)` in Mathlib/Data/Stream/Defs.lean:24,29-31,42; Mathlib also already has `Stream'.tail_cons` at Data/Stream/Init.lean:48-50.",
+   "file": "TauCeti/Probability/Exchangeability/PathSpace/ProcessShift.lean",
+   "fix": "Define these as pointwise aliases of `Stream'.cons`/`Stream'.tail` or drop the new names and state the measurability/comap lemmas using `fun \u03c9 => Stream'.cons (x \u03c9) (t \u03c9)` and `fun \u03c9 => Stream'.tail (t \u03c9)`.",
+   "issue": "`processCons` and `processTail` duplicate Mathlib's `Stream'.cons` and `Stream'.tail` on the same underlying type `\u2115 \u2192 \u03b1`, creating a parallel sequence API.",
+   "line": 58
+  },
+  {
+   "evidence": "The new proof at Cylinder.lean:60-70 uses `Finset.prod_eq_one`/`Finset.prod_eq_zero`; Mathlib has `Set.indicator_pi_one_apply` at Mathlib/Algebra/BigOperators/GroupWithZero/Finset.lean:48-50, exactly relating a finite pi-set indicator to the product of coordinate indicators.",
+   "file": "TauCeti/Probability/Exchangeability/PathSpace/Cylinder.lean",
+   "fix": "Rewrite the cylinder as the preimage of `(Set.univ : Set (Fin m)).pi C` under `fun \u03c9 i => X (k i) \u03c9` and derive the identity from `Set.indicator_pi_one_apply`, keeping only a thin process-level specialization if needed.",
+   "issue": "`blockIndicatorProd_eq_indicator` reproves the finite product-of-indicators-as-pi-indicator lemma by a case split instead of reusing Mathlib's existing indicator-pi theorem.",
+   "line": 60
+  }
+ ],
+ "head_sha": "e42cb0ead7a836a54a2a185524111bee73114e10",
+ "merge_base_sha": "12321b5724f4ad41d0b60a2005aceb2b865d6c2b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 560,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "d27d510675e87e0dd9b1f818f0a9208f8b93fa4750df10f00ca1896f93781895",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260630T054943Z-560-reuse-adbb09",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-30T05:49:43Z",
+ "submitted_by": "kim-em",
+ "summary": "The shifted-path API now records reuse of TauCeti's existing `shift`, but the PR still adds parallel wrappers for stream cons/tail and reproves an existing finite-product indicator identity instead of reusing Mathlib's APIs.",
+ "transcript_blob": "94d6bc48607f623298bf503d75a86f59f7250c6956bd031e4316effd0b687ee4",
+ "usage": {
+  "cached_input_tokens": 298752,
+  "input_tokens": 411695,
+  "output_tokens": 3889,
+  "reasoning_output_tokens": 1485
+ },
+ "verdict": "request_changes"
+}
