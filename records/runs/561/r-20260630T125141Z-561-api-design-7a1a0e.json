@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.435648,
+   "returncode": 0,
+   "secs": 57.3,
+   "usage": {
+    "cached_input_tokens": 95616,
+    "input_tokens": 159606,
+    "output_tokens": 2263,
+    "reasoning_output_tokens": 728
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "170c007429472d9619ec47d1c49d9ed285a30724",
+ "cost_estimated": true,
+ "cost_usd": 0.435648,
+ "dedupe_key": "TauCetiProject/TauCeti|561|e321a4cddff95a0c53496f10fcb50388df582f0b|api-design|gpt-5.5|db8fb3aa80d836bd|production|2",
+ "diff_blob": "53f1f4f7e55986fc80bb9aad8c981db2e7dbf53d3e5ad2b9fdcf7f286942915b",
+ "diff_sha256": "53f1f4f7e55986fc80bb9aad8c981db2e7dbf53d3e5ad2b9fdcf7f286942915b",
+ "duration_s": 57.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"derivative_hermite\"` shows line 43 has `@[simp]` for `derivative_hermite_succ`, while lines 58-59 expose `derivative (hermite n) = n \u2022 hermite (n - 1)` without an attribute; the roadmap A1 entry requests the Hermite derivative API be simp-facing.",
+   "file": "TauCeti/RingTheory/Polynomial/Hermite/Derivative.lean",
+   "fix": "Add `@[simp]` to `derivative_hermite` or otherwise provide the same simp-facing normal form for arbitrary `n`.",
+   "issue": "`Polynomial.derivative_hermite` is the public arbitrary-index normal form for `derivative (hermite n)`, but it lacks `@[simp]`, so `simp` only handles syntactic successor indices via `derivative_hermite_succ`.",
+   "line": 58
+  },
+  {
+   "evidence": "Lines 67-68 expose `derivative^[k] (hermite n) = n.descFactorial k \u2022 hermite (n - k)` with no automation attribute, and the right-hand side removes the iterated derivative without introducing a loop.",
+   "file": "TauCeti/RingTheory/Polynomial/Hermite/Derivative.lean",
+   "fix": "Add `@[simp]` to `iterate_derivative_hermite` if it is the intended normal form, or add a simp-facing wrapper with the same left-hand side.",
+   "issue": "`Polynomial.iterate_derivative_hermite` is the public closed form for `derivative^[k] (hermite n)`, but it is not registered as a normal-form simp lemma, leaving the exposed iterated derivative API manual to use.",
+   "line": 67
+  }
+ ],
+ "head_sha": "e321a4cddff95a0c53496f10fcb50388df582f0b",
+ "merge_base_sha": "170c007429472d9619ec47d1c49d9ed285a30724",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 561,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "ddef20326744f985fd9bfbf3585e30439bdb4950c21a554dbf4693db41dc3b16",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260630T125141Z-561-api-design-7a1a0e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-30T12:51:41Z",
+ "submitted_by": "kim-em",
+ "summary": "The public Hermite derivative surface is still missing automation on the exposed characteristic derivative restatements, so downstream users cannot normalize the arbitrary-index and iterated forms with `simp`.",
+ "transcript_blob": "4b02324a853591aa369fc432df82926e5797efd42707ed85ca2a26f7ff5062b3",
+ "usage": {
+  "cached_input_tokens": 95616,
+  "input_tokens": 159606,
+  "output_tokens": 2263,
+  "reasoning_output_tokens": 728
+ },
+ "verdict": "request_changes"
+}
