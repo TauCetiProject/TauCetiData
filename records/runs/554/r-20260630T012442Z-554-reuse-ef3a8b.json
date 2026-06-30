@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.850899,
+   "returncode": 0,
+   "secs": 86.3,
+   "usage": {
+    "cached_input_tokens": 685568,
+    "input_tokens": 763851,
+    "output_tokens": 3890,
+    "reasoning_output_tokens": 1218
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3db54f9f8d8dd4a237927d8cc7419b18a2f3690e",
+ "cost_estimated": true,
+ "cost_usd": 0.850899,
+ "dedupe_key": "FormalFrontier/TauCeti|554|428655677ce420fd75e1edadc74c7ca742d4bc30|reuse|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "9bb7254d611094f64414a1fbb38ba884ac8e34fc2a970e07866bfb61294d5f46",
+ "diff_sha256": "9bb7254d611094f64414a1fbb38ba884ac8e34fc2a970e07866bfb61294d5f46",
+ "duration_s": 86.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PR line 84 proves `(h * k) \u2022 x = h \u2022 k \u2022 x := mul_smul h k x`; Mathlib exports the same theorem at `mathlib/Mathlib/Algebra/Group/Action/Defs.lean:151` as `export SemigroupAction (mul_smul)`.",
+   "file": "TauCeti/Topology/Homotopy/AmbientIsotopyClassAction.lean",
+   "fix": "Delete this theorem and use `mul_smul h k x` at call sites.",
+   "issue": "`AmbientIsotopyClass.mul_smul_apply` is exactly the existing generic action theorem `mul_smul` specialized to `(Y \u2243\u209c Y)` acting on `AmbientIsotopyClass X Y`.",
+   "line": 82
+  },
+  {
+   "evidence": "Mathlib provides `MulAction.compHom` at `mathlib/Mathlib/Algebra/Group/Action/Hom.lean:41`; TauCeti already uses this pattern at `code/TauCeti/AlgebraicTopology/UniversalCover/Deck/Fiber.lean:127`, and the PR itself rewrites through `toHomeomorphHom_apply`/`map_one`/`map_mul` on lines 65-75.",
+   "file": "TauCeti/Geometry/Diffeomorphism/AmbientIsotopyClassAction.lean",
+   "fix": "Define the instance as `MulAction.compHom (AmbientIsotopyClass X M) (toHomeomorphHom (I := I) (M := M) (n := n))` and keep only the needed simp lemmas.",
+   "issue": "The diffeomorphism `MulAction` manually duplicates the standard pullback of the new homeomorphism action along `Diffeomorph.toHomeomorphHom`.",
+   "line": 62
+  }
+ ],
+ "head_sha": "428655677ce420fd75e1edadc74c7ca742d4bc30",
+ "merge_base_sha": "3db54f9f8d8dd4a237927d8cc7419b18a2f3690e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 554,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "38f2691d0483ca61c6d94c7a8e4015a55241ace99f846bf5f56b41a635fbf60b",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260630T012442Z-554-reuse-ef3a8b",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-30T01:24:42Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR adds one theorem that is a direct duplicate of the generic `MulAction` law, and the diffeomorphism action should be transported through the existing `MulAction.compHom` API instead of restating the action laws manually.",
+ "transcript_blob": "0dc4faa67528689f859bfa1abdcffda6e6baf2587c6ef43fee1e014ffc148c81",
+ "usage": {
+  "cached_input_tokens": 685568,
+  "input_tokens": 763851,
+  "output_tokens": 3890,
+  "reasoning_output_tokens": 1218
+ },
+ "verdict": "block"
+}
