@@ -1,0 +1,85 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.556006,
+   "returncode": 0,
+   "secs": 50.9,
+   "usage": {
+    "cached_input_tokens": 44032,
+    "input_tokens": 136520,
+    "output_tokens": 2385,
+    "reasoning_output_tokens": 790
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3db54f9f8d8dd4a237927d8cc7419b18a2f3690e",
+ "cost_estimated": true,
+ "cost_usd": 0.556006,
+ "dedupe_key": "FormalFrontier/TauCeti|556|1afd48e18f3543ccea253066f7a5f003b51c1046|api-design|gpt-5.5|a3ee771b4b5cc783|production|1",
+ "diff_blob": "4bd21ecdc58c5dfadbf6aa84f2527e544e9570a7755b1270fa80854e78a94ee2",
+ "diff_sha256": "4bd21ecdc58c5dfadbf6aa84f2527e544e9570a7755b1270fa80854e78a94ee2",
+ "duration_s": 50.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 28-30 define `permReindex`; the only related public lemma is measurability at lines 52-56, unlike `shift_apply` in `Exchangeability/Basic.lean`.",
+   "file": "TauCeti/Probability/Exchangeability/ExchangeableSigma.lean",
+   "fix": "Add a simp apply lemma `permReindex \u03c0 x n = x (\u03c0 n)` and use it in place of unfolding the definition.",
+   "issue": "`permReindex` is public but has no exposed characterization such as `@[simp] theorem permReindex_apply`; downstream cannot reason about coordinates of `permReindex \u03c0 x` without unfolding its hidden body.",
+   "line": 28
+  },
+  {
+   "evidence": "Lines 33-43 define `IsFinitelySupportedPerm` and only provide `isFinitelySupportedPerm_one` plus the one-way `eventually_eq_self`; `rg` shows no other TauCeti API for this predicate.",
+   "file": "TauCeti/Probability/Exchangeability/ExchangeableSigma.lean",
+   "fix": "Add characteristic/closure lemmas, at least a finite-support iff or constructor from eventual fixedness and lemmas for `1`, `Equiv.swap`, composition, and inverse as needed by exchangeable events.",
+   "issue": "`IsFinitelySupportedPerm` exposes no usable constructor/API beyond identity, so users cannot prove that basic permutations such as swaps, products, or inverses are finitely supported without unfolding the hidden definition.",
+   "line": 33
+  },
+  {
+   "evidence": "Line 59 has `@[expose, implicit_reducible]`; lines 63-66 give the definitional restatement `pathTail_eq_tailProcess`.",
+   "file": "TauCeti/Probability/Exchangeability/ExchangeableSigma.lean",
+   "fix": "Remove `@[expose]` from `pathTail` and rely on the normal-form theorem for rewriting.",
+   "issue": "`pathTail` is marked `@[expose]` even though the file already provides `pathTail_eq_tailProcess`; this exposes the body to compensate for an API theorem and unnecessarily enlarges the public surface.",
+   "line": 59
+  },
+  {
+   "evidence": "Lines 81-87 define the membership iff with no attribute; `ShiftInvariantSigma.lean` tags the analogous `mem_shiftInvariantSigma_iff` as `@[simp]`.",
+   "file": "TauCeti/Probability/Exchangeability/ExchangeableSigma.lean",
+   "fix": "Annotate `mem_exchangeableSigma_iff` with `@[simp]`; also consider `@[simp]` for `pathTail_eq_tailProcess` if it is intended as the normal form.",
+   "issue": "The main characteristic lemma `mem_exchangeableSigma_iff` is not tagged `@[simp]`, so the new sigma algebra lacks the normal-form automation provided by the parallel `mem_shiftInvariantSigma_iff` API.",
+   "line": 83
+  }
+ ],
+ "head_sha": "1afd48e18f3543ccea253066f7a5f003b51c1046",
+ "merge_base_sha": "3db54f9f8d8dd4a237927d8cc7419b18a2f3690e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 556,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "987789701d02180e76bafa6f118a338d7cd233f40a13fca6af73682df79e10a4",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260630T021311Z-556-api-design-53018a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-30T02:13:11Z",
+ "submitted_by": "kim-em",
+ "summary": "The new sigma algebra is close, but the public API forces downstream users either to unfold hidden definitions or lacks the normal-form automation expected for the declarations it introduces.",
+ "transcript_blob": "6678ac8ddbca56c5b39a8c344909a03be79650fc7d4627340cef491dcda89a04",
+ "usage": {
+  "cached_input_tokens": 44032,
+  "input_tokens": 136520,
+  "output_tokens": 2385,
+  "reasoning_output_tokens": 790
+ },
+ "verdict": "request_changes"
+}
