@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.30116,
+   "returncode": 0,
+   "secs": 57.0,
+   "usage": {
+    "cached_input_tokens": 64000,
+    "input_tokens": 101260,
+    "output_tokens": 2762,
+    "reasoning_output_tokens": 1318
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3db54f9f8d8dd4a237927d8cc7419b18a2f3690e",
+ "cost_estimated": true,
+ "cost_usd": 0.30116,
+ "dedupe_key": "FormalFrontier/TauCeti|558|1090c9c1cbaf4688c98a4e1ac23ecff11f7341a2|generality|gpt-5.5|a3ee771b4b5cc783|production|2",
+ "diff_blob": "31972aeabd7daf02f590facad828b927391c38dd91285f9c42f153188480d010",
+ "diff_sha256": "31972aeabd7daf02f590facad828b927391c38dd91285f9c42f153188480d010",
+ "duration_s": 57.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 67-70 use `measurable_condDistrib` then `h.mono (tailProcess_le_ambient 0 fun k _ => hX k) le_rfl`; `Tail.lean:102-107` explicitly notes only eventual measurability is required for `tailProcess_le_ambient`.",
+   "file": "TauCeti/Probability/DeFinetti/DirectingMeasure.lean",
+   "fix": "State the theorem with `hTail : tailProcess X \u2264 (inferInstance : MeasurableSpace \u03a9)` instead, and derive the current all-coordinate version separately if convenient.",
+   "issue": "`measurable_directingMeasure_coe` assumes `hX : \u2200 n, Measurable (X n)`, but the proof only uses this to show `tailProcess X \u2264 inferInstance`; `measurable_condDistrib` itself needs no measurability of `X 0`.",
+   "line": 64
+  },
+  {
+   "evidence": "Lines 79-85 use `hX` only in `measurable_id'' (tailProcess_le_ambient 0 ...)` and as `(hX 0)` for `condDistrib_ae_eq_condExp`; Mathlib `CondDistrib.lean:321` shows that theorem needs exactly `Measurable X` and `Measurable Y`.",
+   "file": "TauCeti/Probability/DeFinetti/DirectingMeasure.lean",
+   "fix": "Use a signature like `(hTail : tailProcess X \u2264 (inferInstance : MeasurableSpace \u03a9)) (hX0 : Measurable (X 0))` and prove the process-measurable corollary from `tailProcess_le_ambient`.",
+   "issue": "`directingMeasure_X0_marginal` also assumes all coordinates measurable, but the proof only needs measurability of `id : \u03a9 \u2192 \u03a9` from `tailProcess X` to the ambient space and measurability of `X 0`.",
+   "line": 75
+  }
+ ],
+ "head_sha": "1090c9c1cbaf4688c98a4e1ac23ecff11f7341a2",
+ "merge_base_sha": "12321b5724f4ad41d0b60a2005aceb2b865d6c2b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 558,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "222d29a76032c8d4ef5ef90fa2c757fc9c313c716b5bb0a71c5013bea3f24e56",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "generality",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260630T042232Z-558-generality-cebded",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-30T04:22:32Z",
+ "submitted_by": "kim-em",
+ "summary": "The new API proves the right kind of facts, but both exported theorems assume measurability of the entire process where only the tail sub-sigma-algebra, and for the conditional-law theorem the initial coordinate, are used.",
+ "transcript_blob": "b34df01d25a77ff1cbc4ebf1a231168c518c0f4fe2c615444ed45a561cb8dcb2",
+ "usage": {
+  "cached_input_tokens": 64000,
+  "input_tokens": 101260,
+  "output_tokens": 2762,
+  "reasoning_output_tokens": 1318
+ },
+ "verdict": "request_changes"
+}

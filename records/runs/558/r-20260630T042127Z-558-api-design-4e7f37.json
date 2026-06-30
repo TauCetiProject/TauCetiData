@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.703241,
+   "returncode": 0,
+   "secs": 65.2,
+   "usage": {
+    "cached_input_tokens": 102272,
+    "input_tokens": 215113,
+    "output_tokens": 2930,
+    "reasoning_output_tokens": 1333
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3db54f9f8d8dd4a237927d8cc7419b18a2f3690e",
+ "cost_estimated": true,
+ "cost_usd": 0.703241,
+ "dedupe_key": "FormalFrontier/TauCeti|558|1090c9c1cbaf4688c98a4e1ac23ecff11f7341a2|api-design|gpt-5.5|a3ee771b4b5cc783|production|2",
+ "diff_blob": "31972aeabd7daf02f590facad828b927391c38dd91285f9c42f153188480d010",
+ "diff_sha256": "31972aeabd7daf02f590facad828b927391c38dd91285f9c42f153188480d010",
+ "duration_s": 65.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 51 has `@[expose] def directingMeasure`; there is no `directingMeasure_apply`/`directingMeasure_def` grep hit besides the definition, while nearby APIs expose normal forms like `blockLaw_apply`.",
+   "file": "TauCeti/Probability/DeFinetti/DirectingMeasure.lean",
+   "fix": "Remove `@[expose]` and add a public normal-form lemma such as `@[simp] theorem directingMeasure_apply ... : directingMeasure \u03bc X \u03c9 = @condDistrib ...` for the intended rewrite.",
+   "issue": "`directingMeasure` is marked `@[expose]`, so consumers can unfold the body instead of using a stable API.",
+   "line": 51
+  },
+  {
+   "evidence": "Lines 64-70 conclude `Measurable fun \u03c9 => directingMeasure \u03bc X \u03c9 B` by downgrading via `tailProcess_le_ambient`; Mathlib `measurable_condDistrib` is explicitly sub-\u03c3-algebra measurable, and the roadmap names tail/exchangeable measurability as the directing-measure target.",
+   "file": "TauCeti/Probability/DeFinetti/DirectingMeasure.lean",
+   "fix": "Add the stronger lemma `Measurable[tailProcess X] fun \u03c9 => directingMeasure \u03bc X \u03c9 B` (derivable directly from `measurable_condDistrib`), and make the current ambient lemma a corollary using `tailProcess_le_ambient`.",
+   "issue": "The only measurability lemma for set evaluations states ambient `Measurable`, losing the characteristic `tailProcess X`-measurability of the conditional law.",
+   "line": 64
+  }
+ ],
+ "head_sha": "1090c9c1cbaf4688c98a4e1ac23ecff11f7341a2",
+ "merge_base_sha": "12321b5724f4ad41d0b60a2005aceb2b865d6c2b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 558,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0cfe98f2f82aec7c756d02cd31a1b0abc346a41cf1306c4aad01f663d4e55635",
+ "provider": "codex",
+ "repo": "FormalFrontier/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "FormalFrontier/TauCetiReview",
+ "rubrics_sha": "21f3525b96c22030f5b5b49307867b903cab28dc",
+ "rubrics_version": "a3ee771b4b5cc783",
+ "run_id": "r-20260630T042127Z-558-api-design-4e7f37",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-06-30T04:21:27Z",
+ "submitted_by": "kim-em",
+ "summary": "The public surface currently relies on unfolding the new definition and drops the tail-measurability property that characterizes this conditional law. Add characteristic lemmas so downstream de Finetti code can use the object without exposing its body.",
+ "transcript_blob": "3a6a092c58039aa2025b2fc28ce38c5463669f1ba743ef45447d91c3b6b1086b",
+ "usage": {
+  "cached_input_tokens": 102272,
+  "input_tokens": 215113,
+  "output_tokens": 2930,
+  "reasoning_output_tokens": 1333
+ },
+ "verdict": "request_changes"
+}
