@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.293569,
+   "returncode": 0,
+   "secs": 56.0,
+   "usage": {
+    "cached_input_tokens": 35968,
+    "input_tokens": 75203,
+    "output_tokens": 2647,
+    "reasoning_output_tokens": 1590
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "49fe22f8b82acb267639575fd5611353f6218366",
+ "cost_estimated": true,
+ "cost_usd": 0.293569,
+ "dedupe_key": "TauCetiProject/TauCeti|579|39ebddd09b80abbd505fc4195037867a8ef006ce|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "b2c9876b346a5c6487b84570f86ad0d8a12c6386054a95cabfb8862773c03d03",
+ "diff_sha256": "b2c9876b346a5c6487b84570f86ad0d8a12c6386054a95cabfb8862773c03d03",
+ "duration_s": 56.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg \"tailFamily_le_comap_shift|tailProcess_le_comap_shift\"` shows the only uses are their declarations and the proof at lines 99-100 of this new file; existing public tail API is in `Probability/Process/Tail.lean` (`tailFamily_le_iff`, `tailProcess_le_tailFamily`, `futureFiltration_apply`).",
+   "file": "TauCeti/Probability/DeFinetti/CondExpConvergence.lean",
+   "fix": "Make these helpers private, or move a complete public `tailFamily`/shift characterization to `Probability/Process/Tail.lean` (preferably an equality, with the tailProcess corollary derived from it).",
+   "issue": "`tailFamily_le_comap_shift` and `tailProcess_le_comap_shift` are public generic tail facts in a de Finetti file, but the exposed API is only the one-way helper needed by this proof.",
+   "line": 50
+  },
+  {
+   "evidence": "The theorem statement at lines 77-80 conditions on `MeasurableSpace.comap ...`; `Process/Tail.lean` defines the public future \u03c3-algebra as `tailFamily` at lines 31 and 41-69, plus `futureFiltration` at lines 115-143.",
+   "file": "TauCeti/Probability/DeFinetti/CondExpConvergence.lean",
+   "fix": "Expose the characteristic future-level theorem over `tailFamily X (m+1)` (or prove and use a public equality between that tailFamily and the shifted-tail comap), and keep the raw comap bridge private if it is only an implementation step.",
+   "issue": "`Contractable.condExp_indicator_future_eq` exposes the future conditioning \u03c3-algebra as the raw `MeasurableSpace.comap (fun \u03c9 n => X (m + 1 + n) \u03c9)` expression, so users working with the established `tailFamily X (m+1)` / `futureFiltration` API cannot use the theorem directly.",
+   "line": 73
+  }
+ ],
+ "head_sha": "39ebddd09b80abbd505fc4195037867a8ef006ce",
+ "merge_base_sha": "49fe22f8b82acb267639575fd5611353f6218366",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 579,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c5ff1e6b1b12eef58b9eeb3b749e15cb7e1b7b3debfffa56c9ebda5d28ad5607",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T050407Z-579-api-design-b63cc4",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T05:04:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR exposes implementation-level comap-shift facts instead of a complete public tail API around the existing `tailFamily` abstraction.",
+ "transcript_blob": "84103d7c717c8ed828d4de8ce268432e8af0cbddaf160a5cd49c0bcd5e54e58d",
+ "usage": {
+  "cached_input_tokens": 35968,
+  "input_tokens": 75203,
+  "output_tokens": 2647,
+  "reasoning_output_tokens": 1590
+ },
+ "verdict": "request_changes"
+}

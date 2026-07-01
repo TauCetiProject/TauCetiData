@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.470012,
+   "returncode": 0,
+   "secs": 49.9,
+   "usage": {
+    "cached_input_tokens": 59904,
+    "input_tokens": 133990,
+    "output_tokens": 2321,
+    "reasoning_output_tokens": 1003
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "49fe22f8b82acb267639575fd5611353f6218366",
+ "cost_estimated": true,
+ "cost_usd": 0.470012,
+ "dedupe_key": "TauCetiProject/TauCeti|579|39ebddd09b80abbd505fc4195037867a8ef006ce|generality|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "b2c9876b346a5c6487b84570f86ad0d8a12c6386054a95cabfb8862773c03d03",
+ "diff_sha256": "b2c9876b346a5c6487b84570f86ad0d8a12c6386054a95cabfb8862773c03d03",
+ "duration_s": 49.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Process/Tail.lean:31` defines `tailFamily (X : (k : \u2115) \u2192 \u03a9 \u2192 \u03b2 k)`, while this PR has `CondExpConvergence.lean:50 theorem tailFamily_le_comap_shift (X : \u2115 \u2192 \u03a9 \u2192 \u03b1)` and `:64 theorem tailProcess_le_comap_shift (X : \u2115 \u2192 \u03a9 \u2192 \u03b1)`.",
+   "file": "TauCeti/Probability/DeFinetti/CondExpConvergence.lean",
+   "fix": "State both helpers for `{\u03b2 : \u2115 \u2192 Type*} [\u2200 k, MeasurableSpace (\u03b2 k)] (X : (k : \u2115) \u2192 \u03a9 \u2192 \u03b2 k)` with shifted codomain `\u2200 n, \u03b2 (r + n)`, and use the homogeneous specialization at the consumer.",
+   "issue": "`tailFamily_le_comap_shift` and `tailProcess_le_comap_shift` are homogeneous-only, but the existing tail API is dependent-indexed (`tailFamily (X : (k : \u2115) \u2192 \u03a9 \u2192 \u03b2 k)`), so these generic tail facts are under-generalized.",
+   "line": 50
+  },
+  {
+   "evidence": "`CondExpConvergence.lean:73` has `Contractable.condExp_indicator_future_eq ... {k m : \u2115} (hk : k \u2264 m)`, but `:90` states only `(m : \u2115)` versus `X 0`, and `:106` specializes the general theorem with `Nat.zero_le m`.",
+   "file": "TauCeti/Probability/DeFinetti/CondExpConvergence.lean",
+   "fix": "Prove the natural tail theorem with `{k m : \u2115} (hk : k \u2264 m)` concluding equality of the conditional expectations of `X m` and `X k` given `tailProcess X`; derive the current `X 0` form as a corollary if the name is needed.",
+   "issue": "`Contractable.condExp_indicator_tailProcess_eq` keeps only the `k = 0` specialization even though the preceding future-level theorem is already general for every `k \u2264 m` and the same tower proof applies unchanged.",
+   "line": 90
+  }
+ ],
+ "head_sha": "39ebddd09b80abbd505fc4195037867a8ef006ce",
+ "merge_base_sha": "49fe22f8b82acb267639575fd5611353f6218366",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 579,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fc4087cfb9abb399230b2015d14fe10899f9b7df7a2d93862b6964bf04a76ab5",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T050503Z-579-generality-a5e145",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T05:05:03Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR has two avoidable specializations: one in the generic tail \u03c3-algebra helpers and one in the tail conditional-expectation theorem. Both should be stated at the natural level and the current special cases derived if needed.",
+ "transcript_blob": "73fd1947608c9cc1877b30b7b1fa3756292109652bb23f9b482ac9788721059f",
+ "usage": {
+  "cached_input_tokens": 59904,
+  "input_tokens": 133990,
+  "output_tokens": 2321,
+  "reasoning_output_tokens": 1003
+ },
+ "verdict": "request_changes"
+}
