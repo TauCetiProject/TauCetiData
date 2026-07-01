@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.716664,
+   "returncode": 0,
+   "secs": 91.9,
+   "usage": {
+    "cached_input_tokens": 210048,
+    "input_tokens": 306624,
+    "output_tokens": 4292,
+    "reasoning_output_tokens": 1767
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d8a64364859f3cbafd6cc0569675aef9780582bf",
+ "cost_estimated": true,
+ "cost_usd": 0.716664,
+ "dedupe_key": "TauCetiProject/TauCeti|596|2045f5553c38bd20314ffaaf2dfa2f5e0fe60a83|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "c5de6ff20c841fe3a78498026e4a1ec28e5a4d183358a877098e5824adbf8a72",
+ "diff_sha256": "c5de6ff20c841fe3a78498026e4a1ec28e5a4d183358a877098e5824adbf8a72",
+ "duration_s": 91.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Cylinder.lean:4` has `public import Mathlib.MeasureTheory.Integral.Bochner.Set`; Mathlib shows `integral` notation in `Bochner/Basic.lean:160-179`, while `integral_indicator\u2080` and `setIntegral_const` are in `Bochner/Set.lean:185,527`.",
+   "file": "TauCeti/Probability/Exchangeability/Cylinder.lean",
+   "fix": "Make `Mathlib.MeasureTheory.Integral.Bochner.Set` a non-public `import` for the proof, and publicly import only the smaller Bochner integral module needed for the theorem statement, e.g. `Mathlib.MeasureTheory.Integral.Bochner.Basic`.",
+   "issue": "The PR publicly imports all of `Mathlib.MeasureTheory.Integral.Bochner.Set` even though only the proof uses `integral_indicator\u2080` and `setIntegral_const`; this exports a much larger set-integral API from `Cylinder.lean` than the public theorem type requires.",
+   "line": 4
+  },
+  {
+   "evidence": "`Cylinder.lean:128` declares `theorem integral_blockIndicatorProd`; analogous characteristic rectangle API is annotated, with grep hits `Basic.lean:104 theorem blockLaw_apply_rectangle` and `Cylinder.lean:72 theorem blockLaw_blockCylinder` immediately preceded by `@[grind =>]`.",
+   "file": "TauCeti/Probability/Exchangeability/Cylinder.lean",
+   "fix": "Annotate it consistently with the surrounding characteristic rectangle lemmas, e.g. add `@[grind =>]` above `integral_blockIndicatorProd`.",
+   "issue": "`integral_blockIndicatorProd` is the characteristic evaluation lemma for the public `blockIndicatorProd` integral API but has no automation annotation, so `grind` will not use the normal block-law/integral bridge the downstream rectangle argument needs.",
+   "line": 128
+  }
+ ],
+ "head_sha": "2045f5553c38bd20314ffaaf2dfa2f5e0fe60a83",
+ "merge_base_sha": "c64e23a00b1acca13181429e75bc390fae7b7b72",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 596,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2f977d49ec961385b34030e5fd61e4bfbfb617dbf647d5bf7898a374145fc24a",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T145240Z-596-api-design-9eb683",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T14:52:40Z",
+ "submitted_by": "kim-em",
+ "summary": "The new lemma is mathematically scoped, but the public surface is larger than needed and the characteristic integral evaluation is missing the local automation annotation expected for this API.",
+ "transcript_blob": "c966eaa57b3d46b166390480aea1b53d3276df95829c0e34af489e7bd8af6333",
+ "usage": {
+  "cached_input_tokens": 210048,
+  "input_tokens": 306624,
+  "output_tokens": 4292,
+  "reasoning_output_tokens": 1767
+ },
+ "verdict": "request_changes"
+}
