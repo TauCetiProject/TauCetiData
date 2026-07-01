@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.376866,
+   "returncode": 0,
+   "secs": 56.8,
+   "usage": {
+    "cached_input_tokens": 49792,
+    "input_tokens": 104208,
+    "output_tokens": 2663,
+    "reasoning_output_tokens": 1556
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "01b2a2a5b8bb66fee3c7d0a02bbb839b0a5b1c1b",
+ "cost_estimated": true,
+ "cost_usd": 0.376866,
+ "dedupe_key": "TauCetiProject/TauCeti|600|eb96986cc2e78ba1fc2ae5cd86eb2c2d9fe25d1c|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "181a76744f56cbe5209308ebb3b52fa932d062c6ff6b9e05a4a0d84e710e27a4",
+ "diff_sha256": "181a76744f56cbe5209308ebb3b52fa932d062c6ff6b9e05a4a0d84e710e27a4",
+ "duration_s": 56.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` hits: lines 57, 94, 120, and 159 are all `@[expose]` definitions, while the same file already provides simp restatements at lines 67, 75, 84, 113, 139, 169, and 185.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotientFiberAction.lean",
+   "fix": "Remove these `@[expose]` attributes and keep downstream reasoning through the exported `*_apply`, `*_one`, `*_mul`, and `*_mk_apply` lemmas; add any missing characteristic lemma instead of requiring unfold.",
+   "issue": "The new representative/action definitions expose their bodies (`normalizerSubgroupFiberOrbitMap`, `normalizerSubgroupFiberOrbitEquiv`, `normalizerSubgroupFiberOrbitPermHom`, and `normalizerQuotientSubgroupFiberOrbitPermHom`), leaking the quotient-map/lift implementation as public API.",
+   "line": 57
+  },
+  {
+   "evidence": "Line 113 gives `normalizerSubgroupFiberOrbitEquiv_apply`; `rg normalizerSubgroupFiberOrbitEquiv_symm code/TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotientFiberAction.lean` finds no inverse formula, unlike nearby quotient/conjugation APIs that export `*_symm_*` lemmas.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/NormalizerQuotientFiberAction.lean",
+   "fix": "Add a `@[simp]` lemma for `(normalizerSubgroupFiberOrbitEquiv H \u03c6).symm (subgroupFiberOrbitClass H e)` reducing to `subgroupFiberOrbitClass H ((\u03c6 : Deck p)\u207b\u00b9 \u2022 e)` or make the equivalence private if only the hom/action is intended public API.",
+   "issue": "`normalizerSubgroupFiberOrbitEquiv` is public but only its forward application is characterized; users cannot rewrite its inverse/symm action without unfolding the exposed body.",
+   "line": 94
+  }
+ ],
+ "head_sha": "eb96986cc2e78ba1fc2ae5cd86eb2c2d9fe25d1c",
+ "merge_base_sha": "557dc9d7a1e11f24b19e7a433bdf43897f2f6e83",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 600,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4f72ddd060850b59fc8b8b300f8559abaa346d269f356949baddc3fb77e4bbc7",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T165802Z-600-api-design-b9ad81",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T16:58:02Z",
+ "submitted_by": "kim-em",
+ "summary": "The action formulas are present, but the public surface still relies on exposed bodies and leaves the exposed permutation API under-characterized.",
+ "transcript_blob": "0b00d1e9c610bf75d546e9a42956632f99bfb418b448dc8e7446912e5ed473dd",
+ "usage": {
+  "cached_input_tokens": 49792,
+  "input_tokens": 104208,
+  "output_tokens": 2663,
+  "reasoning_output_tokens": 1556
+ },
+ "verdict": "request_changes"
+}
