@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.366994,
+   "returncode": 0,
+   "secs": 48.2,
+   "usage": {
+    "cached_input_tokens": 59008,
+    "input_tokens": 112886,
+    "output_tokens": 2270,
+    "reasoning_output_tokens": 1244
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ee8fdcbe104144dc2c2634b802ef9e9b3d81073a",
+ "cost_estimated": true,
+ "cost_usd": 0.366994,
+ "dedupe_key": "TauCetiProject/TauCeti|499|90f1dc1b9f8a4445a4e1b37dc63060196441fd4e|placement|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "5b483a0f547503563c756ffa2028bd4e1e775643420e7f09bedd6c85550fccff",
+ "diff_sha256": "5b483a0f547503563c756ffa2028bd4e1e775643420e7f09bedd6c85550fccff",
+ "duration_s": 48.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 64 is just `def hermite\u211d (n : \u2115) : \u211d[X] := (hermite n).map (Int.castRingHom \u211d)`, while roadmap targets line 203 name the same polynomial object independently of the Gaussian integral material.",
+   "file": "TauCeti/Analysis/SpecialFunctions/HermiteGaussian.lean",
+   "fix": "Move `hermite\u211d` and any public eval/map API for it to an earlier polynomial file such as `TauCeti/RingTheory/Polynomial/Hermite/Real.lean` or the existing Hermite polynomial API, then import that here.",
+   "issue": "`hermite\u211d` is a public polynomial-level real realization of `Polynomial.hermite`, but it is introduced in the heavy analytic Gaussian-orthogonality file.",
+   "line": 64
+  },
+  {
+   "evidence": "Lines 93, 108, 116, and 125 quantify over arbitrary `\u211d[X]` or `\u2124[X]` polynomials and mention no Hermite polynomial; the first Hermite-specific use is only the private helper at line 134.",
+   "file": "TauCeti/Analysis/SpecialFunctions/HermiteGaussian.lean",
+   "fix": "Move these generic integrability declarations to a Gaussian/polynomial integrability file or namespace, and import that file from `HermiteGaussian.lean`; keep only the Hermite-specific recursion and orthogonality here.",
+   "issue": "The public lemmas `integrable_eval_mul_exp_neg_mul_sq`, `integrable_aeval_mul_exp_neg_mul_sq`, `integrable_eval_mul_gaussian`, and `integrable_aeval_mul_gaussian` are generic polynomial-times-Gaussian integrability facts, not Hermite-specific API, but they live under `TauCeti.Hermite` in `HermiteGaussian.lean`.",
+   "line": 93
+  }
+ ],
+ "head_sha": "90f1dc1b9f8a4445a4e1b37dc63060196441fd4e",
+ "merge_base_sha": "ee8fdcbe104144dc2c2634b802ef9e9b3d81073a",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 499,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d4ade6d44cd26e86d995fe13bbb9f3a3cac8d3851ef96695dc483e45c6a05682",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T135225Z-499-placement-97be1b",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T13:52:25Z",
+ "submitted_by": "kim-em",
+ "summary": "The Hermite/Gaussian orthogonality file is the right home for the main integral results, but it also introduces public dependency-light or generic API that should live earlier/narrower instead of forcing users through the full analytic orthogonality file.",
+ "transcript_blob": "8eea4c477a7cec21f5f01b9c67ffa4443e63a8ee0b077d25962c66e46408d8b5",
+ "usage": {
+  "cached_input_tokens": 59008,
+  "input_tokens": 112886,
+  "output_tokens": 2270,
+  "reasoning_output_tokens": 1244
+ },
+ "verdict": "request_changes"
+}
