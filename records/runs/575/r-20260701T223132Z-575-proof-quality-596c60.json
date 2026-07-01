@@ -1,0 +1,85 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.368476,
+   "returncode": 0,
+   "secs": 57.8,
+   "usage": {
+    "cached_input_tokens": 100992,
+    "input_tokens": 149594,
+    "output_tokens": 2499,
+    "reasoning_output_tokens": 1071
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b145907eb0976e969f933d7fffbf9a3b1a732439",
+ "cost_estimated": true,
+ "cost_usd": 0.368476,
+ "dedupe_key": "TauCetiProject/TauCeti|575|48421fb84edc31bfd5674ebaca99d43989ef9914|proof-quality|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "b7f0e025d41c88c163e172acc5bf8fee87fe83746af276eaf3a8e88166c6decb",
+ "diff_sha256": "b7f0e025d41c88c163e172acc5bf8fee87fe83746af276eaf3a8e88166c6decb",
+ "duration_s": 57.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep hits: lines 452-462 and 479-489 repeat the same `rw [laplaceMomentTransform]`, `rw [\u2190 integral_const_mul]`, `integral_nonneg`, and `heq` proof.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/LaplaceRepresentation.lean",
+   "fix": "Factor a reusable lemma such as `neg_one_pow_mul_laplaceMomentTransform_nonneg` and use it in both the open-half-line and moments proofs.",
+   "issue": "The signed-moment nonnegativity proof is duplicated in `laplaceTransform_isCompletelyMonotoneOnIoi` and `laplaceTransform_isCompletelyMonotone_of_moments`, including the same rewrite chain through `laplaceMomentTransform` and `integral_const_mul`.",
+   "line": 452
+  },
+  {
+   "evidence": "line 477 starts `have htight : IsTightMeasureSet (Set.range \u03bc) := by`, and the proof runs through line 564 before the main extraction resumes.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinTheorem.lean",
+   "fix": "Extract the `htight : IsTightMeasureSet (Set.range \u03bc)` block into a private lemma with explicit hypotheses, or split it into named lemmas for the near-zero gap estimate and finite-initial-segment compact union.",
+   "issue": "`exists_representsLaplace_of_isClosedCompletelyMonotone` is a 160-line proof with the tightness argument inlined as an 88-line local `have`, obscuring the reusable compact-tail argument for shifted representing measures.",
+   "line": 431
+  },
+  {
+   "evidence": "line 279: `rw [show (((-(x : \u211d)) ^ n * Real.exp ...` with no comment explaining why this definitional/algebraic steering is needed.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/LaplaceRepresentation.lean",
+   "fix": "Replace this with a named local equality/lemma documenting the factorization, or avoid `show` by using a clearer calc step before rewriting `abs_mul`.",
+   "issue": "The proof uses an undocumented `show ... by ring` inside a rewrite to force an algebraic shape for the slope computation.",
+   "line": 279
+  },
+  {
+   "evidence": "line 598: `laplaceKernelBoundedContinuous (show 0 \u2264 (1 : \u211d) by norm_num)`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/BernsteinTheorem.lean",
+   "fix": "Use a direct proof argument such as `by norm_num`, or define a small named lemma if this proof term needs to be reused.",
+   "issue": "`laplaceExpGenerator` uses an undocumented `show` merely to manufacture the proof argument `0 \u2264 (1 : \u211d)`.",
+   "line": 598
+  }
+ ],
+ "head_sha": "48421fb84edc31bfd5674ebaca99d43989ef9914",
+ "merge_base_sha": "b145907eb0976e969f933d7fffbf9a3b1a732439",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 575,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5f64a68fef82f76a1d2062b1179782d98ccff065b618968a92be14c6ae85ae47",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T223132Z-575-proof-quality-596c60",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T22:31:32Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs elaborate, but several proof scripts are brittle or under-factored for this amount of analysis. Please factor the repeated moment-sign argument and the long closed-half-line extraction proof, and remove undocumented `show` steering.",
+ "transcript_blob": "5ce3ee2c59b6ac756a4107f0e90192cdf52d6bafb3166d64b058123d3a3cfbd9",
+ "usage": {
+  "cached_input_tokens": 100992,
+  "input_tokens": 149594,
+  "output_tokens": 2499,
+  "reasoning_output_tokens": 1071
+ },
+ "verdict": "request_changes"
+}

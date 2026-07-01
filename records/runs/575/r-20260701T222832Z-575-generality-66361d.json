@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.450613,
+   "returncode": 0,
+   "secs": 53.7,
+   "usage": {
+    "cached_input_tokens": 160256,
+    "input_tokens": 219359,
+    "output_tokens": 2499,
+    "reasoning_output_tokens": 1162
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b145907eb0976e969f933d7fffbf9a3b1a732439",
+ "cost_estimated": true,
+ "cost_usd": 0.450613,
+ "dedupe_key": "TauCetiProject/TauCeti|575|48421fb84edc31bfd5674ebaca99d43989ef9914|generality|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "b7f0e025d41c88c163e172acc5bf8fee87fe83746af276eaf3a8e88166c6decb",
+ "diff_sha256": "b7f0e025d41c88c163e172acc5bf8fee87fe83746af276eaf3a8e88166c6decb",
+ "duration_s": 53.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` hit: line 77 declares `lemma laplaceTransform_nonneg (\u03bc : Measure \u211d\u22650) [IsFiniteMeasure \u03bc] (t : \u211d)`, while line 79 is exactly `exact integral_nonneg fun x => Real.exp_nonneg _`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/LaplaceRepresentation.lean",
+   "fix": "Drop the `[IsFiniteMeasure \u03bc]` argument from `laplaceTransform_nonneg`.",
+   "issue": "`laplaceTransform_nonneg` assumes `[IsFiniteMeasure \u03bc]`, but the proof is just `integral_nonneg fun x => Real.exp_nonneg _` and does not use finiteness.",
+   "line": 77
+  },
+  {
+   "evidence": "`rg` hits: lines 388-391 declare `laplaceTransform_contDiffOn_Ici_of_moments (\u03bc) [IsFiniteMeasure \u03bc] (hmom : \u2200 n, Integrable ...)`; lines 474-477 repeat the same stronger assumption for `laplaceTransform_isCompletelyMonotone_of_moments`. Mathlib has `integrable_const_iff_isFiniteMeasure` at `Mathlib/MeasureTheory/Function/L1Space/Integrable.lean:141`.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/LaplaceRepresentation.lean",
+   "fix": "Remove the explicit finiteness instance from these public signatures and derive it locally via `hmom 0`, `pow_zero`, and Mathlib's `integrable_const_iff_isFiniteMeasure`/`integrable_const_iff_isFiniteMeasure one_ne_zero` API.",
+   "issue": "`laplaceTransform_contDiffOn_Ici_of_moments` and `laplaceTransform_isCompletelyMonotone_of_moments` require `[IsFiniteMeasure \u03bc]` even though `hmom : \u2200 n, Integrable (fun x => (x : \u211d) ^ n) \u03bc` already implies finiteness from the `n = 0` case.",
+   "line": 389
+  }
+ ],
+ "head_sha": "48421fb84edc31bfd5674ebaca99d43989ef9914",
+ "merge_base_sha": "b145907eb0976e969f933d7fffbf9a3b1a732439",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 575,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7607d49706ff8238a28c8e21b34d6ff15342ce9bc3772bc95e0b47fb8150c46e",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T222832Z-575-generality-66361d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T22:28:32Z",
+ "submitted_by": "kim-em",
+ "summary": "Two public Laplace-transform API statements carry finiteness assumptions stronger than their hypotheses or proofs need.",
+ "transcript_blob": "ad7c6c1d642c02007689a482ac8c9f77405d7d08a7de9e20a3ed54bc4f1b013c",
+ "usage": {
+  "cached_input_tokens": 160256,
+  "input_tokens": 219359,
+  "output_tokens": 2499,
+  "reasoning_output_tokens": 1162
+ },
+ "verdict": "request_changes"
+}
