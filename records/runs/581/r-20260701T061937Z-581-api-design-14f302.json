@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.307662,
+   "returncode": 0,
+   "secs": 48.9,
+   "usage": {
+    "cached_input_tokens": 88064,
+    "input_tokens": 128964,
+    "output_tokens": 1971,
+    "reasoning_output_tokens": 585
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3d8f1b2ec9acc9d40d1dcbfae70c35a3ba79944d",
+ "cost_estimated": true,
+ "cost_usd": 0.307662,
+ "dedupe_key": "TauCetiProject/TauCeti|581|d1ccf648abc6cb03c55b3c779e35944085b116cc|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "cd7ea584ac4a8d358c0e3f7a119f7a911ef67320100d8e1d27591641aacba13b",
+ "diff_sha256": "cd7ea584ac4a8d358c0e3f7a119f7a911ef67320100d8e1d27591641aacba13b",
+ "duration_s": 48.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` shows this file has only `min_coercivityConstant_mul_norm_sq_le_energyIntegrand_add_bounded_principal_self` at line 60; the parallel API has `min_coercivityConstant_mul_norm_sq_le_energyIntegrand_add_principal_mass_self_on` at `TauCeti/Analysis/PDE/CoercivePerturbation.lean:122`.",
+   "file": "TauCeti/Analysis/PDE/BoundedPerturbation.lean",
+   "fix": "Add `min_coercivityConstant_mul_norm_sq_le_energyIntegrand_add_bounded_principal_self_on` with field hypotheses `hb`, `hc`, point `x \u2208 \u03a9`, and conclusion for `energyIntegrand (a x + p x) (b x) (c x) U U`.",
+   "issue": "The explicit lower-bound lemma has only the pointwise `b\u2080 c\u2080` form, so coefficient-field consumers of the weak-form/G\u00e5rding estimate must manually rebuild the field specialization even though the neighboring perturbation API exposes it.",
+   "line": 60
+  },
+  {
+   "evidence": "`rg -n \"grind_pattern\" TauCeti/Analysis/PDE/BoundedPerturbation.lean` has no hits, while existing characteristic lemmas carry patterns, e.g. `UniformEllipticEnergy.lean:201` for `isCoercive_energyIntegrand`, `UniformEllipticEnergy.lean:224` for zero drift, and `CoercivePerturbation.lean:146` for perturbation coercivity.",
+   "file": "TauCeti/Analysis/PDE/BoundedPerturbation.lean",
+   "fix": "Add `grind_pattern` declarations for `isCoercive_energyIntegrand_add_bounded_principal` and `isCoercive_energyIntegrand_add_bounded_principal_zero_drift` with patterns ending in the corresponding `IsCoercive (energyIntegrand ...)` conclusions.",
+   "issue": "The characteristic coercivity lemmas for bounded perturbations are not registered with `grind`, unlike the existing coercivity API, so users lose the expected automation path for the new public surface.",
+   "line": 76
+  }
+ ],
+ "head_sha": "d1ccf648abc6cb03c55b3c779e35944085b116cc",
+ "merge_base_sha": "3d8f1b2ec9acc9d40d1dcbfae70c35a3ba79944d",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 581,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1dad802014bd3f389e41c4a48806f54a3d025125959bb740543b56e491c0801b",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T061937Z-581-api-design-14f302",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T06:19:37Z",
+ "submitted_by": "kim-em",
+ "summary": "The new perturbation surface is missing part of the characteristic API and omits the automation annotations used by the surrounding coercivity API.",
+ "transcript_blob": "8ed8f41c8f1f34cde052701de74377ef92812ff97db6d932dda5810b094e75a9",
+ "usage": {
+  "cached_input_tokens": 88064,
+  "input_tokens": 128964,
+  "output_tokens": 1971,
+  "reasoning_output_tokens": 585
+ },
+ "verdict": "request_changes"
+}
