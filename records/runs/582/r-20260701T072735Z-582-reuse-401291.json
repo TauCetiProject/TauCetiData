@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.599001,
+   "returncode": 0,
+   "secs": 75.3,
+   "usage": {
+    "cached_input_tokens": 76032,
+    "input_tokens": 168345,
+    "output_tokens": 3314,
+    "reasoning_output_tokens": 1242
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e0f1b9ae33c8f6285b4e2a3bd45a4dc8a36ddf94",
+ "cost_estimated": true,
+ "cost_usd": 0.599001,
+ "dedupe_key": "TauCetiProject/TauCeti|582|01b17a20ec33fe453f73b995eb93b239041722b3|reuse|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "ecc018c3b2f6a469a92b3f09a9519b08b5e75e42148bd0b33e736dc3b86e4f9c",
+ "diff_sha256": "ecc018c3b2f6a469a92b3f09a9519b08b5e75e42148bd0b33e736dc3b86e4f9c",
+ "duration_s": 75.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Existing grep hit: `TauCeti/Analysis/PDE/SymmetricEnergy.lean:97` proves `energyIntegrand (coefficientSymmetricPart A) b c U U = energyIntegrand A b c U U`; the new proof at line 54 is exactly `energyIntegrand_coefficientSymmetricPart_self A 0 c\u2080 U`.",
+   "file": "TauCeti/Analysis/PDE/SymmetricPartCoerciveEnergy.lean",
+   "fix": "Remove these declarations and use `energyIntegrand_coefficientSymmetricPart_self A 0 c U` directly at call sites.",
+   "issue": "`energyIntegrand_coefficientSymmetricPart_zero_drift_self_eq` is a direct specialization of the existing `energyIntegrand_coefficientSymmetricPart_self` with `b = 0`; the `_on` wrapper at line 88 repeats the same duplicate pointwise specialization.",
+   "line": 50
+  },
+  {
+   "evidence": "Existing grep hits: `TauCeti/Analysis/PDE/CoerciveEnergy.lean:167` has the same lower-bound theorem for arbitrary `A`, `TauCeti/Analysis/PDE/SymmetricCoerciveEnergy.lean:53` has the bundled flip/coercive theorem for arbitrary symmetric `A`, and `TauCeti/Analysis/PDE/UniformEllipticity.lean:579` provides `UniformlyEllipticOn.coefficientSymmetricPart`.",
+   "file": "TauCeti/Analysis/PDE/SymmetricPartCoerciveEnergy.lean",
+   "fix": "Do not add these named wrappers; apply `min_lam_mass_mul_norm_sq_le_energyIntegrand_zero_drift_self`, `zero_drift_flip_eq_and_isCoercive_energyIntegrand`, and the existing `UniformlyEllipticOn` wrappers after rewriting with `toQuadraticForm'_coefficientSymmetricPart` or replacing `h` by `h.coefficientSymmetricPart`.",
+   "issue": "The lower-bound and coercivity declarations at lines 58, 71, 96, 106, 117, and 128 are parallel API for existing general results applied to `coefficientSymmetricPart A` or to `h.coefficientSymmetricPart`, differing only by the symmetric-part spelling.",
+   "line": 58
+  }
+ ],
+ "head_sha": "01b17a20ec33fe453f73b995eb93b239041722b3",
+ "merge_base_sha": "e0f1b9ae33c8f6285b4e2a3bd45a4dc8a36ddf94",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 582,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "add54511cd774a823910c493da2dafeb8e9b8fde3ad303866bd8fc983d17bbfb",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T072735Z-582-reuse-401291",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T07:27:35Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR adds parallel symmetric-part wrappers where existing PDE energy lemmas already provide the same statements by direct instantiation or a small rewrite. The diagonal equality is an outright duplicate of an existing simp theorem, so this should not introduce a new API name.",
+ "transcript_blob": "190c4510d41d400479a315818e2f25fae9465f477a604074d779157917baee5f",
+ "usage": {
+  "cached_input_tokens": 76032,
+  "input_tokens": 168345,
+  "output_tokens": 3314,
+  "reasoning_output_tokens": 1242
+ },
+ "verdict": "block"
+}
