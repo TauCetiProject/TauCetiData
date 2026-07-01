@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.266826,
+   "returncode": 0,
+   "secs": 36.9,
+   "usage": {
+    "cached_input_tokens": 47232,
+    "input_tokens": 86190,
+    "output_tokens": 1614,
+    "reasoning_output_tokens": 566
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f2d2a6329fcdce59fcdb9c4116ea4c1096efe235",
+ "cost_estimated": true,
+ "cost_usd": 0.266826,
+ "dedupe_key": "TauCetiProject/TauCeti|602|93d130dc1d39ccd4797449ea9b9fbebccf08051a|reuse|gpt-5.5|db8fb3aa80d836bd|production|2",
+ "diff_blob": "6f23ab0c8317c6080d0bff188301b2919c6ce292d020fefe8d8a6848cfd3d5ae",
+ "diff_sha256": "6f23ab0c8317c6080d0bff188301b2919c6ce292d020fefe8d8a6848cfd3d5ae",
+ "duration_s": 36.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Coordinates.lean:29-31` defines the map as exactly `Finsupp.linearCombination \ud835\udd5c (normalizedChebyshevTLp \ud835\udd5c)`; Mathlib has `Finsupp.linearCombination` in `mathlib/Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean:17,59`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Trigonometric/Chebyshev/Coordinates.lean",
+   "fix": "Remove this definition and use `Finsupp.linearCombination \ud835\udd5c (normalizedChebyshevTLp \ud835\udd5c)` directly, or introduce only genuinely Chebyshev-specific results not already supplied by the generic map.",
+   "issue": "`chebyshevModeLinearCombination` is just a renamed specialization of `Finsupp.linearCombination \ud835\udd5c (normalizedChebyshevTLp \ud835\udd5c)`, creating parallel API for the same map.",
+   "line": 29
+  },
+  {
+   "evidence": "`Coordinates.lean:37` proves the first by `Finsupp.linearCombination_apply`, and `Coordinates.lean:44` proves the second by simp on the alias; Mathlib provides `linearCombination_apply` and `linearCombination_single` at `mathlib/Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean:59,68`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Trigonometric/Chebyshev/Coordinates.lean",
+   "fix": "Delete these lemmas; callers can use `Finsupp.linearCombination_apply` and `Finsupp.linearCombination_single` with `normalizedChebyshevTLp`.",
+   "issue": "`chebyshevModeLinearCombination_eq_sum` and `chebyshevModeLinearCombination_single` duplicate generic `Finsupp.linearCombination` unfolding/single lemmas after unfolding the alias.",
+   "line": 34
+  }
+ ],
+ "head_sha": "93d130dc1d39ccd4797449ea9b9fbebccf08051a",
+ "merge_base_sha": "f2d2a6329fcdce59fcdb9c4116ea4c1096efe235",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 602,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "4131acbfa8e634d6ed2fca42f2c40fa9a9c84ee19c86daea0710b04cadb757f6",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T214608Z-602-reuse-45d020",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T21:46:08Z",
+ "submitted_by": "kim-em",
+ "summary": "The current diff adds only a Chebyshev-named alias for `Finsupp.linearCombination` and two direct restatements of existing `Finsupp` lemmas. This is outright duplicate API rather than new reusable material.",
+ "transcript_blob": "c85ff0e2cc38f67b811150f90b97f5aa4be45bdf72b905e2460f1696ed33175e",
+ "usage": {
+  "cached_input_tokens": 47232,
+  "input_tokens": 86190,
+  "output_tokens": 1614,
+  "reasoning_output_tokens": 566
+ },
+ "verdict": "block"
+}
