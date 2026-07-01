@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.473028,
+   "returncode": 0,
+   "secs": 77.4,
+   "usage": {
+    "cached_input_tokens": 133376,
+    "input_tokens": 193866,
+    "output_tokens": 3463,
+    "reasoning_output_tokens": 1380
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3d8f1b2ec9acc9d40d1dcbfae70c35a3ba79944d",
+ "cost_estimated": true,
+ "cost_usd": 0.473028,
+ "dedupe_key": "TauCetiProject/TauCeti|581|855aeeda139ec689cd21c90bf47cf81db7b3113a|api-design|gpt-5.5|db8fb3aa80d836bd|production|3",
+ "diff_blob": "4b31590cdc4c68bd9e045e60713b304a72dfef4ddc4af987a63e21b6ba11bda5",
+ "diff_sha256": "4b31590cdc4c68bd9e045e60713b304a72dfef4ddc4af987a63e21b6ba11bda5",
+ "duration_s": 77.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"add_bounded_principal|_on\" code/TauCeti/Analysis/PDE/BoundedPerturbation.lean` shows only lines 40, 58, and 73 with no `_on` forms; adjacent APIs provide these at `UniformEllipticEnergy.lean:177,207,232` and `CoercivePerturbation.lean:153`.",
+   "file": "TauCeti/Analysis/PDE/BoundedPerturbation.lean",
+   "fix": "Add `namespace UniformlyEllipticOn` wrappers analogous to `min_coercivityConstant_mul_norm_sq_le_energyIntegrand_self(_on)`, `isCoercive_energyIntegrand(_on)`, and `isCoercive_energyIntegrand_zero_drift(_on)`, consuming `h : UniformlyEllipticOn \u03a9 a lam Lam` plus `\u2200 x \u2208 \u03a9` bounds for `p`, `b`, and `c`.",
+   "issue": "The file exposes only fixed-matrix lemmas for bounded principal perturbations; there are no `UniformlyEllipticOn` pointwise/`_on` wrappers for coefficient fields, including the zero-drift mass-field form needed by the Lane D weak-form target.",
+   "line": 40
+  },
+  {
+   "evidence": "`rg -n \"grind_pattern .*add_bounded_principal|add_bounded_principal\" code/TauCeti/Analysis/PDE/BoundedPerturbation.lean` finds only the lemmas at lines 40, 58, and 73; comparable coercivity lemmas have patterns at `UniformEllipticEnergy.lean:201,224` and `CoercivePerturbation.lean:146`.",
+   "file": "TauCeti/Analysis/PDE/BoundedPerturbation.lean",
+   "fix": "Add `grind_pattern` declarations for `isCoercive_energyIntegrand_add_bounded_principal` and `isCoercive_energyIntegrand_add_bounded_principal_zero_drift` with patterns ending in the corresponding `IsCoercive (energyIntegrand ...)` goals.",
+   "issue": "The characteristic coercivity lemmas are not registered for `grind`, unlike the neighboring coercivity APIs, so downstream automation cannot discover the new perturbation coercivity facts.",
+   "line": 58
+  }
+ ],
+ "head_sha": "855aeeda139ec689cd21c90bf47cf81db7b3113a",
+ "merge_base_sha": "3d8f1b2ec9acc9d40d1dcbfae70c35a3ba79944d",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 581,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "88ef3ff18e61d23edc240c4d0c796c52007a8ee435038eb97c1a820cfbf33a43",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T071135Z-581-api-design-57d585",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T07:11:35Z",
+ "submitted_by": "kim-em",
+ "summary": "The pointwise perturbation lemmas are exposed, but the public API is missing the coefficient-field consumer forms and automation hooks that adjacent PDE coercivity APIs provide.",
+ "transcript_blob": "d63d18ad6baa4b46952287740822f3ad2038a12eb2039bd0c1a5ca3552c6942e",
+ "usage": {
+  "cached_input_tokens": 133376,
+  "input_tokens": 193866,
+  "output_tokens": 3463,
+  "reasoning_output_tokens": 1380
+ },
+ "verdict": "request_changes"
+}
