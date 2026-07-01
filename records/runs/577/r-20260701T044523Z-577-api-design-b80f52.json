@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.290546,
+   "returncode": 0,
+   "secs": 46.7,
+   "usage": {
+    "cached_input_tokens": 39552,
+    "input_tokens": 79918,
+    "output_tokens": 2298,
+    "reasoning_output_tokens": 1140
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b742851447374d170728e9614928efc6eb9de8ee",
+ "cost_estimated": true,
+ "cost_usd": 0.290546,
+ "dedupe_key": "TauCetiProject/TauCeti|577|443d4eb7058a1a9153970525f0b6543fd209cd23|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "ec164ac7279ceda06535a2a35018e699e9df0862dc06cc7d0c6d837cee46e49b",
+ "diff_sha256": "ec164ac7279ceda06535a2a35018e699e9df0862dc06cc7d0c6d837cee46e49b",
+ "duration_s": 46.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"pseudoHyperbolicDist_(eq_zero|zero|def)|pseudoHyperbolicDist.*= 0\"` finds only lines 38 and 80, and the roadmap target at `TauCetiRoadmap/ConformalMapping/Targets.lean:57-63` names pseudo-hyperbolic distance as the object Schwarz-Pick contracts.",
+   "file": "TauCeti/Analysis/Complex/Conformal/PseudoHyperbolic.lean",
+   "fix": "Add a disc-scoped characteristic lemma, e.g. `pseudoHyperbolicDist_eq_zero_iff_of_norm_lt_one` and/or a `Complex.UnitDisc` version, proved using `one_sub_conj_mul_ne_zero_of_norm_lt_one`; mark the normal-form version with `@[simp]` if it is safe.",
+   "issue": "`pseudoHyperbolicDist_eq_zero_of_eq` exposes only the easy direction, while the global total definition makes the converse false off the disc; consumers of a distance on `Complex.UnitDisc` still lack `pseudoHyperbolicDist ... = 0 \u2194 z = w` under disc hypotheses.",
+   "line": 80
+  },
+  {
+   "evidence": "The definition is at lines 30-31, `pseudoHyperbolicDist_comm` and `pseudoHyperbolicDist_lt_one_of_norm_lt_one` unfold it internally at lines 77 and 120, and `rg` shows no exported `pseudoHyperbolicDist_def` or zero-side lemmas.",
+   "file": "TauCeti/Analysis/Complex/Conformal/PseudoHyperbolic.lean",
+   "fix": "Add `pseudoHyperbolicDist_def` plus `@[simp]` lemmas such as `pseudoHyperbolicDist_zero_right` and `pseudoHyperbolicDist_zero_left` (`= \u2016z\u2016`/`= \u2016w\u2016`) so the formula and zero interactions are available without unfolding.",
+   "issue": "The definition has no public `pseudoHyperbolicDist_def` or zero-normalization lemmas, so downstream proofs must unfold the body to rewrite the roadmap formula or recover the Schwarz-lemma `w = 0` case.",
+   "line": 30
+  }
+ ],
+ "head_sha": "443d4eb7058a1a9153970525f0b6543fd209cd23",
+ "merge_base_sha": "2a6475319f5fda64ec53faa0cd1fdea20819692f",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 577,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c3cfa6cd64d47029bf39807def0a966fad9f33fcc01442db116d9d1837f54e42",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T044523Z-577-api-design-b80f52",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T04:45:23Z",
+ "submitted_by": "kim-em",
+ "summary": "The new surface is small, but the public API does not characterize the advertised pseudo-hyperbolic distance on the unit disc without unfolding the total formula.",
+ "transcript_blob": "e7bf30e8e862945fffdcac6e8563a00eef701ea41a51751e6f4141946f5c6b0e",
+ "usage": {
+  "cached_input_tokens": 39552,
+  "input_tokens": 79918,
+  "output_tokens": 2298,
+  "reasoning_output_tokens": 1140
+ },
+ "verdict": "request_changes"
+}
