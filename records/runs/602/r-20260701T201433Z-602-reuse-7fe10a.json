@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.399199,
+   "returncode": 0,
+   "secs": 48.9,
+   "usage": {
+    "cached_input_tokens": 76928,
+    "input_tokens": 135275,
+    "output_tokens": 2300,
+    "reasoning_output_tokens": 868
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f2d2a6329fcdce59fcdb9c4116ea4c1096efe235",
+ "cost_estimated": true,
+ "cost_usd": 0.399199,
+ "dedupe_key": "TauCetiProject/TauCeti|602|ce5f883a40cee3bc345bb9cc11ebdae41e6631e0|reuse|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "23747e0123c843a0a5aef2ef523554d1db2ba582f3c1392f273247b3cf9d08bf",
+ "diff_sha256": "23747e0123c843a0a5aef2ef523554d1db2ba582f3c1392f273247b3cf9d08bf",
+ "duration_s": 48.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`code/.../Measure.lean:258` defines `inner_normalizedChebyshevTLp`; `code/.../Measure.lean:290` defines `orthonormal_normalizedChebyshevTLp`; `mathlib/.../Orthonormal.lean:64,67,72,75,286` provide the corresponding generic lemmas.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Trigonometric/Chebyshev/Coordinates.lean",
+   "fix": "Use `orthonormal_normalizedChebyshevTLp.norm_eq_one`, `.nnnorm_eq_one`, `.enorm_eq_one`, `.ne_zero`, `.inner_eq_zero`, and the existing `[simp]` lemma `inner_normalizedChebyshevTLp` instead of adding parallel Chebyshev names.",
+   "issue": "The single-mode lemmas at lines 30, 36, 42, 47, 53, and 58 duplicate existing orthonormal/Chebyshev API.",
+   "line": 30
+  },
+  {
+   "evidence": "`mathlib/.../Orthonormal.lean:112,133,152,158,216` define exactly these finsupp coordinate formulas; the PR proofs themselves cite them at lines 109, 119, 126, and 133.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Trigonometric/Chebyshev/Coordinates.lean",
+   "fix": "Do not add these parallel lemmas; consumers can use `(orthonormal_normalizedChebyshevTLp (\ud835\udd5c := \ud835\udd5c)).inner_right_finsupp`, `.inner_left_finsupp`, `.inner_finsupp_eq_sum_left`, `.inner_finsupp_eq_sum_right`, and `.inner_finsupp_eq_zero` with `Finsupp.linearCombination`.",
+   "issue": "The finite-coordinate inner-product lemmas at lines 105, 114, 122, 129, and the support-zero lemma at 136 are just `Orthonormal` finsupp lemmas after unfolding `chebyshevModeLinearCombination`.",
+   "line": 105
+  },
+  {
+   "evidence": "`mathlib/.../Orthonormal.lean:181` proves `Orthonormal.linearIndependent`; `mathlib/.../LinearIndependent/Defs.lean:20` and `:131` identify linear independence with injectivity of `Finsupp.linearCombination`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Trigonometric/Chebyshev/Coordinates.lean",
+   "fix": "Use `(orthonormal_normalizedChebyshevTLp (\ud835\udd5c := \ud835\udd5c)).linearIndependent` together with `linearIndependent_iff` / `Finsupp.linearCombination` instead of adding a second injectivity API.",
+   "issue": "The zero-iff and injectivity lemmas at lines 152 and 163 duplicate the existing linear-independence consequence of orthonormality after unfolding the wrapper definition.",
+   "line": 152
+  }
+ ],
+ "head_sha": "ce5f883a40cee3bc345bb9cc11ebdae41e6631e0",
+ "merge_base_sha": "f2d2a6329fcdce59fcdb9c4116ea4c1096efe235",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 602,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "858e0e0b4cb0659347c9ef9ab1f01dc5ad38952b71697349830c3f5842232032",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T201433Z-602-reuse-7fe10a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T20:14:33Z",
+ "submitted_by": "kim-em",
+ "summary": "The new file mostly adds concrete wrappers around existing TauCeti/Mathlib orthonormal-coordinate API. These should be removed or reduced to genuinely Chebyshev-specific notation/API rather than parallel lemmas for existing `Orthonormal` facts.",
+ "transcript_blob": "0f748775d43f1cfdc612aeb1008116cd4bf2a9bface6e22c74d03bae34edbcb0",
+ "usage": {
+  "cached_input_tokens": 76928,
+  "input_tokens": 135275,
+  "output_tokens": 2300,
+  "reasoning_output_tokens": 868
+ },
+ "verdict": "request_changes"
+}
