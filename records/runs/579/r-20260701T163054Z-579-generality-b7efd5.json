@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.3524,
+   "returncode": 0,
+   "secs": 78.5,
+   "usage": {
+    "cached_input_tokens": 31360,
+    "input_tokens": 75004,
+    "output_tokens": 3950,
+    "reasoning_output_tokens": 2489
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "49fe22f8b82acb267639575fd5611353f6218366",
+ "cost_estimated": true,
+ "cost_usd": 0.3524,
+ "dedupe_key": "TauCetiProject/TauCeti|579|91c5183ba6bb95c532efaca93ce99a998551bb25|generality|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "807348eded11bfae0be7bdd39f3a3548e435fc9af023268724855514817155ce",
+ "diff_sha256": "807348eded11bfae0be7bdd39f3a3548e435fc9af023268724855514817155ce",
+ "duration_s": 78.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`code/TauCeti/Probability/Exchangeability/Contractability.lean:162-166` has `Contractable.pairLaw_eq ... {g : \u2115 \u2192 \u2115} ... {j k : \u2115} (hj : j < g 0) (hk : k < g 0)`, while `CondExpConvergence.lean:39-43` fixes `j = m`, `r = m + 1`, and assumes `hk : k \u2264 m`.",
+   "file": "TauCeti/Probability/DeFinetti/CondExpConvergence.lean",
+   "fix": "State the future lemma as `{r j k : \u2115} (hj : j < r) (hk : k < r) : \u03bc[... X j | tailFamily X r] =\u1d50[\u03bc] \u03bc[... X k | tailFamily X r]`, then derive the current `k \u2264 m` form as a corollary if needed.",
+   "issue": "`Contractable.condExp_indicator_future_eq` special-cases the head indices to `m` and `k \u2264 m` and the cutoff to `m + 1`, although the nearby `Contractable.pairLaw_eq` already supports any two heads `j k` below an arbitrary tail start `g 0`.",
+   "line": 39
+  },
+  {
+   "evidence": "`CondExpConvergence.lean:55-59` exposes only `{k m : \u2115} (hk : k \u2264 m)`, but the proof route only needs a future cutoff above both compared coordinates via `tailProcess_le_tailFamily` and `pairLaw_eq`.",
+   "file": "TauCeti/Probability/DeFinetti/CondExpConvergence.lean",
+   "fix": "State the tail lemma for arbitrary `{j k : \u2115}` by applying the generalized future lemma with a cutoff above both indices, for example `Nat.max j k + 1`; keep the ordered version only as a wrapper if downstream code wants that shape.",
+   "issue": "`Contractable.condExp_indicator_tailProcess_eq` inherits the same ordered `k \u2264 m` special case even though the tail equality is naturally between arbitrary coordinates.",
+   "line": 55
+  },
+  {
+   "evidence": "`Contractable.pairLaw_eq` at `code/TauCeti/Probability/Exchangeability/Contractability.lean:162-164` takes `\u2200 n, AEMeasurable (X n) \u03bc`, while `CondExpConvergence.lean:45-49` uses ordinary measurability only for `X m`, `X k`, and `X (m + 1 + n)` and `CondExpConvergence.lean:61-62` only needs measurability from the cutoff onward.",
+   "file": "TauCeti/Probability/DeFinetti/CondExpConvergence.lean",
+   "fix": "Use `hX_ae : \u2200 n, AEMeasurable (X n) \u03bc` for `Contractable.pairLaw_eq`, plus ordinary measurability only for the tail coordinates needed to make `tailFamily X r \u2264 inferInstance` and the shifted tail map measurable; do not require every coordinate to be ambient-measurable.",
+   "issue": "Both new lemmas assume `(hX_meas : \u2200 n, Measurable (X n))`, which is stronger than the surrounding contractability API and stronger than the proof uses.",
+   "line": 40
+  }
+ ],
+ "head_sha": "91c5183ba6bb95c532efaca93ce99a998551bb25",
+ "merge_base_sha": "49fe22f8b82acb267639575fd5611353f6218366",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 579,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f320d70b4525c05d2b7f66b81c81a94f862cb2297314645fc4831fc5c902e375",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T163054Z-579-generality-b7efd5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T16:30:54Z",
+ "submitted_by": "kim-em",
+ "summary": "The conditional-expectation lemmas are stated below the natural level exposed by the existing contractability API, and they also require full ordinary coordinate measurability where only a smaller mix of assumptions is used.",
+ "transcript_blob": "0dbbe07295f31e98065fea5928c959ec8b37158645d11d87003545e7240517eb",
+ "usage": {
+  "cached_input_tokens": 31360,
+  "input_tokens": 75004,
+  "output_tokens": 3950,
+  "reasoning_output_tokens": 2489
+ },
+ "verdict": "request_changes"
+}
