@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.435312,
+   "returncode": 0,
+   "secs": 62.3,
+   "usage": {
+    "cached_input_tokens": 196864,
+    "input_tokens": 247302,
+    "output_tokens": 2823,
+    "reasoning_output_tokens": 1314
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8a45cc3848ca10051020b40de4541b6f0e46b4fe",
+ "cost_estimated": true,
+ "cost_usd": 0.435312,
+ "dedupe_key": "TauCetiProject/TauCeti|566|181788b2d34bc7e577d1732da7dadee73bcc05c2|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "e635a394983463586d0a87c01d497a4c3aff658d9b9015f0bcab20a053cce224",
+ "diff_sha256": "e635a394983463586d0a87c01d497a4c3aff658d9b9015f0bcab20a053cce224",
+ "duration_s": 62.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 37-43 expose only `CondIndep`, `Measure`, `MeasurableSet`, and conditional-expectation notation; the pull-out lemmas from `PullOut` are used only inside the proof at lines 66-78.",
+   "file": "TauCeti/Probability/DeFinetti/CondIndepIndicator.lean",
+   "fix": "Keep only the imports needed for the theorem statement public; change `PullOut` to a private `import` after the public statement imports.",
+   "issue": "`Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut` is a proof-only dependency but is imported with `public import`, making its API part of this adapter's public surface.",
+   "line": 4
+  },
+  {
+   "evidence": "The public theorem statement is lines 37-43; `rg` finds no `IntegrableOn` occurrence in `CondIndepIndicator.lean` beyond the import.",
+   "file": "TauCeti/Probability/DeFinetti/CondIndepIndicator.lean",
+   "fix": "Change this to a private `import` if the proof needs it, or remove it if it is redundant under the other imports.",
+   "issue": "`Mathlib.MeasureTheory.Integral.IntegrableOn` is also publicly re-exported even though it is not part of the theorem statement, and there is no direct public API in this file involving `IntegrableOn`.",
+   "line": 5
+  }
+ ],
+ "head_sha": "181788b2d34bc7e577d1732da7dadee73bcc05c2",
+ "merge_base_sha": "8a45cc3848ca10051020b40de4541b6f0e46b4fe",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 566,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3284a29425a3a501bdb7861c6220eb8ddac5da2ac6c386e3fcfbbd958387f466",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260701T023820Z-566-api-design-87e5d8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-01T02:38:20Z",
+ "submitted_by": "kim-em",
+ "summary": "The theorem itself is a narrow adapter, but the module publicly re-exports proof-only dependencies. Tighten the public import surface so downstream users cannot accidentally depend on implementation imports.",
+ "transcript_blob": "2fbee12c1609146d76a722bb8881de740269efc9e0e0c530d4dfa77f7a8ec60a",
+ "usage": {
+  "cached_input_tokens": 196864,
+  "input_tokens": 247302,
+  "output_tokens": 2823,
+  "reasoning_output_tokens": 1314
+ },
+ "verdict": "request_changes"
+}
