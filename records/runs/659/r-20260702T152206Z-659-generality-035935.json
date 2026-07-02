@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.530706,
+   "returncode": 0,
+   "secs": 82.2,
+   "usage": {
+    "cached_input_tokens": 260352,
+    "input_tokens": 318534,
+    "output_tokens": 3654,
+    "reasoning_output_tokens": 1155
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b6f7e5e827e7d71317a820bd727d0945489b0006",
+ "cost_estimated": true,
+ "cost_usd": 0.530706,
+ "dedupe_key": "TauCetiProject/TauCeti|659|ae674a84d5881999803abedf83047926b182b102|generality|gpt-5.5|caeca2a4b1193aa2|production|1",
+ "diff_blob": "00765c17a4ea38e36533cb59f18fcab881622e1970e77ecedb1a678f1f578387",
+ "diff_sha256": "00765c17a4ea38e36533cb59f18fcab881622e1970e77ecedb1a678f1f578387",
+ "duration_s": 82.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib has `variable [IsFiniteMeasure \u03bc]` for martingale convergence in `Mathlib/Probability/Martingale/Convergence.lean:243`, `theorem tendsto_ae_condExp` at `:426`, `Integrable.uniformIntegrable_condExp` under `[IsFiniteMeasure \u03bc]` in `ConditionalExpectation/Real.lean:174`, and the upcrossing inequality under `[IsFiniteMeasure \u03bc]` in `Upcrossing.lean:800`.",
+   "file": "TauCeti/Probability/Martingale/Convergence.lean",
+   "fix": "State these theorems with `[IsFiniteMeasure \u03bc]`; in `upcrossings_bdd_uniform`, replace the probability-specific constant step using `measure_univ = 1` with the corresponding finite-measure bound including `\u03bc univ`.",
+   "issue": "`condExp_tendsto_iInf` and its support lemmas require `[IsProbabilityMeasure \u03bc]`, but the natural Mathlib level is finite measures; the upward analogue and the APIs used here are under `[IsFiniteMeasure \u03bc]`. The same over-strong hypothesis appears at `Crossings/AntitoneLimit.lean:45`, `Crossings/AntitoneLimit.lean:290`, `Crossings/Bounds.lean:39`, and `Reverse.lean:60`.",
+   "line": 57
+  },
+  {
+   "evidence": "The signature shows `_hf : Integrable f \u03bc` at `Reverse.lean:62`; the body uses only `stronglyMeasurable_condExp` and `condExp_condExp_of_le` at lines 64-68, and Mathlib's analogous `martingale_condExp` has no integrability hypothesis (`Mathlib/Probability/Martingale/Basic.lean:141`).",
+   "file": "TauCeti/Probability/Martingale/Reverse.lean",
+   "fix": "Remove the `Integrable f \u03bc` argument from `revCEFinite_martingale` and update the single call in `Crossings/Bounds.lean:51`.",
+   "issue": "`revCEFinite_martingale` takes `(_hf : Integrable f \u03bc)`, but the proof never uses it and `Martingale` itself is the non-integrability-bundled Mathlib predicate.",
+   "line": 62
+  },
+  {
+   "evidence": "The declaration has `(_hg_meas : AEMeasurable ...)` at `IntegrationHelpers.lean:41`; the proof only uses `hae` and `hu_meas` in the `lintegral_congr_ae` and `lintegral_liminf_le'` steps at lines 44-55.",
+   "file": "TauCeti/Probability/Martingale/IntegrationHelpers.lean",
+   "fix": "Drop the `_hg_meas` parameter and adjust the call site in `Crossings/AntitoneLimit.lean`.",
+   "issue": "`lintegral_fatou_ofReal_norm` requires `AEMeasurable (fun x => ENNReal.ofReal \u2016g x\u2016) \u03bc`, but the argument is named `_hg_meas` and is unused, making the public helper less general than its proof.",
+   "line": 41
+  }
+ ],
+ "head_sha": "ae674a84d5881999803abedf83047926b182b102",
+ "merge_base_sha": "b6f7e5e827e7d71317a820bd727d0945489b0006",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 659,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fef3e0ddd6e24deda07e951b88ed6ad7cfde3f2ed85a3b4a0737287ad27753db",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "ca4019579fd4922464c844d112a9c5d4b996229f",
+ "rubrics_version": "caeca2a4b1193aa2",
+ "run_id": "r-20260702T152206Z-659-generality-035935",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T15:22:06Z",
+ "submitted_by": "kim-em",
+ "summary": "The main API and several support lemmas are stated with stronger hypotheses than the surrounding Mathlib conditional-expectation and martingale APIs require. There are also visible unused assumptions in public helper lemmas.",
+ "transcript_blob": "3137e5aaf47d1c5429375418b6605aa25d562c4706b491ec6c6f55654478dcd1",
+ "usage": {
+  "cached_input_tokens": 260352,
+  "input_tokens": 318534,
+  "output_tokens": 3654,
+  "reasoning_output_tokens": 1155
+ },
+ "verdict": "request_changes"
+}

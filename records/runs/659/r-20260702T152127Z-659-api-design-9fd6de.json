@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.26823,
+   "returncode": 0,
+   "secs": 39.0,
+   "usage": {
+    "cached_input_tokens": 47360,
+    "input_tokens": 87000,
+    "output_tokens": 1545,
+    "reasoning_output_tokens": 552
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b6f7e5e827e7d71317a820bd727d0945489b0006",
+ "cost_estimated": true,
+ "cost_usd": 0.26823,
+ "dedupe_key": "TauCetiProject/TauCeti|659|ae674a84d5881999803abedf83047926b182b102|api-design|gpt-5.5|caeca2a4b1193aa2|production|1",
+ "diff_blob": "00765c17a4ea38e36533cb59f18fcab881622e1970e77ecedb1a678f1f578387",
+ "diff_sha256": "00765c17a4ea38e36533cb59f18fcab881622e1970e77ecedb1a678f1f578387",
+ "duration_s": 39.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Convergence.lean:6` has `public import TauCeti.Probability.Martingale.Crossings`; `Crossings.lean:3-5` publicly imports all helper files, whose public declarations include `AntitoneLimit.lean:44`, `AntitoneLimit.lean:289`, `Bounds.lean:38`, `Pathwise.lean:146`, `TimeReversalCrossing.lean:174`, `SigmaAlgebraHelpers.lean:37`, and `IntegrationHelpers.lean:35`.",
+   "file": "TauCeti/Probability/Martingale/Crossings.lean",
+   "fix": "Keep only `condExp_tendsto_iInf` public for this target; make the proof-chain declarations private/non-public or import the helper modules non-publicly from `Convergence.lean` instead of through a public re-export shim.",
+   "issue": "The shim publicly re-exports implementation files, so users of `condExp_tendsto_iInf` also get `condExp_exists_ae_limit_antitone`, `ae_limit_is_condexp_iInf`, `upcrossings_bdd_uniform`, `upBefore_le_downBefore_rev_succ`, `timeReversal_crossing_bound`, and sigma/integration helper lemmas as public API.",
+   "line": 3
+  },
+  {
+   "evidence": "`TimeReversalCrossing.lean:40` `@[expose] def negProcess`, `TimeReversalCrossing.lean:44` `@[expose] def revProcess`, `Crossings/Pathwise.lean:40` `@[expose] ... downcrossingsBefore`, `Crossings/Pathwise.lean:45` `@[expose] ... downcrossings`, and `Reverse.lean:54` `@[expose] ... revCEFinite`.",
+   "file": "TauCeti/Probability/Martingale/TimeReversalCrossing.lean",
+   "fix": "Remove `@[expose]` and keep these helpers private/non-public; if any remain public, add the normal characteristic/simp/congruence lemmas consumers need without unfolding.",
+   "issue": "Implementation helpers expose bodies with `@[expose]`: `negProcess`, `revProcess`, `downcrossingsBefore`, `downcrossings`, and `revCEFinite` are not the named downstream theorem and currently rely on unfoldability as their public API.",
+   "line": 40
+  }
+ ],
+ "head_sha": "ae674a84d5881999803abedf83047926b182b102",
+ "merge_base_sha": "b6f7e5e827e7d71317a820bd727d0945489b0006",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 659,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "60c85c69d83233cf4fcae3d160f29a3ecdb3d756cdcbf0dd66ac4ea079581042",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "ca4019579fd4922464c844d112a9c5d4b996229f",
+ "rubrics_version": "caeca2a4b1193aa2",
+ "run_id": "r-20260702T152127Z-659-api-design-9fd6de",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T15:21:27Z",
+ "submitted_by": "kim-em",
+ "summary": "The theorem surface is larger than the roadmap target needs: importing `Convergence` re-exports the whole reversal/upcrossing implementation chain. Several helper definitions also expose their bodies instead of providing a public characteristic API or staying private.",
+ "transcript_blob": "fd34c5dd81d5ee2de45823c5f397b2b689746b900c6d413e58696728c947197f",
+ "usage": {
+  "cached_input_tokens": 47360,
+  "input_tokens": 87000,
+  "output_tokens": 1545,
+  "reasoning_output_tokens": 552
+ },
+ "verdict": "request_changes"
+}
