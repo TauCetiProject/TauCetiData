@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.523594,
+   "returncode": 0,
+   "secs": 65.5,
+   "usage": {
+    "cached_input_tokens": 89088,
+    "input_tokens": 166268,
+    "output_tokens": 3105,
+    "reasoning_output_tokens": 1600
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3ae7925d169b0d03e5680b148d79a5c3028a969b",
+ "cost_estimated": true,
+ "cost_usd": 0.523594,
+ "dedupe_key": "TauCetiProject/TauCeti|611|1a85841f578962d4c4f86fef1c916b7d6b7d8c74|api-design|gpt-5.5|db8fb3aa80d836bd|production|2",
+ "diff_blob": "d57cf96912c26f3aabee3a10b38f37a615df24887909ecfb5d5923284a81258e",
+ "diff_sha256": "d57cf96912c26f3aabee3a10b38f37a615df24887909ecfb5d5923284a81258e",
+ "duration_s": 65.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"@\\[expose\\].*(hopfIdeal|pointsHom)|theorem hopfIdeal_toIdeal|theorem toAdd_pointsHom|theorem mem_range_pointsHom_iff\"` hits lines 159, 173, 227, 235, and 261 in this file.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdditivePTorsion.lean",
+   "fix": "Remove `@[expose]` from both definitions and add any missing rewrite/introduction lemmas needed downstream instead of relying on unfolding.",
+   "issue": "`hopfIdeal` and `pointsHom` are both marked `@[expose]` (lines 159 and 227), exposing proof/definition bodies even though the file already provides characteristic lemmas (`hopfIdeal_toIdeal`, `toAdd_pointsHom`, `pointsHom_injective`, `mem_range_pointsHom_iff`).",
+   "line": 159
+  },
+  {
+   "evidence": "`AdditiveGroup`, `RootsOfUnityGroup`, `SplitTorus`, and `TrivialGroup` expose `pointsMulEquiv`, while `rg -n \"namespace AlphaP|pointsMulEquiv|pointsHom|mem_range_pointsHom_iff\"` shows `AlphaP` has only `pointsHom`, `pointsHom_injective`, and `mem_range_pointsHom_iff`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdditivePTorsion.lean",
+   "fix": "Add a `pointsMulEquiv`/`pointsEquiv` to a bundled subtype or subgroup `{a : Multiplicative A // (Multiplicative.toAdd a)^p = 0}`, with apply/symm/naturality lemmas, and define/use `pointsHom` as its coercion if still needed.",
+   "issue": "The points API only gives an embedding into `Multiplicative A` plus a range predicate, not the promised identification of `\u03b1\u209a(A)` with the p-torsion subgroup as a bundled equivalence; this is weaker than the established `pointsMulEquiv` API used by the adjacent group examples.",
+   "line": 261
+  },
+  {
+   "evidence": "Line 184 proves `(mk x)^p = 0` without `@[simp]`; line 261 proves `a \u2208 pointsHom.range \u2194 (toAdd a)^p = 0` without `@[simp]`, while line 234 already marks the analogous evaluator lemma `toAdd_pointsHom` as simp.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdditivePTorsion.lean",
+   "fix": "Mark `mk_\u03b9_pow_eq_zero` and `mem_range_pointsHom_iff` as `@[simp]` unless the new bundled equivalence makes the range lemma obsolete.",
+   "issue": "Characteristic normal-form lemmas are missing automation tags: `mk_\u03b9_pow_eq_zero` and `mem_range_pointsHom_iff` should simplify the generator relation and the range condition, respectively.",
+   "line": 184
+  }
+ ],
+ "head_sha": "1a85841f578962d4c4f86fef1c916b7d6b7d8c74",
+ "merge_base_sha": "a999b6ab323615f4f0d992bbb76ceb372cb52fda",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 611,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "044a81971d6ce016a0c0e9003958fc5200354ccea3236de7973d3cf6e361d808",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260702T031818Z-611-api-design-20d6af",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T03:18:18Z",
+ "submitted_by": "kim-em",
+ "summary": "The new surface exposes implementation bodies and stops short of the standard points equivalence API for a group-scheme worked example. Add the characteristic equivalence/constructor API and keep implementation details opaque.",
+ "transcript_blob": "dc6b0c62083bd53be4e413706b59cf1288e0e29b6e9f77cba3566b8c4bbf5059",
+ "usage": {
+  "cached_input_tokens": 89088,
+  "input_tokens": 166268,
+  "output_tokens": 3105,
+  "reasoning_output_tokens": 1600
+ },
+ "verdict": "request_changes"
+}
