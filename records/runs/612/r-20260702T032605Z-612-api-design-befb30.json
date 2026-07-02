@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.355999,
+   "returncode": 0,
+   "secs": 49.7,
+   "usage": {
+    "cached_input_tokens": 83968,
+    "input_tokens": 132161,
+    "output_tokens": 2435,
+    "reasoning_output_tokens": 1127
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3ae7925d169b0d03e5680b148d79a5c3028a969b",
+ "cost_estimated": true,
+ "cost_usd": 0.355999,
+ "dedupe_key": "TauCetiProject/TauCeti|612|80c973d4f6b257f159227b4355749185f0bec0f9|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "01de6b835f85d80b2f98e427a00bc36a7e0e122a76790404a38938870d9cbb24",
+ "diff_sha256": "01de6b835f85d80b2f98e427a00bc36a7e0e122a76790404a38938870d9cbb24",
+ "duration_s": 49.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"\\@\\[expose\\]|threeCycle_apply|threeCycleMeasure_singleton\" code/TauCeti/Probability/Exchangeability/ThreeCycle.lean` shows exposed bodies at lines 51 and 59, with public restatements at lines 55 and 74.",
+   "file": "TauCeti/Probability/Exchangeability/ThreeCycle.lean",
+   "fix": "Remove `@[expose]` from both definitions and keep downstream use routed through the stated lemmas/instances; add any missing characterization lemma instead of exposing bodies.",
+   "issue": "`threeCycle` and `threeCycleMeasure` both use `@[expose]`, exposing their bodies even though the public API already gives `threeCycle_apply`, `threeCycleMeasure_singleton`, the instances, and the stationarity/non-symmetry theorems needed by consumers.",
+   "line": 51
+  },
+  {
+   "evidence": "Line 74 states `theorem threeCycleMeasure_singleton (a : ZMod 3) : threeCycleMeasure {a} = 3\u207b\u00b9`; `threeCycle_apply` is already marked `[simp]` at lines 54-55.",
+   "file": "TauCeti/Probability/Exchangeability/ThreeCycle.lean",
+   "fix": "Add `@[simp]` to `threeCycleMeasure_singleton` so rectangle/event mass computations can use the public API without manual rewrites.",
+   "issue": "`threeCycleMeasure_singleton` is the normal-form characterization of the uniform law on singleton events but is not tagged `@[simp]`.",
+   "line": 74
+  }
+ ],
+ "head_sha": "80c973d4f6b257f159227b4355749185f0bec0f9",
+ "merge_base_sha": "3ae7925d169b0d03e5680b148d79a5c3028a969b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 612,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ca4ea25104c6cb8c14caa8ab945ad8ffc1255f33ac7c51f89c6329e42d8e3147",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260702T032605Z-612-api-design-befb30",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T03:26:05Z",
+ "submitted_by": "kim-em",
+ "summary": "The example exposes more implementation detail than its public API needs, and one characteristic normal-form lemma is not marked for automation.",
+ "transcript_blob": "15e9e02d44b6139f4093644e4062e40ab6a879a15ae4c4b223ed1bb653968f4b",
+ "usage": {
+  "cached_input_tokens": 83968,
+  "input_tokens": 132161,
+  "output_tokens": 2435,
+  "reasoning_output_tokens": 1127
+ },
+ "verdict": "request_changes"
+}
