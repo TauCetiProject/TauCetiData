@@ -1,0 +1,78 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.317584,
+   "returncode": 0,
+   "secs": 60.5,
+   "usage": {
+    "cached_input_tokens": 51328,
+    "input_tokens": 91436,
+    "output_tokens": 3046,
+    "reasoning_output_tokens": 1534
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3ae7925d169b0d03e5680b148d79a5c3028a969b",
+ "cost_estimated": true,
+ "cost_usd": 0.317584,
+ "dedupe_key": "TauCetiProject/TauCeti|611|edcc45f4e84c4bc5fe441e58207c92aadc5ca076|api-design|gpt-5.5|db8fb3aa80d836bd|production|3",
+ "diff_blob": "7b8567a90a0f8af2d9b434a5d90fe7487400e5b5ed727de35826c166a95ba517",
+ "diff_sha256": "7b8567a90a0f8af2d9b434a5d90fe7487400e5b5ed727de35826c166a95ba517",
+ "duration_s": 60.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"namespace AlphaP|pointsMulEquiv|pointsHom|mem_range_pointsHom_iff\" code/TauCeti/Algebra/AlgebraicGroup/AdditiveFrobeniusKernel.lean` shows only `pointsHom`, `pointsHom_injective`, and `mem_range_pointsHom_iff`; adjacent examples expose `pointsMulEquiv` in `Trivial.lean:52`, `RootsOfUnity.lean:123`, and `SplitTorus.lean:68`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdditiveFrobeniusKernel.lean",
+   "fix": "Add a `pointsMulEquiv`/similar bundled `MulEquiv` from `WithConv (CoordinateRing p \u2192\u2090[R] A)` to the subtype/subgroup `{a : Multiplicative A // (Multiplicative.toAdd a)^p = 0}`, with apply and inverse simp lemmas.",
+   "issue": "`AlphaP` identifies points only via `pointsHom`, `pointsHom_injective`, and `mem_range_pointsHom_iff`, leaving users to destruct a range existential instead of using a bundled equivalence with the p-nilpotent subgroup.",
+   "line": 263
+  },
+  {
+   "evidence": "`rg -n \"@\\[simp\\].*(mk_\u03b9_pow_eq_zero)|theorem mk_\u03b9_pow_eq_zero\"` hits only `theorem mk_\u03b9_pow_eq_zero` at line 186.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdditiveFrobeniusKernel.lean",
+   "fix": "Add `@[simp]` to `mk_\u03b9_pow_eq_zero` so the coordinate relation `(x\u0304)^p = 0` rewrites automatically.",
+   "issue": "`mk_\u03b9_pow_eq_zero` is the generator relation for the quotient coordinate ring but is not marked as a normal-form simp lemma.",
+   "line": 186
+  },
+  {
+   "evidence": "`rg -n \"@\\[simp\\].*(mem_range_pointsHom_iff)|theorem mem_range_pointsHom_iff\"` hits only `theorem mem_range_pointsHom_iff` at line 263; `toAdd_pointsHom` at line 237 is already marked `@[simp]`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdditiveFrobeniusKernel.lean",
+   "fix": "Add `@[simp]` to `mem_range_pointsHom_iff` unless it is replaced by a bundled points equivalence whose apply/range lemmas carry the corresponding simp annotations.",
+   "issue": "`mem_range_pointsHom_iff` is the characteristic range predicate for the points map but lacks a simp tag, so membership in the exposed image does not normalize to p-nilpotence.",
+   "line": 263
+  }
+ ],
+ "head_sha": "edcc45f4e84c4bc5fe441e58207c92aadc5ca076",
+ "merge_base_sha": "a999b6ab323615f4f0d992bbb76ceb372cb52fda",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 611,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "d36f7ab13832e890135420c8e743281ea8140ecfd9e831881b3e1509183d185b",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260702T033135Z-611-api-design-87f007",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T03:31:35Z",
+ "submitted_by": "kim-em",
+ "summary": "The new public surface still stops at an injective map plus a range predicate, so downstream users do not get the promised points identification as a usable equivalence. Two characteristic normal-form lemmas are also missing the automation tags expected for this API.",
+ "transcript_blob": "a9a0703fe66df1a1bf998b9531f509ca998b5d318e4db08242b283cfb75a36c3",
+ "usage": {
+  "cached_input_tokens": 51328,
+  "input_tokens": 91436,
+  "output_tokens": 3046,
+  "reasoning_output_tokens": 1534
+ },
+ "verdict": "request_changes"
+}
