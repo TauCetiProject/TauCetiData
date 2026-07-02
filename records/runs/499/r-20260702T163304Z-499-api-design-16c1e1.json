@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.250144,
+   "returncode": 0,
+   "secs": 51.5,
+   "usage": {
+    "cached_input_tokens": 91648,
+    "input_tokens": 118604,
+    "output_tokens": 2318,
+    "reasoning_output_tokens": 836
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "de61916fcef24f0b96855cc237f04ed60de37ac2",
+ "cost_estimated": true,
+ "cost_usd": 0.250144,
+ "dedupe_key": "TauCetiProject/TauCeti|499|406394b82772e9da4b01370e307dd11d207a33de|api-design|gpt-5.5|caeca2a4b1193aa2|production|3",
+ "diff_blob": "a29763f4f0e8f9db82b2027883eb8704c5115f66f985522eea71c1f170f4a219",
+ "diff_sha256": "a29763f4f0e8f9db82b2027883eb8704c5115f66f985522eea71c1f170f4a219",
+ "duration_s": 51.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg` hits: `Real.lean:29:@[expose]`, `Real.lean:30:def _root_.Polynomial.hermite\u211d`; lines 33, 46, and 52 provide `hermite\u211d_def`, `eval_hermite\u211d`, and `aeval_hermite\u211d`.",
+   "file": "TauCeti/RingTheory/Polynomial/Hermite/Real.lean",
+   "fix": "Remove `@[expose]`; keep `hermite\u211d_def`, `eval_hermite\u211d`, and `aeval_hermite\u211d` as the public API, adding any missing lemma instead of relying on unfolding.",
+   "issue": "`Polynomial.hermite\u211d` is marked `@[expose]`, making its implementation `(hermite n).map (Int.castRingHom \u211d)` part of the public reduction surface even though the file already provides characteristic lemmas.",
+   "line": 29
+  },
+  {
+   "evidence": "`rg` hits: `GaussianPolynomialIntegrable.lean:41:theorem _root_.Polynomial.integrable_eval_mul_exp_neg_mul_sq`, `GaussianPolynomialIntegrable.lean:62:theorem _root_.Polynomial.integrable_aeval_mul_exp_neg_mul_sq`; the roadmap only names `integrable_aeval_mul_gaussian` at `roadmap/TauCetiRoadmap/OrthogonalL2Bases/Targets.lean:84`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/GaussianPolynomialIntegrable.lean",
+   "fix": "Make the generalized `*_exp_neg_mul_sq` lemmas private or move them out of this target PR; expose only the standard-weight `integrable_eval_mul_gaussian` / `integrable_aeval_mul_gaussian` lemmas needed by the Hermite orthogonality target.",
+   "issue": "`Polynomial.integrable_eval_mul_exp_neg_mul_sq` and `Polynomial.integrable_aeval_mul_exp_neg_mul_sq` expose integrability for every positive Gaussian weight, which is broader public API than the roadmap A1 standard weight `e^{-x\u00b2/2}` needs.",
+   "line": 41
+  }
+ ],
+ "head_sha": "406394b82772e9da4b01370e307dd11d207a33de",
+ "merge_base_sha": "de61916fcef24f0b96855cc237f04ed60de37ac2",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 499,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "052871fd314fdccb4623e353d7c1ed38ddd969dad80fdaf48610754236308ce7",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 3,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "ca4019579fd4922464c844d112a9c5d4b996229f",
+ "rubrics_version": "caeca2a4b1193aa2",
+ "run_id": "r-20260702T163304Z-499-api-design-16c1e1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T16:33:04Z",
+ "submitted_by": "kim-em",
+ "summary": "The orthogonality-facing API is present, but the PR still exposes implementation details beyond what the A1 target needs. In particular, the real Hermite wrapper is reducibly exposed, and the generic positive-Gaussian integrability lemmas are public despite only the standard weight being used by the roadmap target.",
+ "transcript_blob": "8f41c7e6964b9244691db58fd567099e6b9cd605784b2c7e49665fa0360d4f14",
+ "usage": {
+  "cached_input_tokens": 91648,
+  "input_tokens": 118604,
+  "output_tokens": 2318,
+  "reasoning_output_tokens": 836
+ },
+ "verdict": "request_changes"
+}
