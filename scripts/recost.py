@@ -23,7 +23,7 @@ import subprocess
 
 import tcdata
 
-# Single source of truth: FormalFrontier/TauCetiReview runner/prices.json. We never keep our own
+# Single source of truth: TauCetiProject/TauCetiReview runner/prices.json. We never keep our own
 # copy — fetch the canonical file from GitHub (TAUCETI_PRICES path override, else a local engine
 # checkout, can stand in offline).
 _PRICES_PATH = "runner/prices.json"
@@ -35,7 +35,7 @@ def _load_prices_text():
         return pathlib.Path(override).read_text()
     try:
         return subprocess.run(
-            ["gh", "api", "repos/FormalFrontier/TauCetiReview/contents/" + _PRICES_PATH,
+            ["gh", "api", "repos/TauCetiProject/TauCetiReview/contents/" + _PRICES_PATH,
              "-H", "Accept: application/vnd.github.raw"],
             check=True, capture_output=True, text=True).stdout
     except Exception:

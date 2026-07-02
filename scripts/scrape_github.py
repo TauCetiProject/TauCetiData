@@ -30,7 +30,7 @@ import sys
 
 import tcdata
 
-REPO = "FormalFrontier/TauCeti"
+REPO = "TauCetiProject/TauCeti"
 MARKERS = ("<!--tauceti-scoreboard-->", "<!--tauceti-rubric:")
 META_RE = re.compile(r"<!--tauceti-meta:v1 (\{.*\})-->\s*$")
 

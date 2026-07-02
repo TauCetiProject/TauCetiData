@@ -1,13 +1,13 @@
 # TauCetiData
 
 The durable record of AI code reviews in the Tau Ceti project: every review
-execution on [FormalFrontier/TauCeti](https://github.com/FormalFrontier/TauCeti)
+execution on [TauCetiProject/TauCeti](https://github.com/TauCetiProject/TauCeti)
 PRs, archived with full provenance (exact rubric version, model, exact diff,
 runtime, tokens, cost), plus the evaluation data built on top of it (pairwise
 judgments by AI judges and human meta-reviewers).
 
 Reviews are produced by
-[FormalFrontier/TauCetiReview](https://github.com/FormalFrontier/TauCetiReview);
+[TauCetiProject/TauCetiReview](https://github.com/TauCetiProject/TauCetiReview);
 this repo is the analytics archive. The operational state (scheduling,
 staleness, budgets) stays in TauCetiReview's `reviews` branch ledger — nothing
 in the worker reads from here.
@@ -116,7 +116,7 @@ sqlite3 db/tauceti.db "SELECT * FROM ab_pairs LIMIT 5"
 ## Cost analysis
 
 `tauceti-review-costs` (in
-[TauCetiReview](https://github.com/FormalFrontier/TauCetiReview/blob/main/runner/COSTS.md))
+[TauCetiReview](https://github.com/TauCetiProject/TauCetiReview/blob/main/runner/COSTS.md))
 attributes review spend — tokens **and** imputed dollars — to PRs and to merged
 lines of code, reading the `records/runs/` files here. Because the token counts
 are the immutable fact, it recomputes cost from them at the rate in effect on
@@ -124,8 +124,8 @@ each run's date (`runner/prices-history.json`), so the numbers are faithful to
 when a run happened and reproducible by anyone from this public archive:
 
 ```
-git clone --depth 1 https://github.com/FormalFrontier/TauCetiData /tmp/TauCetiData
-uvx --from git+https://github.com/FormalFrontier/TauCetiReview tauceti-review-costs \
+git clone --depth 1 https://github.com/TauCetiProject/TauCetiData /tmp/TauCetiData
+uvx --from git+https://github.com/TauCetiProject/TauCetiReview tauceti-review-costs \
   --source data --data-dir /tmp/TauCetiData all
 ```
 

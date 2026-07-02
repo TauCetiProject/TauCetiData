@@ -179,7 +179,7 @@ def main():
         r1, r2 = (ra, rb) if first_arm == "a" else (rb, ra)
         print("=" * 90)
         print(f"{BOLD}PR #{pair['pr']} · rubric: {pair['rubric']}{RESET}   "
-              f"({CYAN}https://github.com/FormalFrontier/TauCeti/pull/{pair['pr']}/files{RESET})\n")
+              f"({CYAN}https://github.com/TauCetiProject/TauCeti/pull/{pair['pr']}/files{RESET})\n")
         print(render_diff(blob_text(pair["diff_blob"])))
         print(f"\n{BOLD}{'-'*40} REVIEW 1 {'-'*40}{RESET}\n" + render_review(r1))
         print(f"\n{BOLD}{'-'*40} REVIEW 2 {'-'*40}{RESET}\n" + render_review(r2))
