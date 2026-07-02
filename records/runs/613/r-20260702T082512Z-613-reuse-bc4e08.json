@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.735672,
+   "returncode": 0,
+   "secs": 98.2,
+   "usage": {
+    "cached_input_tokens": 309504,
+    "input_tokens": 400506,
+    "output_tokens": 4197,
+    "reasoning_output_tokens": 1825
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3ae7925d169b0d03e5680b148d79a5c3028a969b",
+ "cost_estimated": true,
+ "cost_usd": 0.735672,
+ "dedupe_key": "TauCetiProject/TauCeti|613|d99eca7744b94864e5ca700bfff0a1ac513f8ecf|reuse|gpt-5.5|db8fb3aa80d836bd|production|2",
+ "diff_blob": "b39d6023e6e5a419b040718426b87ef5007b2190b78c384706f1a1eb88de18ed",
+ "diff_sha256": "b39d6023e6e5a419b040718426b87ef5007b2190b78c384706f1a1eb88de18ed",
+ "duration_s": 98.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib has `LinearMap.BilinForm.IsometryEquiv` with field `map_app' : \u2200 n m, B\u2082 (toFun n) (toFun m) = B\u2081 n m` and `map_app`, `refl`, `symm`, `trans` at `mathlib/Mathlib/LinearAlgebra/BilinearForm/IsometryEquiv.lean:40`, `:75`, `:80`, `:85`, `:93`; the PR repeats this at `SymplecticTransport.lean:115`, `:126`, `:144`, `:150`, `:158`.",
+   "file": "TauCeti/Geometry/Symplectic/SymplecticTransport.lean",
+   "fix": "Use `\u03c9\u2081.toBilinForm.IsometryEquiv \u03c9\u2082.toBilinForm` as the bundled symplectomorphism API, or make TauCeti's name a thin wrapper/bridge to it instead of a new Prop with parallel `refl`, `symm`, and `trans` lemmas.",
+   "issue": "`IsSymplectomorphism` and its pointwise/apply/refl/symm/trans API duplicate Mathlib's bilinear-form isometry equivalence API for exactly this preservation condition.",
+   "line": 115
+  },
+  {
+   "evidence": "The new definition duplicates the componentwise bilinear form and separating-left/right proof at `Prod.lean:214-239`; existing hits are `SymplecticForm.prod`/`prod_apply` at `Prod.lean:203`/`:209` and `SymplecticForm.rescale`/`rescale_apply` at `Rescale.lean:67`/`:92`, whose evaluations combine to `\u03c9\u2081 p.1 q.1 - \u03c9\u2082 p.2 q.2`.",
+   "file": "TauCeti/Geometry/Symplectic/Prod.lean",
+   "fix": "Define it via the existing API, e.g. as `\u03c9\u2081.prod (\u03c9\u2082.rescale (-1) _)`, or move it to a file that can import `Rescale` and add only the desired `twistedProd_apply` simp lemma.",
+   "issue": "`twistedProd` reimplements the direct-sum construction and nondegeneracy proof instead of composing the existing `prod` with nonzero `rescale` on the second factor.",
+   "line": 214
+  }
+ ],
+ "head_sha": "d99eca7744b94864e5ca700bfff0a1ac513f8ecf",
+ "merge_base_sha": "3ae7925d169b0d03e5680b148d79a5c3028a969b",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 613,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "ce68d52bbd0c513be7f2b8bd27c65125e797741dace157cb3c5d06c41876e2a5",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260702T082512Z-613-reuse-bc4e08",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T08:25:12Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR adds useful graph lemmas, but it introduces parallel symplectomorphism and twisted-product APIs instead of reusing existing bilinear-form isometry, product, and rescale machinery.",
+ "transcript_blob": "77428a0b6937c3a34f991ef8c4a0f02840b4127244e93e2652789dfcbfd2069c",
+ "usage": {
+  "cached_input_tokens": 309504,
+  "input_tokens": 400506,
+  "output_tokens": 4197,
+  "reasoning_output_tokens": 1825
+ },
+ "verdict": "request_changes"
+}
