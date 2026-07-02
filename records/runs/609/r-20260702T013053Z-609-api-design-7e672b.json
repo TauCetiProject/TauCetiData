@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.386314,
+   "returncode": 0,
+   "secs": 40.6,
+   "usage": {
+    "cached_input_tokens": 43648,
+    "input_tokens": 105164,
+    "output_tokens": 1897,
+    "reasoning_output_tokens": 680
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "48839fdc172ffbf6f336096f9954f653baa6984e",
+ "cost_estimated": true,
+ "cost_usd": 0.386314,
+ "dedupe_key": "TauCetiProject/TauCeti|609|b568cbb9411d674d13bb6cf93c2fd134bfc31264|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "d3fc07ead6209809b4e918cc0c7f765f3a84ae35f1d5e529c8e78781eaa33371",
+ "diff_sha256": "d3fc07ead6209809b4e918cc0c7f765f3a84ae35f1d5e529c8e78781eaa33371",
+ "duration_s": 40.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"Set.range \\(cmRoot p\\)|cmRoot\"` shows the range equality only as local `have hrange` at lines 129-130, while the public equivalence at lines 98-100 uses `adjoin \u211a (Set.range (cmRoot p))`.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/CMFieldGaloisGroup.lean",
+   "fix": "Add a public simp/characteristic lemma for `Set.range (cmRoot p)` equaling the inserted generator set, or state/derive the Galois equivalence directly over the inserted-field type.",
+   "issue": "`galoisGroupEquivISqrtPrimes` is stated for `adjoin \u211a (Set.range (cmRoot p))`, but the named downstream field/API is `adjoin \u211a (insert Complex.I (Set.range ...))`; the only bridge `Set.range (cmRoot p) = insert ...` is a local proof inside `card_aut_adjoin_I_sqrt_primes`, so consumers cannot use the isomorphism at the advertised field without unfolding/reproving it.",
+   "line": 98
+  },
+  {
+   "evidence": "Lines 54 and 58 mark the helper definitions `@[expose]`; lines 61-67 provide the normal-form simp lemmas and line 71 provides `cmRoot_sq`, so consumers should not need body unfolding.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/CMFieldGaloisGroup.lean",
+   "fix": "Remove `@[expose]` from these helper definitions and rely on `cmRadicand_none/some`, `cmRoot_none/some`, `cmRoot_sq`, and the requested range lemma for public use.",
+   "issue": "`cmRadicand` and `cmRoot` are marked `@[expose]`, exposing implementation bodies even though the file already provides the needed pointwise simp lemmas and characteristic theorem.",
+   "line": 54
+  }
+ ],
+ "head_sha": "b568cbb9411d674d13bb6cf93c2fd134bfc31264",
+ "merge_base_sha": "48839fdc172ffbf6f336096f9954f653baa6984e",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 609,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "98554d5f5fa6f0e8dab0601fc5eea14bedc96e1f90d0ec51e3a75f3cfc8b5516",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260702T013053Z-609-api-design-7e672b",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T01:30:53Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR exposes the right core result, but the public interface is not yet usable at the named field without unfolding helpers, and it exposes helper bodies unnecessarily.",
+ "transcript_blob": "bbfd22b794fa6ca9e388921e8825a36d47dda8143884efd6c0f3865cd3111a3f",
+ "usage": {
+  "cached_input_tokens": 43648,
+  "input_tokens": 105164,
+  "output_tokens": 1897,
+  "reasoning_output_tokens": 680
+ },
+ "verdict": "request_changes"
+}
