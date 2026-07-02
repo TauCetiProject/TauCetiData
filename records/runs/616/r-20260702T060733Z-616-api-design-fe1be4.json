@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.281949,
+   "returncode": 0,
+   "secs": 59.5,
+   "usage": {
+    "cached_input_tokens": 35968,
+    "input_tokens": 71223,
+    "output_tokens": 2923,
+    "reasoning_output_tokens": 1780
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "fbfce22077babba99a78ce0811fb12059124eeaa",
+ "cost_estimated": true,
+ "cost_usd": 0.281949,
+ "dedupe_key": "TauCetiProject/TauCeti|616|321c5d87ac616758d58d371ffa236b6b8657606d|api-design|gpt-5.5|db8fb3aa80d836bd|production|1",
+ "diff_blob": "8a1ed5103f46e310d59d7ac0a0eb3288829907f7c72f1a1458f5cf7bdef6a671",
+ "diff_sha256": "8a1ed5103f46e310d59d7ac0a0eb3288829907f7c72f1a1458f5cf7bdef6a671",
+ "duration_s": 59.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg -n \"theorem .*twoRank|lemma .*twoRank|twoRank_.*\" code mathlib` finds only the cardinality and equivalence lemmas, no defining lemma for `twoRank`.",
+   "file": "TauCeti/Algebra/Group/ElementaryTwoQuotient.lean",
+   "fix": "Add a normal-form theorem, preferably `@[simp] theorem twoRank_def : twoRank G = Module.finrank (ZMod 2) (ElementaryTwoQuotient G) := rfl`.",
+   "issue": "`TauCeti.twoRank` is public and now unconditional, but there is no public `twoRank_def`/`twoRank_eq_finrank` lemma characterizing it as `Module.finrank (ZMod 2) (ElementaryTwoQuotient G)`.",
+   "line": 295
+  },
+  {
+   "evidence": "The class-group grep hits show `def twoRank` at line 159 and only `card_elementaryTwoQuotient_eq_two_pow_twoRank`/`twoRank_eq_of_mulEquiv`; no `twoRank_def` lemma is present.",
+   "file": "TauCeti/NumberTheory/ClassGroup/ElementaryTwoQuotient.lean",
+   "fix": "Add the corresponding `@[simp] theorem twoRank_def : twoRank R = TauCeti.twoRank (ClassGroup R) := rfl` (or the finrank statement) and use it as the wrapper's characteristic API.",
+   "issue": "`TauCeti.ClassGroup.twoRank` is a public wrapper, but there is no public lemma rewriting it to `TauCeti.twoRank (ClassGroup R)` or to the underlying finrank.",
+   "line": 159
+  }
+ ],
+ "head_sha": "321c5d87ac616758d58d371ffa236b6b8657606d",
+ "merge_base_sha": "fbfce22077babba99a78ce0811fb12059124eeaa",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 616,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "34ff15ef198c62ff04c3406430d7c622a1634b3c7944abcc5275da04cfa94e0c",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "6375e7b54f691ae805c78bf060b4d883d7b5f5e9",
+ "rubrics_version": "db8fb3aa80d836bd",
+ "run_id": "r-20260702T060733Z-616-api-design-fe1be4",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T06:07:33Z",
+ "submitted_by": "kim-em",
+ "summary": "The widened `twoRank` definitions expose a public quantity whose defining convention is only available by unfolding the body. Add characteristic `*_def` lemmas for both public names so downstream code can use the API without relying on definitional unfolding.",
+ "transcript_blob": "6c9eff853269c93cf74372a8a62682afe42d9f197a634a2deebd279dc881ff87",
+ "usage": {
+  "cached_input_tokens": 35968,
+  "input_tokens": 71223,
+  "output_tokens": 2923,
+  "reasoning_output_tokens": 1780
+ },
+ "verdict": "request_changes"
+}
