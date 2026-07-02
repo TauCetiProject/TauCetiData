@@ -1,0 +1,71 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.515208,
+   "returncode": 0,
+   "secs": 65.3,
+   "usage": {
+    "cached_input_tokens": 151936,
+    "input_tokens": 221292,
+    "output_tokens": 3082,
+    "reasoning_output_tokens": 1240
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0c726130d6c1af18475bbadbdb67a4f0f3772ad6",
+ "cost_estimated": true,
+ "cost_usd": 0.515208,
+ "dedupe_key": "TauCetiProject/TauCeti|652|8a052b9148f15742af55108641aec76db3334eb7|generality|gpt-5.5|caeca2a4b1193aa2|production|1",
+ "diff_blob": "ebd83293fb0a3653e4fed11ae08105171af37a4e678df7703063bee97b3c6dc9",
+ "diff_sha256": "ebd83293fb0a3653e4fed11ae08105171af37a4e678df7703063bee97b3c6dc9",
+ "duration_s": 65.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 59-64 prove the result using only `map_add`, `LinearMap.add_apply`, `P.intersectionForm_isSymm.eq y x`, and `ring`; existing plumbing API confirms symmetry is the only plumbing input at `IntersectionForm.lean:174`.",
+   "file": "TauCeti/LowDimTopology/Plumbing/WeightPolarization.lean",
+   "fix": "State the general lemma for a symmetric `LinearMap.BilinForm`, e.g. `B (x + y) (x + y) = B x x + 2 * B x y + B y y` under `B.IsSymm`, and derive the plumbing specialization from it.",
+   "issue": "`intersectionForm_self_add` is plumbing-specific, but the proof uses only bilinearity and `P.intersectionForm_isSymm`; no plumbing data or integer lattice coordinates are needed.",
+   "line": 59
+  },
+  {
+   "evidence": "Lines 68-76 unfold `intersectionForm_apply` and eliminate `Pi.single`; Mathlib already has adjacent generic single-vector API (`Mathlib/Data/Matrix/Mul.lean:190`, `:206`, `:846`), while TauCeti defines `intersectionForm` as `Matrix.toBilin' P.intersectionMatrix` at `IntersectionForm.lean:159`.",
+   "file": "TauCeti/LowDimTopology/Plumbing/WeightPolarization.lean",
+   "fix": "Add or use a matrix-level lemma such as `Matrix.toBilin'_apply_single_right (M : Matrix V V \u2124) (x : V \u2192 \u2124) (v : V)` and specialize it to `P.intersectionMatrix`.",
+   "issue": "`intersectionForm_apply_single_right` is also over-specialized to `PlumbingGraph`; it is a generic column formula for `Matrix.toBilin' M x (Pi.single v 1)`.",
+   "line": 68
+  }
+ ],
+ "head_sha": "8a052b9148f15742af55108641aec76db3334eb7",
+ "merge_base_sha": "4e1e4f38b911f6b61c146aaf0850d08e65a5a827",
+ "mode": "commit",
+ "model": "gpt-5.5",
+ "pr": 652,
+ "prices_sha": "f353e078f9fc",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "cf2692f9d823fd71ef02fa28b723aa6c77b2fd33f81c476ec612149da09f563c",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "ca4019579fd4922464c844d112a9c5d4b996229f",
+ "rubrics_version": "caeca2a4b1193aa2",
+ "run_id": "r-20260702T125731Z-652-generality-d10e91",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-07-02T12:57:31Z",
+ "submitted_by": "kim-em",
+ "summary": "Two helper lemmas are stated at plumbing level despite using only generic bilinear-form or matrix facts, which leaves the reusable API at the wrong level.",
+ "transcript_blob": "399fce90f17816dd7db5a8d7e1a5c2532427e85af23430407658d59748cb248c",
+ "usage": {
+  "cached_input_tokens": 151936,
+  "input_tokens": 221292,
+  "output_tokens": 3082,
+  "reasoning_output_tokens": 1240
+ },
+ "verdict": "request_changes"
+}
