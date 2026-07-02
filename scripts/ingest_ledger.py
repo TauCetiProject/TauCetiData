@@ -5,7 +5,7 @@ The store is the richest historical source: per-rubric artifacts carry the full 
 usage, and cost, and the rendered scoreboard of every round is on disk — none of which is
 recoverable from GitHub. Two stores exist; ingest both:
 
-    python3 scripts/ingest_ledger.py --store ~/.cache/tauceti-review/store/FormalFrontier__TauCeti
+    python3 scripts/ingest_ledger.py --store ~/.cache/tauceti-review/store/TauCetiProject__TauCeti
     python3 scripts/ingest_ledger.py --reviews-branch       # CI's store (the TauCetiReview branch)
 
 Backfilled records are flagged `fidelity: reconstructed`: the runner did not record base SHAs,
@@ -28,8 +28,8 @@ import tempfile
 
 import tcdata
 
-REPO = "FormalFrontier/TauCeti"
-REVIEW_REPO = "FormalFrontier/TauCetiReview"
+REPO = "TauCetiProject/TauCeti"
+REVIEW_REPO = "TauCetiProject/TauCetiReview"
 
 
 def base_oids(repo):

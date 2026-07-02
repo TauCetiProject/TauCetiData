@@ -62,7 +62,7 @@ def main():
                     help="emit shadow-review commands instead of an estimate")
     ap.add_argument("--label", default="", help="shadow label (default: <target>-backfill)")
     ap.add_argument("--limit", type=int, default=0, help="cap the number of PRs in command mode")
-    ap.add_argument("--repo", default="FormalFrontier/TauCeti")
+    ap.add_argument("--repo", default="TauCetiProject/TauCeti")
     a = ap.parse_args()
     target_model = PROVIDER_MODEL.get(a.target, a.target)
     p_in, p_out = PRICES.get(target_model, (1.0, 1.0))
