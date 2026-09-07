@@ -1,0 +1,240 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.1287455,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 206.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 52370,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 52370,
+    "cache_read_input_tokens": 377547,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2794,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2794,
+      "cache_read_input_tokens": 52376,
+      "input_tokens": 2,
+      "output_tokens": 3253,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16323,
+    "output_tokens_details": {
+     "thinking_tokens": 11117
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "546d706ed17d012c7c963b57f913ac50420a2f43",
+ "cost_usd": 1.128745,
+ "dedupe_key": "TauCetiProject/TauCeti|5965|c021d56471be0d0605d1c8bc4c5a84701edfcd57|api-design|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "8ace7b2d7d149f4913795fcffaa50fe19cdde5d42413c9c1d49b82ecc457bbf0",
+ "diff_sha256": "8ace7b2d7d149f4913795fcffaa50fe19cdde5d42413c9c1d49b82ecc457bbf0",
+ "duration_s": 206.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap README:1071 lists `factorDegrees (X\u2075 \u2212 X \u2212 1) 2 = {3, 2}` under the carrier API's *Examples*; Suggested.lean:970-975 needs exactly this factorization (`Modulo 2 the factorization (x\u00b2 + x + 1)(x\u00b3 + x\u00b2 + 1) exhibits an element of order 6`) for `Nat.card (X ^ 5 - X - 1 : \u211a[X]).Gal = 120`, and Suggested.lean:1039 `HasFactorDegrees` consumes such facts. As an `example` the next PR must redo the whole proof.",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Make it a named public theorem, e.g. `theorem factorDegrees_X_pow_five_sub_X_sub_one_two : factorDegrees (X ^ 5 - X - 1) 2 = {3, 2}`.",
+   "issue": "The `{3, 2}` pattern for `X ^ 5 - X - 1` mod 2 is an anonymous `example`, so it is unavailable downstream even though it is an explicit roadmap product and an input to a later milestone.",
+   "line": 188
+  },
+  {
+   "evidence": "Lines 165-185: statements use only `Polynomial`, `ZMod`, `Irreducible`; proofs are `Polynomial.irreducible_of_degree_le_three_of_not_isRoot` + `decide`. Grep of `./mathlib` finds no existing declaration for either (`X \\^ 2 \\+ X \\+ 1` hits only `Mathlib/RingTheory/Polynomial/Cyclotomic/Basic.lean:382`).",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Drop `private` and export them (relocating them to a finite-field polynomial file such as under `TauCeti/RingTheory/Polynomial/` is the better home); `X ^ 2 + X + 1` over `ZMod 2` is `cyclotomic 3` and is reusable.",
+   "issue": "`irreducible_X_sq_add_X_add_one_zmod_two` (line 165) and `irreducible_X_cube_add_X_sq_add_one_zmod_two` (line 176) are `private`, but both state a pure Mathlib fact about `(ZMod 2)[X]` and neither proof mentions `factorDegrees`; they are general infrastructure hidden in a Galois-groups file.",
+   "line": 165
+  },
+  {
+   "evidence": "Lines 210-215 do `rw [factorDegrees, hmap, normalizedFactors_mul \u2026, normalizedFactors_irreducible \u2026]` rather than using any lemma of this file. `mathlib/Mathlib/RingTheory/UniqueFactorizationDomain/NormalizedFactors.lean:179` gives `normalizedFactors_prod_eq (s) (hs : \u2200 a \u2208 s, Irreducible a) : normalizedFactors s.prod = s.map normalize`, and `Mathlib/Algebra/Polynomial/FieldDivision.lean:611` gives `natDegree_normalize`.",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Add the missing lemma, e.g. `theorem factorDegrees_eq_map_natDegree_of_map_eq_prod {s : Multiset (ZMod p)[X]} (hs : \u2200 q \u2208 s, Irreducible q) (h : f.map (Int.castRingHom (ZMod p)) = s.prod) : factorDegrees f p = s.map Polynomial.natDegree`, provable by `normalizedFactors_prod_eq` plus `Polynomial.natDegree_normalize`.",
+   "issue": "Characteristic API is incomplete: `factorDegrees_mul` only handles a factorization existing over `\u2124`, but the intended use factors the reduction over `(ZMod p)[X]`, where no lift exists. Consequently the file's own computation must unfold the definition and work with `normalizedFactors` by hand.",
+   "line": 93
+  },
+  {
+   "evidence": "Line 51 `@[expose] noncomputable def factorDegrees`; lines 56-59 give the `_def` restatement. `(rfl)` is the repo idiom: 1292 occurrences of `:= (rfl)` across 436 files under `code/TauCeti`. The roadmap's `simp only [factorDegrees]` at Suggested.lean:927 unfolds the roadmap's own copy of the definition, not this one.",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Remove `@[expose]` (the in-file `simp [factorDegrees]` proofs still work inside the defining module) and change line 59 to `:= (rfl)`.",
+   "issue": "`@[expose]` on `factorDegrees` publishes the body although `factorDegrees_def` already supplies the equation and no consumer must unfold or compute; `factorDegrees_def` is proved by bare `rfl`, which makes downstream uses lean on defeq.",
+   "line": 51
+  },
+  {
+   "evidence": "Line 120-123: the hypothesis is an explicit argument, not an instance or a decidable side condition, and the LHS head is `factorDegrees` with both arguments variables.",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Drop the `@[simp]`; keep it as an applied lemma and let `factorDegrees_eq_singleton_iff_irreducible` be the characteristic statement.",
+   "issue": "`@[simp]` on `factorDegrees_eq_singleton` is a conditional rewrite whose side goal `Irreducible (f.map (Int.castRingHom (ZMod p)))` simp cannot discharge, on the maximally general LHS `factorDegrees f p`; it will be attempted on every `factorDegrees` term and essentially never fire.",
+   "line": 120
+  }
+ ],
+ "head_sha": "c021d56471be0d0605d1c8bc4c5a84701edfcd57",
+ "merge_base_sha": "a25bee83b0d4e9def0de586b084e5e09408bc44d",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5965,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "98d9ba499b83130a5e0d26ab4ca9a2da2a06b41e693a1947c1eb822ee6afee06",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260907T233434Z-5965-api-design-6c6cea",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-07T23:34:34Z",
+ "submitted_by": "kim-em",
+ "summary": "The `{3, 2}` computation for `X\u2075 - X - 1` mod 2 \u2014 a roadmap product that Layer 5/6 consumes \u2014 is an anonymous `example`, so nothing downstream can use it, and the two irreducibility facts it needs are hidden as `private` general \ud835\udd3d\u2082 lemmas. The characteristic API is also incomplete: there is no lemma computing `factorDegrees` from a factorization of the reduction, which is why the file has to unfold the definition itself.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/PolynomialGaloisGroups/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/PolynomialGaloisGroups/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/PolynomialGaloisGroups/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "01362a2e5295fb09245f1d63e91d3b088b27a994e5c73c32f432f0cae4f31fd6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 52370,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 52370,
+  "cache_read_input_tokens": 377547,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2794,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2794,
+    "cache_read_input_tokens": 52376,
+    "input_tokens": 2,
+    "output_tokens": 3253,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16323,
+  "output_tokens_details": {
+   "thinking_tokens": 11117
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

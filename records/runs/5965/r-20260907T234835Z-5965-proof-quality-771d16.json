@@ -1,0 +1,201 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.8343745,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 168.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 38996,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 38996,
+    "cache_read_input_tokens": 174691,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2694,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2694,
+      "cache_read_input_tokens": 39102,
+      "input_tokens": 2,
+      "output_tokens": 3766,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13973,
+    "output_tokens_details": {
+     "thinking_tokens": 9701
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "546d706ed17d012c7c963b57f913ac50420a2f43",
+ "cost_usd": 0.834375,
+ "dedupe_key": "TauCetiProject/TauCeti|5965|c021d56471be0d0605d1c8bc4c5a84701edfcd57|proof-quality|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "8ace7b2d7d149f4913795fcffaa50fe19cdde5d42413c9c1d49b82ecc457bbf0",
+ "diff_sha256": "8ace7b2d7d149f4913795fcffaa50fe19cdde5d42413c9c1d49b82ecc457bbf0",
+ "duration_s": 168.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 201-205; the rewrite target `htwo : (2 : (ZMod 2)[X]) = 0` must be produced syntactically by `ring_nf` for `rw [htwo]` to fire.",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Reduce with an explicit `simp only [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_X, Polynomial.map_one]` and close the ring identity in one certified step, e.g. `linear_combination (-(X ^ 4 + X ^ 3 + X ^ 2 + X + 1)) * (CharTwo.two_eq_zero : (2 : (ZMod 2)[X]) = 0)`, which does not depend on any normalizer's output shape.",
+   "issue": "`hmap` is closed by `norm_num; ring_nf; rw [htwo]; simp only [mul_zero, add_zero]; simp only [sub_eq_add_neg, hneg]`. This depends on the exact normal form `ring_nf` emits (that a literal `2` survives in a `rw`-matchable position and that the residue is exactly `sub_eq_add_neg`-shaped); any change to `ring_nf`/`norm_num` output breaks it silently.",
+   "line": 201
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/CharP/Two.lean:49 `theorem two_eq_zero : (2 : R) = 0`, :101 `theorem neg_eq (x : R) : -x = x`; mathlib/Mathlib/Algebra/Polynomial/Coeff.lean:376 `instance charP {p : \u2115} [CharP R p] : CharP R[X] p`.",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Delete both `have`s and use `open scoped CharTwo` / `CharTwo.neg_eq`, `CharTwo.two_eq_zero`, `CharTwo.sub_eq_add` directly.",
+   "issue": "`hneg` and `htwo` re-prove Mathlib lemmas by hand at coefficient level: `(ZMod 2)[X]` has `CharP _ 2` via `Polynomial.charP`, so `-a = a` is `CharTwo.neg_eq` and `(2 : (ZMod 2)[X]) = 0` is `CharTwo.two_eq_zero`. The `htwo` proof additionally depends on the numeral matching `Polynomial.coeff_ofNat_zero`.",
+   "line": 192
+  },
+  {
+   "evidence": "Lines 104 and 139 are `change`; `factorDegrees_def` at line 56 has no occurrences elsewhere in the file (grep `factorDegrees_def` \u2192 single hit).",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Unfold with `rw [factorDegrees_def]` everywhere (lines 104, 124, 210), and use `set g := f.map (Int.castRingHom (ZMod p)) with hgdef` so `hq`/`hprod` are stated in terms of `g` without a `change`; state `hqmem` directly about `g` and close it with `hq \u25b8 Multiset.mem_singleton_self q`. If a `change` is genuinely unavoidable, add a comment giving the reason.",
+   "issue": "Undocumented `change` that simultaneously delta-unfolds `factorDegrees` and folds the `let g`, with no comment saying why. The same pattern recurs at line 139 (`change q \u2208 normalizedFactors (f.map ...)`, which only zeta-unfolds `g` so that `rw [hq]` can match). Meanwhile `factorDegrees_def` (line 56) is proved and then never used; lines 124 and 210 unfold via `rw [factorDegrees]` (equation lemma), a third idiom for the same step.",
+   "line": 104
+  },
+  {
+   "evidence": "Lines 168, 179, 206, 208 \u2014 four `compute_degree!` calls for two distinct statements.",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Hoist the two degree facts into private lemmas used by both the irreducibility proofs and the example, so each `compute_degree!` runs once.",
+   "issue": "The degree facts `(X ^ 3 + X ^ 2 + 1).natDegree = 3` and `(X ^ 2 + X + 1).natDegree = 2` are each proved twice by `compute_degree!` (lines 179 and 206; lines 168 and 208), and the two private irreducibility scripts are otherwise identical modulo the polynomial.",
+   "line": 206
+  },
+  {
+   "evidence": "Line 137 `obtain \u27e8q, hq, -\u27e9 := Multiset.map_eq_singleton.mp h`; the discarded component is `q.natDegree = f.natDegree`, and nothing in lines 138-144 uses the value `f.natDegree`.",
+   "file": "TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "fix": "Extract the forward direction as a standalone lemma stated with `(factorDegrees f p).card = 1` (or `\u2203 d, factorDegrees f p = {d}`) and derive the iff from it.",
+   "issue": "The forward direction of `factorDegrees_eq_singleton_iff_irreducible` discards the degree component (`obtain \u27e8q, hq, -\u27e9`), so it actually proves the stronger, more reusable fact that for monic `f` any singleton \u2014 equivalently `(factorDegrees f p).card = 1` \u2014 forces irreducibility of the reduction. That fact is hidden inside the iff.",
+   "line": 136
+  }
+ ],
+ "head_sha": "c021d56471be0d0605d1c8bc4c5a84701edfcd57",
+ "merge_base_sha": "a25bee83b0d4e9def0de586b084e5e09408bc44d",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5965,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c6fb0e2fda14c1b681a75acb2acc2aca4739734359889a1831000b7a70c51593",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260907T234835Z-5965-proof-quality-771d16",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-07T23:48:35Z",
+ "submitted_by": "kim-em",
+ "summary": "The core API proofs are mostly fine, but the file unfolds `factorDegrees` three different ways including two undocumented `change` steps while the `factorDegrees_def` it proves is never used, and the `X^5-X-1` example rests on a brittle `norm_num; ring_nf; rw [numeral]` chain plus hand-rolled re-proofs of `CharTwo.neg_eq`/`CharTwo.two_eq_zero`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/GaloisGroups/FactorDegrees.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/CharP",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/CharP/Two.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Polynomial/Resultant/Discriminant.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0c38fea196fed681849c7263f2c6c941369b372969daff633d6eed270fa8a48a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 38996,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 38996,
+  "cache_read_input_tokens": 174691,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2694,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2694,
+    "cache_read_input_tokens": 39102,
+    "input_tokens": 2,
+    "output_tokens": 3766,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13973,
+  "output_tokens_details": {
+   "thinking_tokens": 9701
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
