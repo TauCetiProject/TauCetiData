@@ -1,0 +1,88 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.422627,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 67.1,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 185344,
+    "input_tokens": 237937,
+    "output_tokens": 2233,
+    "reasoning_output_tokens": 786
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f1892d4b9fb3ed53b7168686da1d985c00bb2762",
+ "cost_estimated": true,
+ "cost_usd": 0.422627,
+ "dedupe_key": "TauCetiProject/TauCeti|5915|157e1cdcb419c349326a064a706c628f2e1359c3|api-design|gpt-5.6-sol|d0700ff994e59c9f|production|2",
+ "diff_blob": "0c0e0ee15ba0cf4022727e42f045609494c4968bee8fc9e4ef1aec0cea74192f",
+ "diff_sha256": "0c0e0ee15ba0cf4022727e42f045609494c4968bee8fc9e4ef1aec0cea74192f",
+ "duration_s": 67.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 113\u2013134 define a generic square-matrix minor and Cauchy\u2013Binet identity; neither statement nor proof depends on symplectic groups or the special isogeny.",
+   "file": "TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/SpecialIsogeny.lean",
+   "fix": "Move these declarations to the canonical general matrix/minor module and import that module here.",
+   "issue": "`pairMinor`, `pairMinor_eq`, and `pairMinor_mul` are general matrix infrastructure involving only Mathlib types, but are placed in the special-isogeny module.",
+   "line": "113"
+  },
+  {
+   "evidence": "`specialIsogenyToMatrix` is used only to construct `specialIsogeny`; each coordinate-expansion lemma is used only in the adjacent root-action proofs.",
+   "file": "TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/SpecialIsogeny.lean",
+   "fix": "Make the intermediary homomorphism, its apply lemma, and the four coordinate-expansion lemmas private; retain `specialIsogeny` and its characteristic action/coercion theorems as the public API.",
+   "issue": "`specialIsogenyToMatrix` and its apply theorem expose an implementation-stage homomorphism, while `coe_specialIsogeny` already provides the consumer-facing matrix characterization; the four rank-two root-coordinate expansions at lines 394, 407, 451, and 464 are likewise used only as proof scaffolding.",
+   "line": "349"
+  },
+  {
+   "evidence": "Each theorem rewrites an application (or double application) of `specialIsogeny` to a simpler canonical root element or Frobenius image; nearby special-isogeny APIs, such as `datumSpecialIsogeny_mul_self`, use `@[simp]` for the analogous relation.",
+   "file": "TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/SpecialIsogeny.lean",
+   "fix": "Annotate all five group-level characteristic equations with `@[simp]`.",
+   "issue": "The four defining root-subgroup equations (lines 418, 436, 475, 493) and the square relation at line 576 are canonical normal-form rewrites but lack `@[simp]`.",
+   "line": "418"
+  },
+  {
+   "evidence": "`GLSymplecticFin.map` is the canonical scalar-map operation from `Symplectic.Basic`; the only map interaction in this file is the special case with `frobenius` in `specialIsogeny_specialIsogeny` at lines 576\u2013585.",
+   "file": "TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/SpecialIsogeny.lean",
+   "fix": "Add a public theorem that `GLSymplecticFin.map 2 f (specialIsogeny M) = specialIsogeny (GLSymplecticFin.map 2 f M)` for characteristic-two source and target rings, with an appropriate simplification annotation.",
+   "issue": "The endomorphism lacks a naturality theorem describing interaction with `GLSymplecticFin.map`, so consumers cannot transport it across characteristic-two ring homomorphisms without unfolding the minor construction.",
+   "line": "367"
+  }
+ ],
+ "head_sha": "157e1cdcb419c349326a064a706c628f2e1359c3",
+ "merge_base_sha": "96ec06b48fadb177aedb9b903cac3e444018e861",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 5915,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "57d05397d3728e6b2f7ad115fc02a66306a518aa5100d03ebc2f9f61f8439593",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260907T061744Z-5915-api-design-24f6e5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-07T06:17:44Z",
+ "submitted_by": "kim-em",
+ "summary": "The public surface includes proof scaffolding, misplaces general minor infrastructure, and omits expected simplification annotations on the isogeny\u2019s characteristic equations.",
+ "transcript_blob": "e0eb596020d2555adc5e9446833081a67666c2633c01145bc841dc0ee037009e",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 185344,
+  "input_tokens": 237937,
+  "output_tokens": 2233,
+  "reasoning_output_tokens": 786
+ },
+ "verdict": "request_changes"
+}
