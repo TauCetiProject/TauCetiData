@@ -1,0 +1,217 @@
+{
+ "arm": "shadow:cal2-claude",
+ "attempts": [
+  {
+   "cost_usd": 1.5377375,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 223.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 76798,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 76798,
+    "cache_read_input_tokens": 602441,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3626,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3626,
+      "cache_read_input_tokens": 75972,
+      "input_tokens": 2,
+      "output_tokens": 5346,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18476,
+    "output_tokens_details": {
+     "thinking_tokens": 13461
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "673bdb4a0d751a46b4521c9573402fa666dc4dfd",
+ "cost_usd": 1.537737,
+ "dedupe_key": "TauCetiProject/TauCeti|5926|24235533859cb7a3f784352a6a28699b50eb0958|proof-quality|claude-opus-5|d0700ff994e59c9f|shadow:cal2-claude|1",
+ "diff_blob": "d8107fa177372d8fb742e9e3ef7a188aaaedf8291a5f3d414158344eafe0beea",
+ "diff_sha256": "d8107fa177372d8fb742e9e3ef7a188aaaedf8291a5f3d414158344eafe0beea",
+ "duration_s": 223.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PairEval.lean:293-306 vs 343-362 vs 368-387: the three proofs differ only in the family, the series-level lemma rewritten in, and the resulting value.",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/PairEval.lean",
+   "fix": "Add one private lemma, e.g. `private theorem eval\u2082_subst_formalAdd {fam : Unit \u2295 Unit \u2192 MvPowerSeries Unit O} (hfam : HasSubst fam) {t u\u2081 u\u2082 : O} (ht : PowerSeries.HasEval t) (h\u2081 : PowerSeries.HasEval u\u2081) (h\u2082 : PowerSeries.HasEval u\u2082) (hval : (fun s \u21a6 MvPowerSeries.eval\u2082 (RingHom.id O) (fun _ : Unit \u21a6 t) (fam s)) = Sum.elim (fun _ \u21a6 u\u2081) fun _ \u21a6 u\u2082) : MvPowerSeries.eval\u2082 (RingHom.id O) (fun _ : Unit \u21a6 t) (subst fam W.formalAdd) = W.formalAddEval u\u2081 u\u2082`, and reduce all three theorems to supplying `hval` plus the series-level identity.",
+   "issue": "formalAddEval_zero_right (341-362), formalAddEval_zero_left (366-387) and the existing formalAddEval_formalInverseEval (288-306) are three copies of one skeleton: hfam, then `simp only [coe_aeval, algebraMap_self, hfam]; exact hasEval_pair \u2026`, then `aeval_subst \u2026 (continuous_aeval (PowerSeries.hasEval ht)) hev W.formalAdd`, then `rw` the series-level law, then `simpa [formalAddEval, coe_aeval, \u2026, hfam] using h.symm`. The reusable fact \u2014 evaluating a substituted formalAdd at t is formalAddEval at the evaluated pair \u2014 stays hidden inside each proof.",
+   "line": "341"
+  },
+  {
+   "evidence": "Substitution.lean:164-166 states `hasSubst_pair` for `Sum.elim (fun _ \u21a6 q\u2081) (fun _ \u21a6 q\u2082)`; Add/Unit.lean:252-254 states `subst_unitR_formalAdd` for `Sum.elim X (fun _ \u21a6 0)`; Add/Inverse.lean:94-101 exists solely to convert between the two spellings, and Add/Assoc.lean:197-199 comments on the same point.",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/PairEval.lean",
+   "fix": "Ascribe the intended spelling at the witness, e.g. `(hasSubst_pair (by simp) (by simp) : HasSubst (Sum.elim X (fun _ \u21a6 0) : Unit \u2295 Unit \u2192 MvPowerSeries Unit O))`, or bridge with an explicit `funext` reshape, and note why \u2014 matching `invPair_eq`.",
+   "issue": "`hasSubst_pair (q\u2081 := X ()) (q\u2082 := 0)` has family `Sum.elim (fun _ \u21a6 X ()) (fun _ \u21a6 0)`, but `hev`, the `rw [W.subst_unitR_formalAdd]` at line 360 and the `hfam` rewrite all speak of `Sum.elim X (fun _ \u21a6 0)`. The step works only through Unit-eta defeq between `X` and `fun _ \u21a6 X ()`, with no comment. Same at lines 383/385 for the left law.",
+   "line": "358"
+  },
+  {
+   "evidence": "`PowerSeries.X_apply : X (R := R) = MvPowerSeries.X () := rfl` at mathlib/Mathlib/RingTheory/PowerSeries/Basic.lean:161, used by this development at Add/Unit.lean:302.",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/PairEval.lean",
+   "fix": "Replace `PowerSeries.X` by `PowerSeries.X_apply` in both simp sets (`MvPowerSeries.eval\u2082_X` is already `@[simp]` and can go).",
+   "issue": "The closing `simpa` passes the definition `PowerSeries.X` to unfold it into `MvPowerSeries.X ()` so that `eval\u2082_X` applies; likewise at line 386. Unfolding a definition in a simp set is less stable than the named lemma for the same equation.",
+   "line": "361"
+  }
+ ],
+ "head_sha": "24235533859cb7a3f784352a6a28699b50eb0958",
+ "merge_base_sha": "673bdb4a0d751a46b4521c9573402fa666dc4dfd",
+ "mode": "manual",
+ "model": "claude-opus-5",
+ "pr": 5926,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "da06983978e24a078cdd0c820b3d5886d728e61f99d9a948f7b4039e97aa4e23",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260908T022923Z-5926-proof-quality-0df8b4",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-09-08T02:29:23Z",
+ "submitted_by": "kim-em",
+ "summary": "The two new proofs replicate, twice over, the same 20-line transport skeleton already present in formalAddEval_formalInverseEval instead of factoring it into a private lemma, and both bridge the hasSubst_pair family spelling to Add/Unit.lean's spelling by undocumented definitional equality \u2014 the exact mismatch that Add/Inverse.lean and Add/Assoc.lean handle with an explicit, commented reshape.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/PairEval.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Add/Unit.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/MvPowerSeries",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/MvPowerSeries/Evaluation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/MvPowerSeries/Substitution.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/PowerSeries/Evaluation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Add/Assoc.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Add/Inverse.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0d69c31646146966893d19928abcba1f23c833910b2ae3fe862ce8ba63b9f3af",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 76798,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 76798,
+  "cache_read_input_tokens": 602441,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3626,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3626,
+    "cache_read_input_tokens": 75972,
+    "input_tokens": 2,
+    "output_tokens": 5346,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18476,
+  "output_tokens_details": {
+   "thinking_tokens": 13461
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
