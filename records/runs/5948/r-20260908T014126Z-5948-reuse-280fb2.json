@@ -1,0 +1,225 @@
+{
+ "arm": "shadow:cal2-claude",
+ "attempts": [
+  {
+   "cost_usd": 1.8878329999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 183.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 103193,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 103193,
+    "cache_read_input_tokens": 995758,
+    "inference_geo": "not_available",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1866,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1866,
+      "cache_read_input_tokens": 104127,
+      "input_tokens": 2,
+      "output_tokens": 1615,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13899,
+    "output_tokens_details": {
+     "thinking_tokens": 9356
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8c58b2c155b480f6f435aef59017ee75028a8126",
+ "cost_usd": 1.887833,
+ "dedupe_key": "TauCetiProject/TauCeti|5948|09a47d31b7275063abc25d3ae0f63724378cef1c|reuse|claude-opus-5|d0700ff994e59c9f|shadow:cal2-claude|1",
+ "diff_blob": "55884324fdd7944d78a82942e19cea75b4140aa78d8c7234b8d6f655ea748a43",
+ "diff_sha256": "55884324fdd7944d78a82942e19cea75b4140aa78d8c7234b8d6f655ea748a43",
+ "duration_s": 183.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Add/PairSubst.lean:290-295 body vs Assoc.lean:667-670; `hc\u2081`/`hc\u2083` are `constantCoeff_X` at Assoc.lean:615-620, `hF\u2081\u2082c`/`hF\u2082\u2083c` at 649-654.",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Add/Assoc.lean",
+   "fix": "Replace with `have hLc := constantCoeff_subst_pair_formalAdd Universal.curve hF\u2081\u2082c hc\u2083` and `have hRc := constantCoeff_subst_pair_formalAdd Universal.curve hc\u2081 hF\u2082\u2083c`.",
+   "issue": "`hLc` and `hRc` (lines 667-670) re-derive exactly the lemma this PR promotes to public: `constantCoeff_subst_eq_zero (hasSubst_pair hF\u2081\u2082c hc\u2083) (by rintro (j | j) <;> simp [hF\u2081\u2082c]) (constantCoeff_formalAdd Universal.curve)` is the body of `constantCoeff_subst_pair_formalAdd` (Add/PairSubst.lean:290-295) at `q\u2081 = F\u2081\u2082`, `q\u2082 = X (Sum.inr (Sum.inr ()))`. The PR repointed the four `X`-specialised sites but not these two, which are the instances the new generality was introduced for.",
+   "line": 667
+  },
+  {
+   "evidence": "`MvPowerSeries.aeval_subst` with `hasSubst_pair`/`hasSubst_invPair` at PairEval.lean:328, 397, 440, 465; `hasSubst_invPair` is itself `hasSubst_pair (constantCoeff_X ()) (constantCoeff_formalInverse W)` (Add/Inverse.lean:88-90), and the three series-level identities are all stated at pairs `Sum.elim X (fun _ \u21a6 \u00b7)`.",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/PairEval.lean",
+   "fix": "State the transport once, generic in `\u03c3`, the family `a : \u03c3 \u2192 O` with `MvPowerSeries.HasEval a`, and `q\u2081 q\u2082` with vanishing constant coefficient (hypotheses `PowerSeries.HasEval (eval\u2082 (RingHom.id O) a q\u1d62)`), and derive all four: `hstep` is its `\u03c3 = Unit \u2295 Unit \u2295 Unit`, `a = T` instance; the other three are its `\u03c3 = Unit`, `a = fun _ \u21a6 t` instance followed by `subst_invPair_formalAdd` (Add/Inverse.lean:281), `subst_unitR_formalAdd` (Add/Unit.lean:252) and `subst_unitL_formalAdd` (Add/Unit.lean:272) plus `eval\u2082_X`.",
+   "issue": "The local `hstep` is the fourth copy in this file of the same transport `eval\u2082 id a (subst (Sum.elim (fun _ \u21a6 q\u2081) fun _ \u21a6 q\u2082) formalAdd) = formalAddEval (eval\u2082 id a q\u2081) (eval\u2082 id a q\u2082)` \u2014 the identical `hfam`/`hev`/`MvPowerSeries.aeval_subst (hasSubst_pair ..)`/`simpa [formalAddEval, coe_aeval, Algebra.algebraMap_self, hfam]` block appears at lines 318-331 (`formalAddEval_formalInverseEval`), 425-444 (`formalAddEval_zero_right`) and 450-469 (`formalAddEval_zero_left`), each only differing in the pair and the series identity rewritten afterwards.",
+   "line": 376
+  }
+ ],
+ "head_sha": "09a47d31b7275063abc25d3ae0f63724378cef1c",
+ "merge_base_sha": "df6795e855f965f3b76757ac7f0182f97c0afdf5",
+ "mode": "manual",
+ "model": "claude-opus-5",
+ "pr": 5948,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "561fa47bb9322ed1de4b27c1aaa40e1c80c9125a759266551ae3a1cc102c9368",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260908T014126Z-5948-reuse-280fb2",
+ "schema": "tauceti.run/v1",
+ "source": "shadow",
+ "started_at": "2026-09-08T01:41:26Z",
+ "submitted_by": "kim-em",
+ "summary": "The new mathematics (parameter-level associativity, ideal-free closure) is not duplicated in Mathlib or TauCeti, but the PR leaves two hand-rolled copies of the very lemma it just made public, and its `hstep` is a fourth in-file copy of an evaluation-transport that three existing proofs already open-code.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/PairEval.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Add/PairSubst.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Eval.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/MvPowerSeries/Evaluation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Add/Assoc.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/FormalGroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/FormalGroup/Add/Assoc.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7014d03335e14679e921524cb8a15e6005703ecdd8dc5c1b1f1bb55c85d7c2dc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 103193,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 103193,
+  "cache_read_input_tokens": 995758,
+  "inference_geo": "not_available",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1866,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1866,
+    "cache_read_input_tokens": 104127,
+    "input_tokens": 2,
+    "output_tokens": 1615,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13899,
+  "output_tokens_details": {
+   "thinking_tokens": 9356
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
