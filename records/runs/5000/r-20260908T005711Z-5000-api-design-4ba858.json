@@ -1,0 +1,333 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.6719589999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 386.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 135327,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 135327,
+    "cache_read_input_tokens": 3137184,
+    "inference_geo": "not_available",
+    "input_tokens": 66,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3384,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3384,
+      "cache_read_input_tokens": 134743,
+      "input_tokens": 2,
+      "output_tokens": 4494,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 29057,
+    "output_tokens_details": {
+     "thinking_tokens": 21009
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "96718bcada8ac4f4f94ec5b697536b84eafb44e8",
+ "cost_usd": 3.671959,
+ "dedupe_key": "TauCetiProject/TauCeti|5000|bfe2060e3945c1c5e6a73a735f41849ed6118b28|api-design|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "91597d3fc07544949df7eb0810ca9724b3451de6bd80fdfdb90cbea42534b7f7",
+ "diff_sha256": "91597d3fc07544949df7eb0810ca9724b3451de6bd80fdfdb90cbea42534b7f7",
+ "duration_s": 386.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Diagonal.lean:89` `noncomputable def diagonal ... := leviHom.comp diagGL`; `TorusGeneration.lean:123` `(s : Fin m \u2192 R\u02e3) : leviHom (diagGL s) \u2208 H`; no `@[expose]` in the new file and no `diagonal_def` anywhere in the diff.",
+   "file": "TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Diagonal.lean",
+   "fix": "Add `diagonal_def : diagonal = leviHom.comp diagGL` (or `diagonal_apply`) in this file, and restate `leviHom_diagGL_mulSingle`/`leviHom_diagGL_mem_of_long` in terms of `diagonal` in `TorusGeneration.lean` (which can import this file; `Levi.lean` cannot, so its hypothesis stays as is).",
+   "issue": "`diagonal := leviHom.comp diagGL` adds a second public spelling of a map the repo already exposes as `leviHom (diagGL s)` (`TorusGeneration.lean:57,123`; hypothesis of `Levi.lean:288`), with no lemma linking them and an unexposed body, so `leviHom_diagGL_mem_of_long` cannot be applied to a `diagonal t` term without redoing the block computation of `coe_diagonal` backwards.",
+   "line": "89"
+  },
+  {
+   "evidence": "`Symplectic/Basic.lean:1087` `theorem hom_short ... (short family i j hij).hom = family.hom hij` and `:1106` `map_hom_apply`; `AlgebraicGroup/Symplectic/RootSubgroup.lean:126,177,204,236,297,549` all route short roots through `.short family i j hij`.",
+   "file": "TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Diagonal.lean",
+   "fix": "Add `ShortRootFamily.character` plus `character_short : (short family i j hij).character = family.character hij` (mirroring `hom_short`), and a `map_character`-style lemma `Units.map f (root.character t) = root.character fun i \u21a6 Units.map f (t i)`.",
+   "issue": "`RootSubgroupIndex.character` gets constructor lemmas only. There is no `character_short` counterpart to the existing `hom_short`, although every public short-root subgroup is indexed via `.short family i j hij`, whose `dite` a downstream user cannot unfold (body not exposed); and no coefficient-change lemma matching `RootSubgroupIndex.map_hom_apply`/the new `map_diagonal`, which the pinning's base change will need.",
+   "line": "158"
+  },
+  {
+   "evidence": "`mathlib/Mathlib/Algebra/Group/End.lean:734` `theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g\u207b\u00b9`.",
+   "file": "TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Diagonal.lean",
+   "fix": "Delete it and use `map_mul (MulAut.conj d) x y` (with `MulAut.conj_apply`) in the five conjugation branches.",
+   "issue": "`private theorem conjugate_mul` is a general group fact (statement only in Mathlib types, proof independent of the symplectic subject) already available in Mathlib, hidden here as a file-local helper.",
+   "line": "212"
+  }
+ ],
+ "head_sha": "bfe2060e3945c1c5e6a73a735f41849ed6118b28",
+ "merge_base_sha": "96718bcada8ac4f4f94ec5b697536b84eafb44e8",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5000,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "034b17b41ddc410aca5a681aae09c39ef28631e565f3cfae9d319e4c7b2ce98d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260908T005711Z-5000-api-design-4ba858",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-08T00:57:11Z",
+ "submitted_by": "kim-em",
+ "summary": "The scheme-points and coordinate-map layers mirror the GL/SL templates correctly and the coordinate-map characterization is complete, but the new matrix-level names are under-connected: `diagonal` is a second, unbridged spelling of the existing `leviHom \u2218 diagGL` surface, and `character` lacks the short-family and coefficient-change lemmas its sibling `hom` has.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/TorusGeneration.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Diagonal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/DiagonalTorus/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Scheme.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/Symplectic/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Scheme.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Scheme.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/RootGeneration.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/Symplectic/RootSubgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/ReductiveGroups/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Levi.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SplitTorus",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SplitTorus/Scheme.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Scheme/Torus.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Scheme",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Scheme/Relations/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/AdditiveGroup/Scheme.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/TypeC.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/TypeC.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/Symplectic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/Symplectic/StandardCarrier/Scheme.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/Symplectic/StandardCarrier/Scheme.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 40,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2c500666ec58de88b6a4fd25677f1aebd9abde2ddb325c4121c506707ffac171",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 135327,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 135327,
+  "cache_read_input_tokens": 3137184,
+  "inference_geo": "not_available",
+  "input_tokens": 66,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3384,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3384,
+    "cache_read_input_tokens": 134743,
+    "input_tokens": 2,
+    "output_tokens": 4494,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 29057,
+  "output_tokens_details": {
+   "thinking_tokens": 21009
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
