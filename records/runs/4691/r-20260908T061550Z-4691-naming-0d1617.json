@@ -1,0 +1,74 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.437724,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 102.4,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 263808,
+    "input_tokens": 311460,
+    "output_tokens": 2252,
+    "reasoning_output_tokens": 1014
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "69cd94612d0a2880c2b7b6d76265e6e8a5bef740",
+ "cost_estimated": true,
+ "cost_usd": 0.437724,
+ "dedupe_key": "TauCetiProject/TauCeti|4691|3df79419593c30abecac4993f7fcc439c9e9d09e|naming|gpt-5.6-sol|d0700ff994e59c9f|production|1",
+ "diff_blob": "86c0c635467796fcf7f2eac59dbae30e3b0fab52de04496414736d8b91bee2d9",
+ "diff_sha256": "86c0c635467796fcf7f2eac59dbae30e3b0fab52de04496414736d8b91bee2d9",
+ "duration_s": 102.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 73, 91, 99, and 182 explicitly take `(c : GroupLike \u2026)`; Mathlib defines `structure GroupLike` in `Mathlib/RingTheory/Coalgebra/GroupLike.lean:66`, and existing TauCeti extensions use `namespace TauCeti.GroupLike` in `Algebra/Coalgebra/GroupLike/Map.lean:27`.",
+   "file": "TauCeti/Algebra/Coalgebra/Comodule/Weight/Space.lean",
+   "fix": "Move these declarations and their associated API into `TauCeti.GroupLike`, using nonredundant names such as `weightSpace` and `weightSubcomodule`, and update references.",
+   "issue": "`groupLikeWeightSpace` and the `c`-first declarations at lines 91, 99, and 182 are under `TauCeti.Comodule`, although their first explicit argument is Mathlib's `GroupLike`; the namespace rule requires `c.foo` APIs to live under `TauCeti.GroupLike`.",
+   "line": 73
+  },
+  {
+   "evidence": "Lines 36, 41, and 47 all take `phi : N \u2192\u2097[R] R` as their first explicit argument; the tensor itself is only the later argument or the returned map's domain.",
+   "file": "TauCeti/LinearAlgebra/TensorProduct/Basic.lean",
+   "fix": "Move the contraction and its argument-first lemmas to `LinearMap` (with a name supporting `phi.\u2026` notation), then update usages.",
+   "issue": "`tensorComponent` and its `tensorComponent_tmul`/`tensorComponent_map` API are in `TensorProduct`, but their first explicit argument is a Mathlib `LinearMap`, so the namespace rule calls for dot notation on that functional.",
+   "line": 36
+  }
+ ],
+ "head_sha": "3df79419593c30abecac4993f7fcc439c9e9d09e",
+ "merge_base_sha": "7a6aff911807748ad8096eda9d9ceedb65ff017c",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 4691,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8f586364e646547219a0c72e6c7bcd2bb7f3f92c9f3f6ea4eb4191bc4d989b45",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260908T061550Z-4691-naming-0d1617",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-08T06:15:50Z",
+ "submitted_by": "kim-em",
+ "summary": "New APIs are placed under organizational namespaces instead of the namespaces of their first explicit Mathlib-typed arguments, preventing intended dot notation.",
+ "transcript_blob": "fe5024bb919c6d5ee290dc29c030f305c7e5ba34893601d6523628110c33dd8e",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 263808,
+  "input_tokens": 311460,
+  "output_tokens": 2252,
+  "reasoning_output_tokens": 1014
+ },
+ "verdict": "request_changes"
+}
