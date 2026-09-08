@@ -1,0 +1,242 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2752679999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 282.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105983,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105983,
+    "cache_read_input_tokens": 1252816,
+    "inference_geo": "not_available",
+    "input_tokens": 36,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2349,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2349,
+      "cache_read_input_tokens": 106434,
+      "input_tokens": 2,
+      "output_tokens": 6137,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23072,
+    "output_tokens_details": {
+     "thinking_tokens": 16915
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0696d8691f4a5d872b48fe58b73857e44d87368e",
+ "cost_usd": 2.275268,
+ "dedupe_key": "TauCetiProject/TauCeti|5947|93a25d8fb5272482da495c7d155b35e8b9607e84|api-design|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "2f450db6a08d992fde630845bf6c2c9bda5d61f69649edda7da346425e6c333e",
+ "diff_sha256": "2f450db6a08d992fde630845bf6c2c9bda5d61f69649edda7da346425e6c333e",
+ "duration_s": 282.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The proof body uses only `HopfIdeal.mem_map_of_mem`, `HopfIdeal.mem_map_iff_of_surjective`, `Ideal.Quotient.mk\u2090_surjective`, `CommHopfAlgCat.quotientPointsHom_apply_apply`. The same argument is already duplicated verbatim in `GeneralLinear/Dynamic/Weight/Normal.lean:167-185` and `:200-218`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Borel.lean",
+   "fix": "State it generically and publicly (e.g. `CommHopfAlgCat.mem_quotientPointsSubgroup_map_mkQuotient_iff` in `HopfIdeal/Points/Order.lean`) and instantiate it here and at the two existing copies in `GeneralLinear/Dynamic/Weight/Normal.lean`.",
+   "issue": "`mem_definingPointsSubgroup_iff_pullback` is `private`, but it is general Hopf-ideal infrastructure with nothing SL\u2082-specific: for any `H`, `I J : HopfIdeal R H`, a point of `quotient H I` lies in `quotientPointsSubgroup (quotient H I) (J.map (mkQuotient H I).hom)` iff `quotientPointsHom H I A g` lies in `quotientPointsSubgroup H J`.",
+   "line": "124"
+  },
+  {
+   "evidence": "Line 75 `noncomputable def definingHopfIdeal`; no `definingHopfIdeal_def` in the file (only `definingHopfIdeal_toIdeal`, line 81), while the parallel `lowerLeftCoordinate_def` is supplied at line 64. `@[expose]` is the repo's body-exposure opt-in (618 occurrences), so the body is hidden.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Borel.lean",
+   "fix": "Add a public `definingHopfIdeal_def : definingHopfIdeal R = (GeneralLinear.Borel.definingHopfIdeal R).map (SpecialLinear.coordinateMap R 2).hom`, mirroring `lowerLeftCoordinate_def` directly above.",
+   "issue": "`definingHopfIdeal` is a `def` with an unexposed body, and its docstring's defining property (\"the image of the general-linear upper-triangular Hopf ideal under the determinant-one quotient map\") has no public restatement \u2014 consumers cannot relate it to `GeneralLinear.Borel.definingHopfIdeal`, which is exactly what the stated follow-up smoothness/connectedness/base-change work needs.",
+   "line": "75"
+  },
+  {
+   "evidence": "`HopfIdeal/Points/Basic.lean:71-76`: `@[simp] lemma quotientPointsHom_apply \u2026 : quotientPointsHom H I A f = toConv (f.ofConv.comp ((mkQuotient H I).hom \u2026))`; `SpecialLinear/Basic.lean:401` `theorem pointsMulEquiv_toGL` has no `@[simp]`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Borel.lean",
+   "fix": "Drop `@[simp]` (its direct model `SpecialLinear.pointsMulEquiv_toGL` carries no `@[simp]`), or restate the LHS in simp-normal form as `pointsMulEquiv_mapValue` was.",
+   "issue": "`@[simp]` on `pointsMulEquiv_coe` cannot fire: its LHS contains `CommHopfAlgCat.quotientPointsHom \u2026 f`, which the `@[simp]` lemma `quotientPointsHom_apply` rewrites to `toConv (f.ofConv.comp \u2026)` first, so the outer pattern no longer matches.",
+   "line": "226"
+  }
+ ],
+ "head_sha": "93a25d8fb5272482da495c7d155b35e8b9607e84",
+ "merge_base_sha": "49bdd82a837803b1be888993c4604b970561a7cc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5947,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ffa0a8fd51d9693970ba435f3148fec9e22cca40f7e3795531fc4d7f673e6e39",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260908T014507Z-5947-api-design-cb96fd",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-08T01:45:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The Borel point API and maximality results are exposed sensibly, but a fully general quotient-points lemma is hidden as `private`, the defining ideal's documented characterization has no public restatement, and one `@[simp]` LHS is not simp-normal.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Borel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Borel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/SpecialLinearGroup/Borel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/FunctorOfPoints.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/HopfIdeal/Points/Order.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/HopfIdeal",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Dynamic/Weight/Normal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/SpecialLinearGroup.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/SpecialLinearGroup.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/HopfAlgebra/HopfIdeal/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/HopfIdeal/Points/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f045b802ddbb0e1e451cc2ff2fa60196878f41262a2ca412574507fb3c62cf77",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105983,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105983,
+  "cache_read_input_tokens": 1252816,
+  "inference_geo": "not_available",
+  "input_tokens": 36,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2349,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2349,
+    "cache_read_input_tokens": 106434,
+    "input_tokens": 2,
+    "output_tokens": 6137,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23072,
+  "output_tokens_details": {
+   "thinking_tokens": 16915
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

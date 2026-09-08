@@ -1,0 +1,333 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 4.0620755,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 365.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 157773,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 157773,
+    "cache_read_input_tokens": 3533555,
+    "inference_geo": "not_available",
+    "input_tokens": 70,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2256,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2256,
+      "cache_read_input_tokens": 158317,
+      "input_tokens": 2,
+      "output_tokens": 4276,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 28210,
+    "output_tokens_details": {
+     "thinking_tokens": 18743
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0696d8691f4a5d872b48fe58b73857e44d87368e",
+ "cost_usd": 4.062075,
+ "dedupe_key": "TauCetiProject/TauCeti|5947|93a25d8fb5272482da495c7d155b35e8b9607e84|reuse|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "2f450db6a08d992fde630845bf6c2c9bda5d61f69649edda7da346425e6c333e",
+ "diff_sha256": "2f450db6a08d992fde630845bf6c2c9bda5d61f69649edda7da346425e6c333e",
+ "duration_s": 365.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Dynamic/Weight/Normal.lean:157-185 and :190-218 versus code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Borel.lean:124-150; no such general lemma exists (grep for `quotientPointsSubgroup` in `HopfIdeal/Points/*` returns only `_antitone`, `_le_of_le`, `_of_le`, `_eq_of_eq`, `_bot`, `_sup`).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Borel.lean",
+   "fix": "Add the general lemma once, e.g. in `TauCeti/Algebra/AlgebraicGroup/HopfIdeal/Points/Order.lean`: for `H : CommHopfAlgCat R`, `I J : HopfIdeal R H`, `f \u2208 quotientPointsSubgroup (quotient H I) (J.map (mkQuotient H I).hom) A \u2194 quotientPointsHom H I A f \u2208 quotientPointsSubgroup H J A`; then derive this private lemma from it via `SpecialLinear.coordinateMap_apply`, and rewrite the two `Dynamic/Weight/Normal.lean` clones to use it as well.",
+   "issue": "`mem_definingPointsSubgroup_iff_pullback` is a third line-for-line copy of an existing proof: `TauCeti.GeneralLinear.mem_weightLeviInParabolicPointsSubgroup_iff` and `mem_weightUnipotentInParabolicPointsSubgroup_iff` prove the same statement (a point of `H/I` lies in the subgroup cut out by `J.map (quotient map)` iff its pullback lies in the subgroup cut out by `J`) with the identical `mem_quotientPointsSubgroup_iff` / `HopfIdeal.mem_map_of_mem` / `HopfIdeal.mem_map_iff_of_surjective` script.",
+   "line": "124"
+  },
+  {
+   "evidence": "grep for `lowerLeftCoordinate` across `code/TauCeti` shows the SL `_def` name only at its own declaration site (SpecialLinear/Borel.lean:64-68); the file's own `definingHopfIdeal_toIdeal` and `coordinateMap_lowerLeftCoordinate` do not use it.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Borel.lean",
+   "fix": "Delete `lowerLeftCoordinate_def`; users can `rw [lowerLeftCoordinate]`. (The GL analogue at `GeneralLinear/Borel.lean:73` earns its place \u2014 it is used at lines 97, 100 and 193 \u2014 this one does not.)",
+   "issue": "`lowerLeftCoordinate_def` restates the definition on line 60-61 verbatim and is proved by `unfold; rfl`; it has no consumer anywhere in the repo, so it is a public duplicate of the auto-generated equation lemma.",
+   "line": "64"
+  },
+  {
+   "evidence": "`SL2Borel` definition: code/TauCeti/LinearAlgebra/Matrix/SpecialLinearGroup/Borel.lean:57-58; `GL2Borel` abbrev: code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Borel.lean:152; `Subgroup.mem_comap : x \u2208 K.comap f \u2194 f x \u2208 K := Iff.rfl` at mathlib/Mathlib/Algebra/Group/Subgroup/Map.lean:82.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Borel.lean",
+   "fix": "Replace lines 165-173 with `exact Subgroup.mem_comap.symm` (or `rw [SL2Borel, Subgroup.mem_comap]`), dropping the two `GL2Borel.mem_iff`/`SL2Borel.mem_iff` round trips.",
+   "issue": "The two-branch `constructor` block re-derives `Subgroup.mem_comap`: after `rw [..., pointsMulEquiv_toGL]` the goal is `Matrix.SpecialLinearGroup.toGL g \u2208 upperTriangularGroup (Fin 2) A \u2194 g \u2208 SL2Borel A`, and `SL2Borel R` is by definition `(GL2Borel R).comap Matrix.SpecialLinearGroup.toGL` with `GL2Borel R` an abbrev for `upperTriangularGroup (Fin 2) R`.",
+   "line": "165"
+  }
+ ],
+ "head_sha": "93a25d8fb5272482da495c7d155b35e8b9607e84",
+ "merge_base_sha": "49bdd82a837803b1be888993c4604b970561a7cc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5947,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9860560e91d247891f9383583e1ef816e8674f77becffc30599981a17fc674e9",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260908T013616Z-5947-reuse-2d7ee4",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-08T01:36:16Z",
+ "submitted_by": "kim-em",
+ "summary": "The Hopf ideal, its point identification with SL2Borel, and the maximality theorem are genuinely new, but the file re-proves a general points-of-a-mapped-ideal lemma that already exists twice verbatim in the repo, restates its own definition in an unused `_def` lemma, and re-derives `Subgroup.mem_comap` by hand.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Borel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/SpecialLinearGroup/Borel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Borel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Center/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/HopfIdeal/Points/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/HopfIdeal",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/HopfIdeal/Points/Order.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/HopfIdeal/Quotient/Image",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialOrthogonal/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialOrthogonal/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/HopfIdeal/Quotient/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/UpperTriangular/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/UpperTriangular/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Subgroup",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Submonoid/Operations.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Submonoid",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Dynamic/Weight/Normal.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 46,
+  "trace_truncated": true
+ },
+ "transcript_blob": "afb2150f417eaf46afb3290da780cf7fd7fc5579a6e7fd44716356caea7fd49f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 157773,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 157773,
+  "cache_read_input_tokens": 3533555,
+  "inference_geo": "not_available",
+  "input_tokens": 70,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2256,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2256,
+    "cache_read_input_tokens": 158317,
+    "input_tokens": 2,
+    "output_tokens": 4276,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 28210,
+  "output_tokens_details": {
+   "thinking_tokens": 18743
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
