@@ -1,0 +1,88 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.245812,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 38.8,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 71424,
+    "input_tokens": 104738,
+    "output_tokens": 1451,
+    "reasoning_output_tokens": 437
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "424d77d2914b33d001ef4379c25080776dedb560",
+ "cost_estimated": true,
+ "cost_usd": 0.245812,
+ "dedupe_key": "TauCetiProject/TauCeti|6346|0ba8fd92f6e0151881ceabbc867bd670eaee6e07|api-design|gpt-5.6-sol|d0700ff994e59c9f|production|1",
+ "diff_blob": "3da728b29149b32c431534a6697e4ff766376fb96a3b5d23413dae817dae0262",
+ "diff_sha256": "3da728b29149b32c431534a6697e4ff766376fb96a3b5d23413dae817dae0262",
+ "duration_s": 38.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 135\u2013139 claim `\u27e6g \u2297\u209c a\u27e7 \u21a6 A.\u03c1 g\u207b\u00b9 a`; the only subsequent use computes it by `simp [indBotCounit, resBotIsoTrivial]` at line 145, and no `indBotCounit_*apply*` theorem exists.",
+   "file": "TauCeti/RepresentationTheory/Homological/GroupCohomology/Coinduced.lean",
+   "fix": "Add a generator evaluation lemma, with the appropriate simp/discr-tree treatment used by the existing induction APIs.",
+   "issue": "`indBotCounit` is documented by its action on `IndV.mk` generators but exposes no theorem stating that action, so consumers must unfold the adjunction construction.",
+   "line": 137
+  },
+  {
+   "evidence": "Lines 211\u2013217 specify `f \u21a6 (s \u21a6 (y \u21a6 f (y.out * s)))`, but grep finds only the definition and functorial transports of it, with no application theorem.",
+   "file": "TauCeti/RepresentationTheory/Homological/GroupCohomology/Coinduced.lean",
+   "fix": "Add simp-characterization lemmas for the forward map and a usable inverse characterization.",
+   "issue": "`resCoindBotIso` has no `hom` or `inv` application lemmas despite its docstring specifying the forward map, leaving the principal restriction isomorphism usable only by unfolding its composite body.",
+   "line": 214
+  },
+  {
+   "evidence": "The two exposed definitions are at lines 93\u201394 and 127\u2013128; the API contains only `coindBotFunctor_obj` and `indBotFunctor_obj` at lines 98 and 132.",
+   "file": "TauCeti/RepresentationTheory/Homological/GroupCohomology/Coinduced.lean",
+   "fix": "Remove both `@[expose]` annotations and add the necessary `map` computation/naturality lemmas.",
+   "issue": "`coindBotFunctor` and `indBotFunctor` are both `@[expose]`, making their composite implementation part of the public reduction behavior; only object lemmas are supplied, so exposure substitutes for a morphism-level API.",
+   "line": 93
+  },
+  {
+   "evidence": "Its signature is solely `S \u00d7 (G \u29f8 S) \u2243 G`, and lines 192\u2013195 explicitly describe it as a variant of Mathlib's general `Subgroup.groupEquivQuotientProdSubgroup`.",
+   "file": "TauCeti/RepresentationTheory/Homological/GroupCohomology/Coinduced.lean",
+   "fix": "Relocate it and `prodQuotientEquiv_apply` to the canonical quotient-group or permutation infrastructure module, then import and use it here.",
+   "issue": "`prodQuotientEquiv` is general quotient-group infrastructure mentioning no coinduction or cohomology types, but is publicly located inside this specialized supplier module.",
+   "line": 197
+  }
+ ],
+ "head_sha": "0ba8fd92f6e0151881ceabbc867bd670eaee6e07",
+ "merge_base_sha": "424d77d2914b33d001ef4379c25080776dedb560",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 6346,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bde1c86ab6d24e5ead488493bb035537c1b9d8ffbb491f470de14385acd76dbb",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260911T231522Z-6346-api-design-93d940",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-11T23:15:22Z",
+ "submitted_by": "kim-em",
+ "summary": "The new public constructions lack key computation lemmas, expose functor implementations, and place a general quotient-group equivalence in a specialized cohomology module.",
+ "transcript_blob": "98bd34e1511de78fa0bcfb5644e3da616ebc24d997ff1e713f9c6d4d5b594e08",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 71424,
+  "input_tokens": 104738,
+  "output_tokens": 1451,
+  "reasoning_output_tokens": 437
+ },
+ "verdict": "request_changes"
+}
