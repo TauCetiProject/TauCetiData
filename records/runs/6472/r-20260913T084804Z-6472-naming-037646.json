@@ -1,0 +1,81 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.324058,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 51.6,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 126336,
+    "input_tokens": 168470,
+    "output_tokens": 1674,
+    "reasoning_output_tokens": 595
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e93045db19be54fe04dedd3b1ed8a65dd13f0a5c",
+ "cost_estimated": true,
+ "cost_usd": 0.324058,
+ "dedupe_key": "TauCetiProject/TauCeti|6472|56dd40f0f5f6a07dba593dbe513fe48fff66cd78|naming|gpt-5.6-sol|d0700ff994e59c9f|production|1",
+ "diff_blob": "363e0c4c51705fcc02c043085b53f0c4cfdd0ad8e7bf078edcf75f5e5d84589a",
+ "diff_sha256": "363e0c4c51705fcc02c043085b53f0c4cfdd0ad8e7bf078edcf75f5e5d84589a",
+ "duration_s": 51.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 75 declares `curvatureOperator` with first argument `cov : _root_.CovariantDerivative I F V`; adjacent Mathlib `CovariantDerivative/Torsion.lean:111` places `torsion` and its API in `namespace CovariantDerivative`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CovariantDerivative/Curvature.lean",
+   "fix": "Move these declarations to the root `CovariantDerivative` namespace, yielding names such as `CovariantDerivative.curvatureOperator` and direct `cov.curvatureOperator` notation.",
+   "issue": "`curvatureOperator` and its entire theorem family are in `TauCeti`, although their receiver is the existing Mathlib type `CovariantDerivative`.",
+   "line": "75"
+  },
+  {
+   "evidence": "Lines 29 and 44 place the theorem in `TauCeti.Manifold`; line 45 begins with `(cov : _root_.CovariantDerivative I F V)`, while existing Tau Ceti connection APIs use `namespace CovariantDerivative` (e.g. `LeviCivita/Regularity.lean:143`).",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CovariantDerivative/Regularity.lean",
+   "fix": "Move it to the root `CovariantDerivative` namespace as `CovariantDerivative.contMDiff_apply` or `CovariantDerivative.contMDiff_covariantDerivative_apply`, following nearby connection APIs.",
+   "issue": "`TauCeti.Manifold.contMDiff_covariantDerivative_apply` is misnamespaced despite taking a `CovariantDerivative` as its first explicit argument.",
+   "line": "44"
+  },
+  {
+   "evidence": "Mathlib `Geometry/Manifold/VectorBundle/CovariantDerivative/Torsion.lean` declares `torsion_antisymm` for the identical conclusion shape `cov.torsion x X\u2080 Y\u2080 = -cov.torsion x Y\u2080 X\u2080`; conclusion-based naming and adjacent consistency favor `antisymm`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CovariantDerivative/Curvature.lean",
+   "fix": "Rename it to `curvatureOperator_antisymm` and update its three internal uses.",
+   "issue": "`curvatureOperator_swap` uses generic rewriting terminology for the conclusion `R X Y = -R Y X`; the adjacent tensor API calls this property `antisymm`.",
+   "line": "90"
+  }
+ ],
+ "head_sha": "56dd40f0f5f6a07dba593dbe513fe48fff66cd78",
+ "merge_base_sha": "d8792ef1da26458b589fa11d8f026c4c401c8345",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 6472,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2264edfb61cd59dce518c0b1152c388dce04389e6a3571e6f51965309b8a7276",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260913T084804Z-6472-naming-037646",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-13T08:48:04Z",
+ "submitted_by": "kim-em",
+ "summary": "The new API is placed outside the namespace of its Mathlib receiver type, and the antisymmetry lemma diverges from the adjacent canonical terminology.",
+ "transcript_blob": "ae25cd44f267a4896e6f4e4669a9e5093e0cede00a3d56aa6a596ffd53213eb7",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 126336,
+  "input_tokens": 168470,
+  "output_tokens": 1674,
+  "reasoning_output_tokens": 595
+ },
+ "verdict": "request_changes"
+}
