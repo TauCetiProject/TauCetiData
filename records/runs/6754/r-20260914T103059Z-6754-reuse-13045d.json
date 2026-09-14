@@ -1,0 +1,344 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.366765,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 365.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 148239,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 148239,
+    "cache_read_input_tokens": 2228622,
+    "inference_geo": "not_available",
+    "input_tokens": 46,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6764,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6764,
+      "cache_read_input_tokens": 144368,
+      "input_tokens": 2,
+      "output_tokens": 10503,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 29992,
+    "output_tokens_details": {
+     "thinking_tokens": 20456
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3904b7792b377c715658e5fca9f5cf9e3153c5c3",
+ "cost_usd": 3.366765,
+ "dedupe_key": "TauCetiProject/TauCeti|6754|707d560c52858af230b1c67b614785cf9c3fc428|reuse|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "b4c50fb08b0ffe4ed90922a180231bc261715946e8633a6f625d76ae4ac4ca25",
+ "diff_sha256": "b4c50fb08b0ffe4ed90922a180231bc261715946e8633a6f625d76ae4ac4ca25",
+ "duration_s": 365.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/Matrix/Defs.lean:467 `theorem transpose_map {f : \u03b1 \u2192 \u03b2} {M : Matrix m n \u03b1} : M\u1d40.map f = (M.map f)\u1d40 := rfl`.",
+   "file": "TauCeti/Algebra/Lie/F4/ShortRoot/PinnedForm.lean",
+   "fix": "Delete the lemma and rewrite with `\u2190 Matrix.transpose_map` at line 157 instead of `map_intCast_transpose`.",
+   "issue": "`map_intCast_transpose` is `Matrix.transpose_map` restated: Mathlib proves `M\u1d40.map f = (M.map f)\u1d40` for an arbitrary `f : \u03b1 \u2192 \u03b2`.",
+   "line": "86"
+  },
+  {
+   "evidence": "PinnedForm.lean:95 is literally `Matrix.map_mul (f := (Int.castRingHom R))`; mathlib/Mathlib/Data/Matrix/Mul.lean:439 `protected theorem map_mul ... : (L * M).map f = L.map f * M.map f`.",
+   "file": "TauCeti/Algebra/Lie/F4/ShortRoot/PinnedForm.lean",
+   "fix": "Delete it and use `Matrix.map_mul (f := Int.castRingHom R)` directly at the use sites (lines 169, 175, 182, 187).",
+   "issue": "`map_intCast_mul` is a wrapper whose whole proof is the Mathlib lemma it wraps; it is also the fourth copy of this private helper in the directory (Derivation.lean:373, DividedPowerDerivation.lean:70 as `map_intCast_mul'`, SpecialIsogeny.lean:179).",
+   "line": "92"
+  },
+  {
+   "evidence": "mathlib/Mathlib/Data/Matrix/Basic.lean:353 `protected theorem map_add (f) (hf : \u2200 a\u2081 a\u2082, f (a\u2081 + a\u2082) = f a\u2081 + f a\u2082) (M N)` and :348 `protected theorem map_zero (f) (h : f 0 = 0)`; `Matrix.map_zero _ Int.cast_zero` is already used in this repo at SpecialIsogeny.lean:230.",
+   "file": "TauCeti/Algebra/Lie/F4/ShortRoot/PinnedForm.lean",
+   "fix": "Delete both and use `Matrix.map_add _ Int.cast_add M M'` and `Matrix.map_zero _ Int.cast_zero` at the use sites.",
+   "issue": "`map_intCast_add` and `map_intCast_zero` (line 106) restate `Matrix.map_add` and `Matrix.map_zero`; both are also already duplicated privately in DividedPowerDerivation.lean:54 and :76 and SpecialIsogeny.lean:187.",
+   "line": "98"
+  },
+  {
+   "evidence": "grep `smul_cancel` in TauCeti: PinnedForm.lean:112 and DividedPowerDerivation.lean:82, identical text `{c : \u2124} (hc : c \u2260 0) {A B : Matrix (Fin 26) (Fin 26) \u2124} (h : c \u2022 A = c \u2022 B) : A = B`.",
+   "file": "TauCeti/Algebra/Lie/F4/ShortRoot/PinnedForm.lean",
+   "fix": "Keep one copy, make it non-private (e.g. in Derivation.lean, which both files import transitively) and delete the other; the two uses here (line 128) and the three in DividedPowerDerivation (:117, :173, :224) then share it.",
+   "issue": "`smul_cancel` is a verbatim duplicate \u2014 same name, statement and proof \u2014 of the private lemma in DividedPowerDerivation.lean:82.",
+   "line": "112"
+  },
+  {
+   "evidence": "`Matrix.IsDoubleStep.mul_apply` at TauCeti/LinearAlgebra/Matrix/Step.lean:164 `(M * N) a b = M a (t\u2081 b) * c\u2081 b + M a (t\u2082 b) * c\u2082 b`; `isDoubleStep_multiplicationOperator` at InvariantStructure.lean:256; `isStep_rootMatrix` at QuotientCoordinates.lean:89.",
+   "file": "TauCeti/Algebra/Lie/F4/ShortRoot/StepTranspose.lean",
+   "fix": "Drop the tables and replace `Matrix.IsDoubleStep.transpose_mul_apply (isDoubleStep_transpose_rootMatrix _)` in the eight derivation proofs by `Matrix.IsDoubleStep.mul_apply (isDoubleStep_multiplicationOperator c) _ p q`, which yields `rootMatrix k p (multTargetOne c q) * multCoeffOne c q + rootMatrix k p (multTargetTwo c q) * multCoeffTwo c q`; the root-matrix entries then come from `isStep_rootMatrix k` (already used for the other summand), leaving the goal equally decidable.",
+   "issue": "The four new transposed tables (`rootTransposeTargetOne/Two`, `rootTransposeCoeffOne/Two`, lines 49-99) and `isDoubleStep_transpose_rootMatrix` (line 127) re-tabulate, in inverted form, data already recorded by `rootStepTarget`/`rootStepCoeff`; their only consumer is the product `rootMatrix k * multiplicationOperator c`, whose entries the existing combinators already give without any transpose data.",
+   "line": "49"
+  },
+  {
+   "evidence": "grep for all three names across `code/` returns only StepTranspose.lean itself; the underlying data is Basic.lean:158-186 (`raising/loweringDividedSquareTarget/Coeff`), packaged as `rootDividedSquareStepTarget`/`Coeff` at QuotientCoordinates.lean:81-86.",
+   "file": "TauCeti/Algebra/Lie/F4/ShortRoot/StepTranspose.lean",
+   "fix": "Delete the two tables and the theorem.",
+   "issue": "`rootDividedSquareTransposeTarget`, `rootDividedSquareTransposeCoeff` (lines 101-125) and `isStep_transpose_rootDividedSquareMatrix` (line 137) have no consumer anywhere in the repository, and merely restate the single nonzero entry per generator that `rootDividedSquareStepTarget`/`rootDividedSquareStepCoeff` already record.",
+   "line": "101"
+  },
+  {
+   "evidence": "The four bodies in each file are textually identical: `rw [isDerivation_int_iff]; intro c; rw [Matrix.IsStep.sum_smul ...]; ext p q; rw [Matrix.sub_apply, ...]; simp only [multiplicationOperator_apply]; revert c p q; decide +kernel`.",
+   "file": "TauCeti/Algebra/Lie/F4/ShortRoot/RaisingDerivation.lean",
+   "fix": "Factor the shared script into one lemma reducing `IsDerivation (rootMatrix k)` to the decidable entrywise criterion for a general `k`, then discharge the eight instances by `decide +kernel` (splitting only to keep kernel reduction cheap), and merge the two clone files into one.",
+   "issue": "Eight private theorems (RaisingDerivation.lean:46, 59, 72, 85 and LoweringDerivation.lean:46, 59, 72, 85) carry byte-identical ten-line proof scripts differing only in the index `Sum.inl 0 \u2026 Sum.inr 3`; the two files are clones of each other down to the docstrings.",
+   "line": "46"
+  },
+  {
+   "evidence": "SpecialIsogeny.lean:197-202 `exp_mul_mul_exp (X Y M u) : (1 + u \u2022 X + u ^ 2 \u2022 Y) * M * (1 + u \u2022 X + u ^ 2 \u2022 Y) = M + u \u2022 (X * M + M * X) + ...`, which is `expand` at `Nt = Nm = X`, `Pt = Pm = Y`.",
+   "file": "TauCeti/Algebra/Lie/F4/ShortRoot/PinnedForm.lean",
+   "fix": "Generalise `exp_mul_mul_exp` in SpecialIsogeny.lean to independent left/right factors, un-privatise it (or move it next to `rootElementMatrix`), and use it here instead of the local `have expand`.",
+   "issue": "The local `expand` is the two-sided generalisation of the existing private `exp_mul_mul_exp`, proved the same way (`simp only [...]; module`), so the same divided-power conjugation expansion is now proved twice in the same namespace.",
+   "line": "158"
+  }
+ ],
+ "head_sha": "707d560c52858af230b1c67b614785cf9c3fc428",
+ "merge_base_sha": "3904b7792b377c715658e5fca9f5cf9e3153c5c3",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 6754,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f207f5bde24ddabc7bdf824f4c4eda7df8da1ee268b9aec88cff55f92257ee6f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260914T103059Z-6754-reuse-13045d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-14T10:30:59Z",
+ "submitted_by": "kim-em",
+ "summary": "PinnedForm.lean re-proves five lemmas that located Mathlib declarations (Matrix.transpose_map, Matrix.map_mul, Matrix.map_add, Matrix.map_zero) and an existing in-repo private lemma directly replace, and the new StepTranspose.lean tabulates 145 lines of transposed step data that Matrix.IsDoubleStep.mul_apply plus the existing isDoubleStep_multiplicationOperator/isStep_rootMatrix already provide. RaisingDerivation.lean and LoweringDerivation.lean are byte-identical clones of one ten-line proof script eight times over.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot/Derivation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot/DividedPowerDerivation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot/QuotientCoordinates.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot/SpecialIsogeny.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Torsion.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/SesquilinearForm.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/SesquilinearForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/BilinearForm/Isometry.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot/InvariantStructure.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot/InvariantStructure.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot/InvariantStructure.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/Step.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/F4/ShortRoot/PinnedForm.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Mul.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 35,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8899846887ea26744c0c10c8f103414bbef102ec0b901792b7820979f07c33cf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 148239,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 148239,
+  "cache_read_input_tokens": 2228622,
+  "inference_geo": "not_available",
+  "input_tokens": 46,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6764,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6764,
+    "cache_read_input_tokens": 144368,
+    "input_tokens": 2,
+    "output_tokens": 10503,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 29992,
+  "output_tokens_details": {
+   "thinking_tokens": 20456
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
