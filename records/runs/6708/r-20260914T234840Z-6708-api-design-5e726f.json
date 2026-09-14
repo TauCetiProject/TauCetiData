@@ -1,0 +1,74 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.3249,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 55.5,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 135680,
+    "input_tokens": 176172,
+    "output_tokens": 1820,
+    "reasoning_output_tokens": 948
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b8bd567c085b6c4a0fdf57b2c260e75c71765136",
+ "cost_estimated": true,
+ "cost_usd": 0.3249,
+ "dedupe_key": "TauCetiProject/TauCeti|6708|5f34250cb4edc55297fd62326947094bb5cc8855|api-design|gpt-5.6-sol|d0700ff994e59c9f|production|1",
+ "diff_blob": "07ad10dfc72f7e84ba8c0164a898a43598ec0eb3f856b06f9462906e192f287a",
+ "diff_sha256": "07ad10dfc72f7e84ba8c0164a898a43598ec0eb3f856b06f9462906e192f287a",
+ "duration_s": 55.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 350\u2013384 define a raw function and then separately prove `g2CrossMap_zero`, `g2CrossMap_add`, and `g2CrossMap_smul`; `isogenyProjection` at line 442 already uses the appropriate `\u2192\u2097[R]` interface.",
+   "file": "TauCeti/Algebra/Lie/G2/ShortRoot/CrossProduct.lean",
+   "fix": "Define it as a linear map from matrices to `Fin 7 \u2192 R` (or provide a canonical bundled linear-map definition) and state equivariance through that API.",
+   "issue": "`Matrix.g2CrossMap` is mathematically linear in `W` but is exposed as an unbundled function, forcing bespoke `zero`/`add`/`smul` lemmas and obstructing kernels, ranges, and composition.",
+   "line": "350"
+  },
+  {
+   "evidence": "Line 493 defines a signed selection of matrix entries, while the parallel `isogenyProjection` construction at lines 442\u2013449 is correctly bundled as a linear map.",
+   "file": "TauCeti/Algebra/Lie/G2/ShortRoot/CrossProduct.lean",
+   "fix": "Bundle each coefficient as `Matrix (Fin 7) (Fin 7) R \u2192\u2097[R] R` and retain an application lemma for its entrywise formula.",
+   "issue": "The public, exposed coordinate functional `isogenyKernelCoeff a` is also linear in `W` but is presented as a raw function, so downstream decomposition and coordinate arguments cannot use linear-map operations.",
+   "line": "493"
+  }
+ ],
+ "head_sha": "5f34250cb4edc55297fd62326947094bb5cc8855",
+ "merge_base_sha": "b8bd567c085b6c4a0fdf57b2c260e75c71765136",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 6708,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d178da549c9334d3607faeb775574679970f166dcc5fa579a41f253e7166b6ff",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260914T234840Z-6708-api-design-5e726f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-14T23:48:40Z",
+ "submitted_by": "kim-em",
+ "summary": "Two exported linear constructions are exposed as raw functions, preventing consumers from using the standard linear-map API.",
+ "transcript_blob": "31c4d5cfd0ff2eec4e428b2e24cf9154cf4680c0f5f4fb90615fe88844df3974",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 135680,
+  "input_tokens": 176172,
+  "output_tokens": 1820,
+  "reasoning_output_tokens": 948
+ },
+ "verdict": "request_changes"
+}
