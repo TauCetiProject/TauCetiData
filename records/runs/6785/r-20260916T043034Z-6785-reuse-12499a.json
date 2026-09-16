@@ -1,0 +1,81 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.601269,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 69.6,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 370048,
+    "input_tokens": 436527,
+    "output_tokens": 2795,
+    "reasoning_output_tokens": 924
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "dfe3d32f4ae2687ca5f692902830412fa5e3263b",
+ "cost_estimated": true,
+ "cost_usd": 0.601269,
+ "dedupe_key": "TauCetiProject/TauCeti|6785|1f94199c5b273cf96f5a9434f40195ef5f701e28|reuse|gpt-5.6-sol|d0700ff994e59c9f|production|1",
+ "diff_blob": "99a5ff0c5e918492077fb00f53c78c1e23b421befae5fb20329aea2d0c9e3309",
+ "diff_sha256": "99a5ff0c5e918492077fb00f53c78c1e23b421befae5fb20329aea2d0c9e3309",
+ "duration_s": 69.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Mathlib/FieldTheory/Finite/Basic.lean:333` defines `FiniteField.frobeniusAlgHom`, and lines 345 and 380 identify its action and its iterates; for `K = ZMod p`, the iterate is exactly the `p ^ n`-power map defined here.",
+   "file": "TauCeti/Algebra/CharP/Frobenius/PrimeField.lean",
+   "fix": "Use `(FiniteField.frobeniusAlgHom (ZMod p) A) ^ n` and its existing `coe_frobeniusAlgHom`/`AlgHom.coe_pow` lemmas; delete this definition and its two wrapper lemmas.",
+   "issue": "`iterateFrobeniusAlgHom` directly duplicates the iterated power of Mathlib's prime-field algebra Frobenius.",
+   "line": "34"
+  },
+  {
+   "evidence": "`ToralClosure/Basic.lean:82` defines `kostantToralDefiningIdeal` as that generator map's `commonKernelHopfIdeal`; `HopfIdeal/CommonKernel/Endomorphism.lean:101,143` and `GeneralLinear/Generated/Endomorphism.lean:72\u2013137` contain the same kernel, restriction, point-conversion, and evaluation constructions.",
+   "file": "TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Scheme/ToralClosure/Endomorphism.lean",
+   "fix": "Instantiate `CommHopfAlgCat.commonKernelHopfIdeal_toIdeal_le_ker_of_comp_commonKernelLift`, `commonKernelSpecRestrict`, and `GeneralLinear.generatedPointsEndomorphism` with `ToralClosure.Internal.kostantToralGeneratorMap`; retain only thin domain-specific corollaries where consumers need the Kostant names.",
+   "issue": "The private kernel argument and the declarations at lines 122\u2013359 reimplement the generic common-kernel restriction and generated-points endomorphism machinery added elsewhere in this PR.",
+   "line": "76"
+  },
+  {
+   "evidence": "`GeneralLinear/Frobenius/GeneralLinear.lean:193\u2013241` already defines `iterateFrobeniusHopfIdealPoints` and proves the same entrywise action, zeroth-iterate, and additive-composition results; `Carrier.lean:277` identifies `points A` with the required Hopf-ideal subgroup.",
+   "file": "TauCeti/Algebra/Lie/G2/ShortRoot/PrimeField/Carrier.lean",
+   "fix": "Define the specialization through `GeneralLinear.iterateFrobeniusHopfIdealPoints 7 3 m definingIdeal A` (transporting across `points_eq_hopfIdealPointsSubgroup` if necessary) and reuse its coefficient, zero, and add lemmas.",
+   "issue": "`frobenius` and its entrywise, zero, and composition lemmas at lines 434\u2013470 re-derive the existing Frobenius endomorphism for a Hopf-ideal point subgroup.",
+   "line": "429"
+  }
+ ],
+ "head_sha": "1f94199c5b273cf96f5a9434f40195ef5f701e28",
+ "merge_base_sha": "dfe3d32f4ae2687ca5f692902830412fa5e3263b",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 6785,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "78bbde85a256e6acd2924b321880e703fa22cb2cff12dff62afc9c0b5ad8247c",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "603b28011f779bd341d0a08e788498b81542bd7d",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260916T043034Z-6785-reuse-12499a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-16T04:30:34Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR duplicates existing Mathlib Frobenius infrastructure and re-derives two existing generic TauCeti APIs in specialized form.",
+ "transcript_blob": "7b61ae20cddcc53d11d627db48af43083a930182d31c278663f039b1fbe08506",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 370048,
+  "input_tokens": 436527,
+  "output_tokens": 2795,
+  "reasoning_output_tokens": 924
+ },
+ "verdict": "block"
+}
