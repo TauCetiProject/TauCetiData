@@ -1,0 +1,81 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.259856,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 50.9,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 177152,
+    "input_tokens": 200350,
+    "output_tokens": 1843,
+    "reasoning_output_tokens": 519
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "712bcfde6c71cce86106813cc7b230fbe3ace405",
+ "cost_estimated": true,
+ "cost_usd": 0.259856,
+ "dedupe_key": "TauCetiProject/TauCeti|6966|327bdfb73a85fb63f60decb8aef5759a0c0fb5a5|proof-quality|gpt-5.6-sol|d0700ff994e59c9f|production|1",
+ "diff_blob": "8fee52f099df18cae64d5e6aded70993ca74a0963ab1fc3786620febe5d71e42",
+ "diff_sha256": "8fee52f099df18cae64d5e6aded70993ca74a0963ab1fc3786620febe5d71e42",
+ "duration_s": 50.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/LinearAlgebra/Matrix/Hermitian.lean:297 defines `isHermitian_mul_mul_conjTranspose`; the current declaration takes both `hA` and the derivable `hPA`.",
+   "file": "TauCeti/Analysis/Matrix/HermitianSignature.lean",
+   "fix": "Remove `hPA` from the theorem arguments and construct it internally with `Matrix.isHermitian_mul_mul_conjTranspose P hA`.",
+   "issue": "`signature_congr` requires `hPA`, although Hermiticity of `P * A * P\u1d34` follows directly from `hA`; this burdens every caller with a redundant proof.",
+   "line": 89
+  },
+  {
+   "evidence": "The proof contains `show (1 : Matrix \u03b9 \u03b9 \u2102) = (1 : Matrix \u03b9 \u03b9 \u211d).map ...` without an explanatory comment.",
+   "file": "TauCeti/LinearAlgebra/Matrix/Realify.lean",
+   "fix": "Replace it with an explicit `Matrix.map_one` rewrite/lemma, or document why ordinary rewriting cannot expose `realify_map_ofReal`.",
+   "issue": "`realify_one` uses an undocumented `show` to reshape the identity matrix through `map`, relying opaquely on goal conversion.",
+   "line": 93
+  },
+  {
+   "evidence": "The proof contains `rw [show (25 : \u211d) = 5 ^ 2 by norm_num, Real.sqrt_sq ...]` with no comment explaining why goal reshaping is necessary.",
+   "file": "TauCeti/KnotTheory/TristramLevine.lean",
+   "fix": "Prove the square-root equality directly with `norm_num`/the relevant square-root lemma, or isolate and explain the required normalization.",
+   "issue": "The unit-circle computation uses an undocumented `show` solely to rewrite `25` as `5 ^ 2`, obscuring a routine arithmetic normalization.",
+   "line": 229
+  }
+ ],
+ "head_sha": "327bdfb73a85fb63f60decb8aef5759a0c0fb5a5",
+ "merge_base_sha": "0ce0e8862fb5aeb94a921ab5dc54e2fce17c2d0b",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 6966,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "faabe2f917062df6e7b17baf7d4bb8faa1d3ed204015ce5dec4c1cd54b41daa3",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "603b28011f779bd341d0a08e788498b81542bd7d",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260916T025517Z-6966-proof-quality-438076",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-16T02:55:17Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs contain a redundant Hermiticity hypothesis and two undocumented `show` steps that obscure avoidable goal-shaping.",
+ "transcript_blob": "d560f97b96314bc872b2b223252ab0d7ef2e9faac37eaef85a58a53ea08652b1",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 177152,
+  "input_tokens": 200350,
+  "output_tokens": 1843,
+  "reasoning_output_tokens": 519
+ },
+ "verdict": "request_changes"
+}
