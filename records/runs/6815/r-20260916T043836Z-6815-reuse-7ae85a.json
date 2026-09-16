@@ -1,0 +1,81 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.351069,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 47.0,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 151808,
+    "input_tokens": 197313,
+    "output_tokens": 1588,
+    "reasoning_output_tokens": 241
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bdc664fca21f468b3259e1131b14b8ad3991004e",
+ "cost_estimated": true,
+ "cost_usd": 0.351069,
+ "dedupe_key": "TauCetiProject/TauCeti|6815|41fb789a126de1037659880948fe7d7b9ac74afc|reuse|gpt-5.6-sol|d0700ff994e59c9f|production|2",
+ "diff_blob": "bbc6848e820adff9c4933b27bc3e0f0e6bc65678f2e7b3c472fd7a7bdfe2aca1",
+ "diff_sha256": "bbc6848e820adff9c4933b27bc3e0f0e6bc65678f2e7b3c472fd7a7bdfe2aca1",
+ "duration_s": 47.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`RootLength.lean:297` defines `isLongSimpleRoot_congr`; `RootLength.lean:317` defines `isLongSimpleRoot_G2`; grep finds the new wrapper used only at `ReeG2/Basic.lean:271`.",
+   "file": "TauCeti/LinearAlgebra/RootSystem/RootLength.lean",
+   "fix": "Delete the wrapper and use `isLongSimpleRoot_congr d.dynkinType_eq` with `isLongSimpleRoot_G2` directly in `carrierNode_eq_one_iff`, as Suzuki/Basic already does.",
+   "issue": "`isLongSimpleRoot_iff_of_eq` is a thin wrapper around the existing `DynkinType.isLongSimpleRoot_congr` followed by the supplied equivalence, and its only consumer is ReeG2 `carrierNode_eq_one_iff`.",
+   "line": "282"
+  },
+  {
+   "evidence": "`DiagramPermutations.lean:78-79` defines `lengthPermRankTwo := Equiv.swap 0 1`; the sole grep consumer of the new theorem is `ReeG2/Basic.lean:327`.",
+   "file": "TauCeti/LinearAlgebra/RootSystem/DiagramPermutations.lean",
+   "fix": "Delete the theorem and unfold with `lengthPermRankTwo` at the ReeG2 proof site.",
+   "issue": "`lengthPermRankTwo_eq_swap` republishes the defining equation of `lengthPermRankTwo` as a public theorem solely to unfold it once.",
+   "line": "204"
+  },
+  {
+   "evidence": "`Suzuki/Basic.lean:140-151` contains the same `2*k` induction via the square relation and Frobenius composition; the duplicate is `ReeG2/Basic.lean:227-236`, consumed at lines 261 and 390.",
+   "file": "TauCeti/GroupTheory/SpecificGroups/CFSG/ReeG2/Basic.lean",
+   "fix": "Factor the square-to-Frobenius iteration argument into a shared generic lemma and instantiate it in both Suzuki and ReeG2 instead of retaining two copies.",
+   "issue": "`halfFrobenius_iterate_two_mul` repeats the same abstract induction and iterate algebra already implemented for Suzuki, creating parallel family-specific scaffolding used by both `steinberg_steinberg` and `steinberg_simpleRootSubgroup`.",
+   "line": "227"
+  }
+ ],
+ "head_sha": "41fb789a126de1037659880948fe7d7b9ac74afc",
+ "merge_base_sha": "bdc664fca21f468b3259e1131b14b8ad3991004e",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 6815,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "7f4bfc9285896bfe01c5c5261d171b75494621e2b13e7d9ba77fcfc8941cce68",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "603b28011f779bd341d0a08e788498b81542bd7d",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260916T043836Z-6815-reuse-7ae85a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-16T04:38:36Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR introduces two redundant public transport/unfolding lemmas and duplicates generic half-Frobenius iteration scaffolding already present in the Suzuki implementation.",
+ "transcript_blob": "8535e1bf87545d4cd5420f702c1d4b287ab167fe41aef2147ce5d2066744501e",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 151808,
+  "input_tokens": 197313,
+  "output_tokens": 1588,
+  "reasoning_output_tokens": 241
+ },
+ "verdict": "request_changes"
+}
