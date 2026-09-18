@@ -1,0 +1,74 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.248052,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 63.0,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 141824,
+    "input_tokens": 164658,
+    "output_tokens": 2099,
+    "reasoning_output_tokens": 738
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a2ada2dba7bf3fc871bdde4ec54e65877a67b4b4",
+ "cost_estimated": true,
+ "cost_usd": 0.248052,
+ "dedupe_key": "TauCetiProject/TauCeti|5843|e0a221fd9c03835d8ee8de6448fb38a5e679a455|reuse|gpt-5.6-sol|7b72cafe03b2af65|production|2",
+ "diff_blob": "39ee62566ab915bbb89b3278a28a6cc708cc50082b38d7cec1e8d93c2dab2d72",
+ "diff_sha256": "39ee62566ab915bbb89b3278a28a6cc708cc50082b38d7cec1e8d93c2dab2d72",
+ "duration_s": 63.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/MeasureTheory/Order/Lattice.lean:200 defines `Finset.measurable_sup'`; lines 41, 48, and 55 of this file show the wrappers are exactly that theorem plus duality/application equality, and repository-wide grep finds no consumers.",
+   "file": "TauCeti/MeasureTheory/Order/Lattice.lean",
+   "fix": "Delete these three measurable wrappers; use `Finset.measurable_sup' (\u03b1 := \u03b1\u1d52\u1d48)` for infima and rewrite with `Finset.sup'_apply` or `Finset.inf'_apply` where coordinatewise syntax is required.",
+   "issue": "`measurable_inf'` directly duplicates Mathlib's `Finset.measurable_sup'` under `\u03b1 := \u03b1\u1d52\u1d48`; `measurable_fun_sup'` and `measurable_fun_inf'` merely add `sup'_apply`/`inf'_apply` rewrites and have no repository consumers.",
+   "line": "39"
+  },
+  {
+   "evidence": "Line 68 is exactly `aemeasurable_sup' (\u03b1 := \u03b1\u1d52\u1d48) hs hf`; grep finds no use except line 84 in the adjacent coordinatewise wrapper.",
+   "file": "TauCeti/MeasureTheory/Order/Lattice.lean",
+   "fix": "Delete `aemeasurable_inf'` and prove the consumed coordinatewise infimum lemma directly from `aemeasurable_fun_sup' (\u03b1 := \u03b1\u1d52\u1d48)` (or `aemeasurable_sup'` plus `inf'_apply`).",
+   "issue": "`aemeasurable_inf'` is an unnecessary public dual alias of the newly introduced `aemeasurable_sup'`; its only use is internal scaffolding for `aemeasurable_fun_inf'`.",
+   "line": "66"
+  }
+ ],
+ "head_sha": "e0a221fd9c03835d8ee8de6448fb38a5e679a455",
+ "merge_base_sha": "a2ada2dba7bf3fc871bdde4ec54e65877a67b4b4",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 5843,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "09cc9842f79188357f4a06858745dc9fe81e2cd4f88396a96f86d263dc9741f0",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260918T062619Z-5843-reuse-de8a86",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-18T06:26:19Z",
+ "submitted_by": "kim-em",
+ "summary": "The new lattice module exposes redundant measurable APIs already obtainable directly from Mathlib, plus an unused dual wrapper around its own new theorem.",
+ "transcript_blob": "f51e481ef8d0b4d27e6ad3e733f0892b7c6c70aeaf81048658ddd160e2061c09",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 141824,
+  "input_tokens": 164658,
+  "output_tokens": 2099,
+  "reasoning_output_tokens": 738
+ },
+ "verdict": "block"
+}
