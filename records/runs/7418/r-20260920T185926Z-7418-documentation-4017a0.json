@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.6125625,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 87.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 35344,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 35344,
+    "cache_read_input_tokens": 117795,
+    "inference_geo": "not_available",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1269,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1269,
+      "cache_read_input_tokens": 37076,
+      "input_tokens": 2,
+      "output_tokens": 2159,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8007,
+    "output_tokens_details": {
+     "thinking_tokens": 4905
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "acdb665d25d2cf1063ba1ca0ae3b0520206f55d0",
+ "cost_usd": 0.612563,
+ "dedupe_key": "TauCetiProject/TauCeti|7418|959dacb75a0afcbfb58a1f747ea01e40c0757fe6|documentation|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "85bc1d8cd7df6eaaa925fd98c91be99f5543e176686dd3153dad3e9529cec509",
+ "diff_sha256": "85bc1d8cd7df6eaaa925fd98c91be99f5543e176686dd3153dad3e9529cec509",
+ "duration_s": 87.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep of the file: `fiberEquivKer` occurs only at lines 17, 52, 57, 63, 68 \u2014 all inside docstrings; the proof term at line 125 uses `Fintype.prod_equiv` with `subtypeFiberEquivKer`. Mathlib `Mathlib/GroupTheory/Coset/Basic.lean:469` `variable [Group \u03b1] {H : Type*} [Group H]`, line 474 `def fiberEquivKer`.",
+   "file": "TauCeti/GroupTheory/Coset/Fiber.lean",
+   "fix": "State the truth: the equivalence is built directly here (Mathlib's is unavailable at `MulOneClass H`), and it agrees with `fiberEquivKer` on the preimage form. Same correction is needed in the PR description's \"derived from Mathlib's `fiberEquivKer` rather than a new equivalence\".",
+   "issue": "Provenance says \"this one is Mathlib's `fiberEquivKer` composed with the change of presentation\". `subtypeFiberEquivKer` (lines 71-77) is built by hand with explicit `toFun`/`invFun`/`left_inv`/`right_inv` and never mentions `fiberEquivKer` outside prose; it cannot use it, since Mathlib's needs `[Group H]` while this is stated at `[MulOneClass H]`.",
+   "line": 56
+  },
+  {
+   "evidence": "Line 73 `toFun x := \u27e8a\u207b\u00b9 * x, \u2026\u27e9`; `G` is only `[Group G]`/`[AddGroup G]` (line 71), not commutative.",
+   "file": "TauCeti/GroupTheory/Coset/Fiber.lean",
+   "fix": "Write `x \u21a6 -a + x`, with `a + \u00b7` back.",
+   "issue": "The additive module docstring describes the map as `x \u21a6 x - a`. The map is `x \u21a6 -a + x` (multiplicatively `a\u207b\u00b9 * x`, line 73); `x - a = x + -a` differs in a noncommutative additive group, which is exactly the generality the file advertises.",
+   "line": 21
+  },
+  {
+   "evidence": "Deleted `TauCeti/GroupTheory/Coset/FiberCard.lean` had the same sentence with only two declarations; new file lines 108-109 `[Finite f.ker] (b : H)` (no `ha`), line 121 `(ha : f a = b) [Fintype f.ker]`.",
+   "file": "TauCeti/GroupTheory/Coset/Fiber.lean",
+   "fix": "Rewrite for the current contents: say which results need an inhabitant of the fiber (`card_fiber_eq_card_ker`, `prod_fiber_eq_prod_ker`, `card_zsmul_fiber_eq_card_zsmul_eq_zero`) and drop \"either statement\".",
+   "issue": "The paragraph \"Emptiness is not excluded by fiat \u2026 so a preimage is an argument, and it is the only thing either statement asks for\" is copied unchanged from the deleted `FiberCard.lean`, where the file held exactly two statements. It now contradicts the preceding paragraph (`finite_fiber` needs no preimage) and is false for `prod_fiber_eq_prod_ker`, which also requires `[Fintype f.ker]`.",
+   "line": 29
+  },
+  {
+   "evidence": "Lines 122 and 124: `letI : Fintype {x : G // f x = b} := Fintype.ofEquiv f.ker (f.subtypeFiberEquivKer ha).symm` appears inside the statement.",
+   "file": "TauCeti/GroupTheory/Coset/Fiber.lean",
+   "fix": "Add a sentence saying the fiber's `Fintype` instance in the statement is the one transported along `subtypeFiberEquivKer`, and how a caller with another instance applies it (e.g. via `Subsingleton.elim`/`convert`).",
+   "issue": "`prod_fiber_eq_prod_ker`'s docstring says \"For a finite kernel and a chosen point `a` \u2026\" but does not mention that the left-hand product is taken over a `letI`-supplied `Fintype` instance transported from `f.ker`, which a caller holding a different `Fintype` instance on the fiber must reconcile.",
+   "line": 114
+  }
+ ],
+ "head_sha": "959dacb75a0afcbfb58a1f747ea01e40c0757fe6",
+ "merge_base_sha": "ee3df95ccc9ec361e101a15b49d5483b9ef445d7",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7418,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0831d6e5fddf1ee4bb5a6bd780e7ac2cb89c05b514973830a2942d8ff31e46b4",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T185926Z-7418-documentation-4017a0",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T18:59:26Z",
+ "submitted_by": "kim-em",
+ "summary": "The module docstring's Provenance claims the equivalence is derived from Mathlib's `fiberEquivKer`, which the code does not do (and cannot, at `MulOneClass H`); a translation formula is stated wrongly for a noncommutative group; and a paragraph copied from the deleted `FiberCard.lean` is now false of the file's five declarations.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/Coset/Fiber.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/Isogeny/MulByInt/Fiber.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Subgroup/Ker.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Subgroup/Ker.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/Coset/Fiber.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "63309c4b272579e04c302980a6e30d33cd8c5e4e75f5f2a53929cad1d4084613",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 35344,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 35344,
+  "cache_read_input_tokens": 117795,
+  "inference_geo": "not_available",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1269,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1269,
+    "cache_read_input_tokens": 37076,
+    "input_tokens": 2,
+    "output_tokens": 2159,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8007,
+  "output_tokens_details": {
+   "thinking_tokens": 4905
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
