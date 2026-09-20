@@ -1,0 +1,205 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.2841495000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 168.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 66993,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 66993,
+    "cache_read_input_tokens": 529299,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3060,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3060,
+      "cache_read_input_tokens": 66934,
+      "input_tokens": 2,
+      "output_tokens": 3355,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13978,
+    "output_tokens_details": {
+     "thinking_tokens": 9451
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b48d6c94cc5c8abba44c6eeee6b844a8a22f2bd0",
+ "cost_usd": 1.28415,
+ "dedupe_key": "TauCetiProject/TauCeti|7716|cead8dd51b2be1ca271d8488877b2243da8f9364|generality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "5ecc6ec1df7506181ea0c4a555e845bd10fc9a010e87d6b3046a2517f8c3cd79",
+ "diff_sha256": "5ecc6ec1df7506181ea0c4a555e845bd10fc9a010e87d6b3046a2517f8c3cd79",
+ "duration_s": 168.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`structure IsNondegenerateCriticalPoint` = contDiffAt + fderiv_eq_zero + isInvertible (Morse/Basic.lean:124-130); `ContDiffAt.isCompl_unstableLinearSubspace_stableLinearSubspace (hf) (hker)` at SpectralSplitting.lean:192 and `ContDiffAt.finrank_stableLinearSubspace_add_morseIndex (hf) (hker)` at :201 are the more general nearby statements.",
+   "file": "TauCeti/Analysis/Calculus/Morse/SpectralSplitting.lean",
+   "fix": "State them as `ContDiffAt.stableProjection (hf : ContDiffAt \u211d 2 f x) (hker : LinearMap.ker (hessianOperator f x).toLinearMap = \u22a5) : E \u2192L[\u211d] E` plus the corresponding lemmas, and let Morse-level consumers pass `LinearMap.ker_eq_bot.2 h.isInvertible_hessianOperator.injective` (as `IsNondegenerateCriticalPoint.isCompl_unstableLinearSubspace_stableLinearSubspace` :217 already does).",
+   "issue": "`IsNondegenerateCriticalPoint.stableProjection` and its API (`range_stableProjection` :243, `ker_stableProjection` :250, `isIdempotentElem_stableProjection` :256, `stableProjection_apply_of_mem` :263, `stableProjection_apply_of_mem_unstable` :271, `commute_neg_hessianOperator_stableProjection` :279) assume a nondegenerate critical point, but every proof uses only `h.contDiffAt` and Hessian injectivity; the `fderiv_eq_zero` field is visibly unused. The file's neighbours state the same content one level lower.",
+   "line": 233
+  },
+  {
+   "evidence": "Proof at ExponentialDichotomy.lean:95-153 only uses `P.le_opNorm`, `(id - P).le_opNorm`, membership of `P v` in `range P` and of `v - P v` in `ker P`; LyapunovPerron/Basic.lean:112 `variable {X : Type*} [NormedAddCommGroup X] [NormedSpace \u211d X]` with the identical `hs`/`hu` shapes at :128-130.",
+   "file": "TauCeti/Analysis/Calculus/Morse/ExponentialDichotomy.lean",
+   "fix": "Prove the conversion once in the `ContinuousLinearMap` namespace over a general real Banach `X` (where `hs`/`hu` are already introduced, LyapunovPerron/Basic.lean:126-130), then obtain the Morse version by applying it to `exists_linearized_flow_exponential_bounds`. The unstable counterpart announced in the PR description then reuses it instead of duplicating the same estimate.",
+   "issue": "`exists_stableProjection_exponential_bounds` proves a special case of a general fact: if `P` is idempotent with the exponential bounds holding on `range P` (forward) and `ker P` (backward), then the projection form holds with `K = \u2016P\u2016 + \u20161 - P\u2016 + 1`. The proof body uses nothing about Hessians or inner products beyond `range_stableProjection`/`ker_stableProjection`; it also inherits the unused criticality hypothesis of finding 1.",
+   "line": 86
+  },
+  {
+   "evidence": "`ContinuousLinearMap.lipschitzWith_localStableGraphMap` has constant `2 * K * (\u03b5 * 2) / \u03b1 * (K / (1 - 2 * K * (\u03b5 * 2) / \u03b1))` (LyapunovPerron/Local.lean:130-134), which tends to 0 with `\u03b5`; `ContDiffAt.exists_lipschitzOnWith_negativeGradientRemainder (epsilon : \u211d\u22650) (hepsilon : 0 < epsilon)` (Morse/Linearization.lean:242-245) supplies every positive `\u03b5`.",
+   "file": "TauCeti/Analysis/Calculus/Morse/LocalStable.lean",
+   "fix": "Strengthen to `\u2200 C : \u211d\u22650, 0 < C \u2192 \u2203 r > 0, \u2203 rho > 0, \u2203 g, LipschitzWith C g \u2227 \u2026`, choosing `epsilon \u2264 min (alpha / (8 * K)) (C * alpha / (16 * K ^ 2))` so that the constant of `lipschitzWith_localStableGraphMap` is at most `C`; `exists_lipschitzOnWith_negativeGradientRemainder` accepts any positive `epsilon`.",
+   "issue": "`exists_localStableSet_eq_lipschitzGraph` existentially quantifies the Lipschitz constant `C` after hard-coding `epsilon := alpha / (8 * K)` (:79), so it yields one unquantified constant. The standard Lipschitz local stable-manifold statement gives an *arbitrarily small* constant, and that is exactly what the next step named in the module docstring (differentiability with derivative zero at the origin / tangency to the stable subspace) requires; as stated the theorem cannot supply it and the construction would have to be redone.",
+   "line": 69
+  }
+ ],
+ "head_sha": "cead8dd51b2be1ca271d8488877b2243da8f9364",
+ "merge_base_sha": "b4cdd495fc14afcc7ff3551bea9359d9af3c06fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7716,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5a3c6bd19777ad69dae78386e3a08a40b0385df51e28597811ad3ffb39edd620",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T085657Z-7716-generality-6aa3c6",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T08:56:57Z",
+ "submitted_by": "kim-em",
+ "summary": "The new stable-projection API and its exponential-bound repackaging carry a criticality hypothesis they never use and are proved at the Morse level although the arguments are purely linear/Banach; the headline theorem fixes one Lipschitz constant where the underlying API readily gives an arbitrarily small one, which is the form the stated next step (tangency/differentiability) needs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Morse/LocalStable.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Morse/ExponentialDichotomy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/ODE/LyapunovPerron/Local.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Morse/SpectralSplitting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/InnerProductSpace/Spectrum.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/ODE/ExponentialDichotomy.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/ODE/ExponentialDichotomy.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/ODE/ExponentialDichotomy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/ODE/LyapunovPerron/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "29f05c11ef2384324ad1dd4035b5a5384a7bc2387f1f54e88a4edff51cfcca7c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 66993,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 66993,
+  "cache_read_input_tokens": 529299,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3060,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3060,
+    "cache_read_input_tokens": 66934,
+    "input_tokens": 2,
+    "output_tokens": 3355,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13978,
+  "output_tokens_details": {
+   "thinking_tokens": 9451
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

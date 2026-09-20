@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.0754465,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 148.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 63326,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 63326,
+    "cache_read_input_tokens": 228503,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1994,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1994,
+      "cache_read_input_tokens": 64333,
+      "input_tokens": 2,
+      "output_tokens": 4421,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13115,
+    "output_tokens_details": {
+     "thinking_tokens": 9153
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b48d6c94cc5c8abba44c6eeee6b844a8a22f2bd0",
+ "cost_usd": 1.075446,
+ "dedupe_key": "TauCetiProject/TauCeti|7716|cead8dd51b2be1ca271d8488877b2243da8f9364|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "5ecc6ec1df7506181ea0c4a555e845bd10fc9a010e87d6b3046a2517f8c3cd79",
+ "diff_sha256": "5ecc6ec1df7506181ea0c4a555e845bd10fc9a010e87d6b3046a2517f8c3cd79",
+ "duration_s": 148.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Topology/Algebra/Module/Complement.lean:241 `projectionL_apply_mem`, :282 `projectionL_eq_self_sub_projectionL`, :249 `range_projectionL`; the four workaround sites cited above.",
+   "file": "TauCeti/Analysis/Calculus/Morse/SpectralSplitting.lean",
+   "fix": "Add, next to the existing lemmas: `stableProjection_apply_mem : h.stableProjection v \u2208 h.contDiffAt.stableLinearSubspace`; `@[simp] stableProjection_stableProjection : h.stableProjection (h.stableProjection v) = h.stableProjection v`; `sub_stableProjection_mem_unstableLinearSubspace : v - h.stableProjection v \u2208 h.contDiffAt.unstableLinearSubspace`; and `coe_range_stableProjection : Set.range h.stableProjection = (h.contDiffAt.stableLinearSubspace : Set E)`. Each is one line off Mathlib's `Submodule.projectionL_apply_mem`, `isIdempotentElem_projectionL`, `projectionL_eq_self_sub_projectionL`, `range_projectionL`. Then rewrite the four call sites to use them instead of unfolding.",
+   "issue": "The characteristic API for `stableProjection` is incomplete: it exposes only `range`, `ker`, `IsIdempotentElem`, and the two one-directional `apply_of_mem` lemmas, with no applied forms. This PR's own consumers therefore unfold it four times: ExponentialDichotomy.lean:111-113 proves `P v \u2208 stableLinearSubspace` via `rw [\u2190 h.range_stableProjection]; exact \u27e8v, rfl\u27e9`; :130-132 proves `P (P v) = P v` via `rw [\u2190 mul_apply_eq_comp, h.isIdempotentElem_stableProjection]`; :133-136 proves `v - P v \u2208 unstableLinearSubspace` via `rw [\u2190 h.ker_stableProjection, LinearMap.mem_ker, map_sub]`; LocalStable.lean:129-132 gets `Set.range h.stableProjection = (stableLinearSubspace : Set E)` by falling back on `rfl` across the SetLike coercion.",
+   "line": 233
+  },
+  {
+   "evidence": "mathlib/Mathlib/Topology/Algebra/Module/Complement.lean:253 `projectionL_apply_eq_zero_iff`, :291 `projectionL_eq_self_iff`; the PR's versions at SpectralSplitting.lean:263 and :271 are one-directional.",
+   "file": "TauCeti/Analysis/Calculus/Morse/SpectralSplitting.lean",
+   "fix": "State them as iffs \u2014 `stableProjection_apply_eq_zero_iff : h.stableProjection v = 0 \u2194 v \u2208 h.contDiffAt.unstableLinearSubspace` and `stableProjection_apply_eq_self_iff : h.stableProjection v = v \u2194 v \u2208 h.contDiffAt.stableLinearSubspace` \u2014 keeping the current `@[simp]` one-way forms as `alias`-free corollaries if wanted.",
+   "issue": "`stableProjection_apply_of_mem` and `stableProjection_apply_of_mem_unstable` export only the forward direction of characterizations Mathlib states as iffs, so the elimination direction (`P v = 0 \u2192 v \u2208 unstableLinearSubspace`, `P v = v \u2192 v \u2208 stableLinearSubspace`) is unavailable; ExponentialDichotomy.lean:133-136 needs exactly the missing direction and routes through `ker_stableProjection` and `LinearMap.mem_ker` instead.",
+   "line": 263
+  },
+  {
+   "evidence": "LocalStable.lean:69 `\u2203 (g : E \u2192 E) (C : \u211d\u22650)`; LocalStable.lean:79 `let epsilon : \u211d\u22650 := alpha / (8 * K)`; TauCeti/Analysis/Calculus/Morse/Linearization.lean:242 `exists_lipschitzOnWith_negativeGradientRemainder (epsilon : \u211d\u22650) (hepsilon : 0 < epsilon)`; TauCeti/Analysis/ODE/LyapunovPerron/Local.lean:130-134 `lipschitzWith_localStableGraphMap` with constant `2 * K * (\u03b5 * 2) / \u03b1 * (K / (1 - 2 * K * (\u03b5 * 2) / \u03b1))`.",
+   "file": "TauCeti/Analysis/Calculus/Morse/LocalStable.lean",
+   "fix": "State the theorem as `\u2200 C : \u211d\u22650, 0 < C \u2192 \u2203 r > 0, \u2203 rho > 0, \u2203 g : E \u2192 E, LipschitzWith C g \u2227 ...`, choosing `epsilon` small enough that `2*K*(epsilon*2)/alpha * (K/(1 - 2*K*(epsilon*2)/alpha)) \u2264 C`. `K` and `alpha` are already fixed before `epsilon` is picked (line 78), so this only replaces the arbitrary `alpha / (8 * K)` by an `epsilon` depending on the target `C`.",
+   "issue": "The main theorem quantifies the Lipschitz constant existentially (`\u2203 (g : E \u2192 E) (C : \u211d\u22650), LipschitzWith C g \u2227 ...`) with no bound on `C`, so the exposed interface carries no cone information. The proof hardcodes `epsilon := alpha / (8 * K)` (line 79) although `ContDiffAt.exists_lipschitzOnWith_negativeGradientRemainder` accepts any positive `epsilon` and `lipschitzWith_localStableGraphMap` yields the explicit constant `2*K*(\u03b5*2)/\u03b1 * (K/(1 - 2*K*(\u03b5*2)/\u03b1))`, which tends to `0` with `\u03b5`. A consumer therefore cannot derive tangency of the graph to the stable subspace and must redo the whole construction \u2014 and tangency/differentiability at the origin is precisely the next roadmap step the PR description names.",
+   "line": 69
+  }
+ ],
+ "head_sha": "cead8dd51b2be1ca271d8488877b2243da8f9364",
+ "merge_base_sha": "b4cdd495fc14afcc7ff3551bea9359d9af3c06fc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7716,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e460c6736ec869ae9a9bce88cbedcd89a64ba8f5d32338909d0da03ba33223a8",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T085428Z-7716-api-design-94b639",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T08:54:28Z",
+ "submitted_by": "kim-em",
+ "summary": "The `stableProjection` API stops short of the applied forms every consumer needs \u2014 this PR's own two downstream files unfold it by hand in four places \u2014 and the headline theorem existentially quantifies the Lipschitz constant, discarding the smallness that the roadmap's next step (tangency/differentiability at the origin) requires.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Morse/LocalStable.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Morse/SpectralSplitting.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/ODE/LyapunovPerron/Local.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Morse/ExponentialDichotomy.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/InnerProductSpace/Spectrum.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Morse/HessianFlow.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "54a1ed3e3f16df8174bd5c70393e8937ac4bb11b28134c411f0afdd51a78994b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 63326,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 63326,
+  "cache_read_input_tokens": 228503,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1994,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1994,
+    "cache_read_input_tokens": 64333,
+    "input_tokens": 2,
+    "output_tokens": 4421,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13115,
+  "output_tokens_details": {
+   "thinking_tokens": 9153
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
