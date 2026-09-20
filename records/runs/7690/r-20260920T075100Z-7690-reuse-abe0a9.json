@@ -1,0 +1,213 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3607895,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 148.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 79517,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 79517,
+    "cache_read_input_tokens": 496689,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1185,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1185,
+      "cache_read_input_tokens": 81333,
+      "input_tokens": 2,
+      "output_tokens": 1983,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12687,
+    "output_tokens_details": {
+     "thinking_tokens": 8427
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b456d14ab864d2547d62e3ed15afd58e7e0724b7",
+ "cost_usd": 1.36079,
+ "dedupe_key": "TauCetiProject/TauCeti|7690|a7346813d5d13f9a4462034b97dc06af52cf4465|reuse|claude-opus-5|7b72cafe03b2af65|production|3",
+ "diff_blob": "8a2e20971febcba52db1dfc8184b115017cafbdc8cfe0a0c83192af6c06f544c",
+ "diff_sha256": "8a2e20971febcba52db1dfc8184b115017cafbdc8cfe0a0c83192af6c06f544c",
+ "duration_s": 148.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "TauCeti/Algebra/Lie/UniversalEnveloping/PBW/Basic.lean:77-84 `def pbwFiltration (k : \u2115) : Submodule R U := TauCeti.Algebra.wordFiltration (\u03b9 R).toLinearMap k` and `theorem pbwFiltration_def ... := (rfl)`; Functoriality.lean:109 `(map R f).toLinearMap.restrict fun _ hx => map_mem_pbwFiltration R f hx` vs Functoriality.lean:245 `(map R f).toLinearMap.restrict fun x hx => ...` (the restrict proof is a Prop, so the two terms are defeq).",
+   "file": "TauCeti/Algebra/Lie/UniversalEnveloping/PBW/Functoriality.lean",
+   "fix": "Delete the three private declarations; in `mapGradedPiece` pass `mapFiltration R f k` to `Submodule.mapQ` (its type `\u21a5(pbwFiltration R L k) \u2192\u2097[R] \u21a5(pbwFiltration R M k)` unifies with `\u21a5(wordFiltration \u03b9L k) \u2192\u2097[R] \u21a5(wordFiltration \u03b9M k)` by unfolding `pbwFiltration`; add a type ascription if elaboration needs a nudge), and replace `mapWordFiltration_id`/`mapWordFiltration_comp` in the proofs of `mapGradedPiece_id` (306) and `mapGradedPiece_comp` (315) by `mapFiltration_id`/`mapFiltration_comp`.",
+   "issue": "`mapWordFiltration` (242), `mapWordFiltration_id` (251) and `mapWordFiltration_comp` (259) duplicate the public `mapFiltration` (107), `mapFiltration_id` (118) and `mapFiltration_comp` (128) in the same file: `pbwFiltration R L k` is by definition `wordFiltration (\u03b9 R).toLinearMap k`, and both defs are literally `(map R f).toLinearMap.restrict _`.",
+   "line": "242"
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/DirectSum/Ring.lean:560 `theorem toSemiring_of (f : \u2200 i, A i \u2192+ R) (hone hmul) (i : \u03b9) (x : A i) : toSemiring f hone hmul (of _ i x) = f _ x`; mathlib/Mathlib/Algebra/DirectSum/Algebra.lean:120-121 `toAlgebra` is built as `{ toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with toFun := toSemiring ... }`.",
+   "file": "TauCeti/Algebra/Lie/UniversalEnveloping/PBW/Functoriality.lean",
+   "fix": "Prove it from `DirectSum.toSemiring_of ... k x` (followed by `DirectSum.lof_eq_of` to turn `lof` into `of`) and drop the `change`/comment.",
+   "issue": "`mapAssociatedGraded_of` re-derives the `of`-computation of `DirectSum.toAlgebra` by `change`-ing to `DirectSum.toAddMonoid` and applying `toAddMonoid_of`; the comment at 366-367 claiming no computation lemma exists is wrong \u2014 `DirectSum.toSemiring_of` is exactly that lemma, and `toAlgebra`'s `toFun` is `toSemiring (fun i => (f i).toAddMonoidHom) hone hmul`.",
+   "line": "363"
+  }
+ ],
+ "head_sha": "a7346813d5d13f9a4462034b97dc06af52cf4465",
+ "merge_base_sha": "59adcd66073a31b6449efa76b85501dc6e8bc137",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7690,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "1899285b468cc1f9daaf748884eb52fd68905675234ff70348295e49ada09540",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 3,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T075100Z-7690-reuse-abe0a9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T07:51:00Z",
+ "submitted_by": "kim-em",
+ "summary": "The new private `mapWordFiltration` and its two lemmas are the public `mapFiltration`, `mapFiltration_id`, `mapFiltration_comp` from the same file up to unfolding `pbwFiltration` (whose defining equation is `rfl`). Separately, `mapAssociatedGraded_of` re-derives Mathlib's `DirectSum.toSemiring_of`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/PBW/Functoriality.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/PBW/AssociatedGraded.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/WordFiltration",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/PBW/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/WordFiltration/AssociatedGraded.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/DirectSum",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/PBW.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/DirectSum",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Submodule/LinearMap.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/PBW/Homogeneous.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/SymmetricAlgebra/Functoriality.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b619e1d6472e09e32345c2e3fee8bf0a3f3fbace7a793bccc647b63d8f5a5169",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79517,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 79517,
+  "cache_read_input_tokens": 496689,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1185,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1185,
+    "cache_read_input_tokens": 81333,
+    "input_tokens": 2,
+    "output_tokens": 1983,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12687,
+  "output_tokens_details": {
+   "thinking_tokens": 8427
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}
