@@ -1,0 +1,212 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4526215,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 173.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 79763,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 79763,
+    "cache_read_input_tokens": 547383,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2373,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2373,
+      "cache_read_input_tokens": 80391,
+      "input_tokens": 2,
+      "output_tokens": 2213,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15248,
+    "output_tokens_details": {
+     "thinking_tokens": 11060
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ea4b044f9d4e764d3bf502f1a6c15f8776e9240f",
+ "cost_usd": 1.452622,
+ "dedupe_key": "TauCetiProject/TauCeti|7779|b42fb39a01b42e29f5beaafad9669b448bb04c5d|naming|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "b27cfb6c625cd2e31a99edc4bf9272fd97dd654eee5a340a0ffee5c0db66ff05",
+ "diff_sha256": "b27cfb6c625cd2e31a99edc4bf9272fd97dd654eee5a340a0ffee5c0db66ff05",
+ "duration_s": 173.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/MeasureTheory/Function/FactorsThrough.lean:77 `theorem _root_.Measurable.exists_eq_measurable_comp ... : \u2203 h : Y \u2192 Z, Measurable h \u2227 g = h \u2218 f` \u2014 used at CountablyGenerated.lean:158. Repo precedent for the pattern: TauCeti/MeasureTheory/Measure/FiniteOrder.lean:73 `theorem _root_.Measurable.measure_of_Ici_of_finite`.",
+   "file": "TauCeti/MeasureTheory/MeasurableSpace/CountablyGenerated.lean",
+   "fix": "Rename to `_root_.Measurable.exists_eq_measurable_comp_prodMap` and `_root_.Measurable.exists_eq_measurable_comp_prodMap_self`; the call site then reads `W.measurable.exists_eq_measurable_comp_prodMap_self`.",
+   "issue": "`exists_measurable_comp_prodMap` (and `exists_measurable_comp_prodMap_self`, line 164) take `hf : Measurable f` as first explicit argument but sit in `TauCeti.MeasureTheory`, so no dot notation; they also drop the `eq` that their equational conclusion `f = g \u2218 Prod.map q r` carries, unlike the Mathlib lemma they close with.",
+   "line": 107
+  },
+  {
+   "evidence": "mathlib/Mathlib/Topology/Bases.lean:1025 `exists_countable_of_generateFrom ... : \u2203 s \u2286 t, s.Countable \u2227 ts = generateFrom s`; namespace precedent mathlib/Mathlib/MeasureTheory/Measure/Regular.lean:385 `theorem _root_.MeasurableSet.exists_isOpen_sdiff_lt` declared inside `namespace MeasureTheory`.",
+   "file": "TauCeti/MeasureTheory/MeasurableSpace/CountablyGenerated.lean",
+   "fix": "Rename to `_root_.MeasurableSet.exists_countable_subset_generateFrom`, so the statement is invoked as `hs.exists_countable_subset_generateFrom` and the subject `s` is explicit.",
+   "issue": "`exists_countable_subset_generateFrom` names neither its subject nor its conclusion (`MeasurableSet[generateFrom D] s`), and reads like Mathlib's `exists_countable_of_generateFrom`, which instead concludes that the generated structure itself is unchanged. Its first explicit argument is the Mathlib hypothesis `hs : MeasurableSet[generateFrom C] s`.",
+   "line": 63
+  },
+  {
+   "evidence": "code/TauCeti/MeasureTheory/OptimalTransport/Gluing.lean:202,224,337,344 use `_of_standardBorel` for the hypothesis; the new statement's conclusion is `\u2203 (q : \u03a9 \u2192 \u2115 \u2192 Bool) (hq) (V : Graphon (\u2115 \u2192 Bool) (\u03bc.map q)), V.comap q hq \u03bc = W`; mathlib/Mathlib/MeasureTheory/MeasurableSpace/CountablyGenerated.lean:409 `def mapNatBool`.",
+   "file": "TauCeti/Combinatorics/DenseGraphLimits/Graphon/StandardBorelModel.lean",
+   "fix": "Name it after the carrier in the conclusion, e.g. `Graphon.exists_comap_natBool`, matching Mathlib's `MeasurableSpace.mapNatBool` terminology for the Cantor space.",
+   "issue": "`Graphon.exists_comap_standardBorel` uses `standardBorel` as a bare conclusion suffix, while everywhere else in the repo that token marks a standard-Borel *hypothesis* (`exists_glue_of_standardBorel_right`, `exists_comp_of_standardBorel_left`, and the very theorem this PR deletes, `..._cutDist_eq_zero_of_standardBorel`). The statement names no `StandardBorelSpace`; the carrier is literally `\u2115 \u2192 Bool`.",
+   "line": 58
+  }
+ ],
+ "head_sha": "b42fb39a01b42e29f5beaafad9669b448bb04c5d",
+ "merge_base_sha": "ea4b044f9d4e764d3bf502f1a6c15f8776e9240f",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7779,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "487cfa437d93e349604ee0eb74a2499f5d76d458798d06322793f18d30b43d1c",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T170235Z-7779-naming-67fa50",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T17:02:35Z",
+ "submitted_by": "kim-em",
+ "summary": "Names are mostly descriptive, but the two factorization lemmas and the countable-subfamily lemma sit in the wrong namespace (their first explicit argument is a Mathlib `Measurable`/`MeasurableSet` hypothesis, and Mathlib's own analogue uses dot notation), and `exists_comap_standardBorel` uses a `standardBorel` suffix that clashes with the repo's established `_of_standardBorel` = hypothesis convention.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/MeasurableSpace/CountablyGenerated.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/DenseGraphLimits/Graphon/StandardBorelModel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Bases.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/MeasurableSpace/CountablyGenerated.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/DenseGraphLimits/CutMetric/UnitIntervalModel.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/DenseGraphLimits/Graphon/Pullback.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Measure/UnitIntervalMap.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0726b7473124f26e5e88ddb621707b039d07b7d114e9603c5b5d3b94b85d46d9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79763,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 79763,
+  "cache_read_input_tokens": 547383,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2373,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2373,
+    "cache_read_input_tokens": 80391,
+    "input_tokens": 2,
+    "output_tokens": 2213,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15248,
+  "output_tokens_details": {
+   "thinking_tokens": 11060
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
