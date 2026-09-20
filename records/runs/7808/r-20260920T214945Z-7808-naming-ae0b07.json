@@ -1,0 +1,185 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.891055,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 97.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 52555,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 52555,
+    "cache_read_input_tokens": 293700,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2034,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2034,
+      "cache_read_input_tokens": 53522,
+      "input_tokens": 2,
+      "output_tokens": 1360,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8743,
+    "output_tokens_details": {
+     "thinking_tokens": 5491
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b016f5097a7790b8683a552051b40f8fb36b78cc",
+ "cost_usd": 0.891055,
+ "dedupe_key": "TauCetiProject/TauCeti|7808|223d57c08fe84575b3deb6272d0d90af819b317a|naming|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "b6ec54c6f25f4ce3cc3f549429faf0a73ceae7610b0f42ff7cff3f55384d2ed8",
+ "diff_sha256": "b6ec54c6f25f4ce3cc3f549429faf0a73ceae7610b0f42ff7cff3f55384d2ed8",
+ "duration_s": 97.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 59 states the RHS with `tangentCoordChange I \u03b1 \u03b2 x`; lines 71-73 state it with `fderivWithin \u211d (extChartAt I \u03b2 \u2218 (extChartAt I \u03b1).symm) (Set.range I)`. Mathlib records the derivative form in the name, e.g. `hasFDerivWithinAt_tangentCoordChange` (mathlib/Mathlib/Geometry/Manifold/VectorBundle/Tangent.lean:162).",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/VolumeDensity/ChangeOfCoordinates.lean",
+   "fix": "Record the differing form in the name, e.g. `chartVolumeDensity_changeChart_fderivWithin`, keeping `chartVolumeDensity_changeChart` for the `tangentCoordChange` form.",
+   "issue": "`chartVolumeDensity_changeCoordinates` is synonymous with `chartVolumeDensity_changeChart` (line 55) \u2014 \"change of chart\" and \"change of coordinates\" name the same thing \u2014 yet the two lemmas differ precisely in the form of the Jacobian (`tangentCoordChange` vs `fderivWithin ... (Set.range I)`). Neither name says which form it gives.",
+   "line": "67"
+  },
+  {
+   "evidence": "Statement at lines 82-85 applies the density at a point; `grep 'theorem \\w*comp_symm'` in Mathlib gives only genuine compositions (`Topology/Homeomorph/Defs.lean:211 self_comp_symm (h : X \u2243\u209c Y) : h \u2218 h.symm = id`, `ModelTheory/Basic.lean:705 comp_symm ... (g.comp f).symm = f.symm.comp g.symm`). The naming conventions' symbol table lists `\u2218` \u21a6 `comp`.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/VolumeDensity/ChangeOfCoordinates.lean",
+   "fix": "Rename with `symm_apply` instead of `comp_symm`, e.g. `chartVolumeDensity_symm_apply_changeChart_fderivWithin` (matching whatever is chosen for line 67).",
+   "issue": "`chartVolumeDensity_comp_symm_changeCoordinates` uses `comp` for a statement containing no composition of the density: it is `chartVolumeDensity (I := I) \u03b1 ((extChartAt I \u03b1).symm y)`, a pointwise application, not `chartVolumeDensity \u03b1 \u2218 (extChartAt I \u03b1).symm`. The naming dictionary maps `comp` to `\u2218`, and every Mathlib `comp_symm` lemma really has `\u2218`/`.comp`.",
+   "line": "80"
+  }
+ ],
+ "head_sha": "223d57c08fe84575b3deb6272d0d90af819b317a",
+ "merge_base_sha": "b016f5097a7790b8683a552051b40f8fb36b78cc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7808,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c9fa644ab0d4ad73e9461216fb6ec63788124d45d49f9726c0008ce300fff237",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T214945Z-7808-naming-ae0b07",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T21:49:45Z",
+ "submitted_by": "kim-em",
+ "summary": "The tangent-bundle matrix lemma and `chartVolumeDensity_changeChart` are named correctly and consistently with the existing `chartVolumeDensity_changeFrame`, but the two `changeCoordinates` names are defective: one is an English synonym of `changeChart` with no indication of what differs, and the other advertises a composition that does not occur in the statement.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/VolumeDensity/ChangeOfCoordinates.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/VolumeDensity/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Tangent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Tangent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/VectorBundle/LocalFrame.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Riemannian/ChartGram.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1c2e7bb9e2b32f0f9f45a17c672bcc4a1865446133087b7c7ba68ab578b3688e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 52555,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 52555,
+  "cache_read_input_tokens": 293700,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2034,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2034,
+    "cache_read_input_tokens": 53522,
+    "input_tokens": 2,
+    "output_tokens": 1360,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8743,
+  "output_tokens_details": {
+   "thinking_tokens": 5491
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
