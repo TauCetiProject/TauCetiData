@@ -1,0 +1,235 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.914634,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 297.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 89256,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 89256,
+    "cache_read_input_tokens": 791418,
+    "inference_geo": "not_available",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5313,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5313,
+      "cache_read_input_tokens": 86944,
+      "input_tokens": 2,
+      "output_tokens": 1629,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25049,
+    "output_tokens_details": {
+     "thinking_tokens": 20016
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "19505765b08d734eabdceb08e149fb3fd3426fdb",
+ "cost_usd": 1.914634,
+ "dedupe_key": "TauCetiProject/TauCeti|7658|b0b0a91e1db3bbb9199ae6024fbd142fba5d847d|api-design|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "f3ea0fb6f9949ea801080e8a2c7172dc30bd1c653d45f7e1f747583e9afb79b2",
+ "diff_sha256": "f3ea0fb6f9949ea801080e8a2c7172dc30bd1c653d45f7e1f747583e9afb79b2",
+ "duration_s": 297.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep for `conjugate` in Passport/Basic.lean and Passport/Class.lean yields the five simp lemmas above; grep for `conjugate` in Passport/Normalizer.lean yields no hits.",
+   "file": "TauCeti/Combinatorics/PermutationTriple/Passport/Normalizer.lean",
+   "fix": "Add `@[simp] theorem isGeneratingTriple_conjugate_smul_iff (\u03c4 : Perm (Fin n)) : (P.conjugate \u03c4).IsGeneratingTriple (\u03c4 \u2022 t) \u2194 P.IsGeneratingTriple t`, provable from `PermutationTriple.monodromyGroup_smul`, `Subgroup.map_injective` and `cycleData_smul` (CycleData.lean:88, which gives `cycleData (\u03c4 \u2022 t) = cycleData t`), and `conjugate_lam0/lam1/laminf`.",
+   "issue": "`IsGeneratingTriple` has no lemma relating it to `PassportSpec.conjugate`, the operation on passports in scope. Basic.lean and Class.lean give every other notion one (`isAdmissible_conjugate_iff` Basic:226, `PassportSpec.hasPassport_conjugate_iff` Basic:242, `ConnectedIsoClass.hasPassport_conjugate_iff` Basic:310, `classSet_conjugate` Class:127, `passportSize_conjugate` Class:135, all `@[simp]`); since `P.G` is only a reference representative, a consumer holding a conjugated spec must unfold the predicate and redo the monodromy computation.",
+   "line": 68
+  },
+  {
+   "evidence": "Repo precedent for exactly this shape: `@[simp] theorem ConnectedIsoClass.mk_eq_mk_iff` (Passport/Basic.lean:88) and `@[simp] theorem IsoClass.mk_eq_mk_iff` (PermutationTriple/Basic.lean:310). RHS heads differ (`toClass` vs `mk`), so no loop with either.",
+   "file": "TauCeti/Combinatorics/PermutationTriple/Passport/Normalizer.lean",
+   "fix": "Tag `toClass_eq_toClass_iff` `@[simp]` (or, failing that, `toClass_eq_mk`, so that the tagged `ConnectedIsoClass.mk_eq_mk_iff` can fire).",
+   "issue": "`toClass_eq_toClass_iff` \u2014 the file's characteristic lemma (the class map is constant exactly on normalizer orbits) \u2014 carries no annotation, and `toClass_eq_mk` is not `@[simp]` either, so a goal `g.toClass hn hG = g'.toClass hn hG` is untouched by `simp`, while the strictly weaker consequence `toClass_smul` is tagged.",
+   "line": 214
+  }
+ ],
+ "head_sha": "b0b0a91e1db3bbb9199ae6024fbd142fba5d847d",
+ "merge_base_sha": "5225314d3ae7d6cc89f43e6b370a3e5a5d8f7d52",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7658,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1fd6be7d3bd053689f31f9674e89225fe96f20f863ac82d571683ee6ca33f140",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T022157Z-7658-api-design-30bef5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T02:21:57Z",
+ "submitted_by": "kim-em",
+ "summary": "Surface is minimal with bodies unexposed and no compatibility artifacts, but the new predicate has no interaction lemma with `PassportSpec.conjugate` \u2014 the one operation in scope that every other passport notion covers \u2014 and the characteristic class-equality lemma is missing the `@[simp]` its two repo analogues carry.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple/Passport/Normalizer.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple/Passport/Class.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple/Passport/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Subgroup",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/GroupTheory/GroupAction/Quotient.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Quot.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/GroupTheory/GroupAction/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/BelyiMaps/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/BelyiMaps/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/BelyiMaps/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/BelyiMaps/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple/CycleData.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6d1e75f4562601e5480300cbbd8038c6e0330d9082eda4affe7d61164c085faf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 89256,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 89256,
+  "cache_read_input_tokens": 791418,
+  "inference_geo": "not_available",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5313,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5313,
+    "cache_read_input_tokens": 86944,
+    "input_tokens": 2,
+    "output_tokens": 1629,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25049,
+  "output_tokens_details": {
+   "thinking_tokens": 20016
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

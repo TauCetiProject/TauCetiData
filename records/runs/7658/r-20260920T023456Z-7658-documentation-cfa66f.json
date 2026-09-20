@@ -1,0 +1,160 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.767293,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 81.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 51827,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 51827,
+    "cache_read_input_tokens": 141946,
+    "inference_geo": "not_available",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7528,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7528,
+      "cache_read_input_tokens": 47300,
+      "input_tokens": 2,
+      "output_tokens": 4710,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7120,
+    "output_tokens_details": {
+     "thinking_tokens": 4657
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "19505765b08d734eabdceb08e149fb3fd3426fdb",
+ "cost_usd": 0.767293,
+ "dedupe_key": "TauCetiProject/TauCeti|7658|b0b0a91e1db3bbb9199ae6024fbd142fba5d847d|documentation|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "f3ea0fb6f9949ea801080e8a2c7172dc30bd1c653d45f7e1f747583e9afb79b2",
+ "diff_sha256": "f3ea0fb6f9949ea801080e8a2c7172dc30bd1c653d45f7e1f747583e9afb79b2",
+ "duration_s": 81.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 251-253 and 278-280 take `hn hG` as hypotheses; `ConnectedTriple` is `{t // t.IsConnected}` and `PermutationTriple.isConnected_iff` requires `n \u2260 0` and transitivity (Passport/Basic.lean:50, Normalizer.lean:99-102).",
+   "file": "TauCeti/Combinatorics/PermutationTriple/Passport/Normalizer.lean",
+   "fix": "Qualify both places, e.g. \"for a passport of nonzero degree whose reference subgroup is transitive, the isomorphism classes ... are the orbits ...\", matching the phrasing already used at line 97.",
+   "issue": "Module docstring asserts without hypotheses that \"the isomorphism classes inside a passport are the orbits of the normalizer ... and the size of a passport is the number of those orbits\" (lines 21-24), repeated in the Main declarations bullets (lines 37-40). Both theorems require `hn : n \u2260 0` and `hG : IsPretransitive P.G (Fin n)`, and the claim is false without them: for `n = 0`, `P.G = \u22a5` the unique triple is a generating triple (one orbit) while `ConnectedTriple 0` is empty, so `passportSize = 0`.",
+   "line": 21
+  },
+  {
+   "evidence": "`abbrev GeneratingTriple (P : PassportSpec n) : Type := {t // P.IsGeneratingTriple t}` (line 150) carries no hypotheses; the orbit-class identification only appears in `toClass_eq_toClass_iff`, which takes `hn hG` (lines 214-216).",
+   "file": "TauCeti/Combinatorics/PermutationTriple/Passport/Normalizer.lean",
+   "fix": "Add the hypothesis clause to the two theorem/def docstrings; for `GeneratingTriple`, describe the type by its definition (triples whose monodromy subgroup is `P.G` with the cycle data of `P`) and state the orbit description as holding under the hypotheses.",
+   "issue": "Same overclaim in declaration docstrings: `generatingTripleOrbitsEquivClasses` (lines 248-250) says classes \"are exactly the orbits\", `passportSize_eq_card_generatingTripleOrbits` (lines 276-277) says \"The size of a passport is the number of orbits\", and the `GeneratingTriple` abbrev (lines 148-149) is described as \"the set on which the normalizer ... acts with the isomorphism classes of the passport as orbits\" \u2014 none mention the degree and transitivity hypotheses, and the abbrev itself is defined without any.",
+   "line": 248
+  }
+ ],
+ "head_sha": "b0b0a91e1db3bbb9199ae6024fbd142fba5d847d",
+ "merge_base_sha": "5225314d3ae7d6cc89f43e6b370a3e5a5d8f7d52",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7658,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "198d96ee14110c741d941e0e2b21a3434deab999e8005960b70f1e981d3d3e82",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "documentation",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T023456Z-7658-documentation-cfa66f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T02:34:56Z",
+ "submitted_by": "kim-em",
+ "summary": "Docstrings are otherwise accurate and process-free, but the module docstring and the three docstrings for the main correspondence state the orbits-equal-classes result unconditionally, omitting the `n \u2260 0` and transitivity hypotheses that the theorems actually carry and genuinely need.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple/Passport/Normalizer.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple/Passport/Class.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/PermutationTriple/Passport/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "38e49e08bebab116ae483fe053ae6ab32b58eb38e064227b83764134530d0e49",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 51827,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 51827,
+  "cache_read_input_tokens": 141946,
+  "inference_geo": "not_available",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7528,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7528,
+    "cache_read_input_tokens": 47300,
+    "input_tokens": 2,
+    "output_tokens": 4710,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7120,
+  "output_tokens_details": {
+   "thinking_tokens": 4657
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
