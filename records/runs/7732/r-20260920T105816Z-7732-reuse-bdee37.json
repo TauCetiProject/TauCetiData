@@ -1,0 +1,242 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2974585000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 250.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 113835,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 113835,
+    "cache_read_input_tokens": 1208447,
+    "inference_geo": "not_available",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3982,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3982,
+      "cache_read_input_tokens": 112854,
+      "input_tokens": 2,
+      "output_tokens": 4677,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22189,
+    "output_tokens_details": {
+     "thinking_tokens": 16431
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2677e5ff6b2d449ef68912ee5caa788d6d179c01",
+ "cost_usd": 2.297459,
+ "dedupe_key": "TauCetiProject/TauCeti|7732|8396c1e342f32e77d537ad5ac3ec05fd8065b956|reuse|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "1379bbd3684641dbe09ad61094f842b046b3a4a25169783134025c68bae3ec27",
+ "diff_sha256": "1379bbd3684641dbe09ad61094f842b046b3a4a25169783134025c68bae3ec27",
+ "duration_s": 250.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Unimodular.lean:172-181`: `def steinberg : d.AmbientGroup \u2192* d.AmbientGroup := d.1.1.geckFrobenius`, with `steinberg_eq_geckFrobenius` documented as \"deliberately not a `simp` lemma: `steinberg_geckRootSubgroup` and `coe_steinberg_apply` are the normal forms ... unfolding to `TauCeti.ValidLieTypeIndex.geckFrobenius` would keep them from firing\" \u2014 which is precisely what `frobenius_E8` now exports. `Unimodular.lean:202` provides `steinberg_geckRootSubgroup`.",
+   "file": "TauCeti/GroupTheory/SpecificGroups/CFSG/Assembly/GraphTwisted.lean",
+   "fix": "Make the branch `UnimodularExceptionalIndex.steinberg \u27e8\u27e8\u27e8_, hv\u27e9, by simp\u27e9, h\u27e9` (binding `h` as the `steinberg` branch at line 207 does), state `frobenius_E8`/`frobenius_F4`/`frobenius_G2` against it (still `rfl`), and close the three proof branches with `UnimodularExceptionalIndex.steinberg_geckRootSubgroup \u27e8\u27e8\u27e8_, hv\u27e9, by simp\u27e9, h\u27e9 (.inl i) u`, exactly as lines 537-541 do. This also matches how the E\u2086/E\u2087 branches already reuse `TypeE6LieIndex.steinberg`/`TypeE7LieIndex.steinberg` for the untwisted Frobenius.",
+   "issue": "The E\u2088/F\u2084/G\u2082 branch of `frobenius` is `ValidLieTypeIndex.geckFrobenius \u27e8_, hv\u27e9`, skipping the located family declaration `UnimodularExceptionalIndex.steinberg` (`Unimodular.lean:172`, `def steinberg := d.1.1.geckFrobenius`), which is the same map and is what `AmbientGroup`, `simpleRootSubgroup` and `steinberg` use on these same three constructors (lines 128, 167, 207). Same instance in the three branch equations `frobenius_E8`/`frobenius_F4`/`frobenius_G2` (383-386, 402-405, 421-424) and in the three proof lines 493-498, which call `geckFrobenius_geckRootSubgroup` instead of the family lemma `UnimodularExceptionalIndex.steinberg_geckRootSubgroup` (`Unimodular.lean:202`) that the sibling `steinberg_simpleRootSubgroup` proof already uses at lines 537-541. The result is a public branch equation that rewrites the uniform Frobenius out of the family's simp normal form.",
+   "line": "187"
+  }
+ ],
+ "head_sha": "8396c1e342f32e77d537ad5ac3ec05fd8065b956",
+ "merge_base_sha": "67eeb6f87bb8481843c8a0d7069558f137e4f39f",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7732,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fc585a60223af13c836da2b22c0a8c7cd2c2857aa1a73bef48649691331d45d2",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T105816Z-7732-reuse-bdee37",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T10:58:16Z",
+ "submitted_by": "kim-em",
+ "summary": "The assembly reuses the located family API on sixteen of seventeen branches without re-deriving anything. The exception is the E\u2088/F\u2084/G\u2082 branch of the new GraphTwistedIndex.frobenius, which bypasses UnimodularExceptionalIndex.steinberg and its pinned lemma in favour of the carrier-level geckFrobenius, creating a second route around the family layer that every sibling branch equation goes through.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Assembly/GraphTwisted.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Datum/Frobenius.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Datum/Assembly.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/GeckCarrier.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/GeckCarrier.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Unimodular.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/SuzukiRee.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/HalfFrobenius.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/TypeB/Two.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Tits",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Tits/Carrier.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/ReeG2/Carrier.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Suzuki/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Index.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/TypeD.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Frobenius.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/SpecificGroups/CFSG/Frobenius.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9f8e3ebf3c3678290f87adbefc8e0013298cc98ac8f4cabddc77f3e73e5625af",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 113835,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 113835,
+  "cache_read_input_tokens": 1208447,
+  "inference_geo": "not_available",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3982,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3982,
+    "cache_read_input_tokens": 112854,
+    "input_tokens": 2,
+    "output_tokens": 4677,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22189,
+  "output_tokens_details": {
+   "thinking_tokens": 16431
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
