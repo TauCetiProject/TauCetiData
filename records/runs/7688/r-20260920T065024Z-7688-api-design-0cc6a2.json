@@ -1,0 +1,230 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8544405,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 327.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 84093,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 84093,
+    "cache_read_input_tokens": 686781,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4687,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4687,
+      "cache_read_input_tokens": 82407,
+      "input_tokens": 2,
+      "output_tokens": 5219,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 26800,
+    "output_tokens_details": {
+     "thinking_tokens": 22450
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "59adcd66073a31b6449efa76b85501dc6e8bc137",
+ "cost_usd": 1.85444,
+ "dedupe_key": "TauCetiProject/TauCeti|7688|d5c3f701dfb8e4ff20611b6e1434b58a9bef02bc|api-design|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "196353fe2957ecaa0b52a95089f4bae0a101b056d3341660421f0e57aee24e85",
+ "diff_sha256": "196353fe2957ecaa0b52a95089f4bae0a101b056d3341660421f0e57aee24e85",
+ "duration_s": 327.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 231-243 declare only `mixed_obj`, `Faithful`, `Additive`, `Linear`; no lemma mentions `mixed.map`.",
+   "file": "TauCeti/Geometry/Hodge/Category.lean",
+   "fix": "Add `mixed_map_hom : HEq (mixed.map f) f` plus the `eqToHom`-conjugated `mixed_map`, mirroring lines 256-267.",
+   "issue": "`mixed` gets only `mixed_obj` (line 233); its action on morphisms is uncharacterized, unlike `rational` (`rational_map_hom`/`rational_map`, lines 256, 264) and `complex` (lines 293, 301). With the body unexposed, a consumer cannot state or prove anything about `mixed.map f`, so the mixed realization is unusable for transporting the existing `MixedHodgeStructureCat` kernel/strictness/subobject API (Mixed/Kernels.lean, Mixed/CoimageImage.lean) to this category.",
+   "line": 224
+  },
+  {
+   "evidence": "Line 227 `map f := f`; lines 236-237 give `Faithful` only; the repo already uses `Full`/`FullyFaithful` instances (Topology/Covering/Monodromy/Full.lean:42).",
+   "file": "TauCeti/Geometry/Hodge/Category.lean",
+   "fix": "Add the `(mixed (n := n)).Full` instance (`\u27e8fun f \u21a6 \u27e8f, rfl\u27e9\u27e9`), or better a `Functor.FullyFaithful` def as done for `fullyFaithfulForget` in TauCeti/Topology/Covering/Monodromy/Connected.lean:119.",
+   "issue": "`mixed` is fully faithful by construction (`map f := f`, line 227, since `Hom X Y` is reducibly `MixedHodgeStructure.Hom X.asMixed.hs Y.asMixed.hs`), but only `Faithful` is declared. Fullness is exactly what identifies subobjects/simple objects here with the mixed ones for the L1 semisimplicity target, and the unexposed body makes it unprovable downstream.",
+   "line": 236
+  },
+  {
+   "evidence": "TauCeti/Geometry/Hodge/Projection.lean:102 `HodgeStructureOn.IsMorphism hs hs (rationalMapToComplex h\u211a h\u2102 h\u211a h\u2102 (projection P W))`, and lines 120/136 state the semisimplicity-in-projector-form results in the same shape.",
+   "file": "TauCeti/Geometry/Hodge/Category.lean",
+   "fix": "Add `Hom.ofIsMorphism (f : X.ratCarrier \u2192\u2097[\u211a] Y.ratCarrier) (h : HodgeStructureOn.IsMorphism X.hs Y.hs (rationalMapToComplex \u2026 f)) : Hom X Y` with its `toRatLinearMap` simp lemma (or take that hypothesis in `mk`).",
+   "issue": "Introduction and elimination speak different languages: `Hom.mk` takes the elementwise hypothesis `\u2200 p x, x \u2208 X.hs.F p \u2192 rationalMapToComplex \u2026 f x \u2208 Y.hs.F p`, while `Hom.isMorphism` (line 167) returns `HodgeStructureOn.IsMorphism`, which is also the exact form every existing producer of rational Hodge morphisms yields. Building an object-level morphism from a Hodge projector therefore requires hand-converting `map_F_le` back to membership form.",
+   "line": 141
+  }
+ ],
+ "head_sha": "d5c3f701dfb8e4ff20611b6e1434b58a9bef02bc",
+ "merge_base_sha": "bbd0a35abb451fe01f5ee9faf15dcbbf212871bb",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7688,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "11d2809438e716b35b5223f95c80466556d77a88c48cd3bfdd1cdc888432b663",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260920T065024Z-7688-api-design-0cc6a2",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-20T06:50:24Z",
+ "submitted_by": "kim-em",
+ "summary": "The `mixed` realization has no characteristic lemma for its action on morphisms and no fullness instance, and since its body is unexposed downstream can supply neither. The morphism introduction `Hom.mk` is also phrased in a different vocabulary from both the elimination `Hom.isMorphism` and every existing producer in the repo.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge/Category.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge/Mixed/Category.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge/Mixed/Morphism.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge/Morphism.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge/Projection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge/Semisimple.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Hodge/Projection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/lakefile.toml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fed372d252db37a5c5ce53990ee108bc81de21a445dadb6df8371827b9dcd246",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 84093,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 84093,
+  "cache_read_input_tokens": 686781,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4687,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4687,
+    "cache_read_input_tokens": 82407,
+    "input_tokens": 2,
+    "output_tokens": 5219,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 26800,
+  "output_tokens_details": {
+   "thinking_tokens": 22450
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
