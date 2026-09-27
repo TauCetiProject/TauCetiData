@@ -1,0 +1,138 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.8698199999999998,
+   "model": "claude-opus-4-8",
+   "returncode": 0,
+   "secs": 113.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 48384,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 48384,
+    "cache_read_input_tokens": 354820,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3780,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3780,
+      "cache_read_input_tokens": 62031,
+      "input_tokens": 2,
+      "output_tokens": 1729,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8340,
+    "output_tokens_details": {
+     "thinking_tokens": 5565
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "cost_usd": 0.86982,
+ "dedupe_key": "TauCetiProject/TauCeti|9411|2bd1d95411b359abdc9d0f7558e2ba5a6fdabeb6|proof-quality|claude-opus-4-8|8e496a4454cfbac9|production|1",
+ "diff_blob": "28b71f7f0b2c36942b04eedf53c7d6a87ec61fb5e93bc1bff6737b5ae7411f17",
+ "diff_sha256": "28b71f7f0b2c36942b04eedf53c7d6a87ec61fb5e93bc1bff6737b5ae7411f17",
+ "duration_s": 113.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 125 `change x - 0 \u2208 P \u2194 x \u2208 P`; Mathlib has `PartialOrder.mkOfGroupCone_le_iff` (Mathlib/Algebra/Order/Group/Cone.lean:107) with `@[to_additive]`.",
+   "file": "TauCeti/Algebra/Order/Ring/Ordering/Extension.lean",
+   "fix": "Rewrite with the explicit lemma `PartialOrder.mkOfAddGroupCone_le_iff` (the `to_additive` of `mkOfGroupCone_le_iff`) then `sub_zero`, plus a `cone`-membership lemma; or add a comment stating why the defeq step is needed.",
+   "issue": "`nonneg_iff` proves `0 \u2264 x \u2194 x \u2208 P` via `change x - 0 \u2208 P \u2194 x \u2208 P`, collapsing two undocumented defeqs at once: `order P = .mkOfAddGroupCone (cone P)` and `x \u2208 cone P` \u2194 `x \u2208 P`. Brittle across renames/refactors of the cone construction.",
+   "line": "125"
+  },
+  {
+   "evidence": "Lines 50 (`change (a : L) = f y * f y`) and 56 (`rfl`) after `rw [hy2, f.commutes]` leaves `(\u2191a : L) = algebraMap P.field L a`.",
+   "file": "TauCeti/FieldTheory/RealClosure/RealClosure.lean",
+   "fix": "Replace the trailing `rfl` with the explicit `IntermediateField`/`algebraMap` coercion lemma (e.g. `IntermediateField.algebraMap_apply`/coe lemma), and document the `change`.",
+   "issue": "`isRealClosed` uses `change (a : L) = f y * f y` (undocumented) and closes at line 56 with a bare `rfl` relying on the coercion `\u2191a` being definitionally `algebraMap P.field L a`. Reliance on coercion-vs-algebraMap defeq is exactly the flagged pattern.",
+   "line": "50"
+  },
+  {
+   "evidence": "Line 55 `change y.val * y.val \u2208 P.nonneg`; carrier defined at line 52 as `P.nonneg.comap P.field.val.toRingHom`.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderedSubfield.lean",
+   "fix": "Use `Subsemiring.mem_comap` and a `map_mul`/coe lemma explicitly, or add a comment justifying the defeq step.",
+   "issue": "`preordering.mem_of_isSquare'` uses `change y.val * y.val \u2208 P.nonneg` with no comment, silently unfolding `x \u2208 comap P.field.val.toRingHom P.nonneg` plus `map_mul` on the coercion.",
+   "line": "55"
+  },
+  {
+   "evidence": "Line 121 passes `(QuadraticAlgebra.re\u2097 \u2026).toAddMonoidHom`; line 123 `change 0 \u2264 (\u2026 ).re`.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderExtension.lean",
+   "fix": "Rewrite via the applied-form lemma for `re\u2097` (e.g. `re\u2097_apply`) before the `simp only`, or add a comment explaining the `change`.",
+   "issue": "`quadratic_cone_proper` uses `change 0 \u2264 (algebraMap \u2026 b * y ^ 2).re` with no comment, relying on `(QuadraticAlgebra.re\u2097 \u2026).toAddMonoidHom` applied being defeq to `.re`.",
+   "line": "123"
+  }
+ ],
+ "head_sha": "2bd1d95411b359abdc9d0f7558e2ba5a6fdabeb6",
+ "merge_base_sha": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 9411,
+ "prices_sha": "9c4184d30902",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5ac217cd257103e2c208f1196cf253eb2ae1fa8a00c21d6790a83dec84db6bdf",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "eeed9637d7e2af319a04de8120b35f0c52318f0d",
+ "rubrics_version": "8e496a4454cfbac9",
+ "run_id": "r-20260927T100110Z-9411-proof-quality-f5ba1f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-27T10:01:10Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are mostly robust, but several use `change` (and a closing bare `rfl`) that silently collapse definitional equalities across cone wrappers, `comap`, and coercions without any comment justifying why an explicit rewrite is unavailable. Each is fragile under Mathlib refactors and should use an explicit lemma or carry a comment.",
+ "transcript_blob": "78d68f2fdc2b63fdcbf52b7d6589f4d70fdefebdac164927e9f8576340c46bd3",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 48384,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 48384,
+  "cache_read_input_tokens": 354820,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3780,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3780,
+    "cache_read_input_tokens": 62031,
+    "input_tokens": 2,
+    "output_tokens": 1729,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8340,
+  "output_tokens_details": {
+   "thinking_tokens": 5565
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

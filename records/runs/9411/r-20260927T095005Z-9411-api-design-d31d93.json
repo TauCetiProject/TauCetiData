@@ -1,0 +1,131 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.1251140000000002,
+   "model": "claude-opus-4-8",
+   "returncode": 0,
+   "secs": 184.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 52287,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 52287,
+    "cache_read_input_tokens": 547468,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7733,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7733,
+      "cache_read_input_tokens": 61981,
+      "input_tokens": 2,
+      "output_tokens": 1415,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13136,
+    "output_tokens_details": {
+     "thinking_tokens": 9586
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "cost_usd": 1.125114,
+ "dedupe_key": "TauCetiProject/TauCeti|9411|2bd1d95411b359abdc9d0f7558e2ba5a6fdabeb6|api-design|claude-opus-4-8|8e496a4454cfbac9|production|1",
+ "diff_blob": "28b71f7f0b2c36942b04eedf53c7d6a87ec61fb5e93bc1bff6737b5ae7411f17",
+ "diff_sha256": "28b71f7f0b2c36942b04eedf53c7d6a87ec61fb5e93bc1bff6737b5ae7411f17",
+ "duration_s": 184.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Only reference to adjoin/chainUnion outside their definitions is within exists_ordering (Extension.lean:91-98); no hit in TauCeti/FieldTheory/RealClosure/*.",
+   "file": "TauCeti/Algebra/Order/Ring/Ordering/Extension.lean",
+   "fix": "Mark all five `private` (weightedSquares_mul in OrderExtension is already private, matching this). Keep exists_ordering/cone/order/nonneg_iff/exists_linearOrder public.",
+   "issue": "adjoin (l.28), le_adjoin (l.53), mem_adjoin (l.57), chainUnion (l.62) and le_chainUnion (l.83) are pure implementation scaffolding for the Zorn argument in exists_ordering; grep shows no use outside this file. They are exposed public API.",
+   "line": "28"
+  },
+  {
+   "evidence": "grep: chainUnion/le_chainUnion referenced only at OrderedSubfield.lean:167 (exists_maximal).",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderedSubfield.lean",
+   "fix": "Mark both `private`.",
+   "issue": "OrderedSubfield.chainUnion (l.113) and le_chainUnion (l.159) are used only by exists_maximal (l.167); they are public exposed scaffolding.",
+   "line": "113"
+  },
+  {
+   "evidence": "extensionCone defined at OrderExtension.lean:41 under `@[expose] public section` (l.19); closure_induction on its membership at PolynomialCone.lean:30 etc., a module that imports OrderExtension, so the unfolding requires the exposed body.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderExtension.lean",
+   "fix": "Add an induction/eliminator principle, e.g. `@[elab_as_elim] theorem extensionCone_closure_induction` over weightedSquares generators (plus a `mem_extensionCone` intro), rewrite the closure_induction call sites to use it, and drop `@[expose]` on extensionCone so its body stays hidden.",
+   "issue": "extensionCone's body is exposed (`@[expose] public section`) purely so downstream modules can apply AddSubmonoid.closure_induction to `x \u2208 extensionCone f` (PolynomialCone.lean:30,71,86; OrderExtension.lean:45,47,66). Membership has no characteristic elimination lemma; the exposed defeq to AddSubmonoid.closure (weightedSquares f) stands in for it.",
+   "line": "41"
+  }
+ ],
+ "head_sha": "2bd1d95411b359abdc9d0f7558e2ba5a6fdabeb6",
+ "merge_base_sha": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "mode": "commit",
+ "model": "claude-opus-4-8",
+ "pr": 9411,
+ "prices_sha": "9c4184d30902",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5aca9d49a2db2c7ad54ea3758c70081ce8c6eaa6e4fc173c8f85d18197355dc2",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "eeed9637d7e2af319a04de8120b35f0c52318f0d",
+ "rubrics_version": "8e496a4454cfbac9",
+ "run_id": "r-20260927T095005Z-9411-api-design-d31d93",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-27T09:50:05Z",
+ "submitted_by": "kim-em",
+ "summary": "The public surface leaks Zorn-proof helpers that have no downstream use and should be private, and the extensionCone body is exposed only so downstream modules can run AddSubmonoid.closure_induction on its membership \u2014 a body exposed for want of an induction lemma.",
+ "transcript_blob": "53a3187875dfab92d466aa639288528068a971b1177b25886592e7e0df1afef2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 52287,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 52287,
+  "cache_read_input_tokens": 547468,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7733,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7733,
+    "cache_read_input_tokens": 61981,
+    "input_tokens": 2,
+    "output_tokens": 1415,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13136,
+  "output_tokens_details": {
+   "thinking_tokens": 9586
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
