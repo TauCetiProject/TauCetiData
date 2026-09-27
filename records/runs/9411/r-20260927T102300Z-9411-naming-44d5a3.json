@@ -1,0 +1,312 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7499540000000002,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 196.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 75951,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 75951,
+    "cache_read_input_tokens": 1775816,
+    "inference_geo": "not_available",
+    "input_tokens": 898,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 472,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 472,
+      "cache_read_input_tokens": 78480,
+      "input_tokens": 32,
+      "output_tokens": 5243,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15560,
+    "output_tokens_details": {
+     "thinking_tokens": 8298
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "cost_usd": 2.749954,
+ "dedupe_key": "TauCetiProject/TauCeti|9411|d7fb11c9b57fc11f77e886418e06f32a5314589b|naming|claude-fable-5-1|7b72cafe03b2af65|production|1",
+ "diff_blob": "dc5266c068383d60fe590b85dd68866e0621acfe3205c3033c56ef68927a45d0",
+ "diff_sha256": "dc5266c068383d60fe590b85dd68866e0621acfe3205c3033c56ef68927a45d0",
+ "duration_s": 196.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rg RealClosure mathlib/Mathlib` returns no hits, so this is not a Mathlib namespace; every other project-owned namespace in `TauCeti/FieldTheory` is nested under `TauCeti` (`Minpoly/IsIntegrallyClosedIn.lean:52`, `KummerExtension.lean:46`, `IntermediateField/Quadratic.lean:40`).",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderExtension.lean",
+   "fix": "Wrap each file in `namespace TauCeti` (i.e. `TauCeti.RealClosure`), matching the repo convention, e.g. `code/TauCeti/GroupTheory/TriangleGroup/Regular.lean:46-48` (`namespace TauCeti` then `namespace TriangleGroup`).",
+   "issue": "`namespace RealClosure` is a new top-level namespace holding Tau Ceti's own notions (`weightedSquares`, `extensionCone`, `OrderedSubfield`, all the `exists_*` theorems); none is dot notation on a Mathlib type. Same in OrderedSubfield.lean:20, PolynomialCone.lean:20, OddExtension.lean:26, Basic.lean:31.",
+   "line": 21
+  },
+  {
+   "evidence": "`roadmap/TauCetiRoadmap/RealAlgebraicGeometry/Suggested.lean:26` states the identical signature under `exists_realClosure`; README line 136: \"The checked target is `exists_realClosure`\".",
+   "file": "TauCeti/FieldTheory/RealClosure/Basic.lean",
+   "fix": "Rename to `exists_realClosure` (the roadmap target name); keep `exists_intermediateField` or rename it `exists_isRealClosed_intermediateField` so its conclusion is visible.",
+   "issue": "`exists_ordered_extension` understates the conclusion: the statement gives an algebraic, real closed, strictly ordered extension, not merely an ordered one, and the roadmap fixes the name of this exact statement as `exists_realClosure`.",
+   "line": 96
+  },
+  {
+   "evidence": "Mathlib names this conclusion `neg_one_notMem` (`Mathlib/Algebra/Order/Ring/Ordering/Defs.lean:82`, `RingPreordering.neg_one_notMem`) and the totality field `mem_or_neg_mem` (`HasMemOrNegMem`, used at Extension.lean:117); `rg '^(theorem|lemma) \\S*proper' mathlib/Mathlib/Algebra` has no such usage.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderExtension.lean",
+   "fix": "`neg_one_notMem_extensionCone_quadraticAlgebra`, `neg_one_notMem_extensionCone_adjoinRoot_of_odd`; rename the fields `neg_one_notMem` and `mem_or_neg_mem`.",
+   "issue": "`quadratic_cone_proper` and `odd_cone_proper` (OddExtension.lean:53) conclude `-1 \u2209 extensionCone \u2026`; `proper` is not Mathlib vocabulary for this, and the same holds for the structure field `OrderedSubfield.neg_one` (OrderedSubfield.lean:33) and `OrderedSubfield.total` (line 32).",
+   "line": 131
+  },
+  {
+   "evidence": "`Mathlib/Algebra/Order/Ring/Ordering/Defs.lean:76`: `protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x \u2208 P` (used by this PR at Extension.lean:47).",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderExtension.lean",
+   "fix": "Rename to `mul_self_mem_extensionCone`.",
+   "issue": "`square_mem_extensionCone` proves `x * x \u2208 extensionCone f`; Mathlib spells this `mul_self_mem`.",
+   "line": 69
+  },
+  {
+   "evidence": "The proof is literally `AddSubmonoid.subset_closure hx`; Mathlib's `AddSubmonoid.mem_closure` is the iff.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderExtension.lean",
+   "fix": "Rename to `subset_extensionCone` (or `mem_extensionCone_of_mem_weightedSquares`).",
+   "issue": "`mem_extensionCone` is a one-directional `x \u2208 weightedSquares f \u2192 x \u2208 extensionCone f`; in Mathlib `mem_foo` is the membership characterisation and the generator inclusion is `subset_closure`.",
+   "line": 52
+  },
+  {
+   "evidence": "Naming conventions: \"the name of theorem simply describes the conclusion\", hypotheses after `of_`; contrast `nonneg_of_mem_extensionCone` at OrderExtension.lean:94.",
+   "file": "TauCeti/FieldTheory/RealClosure/PolynomialCone.lean",
+   "fix": "`even_natDegree_and_leadingCoeff_nonneg_of_mem_extensionCone`, `eval_nonneg_of_mem_extensionCone`, `aeval_mem_extensionCone`, `map_nonneg_of_mem_extensionCone` (or similar conclusion-first names).",
+   "issue": "`extensionCone_degree`, `extensionCone_eval` (line 61), `extensionCone_map` (line 69), and `extensionCone_nonneg` (OrderExtension.lean:74) name the hypothesis, not the conclusion (`Even natDegree \u2227 0 \u2264 leadingCoeff`, `0 \u2264 eval x p`, `aeval x p \u2208 extensionCone`, `0 \u2264 g x`), while `nonneg_of_mem_extensionCone` in the same PR follows the convention.",
+   "line": 28
+  },
+  {
+   "evidence": "Naming conventions, \"Predicates as suffixes\": `IsClosed (Icc a b)` is `isClosed_Icc`; Extension.lean:126 already uses `isStrictOrderedRing` for the same conclusion.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderedSubfield.lean",
+   "fix": "Rename to `isStrictOrderedRing` and `mem_of_isMax`.",
+   "issue": "`OrderedSubfield.ordered` proves `IsStrictOrderedRing P.field`; the predicate should appear in the name, as the PR itself does for `RingPreordering.isStrictOrderedRing` (Extension.lean:126). Likewise `mem_of_maximal` (line 193) takes `IsMax P`.",
+   "line": 72
+  },
+  {
+   "evidence": "Mathlib precedent `exists_irreducible_factor` (`Mathlib/RingTheory/UniqueFactorizationDomain/Defs.lean:49`).",
+   "file": "TauCeti/FieldTheory/RealClosure/OddExtension.lean",
+   "fix": "Rename to `exists_irreducible_factor_of_odd_natDegree` (or `exists_odd_natDegree_irreducible_factor`).",
+   "issue": "`exists_odd_factor` reads as an odd polynomial factor; the conclusion is an irreducible factor of odd degree.",
+   "line": 34
+  }
+ ],
+ "head_sha": "d7fb11c9b57fc11f77e886418e06f32a5314589b",
+ "merge_base_sha": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 9411,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1119b7544f088b17a8391bd71b2a30241bd90c3623bbb85a9f5fa2b835a8f784",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260927T102300Z-9411-naming-44d5a3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-27T10:23:00Z",
+ "submitted_by": "kim-em",
+ "summary": "Project-owned notions (OrderedSubfield, extensionCone, weightedSquares) live in a top-level `RealClosure` namespace instead of under `TauCeti`, the headline theorem is named below its strength and differently from the roadmap target, and several lemmas use non-Mathlib terminology (`proper`, `square_mem`, `total`, `neg_one`) or name the hypothesis instead of the conclusion. The `RingPreordering.*` dot-notation lemmas are correctly placed.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Ordering/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Cone.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Ring/Semireal/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/FieldTheory/IsRealClosed/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/AGENTS.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/TriangleGroup/Regular.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Ordering/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Ordering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Cone.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 28,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b53793b9a15a712f973d6be377e9febd085761d281841cc8abda2b1e484a04a6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 75951,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 75951,
+  "cache_read_input_tokens": 1775816,
+  "inference_geo": "not_available",
+  "input_tokens": 898,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 472,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 472,
+    "cache_read_input_tokens": 78480,
+    "input_tokens": 32,
+    "output_tokens": 5243,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15560,
+  "output_tokens_details": {
+   "thinking_tokens": 8298
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
