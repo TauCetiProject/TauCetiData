@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0290955,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 144.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 67625,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 67625,
+    "cache_read_input_tokens": 222182,
+    "inference_geo": "not_available",
+    "input_tokens": 130,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2577,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2577,
+      "cache_read_input_tokens": 68049,
+      "input_tokens": 32,
+      "output_tokens": 3380,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12395,
+    "output_tokens_details": {
+     "thinking_tokens": 8187
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "cost_usd": 2.029095,
+ "dedupe_key": "TauCetiProject/TauCeti|9411|9ee35aaff7149ad979e016d31371a34e7c83f3cd|naming|claude-fable-5-1|7b72cafe03b2af65|production|2",
+ "diff_blob": "e525291f69360cabf2c37dcfe2dcee86f2554ab97e3dbd54c67f86fff3abddf4",
+ "diff_sha256": "e525291f69360cabf2c37dcfe2dcee86f2554ab97e3dbd54c67f86fff3abddf4",
+ "duration_s": 144.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Algebra/Group/Submonoid/Basic.lean:123 `subset_closure`, :126 `mem_closure_of_mem`, :162 `closure_induction` \u2014 lemmas about a set-valued def live in the parent namespace with the def name inline; TauCeti's `proCCompletion.mk_apply` precedent is for a Type-valued def, not a Subsemiring.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderExtension.lean",
+   "fix": "Use one scheme throughout, following `Submonoid.closure`: `mul_self_mem_extensionCone`, `map_nonneg_of_mem_extensionCone`, `even_natDegree_of_mem_extensionCone`, `leadingCoeff_nonneg_of_mem_extensionCone`, `eval_nonneg_of_mem_extensionCone`, `aeval_mem_extensionCone`, `extensionCone.exists_linearOrder` \u2192 `exists_linearOrder_of_neg_one_notMem_extensionCone`.",
+   "issue": "`extensionCone` is a `Subsemiring`-valued def, so `extensionCone.mul_self_mem f x` looks like dot notation but `(extensionCone f).mul_self_mem` does not resolve; the same file mixes this with the standard scheme (`subset_extensionCone`, `nonneg_mem_extensionCone`, `nonneg_of_mem_extensionCone`, `extensionCone_induction`, `lift_extensionCone`). Same fake-namespace form: `extensionCone.map_nonneg` (line 81), `extensionCone.exists_linearOrder` (line 104), `extensionCone.even_natDegree`, `extensionCone.leadingCoeff_nonneg`, `extensionCone.eval_nonneg`, `extensionCone.aeval_mem` (PolynomialCone.lean 55-78).",
+   "line": 72
+  },
+  {
+   "evidence": "Rubric: material goes in `TauCeti` unless it is dot notation on an existing Lean/Mathlib type; `extensionCone` is defined at OrderExtension.lean:43 inside `TauCeti.RealClosure` and appears in both statements.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderExtension.lean",
+   "fix": "Keep them in `TauCeti.RealClosure`, e.g. `neg_one_notMem_extensionCone_quadraticAlgebra` and `neg_one_notMem_extensionCone_adjoinRoot`. The `exists_linearOrder` pair may stay in the Mathlib namespaces since their statements use only Mathlib notions.",
+   "issue": "`_root_.QuadraticAlgebra.neg_one_notMem_extensionCone` and `_root_.AdjoinRoot.neg_one_notMem_extensionCone` (OddExtension.lean:99) state facts about the TauCeti-only `extensionCone` but are placed in Mathlib namespaces; neither is a dot-notation case (first explicit argument is `ha : 0 \u2264 a` resp. `p : K[X]`, not a `QuadraticAlgebra`/`AdjoinRoot`).",
+   "line": 129
+  },
+  {
+   "evidence": "Basic.lean:38, :63, :87 in the PR diff; rubric: consistency with adjacent declarations.",
+   "file": "TauCeti/FieldTheory/RealClosure/Basic.lean",
+   "fix": "Rename to `OrderedSubfield.isRealClosed_of_isMax`.",
+   "issue": "`OrderedSubfield.isRealClosed (P) (hP : IsMax P)` drops the `IsMax` hypothesis from its name while the adjacent `isSquare_of_isMax` (line 38) and `exists_root_of_isMax` (line 63) with the same hypothesis keep it; users see `P.isRealClosed` and expect it unconditional.",
+   "line": 87
+  },
+  {
+   "evidence": "OrderedSubfield.lean:106 `private def image`; rubric: a name must describe the conclusion, not the proof.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderedSubfield.lean",
+   "fix": "Name the conclusion, e.g. `exists_le_forall_apply_mem_field` or `exists_le_range_le_field`.",
+   "issue": "`OrderedSubfield.exists_image` is named after the `private def image` used in its proof, which consumers cannot see; the conclusion is `\u2203 Q, P \u2264 Q \u2227 \u2200 x, f x \u2208 Q.field`.",
+   "line": 163
+  }
+ ],
+ "head_sha": "9ee35aaff7149ad979e016d31371a34e7c83f3cd",
+ "merge_base_sha": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 9411,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "eaa071cb11d1d524b54cc6939658f893e65b3f0dc2ea88ce1b80cc677988187f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260927T110955Z-9411-naming-fc51b9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-27T11:09:55Z",
+ "submitted_by": "kim-em",
+ "summary": "Most renames from the prior round land correctly (linearOrder, toRingCone, exists_le_isOrdering, exists_isMax, algebraMap_strictMono), and the contested odd-factor name is withdrawn since it matches Mathlib's `WfDvdMonoid.exists_irreducible_factor` pattern. Remaining: the `extensionCone` lemmas mix a fake dot-namespace with the standard `foo_extensionCone` scheme, two lemmas about the TauCeti-only `extensionCone` sit in Mathlib's `AdjoinRoot`/`QuadraticAlgebra` namespaces, and two names in the closure files describe the proof or break adjacent consistency.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Polynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Ordering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Cone.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Submonoid/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/QuadraticAlgebra/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/FieldTheory/IsRealClosed",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Cone.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8113913865b333b830376cc0c231fed5e23cd22226cd7446512a571dcbe48f97",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 67625,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 67625,
+  "cache_read_input_tokens": 222182,
+  "inference_geo": "not_available",
+  "input_tokens": 130,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2577,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2577,
+    "cache_read_input_tokens": 68049,
+    "input_tokens": 32,
+    "output_tokens": 3380,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12395,
+  "output_tokens_details": {
+   "thinking_tokens": 8187
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
