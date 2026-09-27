@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4123985,
+   "model": "claude-fable-5-1",
+   "returncode": 0,
+   "secs": 104.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 46003,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 46003,
+    "cache_read_input_tokens": 283714,
+    "inference_geo": "not_available",
+    "input_tokens": 226,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2298,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2298,
+      "cache_read_input_tokens": 46706,
+      "input_tokens": 32,
+      "output_tokens": 2725,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8383,
+    "output_tokens_details": {
+     "thinking_tokens": 5111
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "cost_usd": 1.412398,
+ "dedupe_key": "TauCetiProject/TauCeti|9411|b973a75f28ff4d61c6681b23c8ef0fbaf673dcc7|proof-quality|claude-fable-5-1|7b72cafe03b2af65|production|1",
+ "diff_blob": "3daa757ab1d1dcb64c2e9a2edc4f63aee58cf5c789963366e21cea526833657b",
+ "diff_sha256": "3daa757ab1d1dcb64c2e9a2edc4f63aee58cf5c789963366e21cea526833657b",
+ "duration_s": 104.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Extension.lean:131-132: `rw [PartialOrder.mkOfAddGroupCone_le_iff, sub_zero]` then `rfl`; `cone` at line 108 is built by `__ := P.toSubsemiring` and has no membership lemma.",
+   "file": "TauCeti/Algebra/Order/Ring/Ordering/Extension.lean",
+   "fix": "Add `@[simp] theorem mem_cone (P : RingPreordering K) {x : K} : x \u2208 cone P \u2194 x \u2208 P := Iff.rfl` next to `cone` and finish `nonneg_iff` with `exact mem_cone P` (or `simp [mem_cone]`).",
+   "issue": "`nonneg_iff` closes `x \u2208 cone P \u2194 x \u2208 P` with a bare `rfl`, relying on the `cone` wrapper being definitionally transparent with no statement recording that fact.",
+   "line": 132
+  },
+  {
+   "evidence": "OrderedSubfield.lean:52-53 defines `preordering` via `__ := P.nonneg.comap P.field.val.toRingHom`; line 78 relies on that unfolding with no lemma; `Subsemiring.mem_comap` exists at mathlib/Mathlib/Algebra/Ring/Subsemiring/Basic.lean:112.",
+   "file": "TauCeti/FieldTheory/RealClosure/OrderedSubfield.lean",
+   "fix": "Add `theorem mem_preordering (P : OrderedSubfield K L) {x : P.field} : x \u2208 P.preordering \u2194 x.val \u2208 P.nonneg := Subsemiring.mem_comap` and prove `nonneg_iff` as `(RingPreordering.nonneg_iff _ x).trans P.mem_preordering`.",
+   "issue": "`nonneg_iff` is stated as `x.val \u2208 P.nonneg` but proved by the term `RingPreordering.nonneg_iff P.preordering x`, whose type is `x \u2208 P.preordering`; unification silently unfolds `comap` and the `val.toRingHom` coercion.",
+   "line": 78
+  },
+  {
+   "evidence": "OddExtension.lean:59-97: the induction hypothesis `ih` is used only once, at line 89, after 25 lines of degree bookkeeping that never mention it.",
+   "file": "TauCeti/FieldTheory/RealClosure/OddExtension.lean",
+   "fix": "Factor lines 64-97 into a lemma, e.g. `exists_lt_of_neg_one_mem (p) (hp : Irreducible p) (hodd : Odd p.natDegree) (h : -1 \u2208 extensionCone (algebraMap K (AdjoinRoot p))) : \u2203 r, Irreducible r \u2227 Odd r.natDegree \u2227 r.natDegree < p.natDegree \u2227 -1 \u2208 extensionCone (algebraMap K (AdjoinRoot r))`, and reduce the main theorem to a five-line strong induction on it.",
+   "issue": "`extensionCone.neg_one_notMem_of_odd` buries the self-contained descent step (a certificate over `AdjoinRoot p` yields an irreducible odd `r` of smaller degree with a certificate over `AdjoinRoot r`) inside a 40-line strong induction, hiding a reusable fact and obscuring the structure.",
+   "line": 59
+  },
+  {
+   "evidence": "Basic.lean:40-83: the two bullets after `apply IsRealClosed.of_linearOrderedField` share no hypotheses beyond `hP` and each ends with an independent `refine \u27e8_, ?_\u27e9` construction.",
+   "file": "TauCeti/FieldTheory/RealClosure/Basic.lean",
+   "fix": "Split into `OrderedSubfield.isSquare_of_isMax (hP : IsMax P) {a : P.field} (ha : 0 \u2264 a) : IsSquare a` and `OrderedSubfield.exists_root_of_isMax (hP : IsMax P) {p} (hp : Odd p.natDegree) : \u2203 x, p.eval x = 0`, then apply `IsRealClosed.of_linearOrderedField` to them.",
+   "issue": "`OrderedSubfield.isRealClosed` inlines two independent ~20-line arguments (every nonnegative element of a maximal ordered subfield is a square; every odd-degree polynomial over it has a root), each a reusable fact about maximal ordered subfields.",
+   "line": 40
+  }
+ ],
+ "head_sha": "b973a75f28ff4d61c6681b23c8ef0fbaf673dcc7",
+ "merge_base_sha": "db988efdc94008ff2da2ebf344cec9805da6a355",
+ "mode": "commit",
+ "model": "claude-fable-5-1",
+ "pr": 9411,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0a969943b9a2f31c4107cf96ea82b4dc079c0f13d2b43dc6680aae45f08f2276",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260927T105154Z-9411-proof-quality-5e3241",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-27T10:51:54Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are mostly robust and the single `change` is documented, but two membership facts are closed by unstated definitional unfolding across the `cone`/`comap` wrappers, and the two longest proofs inline reusable steps (the odd-degree descent step and the square-root/odd-root closure of a maximal ordered subfield).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Group/Cone.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Order/Ring/Ordering/Extension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/OrderedSubfield.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b0132017ad0a3ade03da01badd9d4da6e6b77b3132197db767e563e4a77b2a39",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 46003,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 46003,
+  "cache_read_input_tokens": 283714,
+  "inference_geo": "not_available",
+  "input_tokens": 226,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2298,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2298,
+    "cache_read_input_tokens": 46706,
+    "input_tokens": 32,
+    "output_tokens": 2725,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8383,
+  "output_tokens_details": {
+   "thinking_tokens": 5111
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
