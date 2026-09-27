@@ -1,0 +1,327 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2444014999999995,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 357.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 95612,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 95612,
+    "cache_read_input_tokens": 1078973,
+    "inference_geo": "not_available",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2630,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2630,
+      "cache_read_input_tokens": 95983,
+      "input_tokens": 2,
+      "output_tokens": 6554,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 29945,
+    "output_tokens_details": {
+     "thinking_tokens": 21107
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "cost_usd": 2.244401,
+ "dedupe_key": "TauCetiProject/TauCeti|9580|51221878c7434d648e3d94d7becab5e789aeda15|naming|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "8048362677ec1ad2bad24991d1369df0b01478e9bd225d13ca1760bd373ba65a",
+ "diff_sha256": "8048362677ec1ad2bad24991d1369df0b01478e9bd225d13ca1760bd373ba65a",
+ "duration_s": 357.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -o ivt mathlib/Mathlib` \u2192 4 hits, all a local name in `RingTheory/Morita/Matrix.lean`; Mathlib spells the notion `intermediate_value_Icc` (`Topology/Order/IntermediateValue.lean:586`) and root existentials `exists_root_of_degree_eq_one` (`Algebra/Polynomial/FieldDivision.lean:536`). The same file uses `intermediate_value_Icc` at line 148, so `ivt` is inconsistent even locally.",
+   "file": "TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "fix": "Rename to conclusion-describing names, e.g. `Polynomial.exists_isRoot_Ioo_of_eval_neg_of_eval_pos` and `Polynomial.exists_isRoot_Ioo_of_eval_mul_neg`.",
+   "issue": "`ivt` (and `ivt_of_mul_neg`, line 140) is an acronym that is not Mathlib terminology and does not describe the conclusion (`\u2203 c \u2208 Ioo a b, p.eval c = 0`).",
+   "line": "125"
+  },
+  {
+   "evidence": "`Grep \"SquareClosed\" code/TauCeti --glob *.lean` returns only these three declarations and their call sites; `Grep \"SquareClosed|IsSqClosed|sqClosed\" mathlib/Mathlib` \u2192 no matches.",
+   "file": "TauCeti/FieldTheory/RealClosure/AlgebraicClosed.lean",
+   "fix": "Drop the phantom namespace and name the hypothesis: `finrank_eq_one_of_forall_isSquare`, `isAlgClosed_of_forall_isSquare`, `finrank_eq_one_of_isGalois_of_forall_isSquare`. Same for the `_of_isSquare`/`hsq` names `finrank_ne_two_of_isSquare` (FiniteExtension.lean:32) and `finrank_eq_one_of_twoGroup` (Galois.lean:41), whose hypothesis is also a `\u2200`.",
+   "issue": "`SquareClosed.finrank_eq_one`, `SquareClosed.isAlgClosed` (line 55) and `SquareClosed.finrank_eq_one_of_isGalois` (Galois.lean:55) sit in a `SquareClosed` namespace for which no declaration exists, so dot notation can never fire (the hypothesis is `hsq : \u2200 x : C, IsSquare x`).",
+   "line": "38"
+  },
+  {
+   "evidence": "Mathlib keeps the two families distinct: `monotoneOn_of_deriv_nonneg` (`Analysis/Calculus/Deriv/MeanValue.lean:411`) vs `monotone_of_deriv_nonneg` (:419); `strictMonoOn_of_deriv_pos` (:376) vs `strictMono_of_deriv_pos` (:388); `antitoneOn_of_deriv_nonpos` (:480); `strictAntiOn_of_deriv_neg` (:444).",
+   "file": "TauCeti/FieldTheory/RealClosure/Rolle.lean",
+   "fix": "Rename to `Rolle.monotoneOn`, `Rolle.antitoneOn`, `Rolle.strictMonoOn`, `Rolle.strictAntiOn`.",
+   "issue": "`Rolle.monotone` proves `MonotoneOn p.eval (Icc a b)`, not `Monotone`; likewise `Rolle.antitone` (60), `Rolle.strictMono` (70), `Rolle.strictAnti` (78). The names advertise the global predicates.",
+   "line": "50"
+  },
+  {
+   "evidence": "The lemmas they call are `irreducible_quadratic_eval_pos_iff_leadingCoeff_pos` / `..._eval_neg_iff_leadingCoeff_neg` (`code/TauCeti/Algebra/Polynomial/RealClosed/Quadratic.lean:82,93`). Counterexample to the unqualified name: `p = X^2 - 1` over \u211d has `natDegree = 2`, `eval 0 * eval 2 = -1 * 3 < 0`.",
+   "file": "TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "fix": "Rename to `irreducible_quadratic_eval_mul_pos` and `irreducible_quadratic_leadingCoeff_mul_eval_pos`, matching the sibling lemmas.",
+   "issue": "`quadratic_eval_mul_pos` omits the essential `Irreducible p` hypothesis from the name, so the name asserts something false for quadratics in general; `quadratic_leading_mul_pos` (line 47) has the same defect and additionally abbreviates `leadingCoeff` to `leading` and drops `eval`.",
+   "line": "56"
+  },
+  {
+   "evidence": "Naming conventions, \"Predicates as suffixes\": `IsClosed (Icc a b)` \u2192 `isClosed_Icc`; Mathlib's own real-closed file uses prefix form (`IsRealClosed.isSquare_neg_of_not_isSquare`, `nonneg_iff_isSquare`, `mathlib/Mathlib/FieldTheory/IsRealClosed/Basic.lean:76,111`), and all `QuadraticAlgebra` lemmas live in that namespace (`mathlib/Mathlib/Algebra/QuadraticAlgebra/Basic.lean:44`).",
+   "file": "TauCeti/FieldTheory/RealClosure/Complexification.lean",
+   "fix": "Rename to `QuadraticAlgebra.isSquare` (so `z.isSquare` elaborates) and `isAlgClosed_quadraticAlgebra`.",
+   "issue": "`complex_isSquare` puts the predicate last and calls `QuadraticAlgebra R (-1) 0` \"complex\", which is not Mathlib terminology; its first explicit argument is `z : QuadraticAlgebra R (-1) 0`, so it belongs in the `QuadraticAlgebra` namespace. `complex_isAlgClosed` (AlgebraicClosed.lean:68) has the same predicate-suffix and terminology problem.",
+   "line": "32"
+  },
+  {
+   "evidence": "Mathlib has no `TwoGroup`; the notion is `IsPGroup p G` (`mathlib/Mathlib/GroupTheory/PGroup.lean:64,86`), and the statements here are literally `IsPGroup 2 (E \u2243\u2090[R] E)`.",
+   "file": "TauCeti/FieldTheory/RealClosure/Galois.lean",
+   "fix": "Rename to e.g. `isPGroup_two_algEquiv` (or `isPGroup_aut`) and `finrank_eq_one_of_isPGroup`.",
+   "issue": "`galois_isTwoGroup` and `finrank_eq_one_of_twoGroup` (line 41) use nonstandard \"twoGroup\" for `IsPGroup 2`, and the first puts the predicate in suffix position.",
+   "line": "24"
+  },
+  {
+   "evidence": "Mathlib names Rolle's conclusion `exists_deriv_eq_zero` / `exists_hasDerivAt_eq_zero` (`mathlib/Mathlib/Analysis/Calculus/LocalExtr/Rolle.lean:54,61`).",
+   "file": "TauCeti/FieldTheory/RealClosure/AbstractRolle.lean",
+   "fix": "Name them after the conclusion, e.g. `exists_derivative_eval_eq_zero_of_eval_eq_zero_of_forall_ne_zero` and `exists_derivative_eval_eq_zero_of_eval_eq_zero`.",
+   "issue": "`rolle_consecutive` and `rolle_roots` (line 93) conclude `\u2203 c \u2208 Ioo a b, p.derivative.eval c = 0`, not `Rolle _`; since this PR defines a Prop `Rolle` (Rolle.lean:27) whose proofs are named `rolle_*` (`rolle_realClosed : Rolle R`, line 113), the `rolle_` prefix misreads as \"concludes `Rolle`\".",
+   "line": "45"
+  },
+  {
+   "evidence": "Mathlib's mean value theorem is `exists_deriv_eq_slope` / `exists_ratio_deriv_eq_ratio_slope` (`mathlib/Mathlib/Analysis/Calculus/Deriv/MeanValue.lean:153,133`); no Mathlib declaration is named `mean_value`.",
+   "file": "TauCeti/FieldTheory/RealClosure/Rolle.lean",
+   "fix": "Rename to e.g. `Rolle.exists_eval_sub_eq_derivative_eval_mul`.",
+   "issue": "`Rolle.mean_value` names the classical theorem rather than its conclusion `p.eval b - p.eval a = p.derivative.eval c * (b - a)`.",
+   "line": "34"
+  },
+  {
+   "evidence": "Rubric's dot-notation rule; repo precedent: `Grep \"namespace Polynomial\" code/TauCeti` and `Grep \"_root_\\.Polynomial\\.\" code/TauCeti` give dozens of hits (e.g. `TauCeti/Algebra/Polynomial/LinearFactor.lean:42`, `TauCeti/RingTheory/Polynomial/Roots.lean:58`).",
+   "file": "TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "fix": "Put these `eval`/root lemmas in the `Polynomial` namespace (`_root_.Polynomial.\u2026`), as the rest of the repo does for polynomial lemmas.",
+   "issue": "`eval_mul_pos_of_no_roots`, `ivt` (125), `ivt_of_mul_neg` (140) and `rolle_consecutive`/`rolle_roots` (AbstractRolle.lean:45,93) all take an explicit `p : R[X]` first but live in `TauCeti.RealClosure`, so `p.eval_mul_pos_of_no_roots` does not elaborate and upstreaming needs a rename \u2014 while the same file puts `intermediate_value_Icc` in `Polynomial` (line 148).",
+   "line": "91"
+  }
+ ],
+ "head_sha": "51221878c7434d648e3d94d7becab5e789aeda15",
+ "merge_base_sha": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9580,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c29052443235cb887bfb3d1f4eda9e06b9bf3a44d6014bef1bc85b8ad2f979f2",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260927T233954Z-9580-naming-031bc8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-27T23:39:54Z",
+ "submitted_by": "kim-em",
+ "summary": "Several introduced names describe the classical theorem rather than the conclusion (`ivt`, `rolle_consecutive`, `mean_value`), use nonstandard terminology (`twoGroup`, `complex_`, `leading`), overstate the statement (`Rolle.monotone` proves only `MonotoneOn`; `quadratic_eval_mul_pos` needs irreducibility), and hang three theorems off a `SquareClosed` namespace that does not exist. No notation is introduced.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/Rolle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Order/Ring/Ordering/Semireal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Order/Ring/Ordering/Extension.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Ring/Semireal",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/AlgebraicClosed.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/Galois.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/RealClosed/Quadratic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/QuadraticAlgebra/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/FieldTheory/IsRealClosed/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/QuadraticDiscriminant.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/AbstractRolle.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 30,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c783bbe1ca795093dae9629597d1a7f149926642eb2e442f6258ba228181b72d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 95612,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 95612,
+  "cache_read_input_tokens": 1078973,
+  "inference_geo": "not_available",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2630,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2630,
+    "cache_read_input_tokens": 95983,
+    "input_tokens": 2,
+    "output_tokens": 6554,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 29945,
+  "output_tokens_details": {
+   "thinking_tokens": 21107
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

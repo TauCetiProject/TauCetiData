@@ -1,0 +1,299 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3175485,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 328.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 100723,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 100723,
+    "cache_read_input_tokens": 1379207,
+    "inference_geo": "not_available",
+    "input_tokens": 38,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2227,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2227,
+      "cache_read_input_tokens": 101497,
+      "input_tokens": 2,
+      "output_tokens": 4872,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24821,
+    "output_tokens_details": {
+     "thinking_tokens": 18673
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "cost_usd": 2.317549,
+ "dedupe_key": "TauCetiProject/TauCeti|9580|51221878c7434d648e3d94d7becab5e789aeda15|api-design|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "8048362677ec1ad2bad24991d1369df0b01478e9bd225d13ca1760bd373ba65a",
+ "diff_sha256": "8048362677ec1ad2bad24991d1369df0b01478e9bd225d13ca1760bd373ba65a",
+ "duration_s": 328.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Repo convention for a Prop-valued def is unexposed body plus named elim lemma: `TauCeti/GroupTheory/TrivialIntersection.lean:115` `def IsTISubgroup ... : Prop` (no `@[expose]`) with `IsTISubgroup.eq_one` at line 121.",
+   "file": "TauCeti/FieldTheory/RealClosure/Rolle.lean",
+   "fix": "Drop `@[expose]` and add, in this file, an elimination lemma (`Rolle.exists_deriv_eq_zero (h : Rolle R) (p) (hab : a < b) (heq : p.eval a = p.eval b) : \u2203 c \u2208 Ioo a b, p.derivative.eval c = 0 := h ..`) and an introduction lemma (`Rolle.of_forall`); use them in `Rolle.mean_value` and `rolle_realClosed`.",
+   "issue": "`@[expose] def Rolle` has no characteristic API: every consumer unfolds the body (`h (p - C m * X) a b hab heq` at Rolle.lean:42, `intro p a b hab heq` at AbstractRolle.lean:114), so the body is exposed in place of missing lemmas.",
+   "line": "27"
+  },
+  {
+   "evidence": "AbstractRolle.lean:37-42: `omit [LinearOrder R] [IsStrictOrderedRing R] [IsRealClosed R] in private theorem factor_root {p : R[X]} (hp : p \u2260 0) ...`.",
+   "file": "TauCeti/FieldTheory/RealClosure/AbstractRolle.lean",
+   "fix": "Move it, public and in the `Polynomial` namespace, to a general polynomial file (e.g. alongside `TauCeti/Algebra/Polynomial/LinearFactor.lean`), named for its content, e.g. `Polynomial.exists_eq_X_sub_C_pow_succ_mul_of_isRoot`.",
+   "issue": "`private theorem factor_root` is general infrastructure hidden here: it `omit`s every real-closed instance, mentions only Mathlib types, and its proof is only `Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd` + `rootMultiplicity_pos` (mathlib/Mathlib/Algebra/Polynomial/Div.lean:551,666). The roadmap's Layer 1 also needs multiplicity factoring for \"multiplicity and sign changes\".",
+   "line": "38"
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/QuadraticAlgebra/Basic.lean:488,513,529: `Field (QuadraticAlgebra K a b)` requires `Fact (\u2200 r, r ^ 2 \u2260 a + b * r)`, obtained from `Fact (\u00ac IsSquare a)`; Complexification.lean:26 supplies the latter only `scoped`.",
+   "file": "TauCeti/FieldTheory/RealClosure/Complexification.lean",
+   "fix": "Make the instance a plain (non-scoped, named) instance \u2014 mirroring Mathlib's non-scoped derivation `instance {a : K} [Fact (\u00ac IsSquare a)] : Fact (\u2200 r : K, r ^ 2 \u2260 a + 0 * r)` \u2014 or bundle the complexification as a def carrying its field instance; at minimum document the required `open scoped`.",
+   "issue": "The `Field (QuadraticAlgebra R (-1) 0)` in the statements of `complex_isSquare` and `complex_isAlgClosed` is synthesized from a `scoped instance : Fact (\u00ac IsSquare (-1 : R))`. Outside `TauCeti.RealClosure` a consumer cannot synthesize that `Field` instance, so the public theorems cannot be stated or applied without `open scoped TauCeti.RealClosure`, which no docstring mentions.",
+   "line": "26"
+  },
+  {
+   "evidence": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/README.md:193 \"Prove polynomial IVT, its weak-sign and closed-interval forms\"; IVT.lean:128.",
+   "file": "TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "fix": "Expose it, e.g. `theorem exists_root_Icc (p : R[X]) (hab : a \u2264 b) (ha : p.eval a \u2264 0) (hb : 0 \u2264 p.eval b) : \u2203 c \u2208 Set.Icc a b, p.eval c = 0`, and derive `ivt` from it.",
+   "issue": "The weak-sign closed-interval form of IVT, an explicit roadmap product, is proved inline and discarded: `hroot : \u2203 c \u2208 Set.Icc a b, p.eval c = 0` at line 128 is thrown away in favour of the strict `ivt`. Consumers with `p.eval a \u2264 0 \u2264 p.eval b` must go through `intermediate_value_Icc` and unpack set-image membership.",
+   "line": "125"
+  },
+  {
+   "evidence": "Mathlib pairs the two forms: mathlib/Mathlib/Topology/Order/IntermediateValue.lean:586 (`intermediate_value_Icc`) and :592 (`intermediate_value_Icc'`).",
+   "file": "TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "fix": "Add `Polynomial.intermediate_value_Icc' (hab : a \u2264 b) : Set.Icc (p.eval b) (p.eval a) \u2286 p.eval '' Set.Icc a b`, proved from `ivt_of_mul_neg`.",
+   "issue": "`Polynomial.intermediate_value_Icc` has no reversed companion, so a polynomial with `p.eval b \u2264 y \u2264 p.eval a` gets nothing, even though the file already develops both sign directions (`ivt_of_mul_neg`).",
+   "line": "148"
+  }
+ ],
+ "head_sha": "51221878c7434d648e3d94d7becab5e789aeda15",
+ "merge_base_sha": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9580,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e97641dbb3729d3eadb9b73d20254aedc2b2398e2a9e87a5db25de941d0ec006",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260927T231140Z-9580-api-design-23694b",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-27T23:11:40Z",
+ "submitted_by": "kim-em",
+ "summary": "The new surface is mostly right, but `Rolle` is exposed instead of carrying intro/elim lemmas, a general polynomial-factoring fact is hidden as `private`, the complexification's `Field` instance comes from an undocumented scoped `Fact` instance, and the roadmap's weak-sign and reversed closed-interval IVT forms are not exposed.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/AbstractRolle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/Rolle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Ordering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Ring/SumsOfSquares.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Order/Ring/Ordering/Extension.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Order/Ring/Ordering/Extension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/Complexification.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/FieldTheory/IsRealClosed/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/QuadraticAlgebra/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/LinearFactor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/RealClosed/Quadratic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/TrivialIntersection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/PL/Map.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/AlgebraicClosed.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 30,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1a0e64de2ddd229868e3b94079cbe12e040a96655ed8442d8feb78d4df342643",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 100723,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 100723,
+  "cache_read_input_tokens": 1379207,
+  "inference_geo": "not_available",
+  "input_tokens": 38,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2227,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2227,
+    "cache_read_input_tokens": 101497,
+    "input_tokens": 2,
+    "output_tokens": 4872,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24821,
+  "output_tokens_details": {
+   "thinking_tokens": 18673
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
