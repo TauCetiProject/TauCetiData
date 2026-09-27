@@ -1,0 +1,181 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.9438609999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 159.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 51300,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 51300,
+    "cache_read_input_tokens": 204132,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3505,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3505,
+      "cache_read_input_tokens": 50796,
+      "input_tokens": 2,
+      "output_tokens": 2998,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13149,
+    "output_tokens_details": {
+     "thinking_tokens": 9956
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3f11259401cff5b2b35c15a2c3f4c16e5a0ceaaf",
+ "cost_usd": 0.943861,
+ "dedupe_key": "TauCetiProject/TauCeti|9587|5448700313e95a481e3b926ce9fb81625de78f2f|api-design|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "ad524c80f19c41701dbb5c4cecfaafa11924bee981275e4505d0131bc98afa39",
+ "diff_sha256": "ad524c80f19c41701dbb5c4cecfaafa11924bee981275e4505d0131bc98afa39",
+ "duration_s": 159.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Polynomial/Eval/Defs.lean:580 `@[simp] lemma eval_map_apply (x : R) : (p.map f).eval (f x) = f (p.eval x)`; mathlib/Mathlib/Basic/Sign/Defs.lean:306-309 `StrictMono.sign_comp ... : sign (f a) = sign a`; the PR proof is `rw [eval_map_apply]; exact hf.sign_comp _`.",
+   "file": "TauCeti/Algebra/Polynomial/Eval/Sign.lean",
+   "fix": "Drop the lemma and the file; at use sites the canonical post-PR API is `eval_map_apply` (simp) followed by `hf.sign_comp`. If a named lemma is kept for the roadmap's real-closure work, give it a statement whose LHS survives simp and that a consumer actually needs (e.g. the zero/positivity transfer `(p.map f).eval (f x) = 0 \u2194 p.eval x = 0` and `0 < (p.map f).eval (f x) \u2194 0 < p.eval x`), rather than restating the two-lemma composite.",
+   "issue": "`Polynomial.sign_eval_map`'s LHS `sign ((p.map f).eval (f x))` is not in simp normal form: `Polynomial.eval_map_apply` is `@[simp]` and rewrites the inner subterm to `f (p.eval x)`, leaving `sign (f (p.eval x))`, which this lemma no longer matches. The exported name therefore cannot be annotated `@[simp]` (it would never fire) and silently fails to apply in any goal `simp` has touched \u2014 exactly where the residual goal is closed by Mathlib's `StrictMono.sign_comp`, which is the entire proof body.",
+   "line": "23"
+  }
+ ],
+ "head_sha": "5448700313e95a481e3b926ce9fb81625de78f2f",
+ "merge_base_sha": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9587,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5b934d9fdd0c9aaaab12611a69caec0bfccb2422603072bd86fe3d621a627ca4",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260927T231433Z-9587-api-design-e26cf9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-27T23:14:33Z",
+ "submitted_by": "kim-em",
+ "summary": "The file's only exported name has a left-hand side that Mathlib's `@[simp] eval_map_apply` rewrites away, so it can never be a simp lemma and stops applying after any `simp`; what remains is exactly `StrictMono.sign_comp`. The exposed surface duplicates that Mathlib composite rather than adding usable API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Eval/Sign.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Basic/Sign/Defs.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial/Eval/Defs.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f35e9ef5f7c6dd62ea3817e09bcd7a94a2738975059fa114598cb55c145e41bf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 51300,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 51300,
+  "cache_read_input_tokens": 204132,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3505,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3505,
+    "cache_read_input_tokens": 50796,
+    "input_tokens": 2,
+    "output_tokens": 2998,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13149,
+  "output_tokens_details": {
+   "thinking_tokens": 9956
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
