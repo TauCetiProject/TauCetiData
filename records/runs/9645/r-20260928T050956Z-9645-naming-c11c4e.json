@@ -1,0 +1,251 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1863605,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 255.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 117293,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 117293,
+    "cache_read_input_tokens": 1060071,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2639,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2639,
+      "cache_read_input_tokens": 117655,
+      "input_tokens": 2,
+      "output_tokens": 3266,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19331,
+    "output_tokens_details": {
+     "thinking_tokens": 13393
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9ab88a51a6e1d3a32ce5b7b52e6f32bd9efbb542",
+ "cost_usd": 2.186361,
+ "dedupe_key": "TauCetiProject/TauCeti|9645|ff7bb72a44f4169375e4e5e9c8b82e0dab962f8b|naming|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "f51cb2120ff0c56106e178449b231ab6f3d6a611d434023c26b3ec78fc9ce513",
+ "diff_sha256": "f51cb2120ff0c56106e178449b231ab6f3d6a611d434023c26b3ec78fc9ce513",
+ "duration_s": 255.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Infinity.lean:67,70 calls `List.exists_signs_atTop`; Eval/Infinity.lean defines `Polynomial.exists_sign_atTop`/`exists_sign_atBot` and `List.exists_signs_atTop`/`exists_signs_atBot`. Repo precedent for spelling out what exists: code/TauCeti/Algebra/Polynomial/Sturm/GCD.lean:62 `exists_getLast?_sturmSeq_associated_gcd`.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Infinity.lean",
+   "fix": "Rename to `exists_signVariationsAt_eq_atTop` / `exists_signVariationsAt_eq_atBot` (or at minimum `exists_atTop`/`exists_atBot`).",
+   "issue": "`exists_top` (and `exists_bot`, line 82) read as \"there exists a top/bot element\"; what actually exists is a bound `B` beyond which `signVariationsAt cs x = signVariationsAtTop cs`. They also break the `atTop`/`atBot` spelling used by their own dependencies one file over.",
+   "line": "67"
+  },
+  {
+   "evidence": "Local.lean:56-61 (statement); used as `h.interior` at Sum.lean:102. mathlib/Mathlib/Topology/Defs/Basic.lean defines the root-namespace `interior`.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Local.lean",
+   "fix": "Rename to something naming the conclusion, e.g. `signVariationsAt_eq_of_ne_root` or `eq_of_interior_zero`, consistent with the sibling `eq_right`/`eq_left` in Sum.lean:42,60.",
+   "issue": "`Regular.interior` has conclusion `signVariationsAt cs a = signVariationsAt cs r \u2227 signVariationsAt cs r = signVariationsAt cs b`; the name describes neither that nor a property of `Regular`, and inside `namespace TauCeti.Sturm.Regular` a bare `interior` now competes with Mathlib's topological `interior : Set X \u2192 Set X`.",
+   "line": "56"
+  },
+  {
+   "evidence": "Naming doc: \"we rely on descriptive names. Often the name of theorem simply describes the conclusion.\" Mathlib has no bare eponymous theorem names for this class of result \u2014 Rolle is `exists_deriv_eq_zero`, the MVT is `exists_deriv_eq_slope`, the FTA is `Complex.exists_root`; grep of `^theorem (rolle|bezout|hensel|zorn|gauss|schur|tychonoff|urysohn|wedderburn|\u2026)` over ./mathlib/Mathlib returns nothing.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Tarski.lean",
+   "fix": "Name from the conclusion and drop the redundant `sturm`, e.g. `card_roots_Ioi`/`card_roots_eq` for the counting results and `sum_sign_eval_Ioi`-style names for the query-sum results; keep \"Sturm\u2013Tarski\" as the bolded phrase in the docstring, as Mathlib does.",
+   "issue": "`sturm` (and `sturm_Ioi`/`sturm_Iio`/`sturm_univ` at Infinity.lean:228,238,248) name the theorem after Sturm rather than its conclusion \u2014 a root count \u2014 and the full name `TauCeti.Sturm.sturm` stutters with its namespace. Same for `tarski` (Tarski.lean:126), `tarski_squarefree` (:193), `tarski_sturmSeq` (:217), `tarski_Ioi`/`tarski_Iio`/`tarski_univ` and `tarski_sturmSeq_*` (Infinity.lean:100,124,148,168,189,210).",
+   "line": "239"
+  },
+  {
+   "evidence": "Signs.lean:176-189 vs :191-197; naming addendum: `_eq` marks that the statement is an equality, which does not distinguish two lemmas whose conclusions are the same equality.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Signs.lean",
+   "fix": "Rename the first to name what makes it true, e.g. `signVariationsAt_eq_of_alternate` or `signVariationsAt_eq_of_collapse`, keeping `signVariationsAt_const` as is.",
+   "issue": "`signVariationsAt_eq` and `signVariationsAt_const` (line 191) have the same conclusion shape `signVariationsAt cs a = signVariationsAt cs b` under different hypotheses; `_eq` adds no information (every equality lemma could carry it), so a consumer cannot tell them apart by name.",
+   "line": "176"
+  },
+  {
+   "evidence": "SignVariations.lean:38-42 (docstring on `List.signVariations_cons_of_ne_zero`); RealClosed/Sign.lean:44-49 (`Polynomial.signs_at_root`, no chain argument).",
+   "file": "TauCeti/Data/List/SignVariations.lean",
+   "fix": "Say \"adds one sign variation\" in the first, and \"a polynomial\" instead of \"the head polynomial\" in the second.",
+   "issue": "Docstring says \"adds one signVariationsAt\" \u2014 `signVariationsAt` is a `TauCeti.Sturm` definition that does not exist in the `List` namespace; a leftover from the rename. Same class of leftover at TauCeti/Algebra/Polynomial/RealClosed/Sign.lean:44, whose docstring calls `p` \"the head polynomial\" although the lemma is now a standalone `Polynomial` fact with no chain.",
+   "line": "38"
+  }
+ ],
+ "head_sha": "ff7bb72a44f4169375e4e5e9c8b82e0dab962f8b",
+ "merge_base_sha": "9ab88a51a6e1d3a32ce5b7b52e6f32bd9efbb542",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9645,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "261628994b53d1dff0d1ebaeb6340a06adaa64df08a9091c3509c1ca06555e51",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260928T050956Z-9645-naming-c11c4e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-28T05:09:56Z",
+ "submitted_by": "kim-em",
+ "summary": "Most prior naming findings are fixed at head. Four remain: `exists_top`/`exists_bot` read as order-theoretic existence and break the sibling `atTop`/`atBot` convention, `Regular.interior` shadows Mathlib's topological `interior` while describing neither its conclusion nor a `Regular` property, the `sturm*`/`tarski*` family is eponymous (with `TauCeti.Sturm.sturm` stuttering), and two docstrings still name declarations that do not exist in scope.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Data/List/SignVariations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Local.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Sum.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Tarski.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Infinity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/List/SignVariations.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/SignedRemainders.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Signs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial/Sturm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/GCD.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/RealClosed/Sign.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Infinity.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0d344812a39313d72f9911ddcf1192b83d333349049d85debbeb6957b5247d35",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 117293,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 117293,
+  "cache_read_input_tokens": 1060071,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2639,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2639,
+    "cache_read_input_tokens": 117655,
+    "input_tokens": 2,
+    "output_tokens": 3266,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19331,
+  "output_tokens_details": {
+   "thinking_tokens": 13393
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
