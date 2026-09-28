@@ -1,0 +1,256 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8690395000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 1309.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 84954,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 84954,
+    "cache_read_input_tokens": 872543,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4809,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4809,
+      "cache_read_input_tokens": 95717,
+      "input_tokens": 2,
+      "output_tokens": 2476,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17436,
+    "output_tokens_details": {
+     "thinking_tokens": 11572
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "cost_usd": 1.86904,
+ "dedupe_key": "TauCetiProject/TauCeti|9580|76a63dad2476063d364a027ff50e5c014126183e|naming|claude-opus-5|7b72cafe03b2af65|production|3",
+ "diff_blob": "f0f58c286a207008dc40a30a93354352b2dd881d4a349fcda1a47fdad5886552",
+ "diff_sha256": "f0f58c286a207008dc40a30a93354352b2dd881d4a349fcda1a47fdad5886552",
+ "duration_s": 1309.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Rolle.lean:22 `namespace Polynomial`, :25 `def Rolle (R : Type*) [Field R] [LinearOrder R] : Prop`. Repo precedent for a statement-as-Prop: `TauCeti/Topology/TriangulationConjecture.lean:65,74` \u2014 `namespace TauCeti` then `def TriangulationConjecture.{v} (n : \u2115) : Prop`. This does not conflict with my earlier dot-notation finding, which concerned lemmas taking an explicit `p : R[X]` (now correctly in `Polynomial`).",
+   "file": "TauCeti/Algebra/Polynomial/Rolle.lean",
+   "fix": "Move the def to the `TauCeti` namespace with a descriptive name, e.g. `TauCeti.PolynomialRolle R`, keeping the consequences as dot notation (`PolynomialRolle.monotoneOn`, ...) and updating `rolle_realClosed`/`AbstractRolle` uses.",
+   "issue": "`def Rolle (R : Type*) ... : Prop` is declared inside `namespace Polynomial`, but it is a property of the ordered field `R` \u2014 its first (and only) explicit argument is a `Type`, not a polynomial \u2014 so `Polynomial.Rolle` is not dot notation and reads as a predicate on polynomials; the bare proper noun `Rolle` also says nothing about what the property asserts.",
+   "line": "25"
+  },
+  {
+   "evidence": "mathlib/Mathlib/Analysis/Calculus/LocalExtr/Rolle.lean:27,61 \u2014 `exists_deriv_eq_zero` \"deals with `deriv f`\"; no lemma name in `mathlib/Mathlib/Algebra/Polynomial/` abbreviates `derivative` to `deriv` (grep for `^(theorem|lemma) .*deriv[^a]` there returns only `pderiv_*`). PR-internal: AbstractRolle.lean:91 `exists_derivative_root`, Rolle.lean:45 `exists_eval_sub_eq_derivative_eval_mul`.",
+   "file": "TauCeti/Algebra/Polynomial/Rolle.lean",
+   "fix": "Rename to `Rolle.exists_derivative_root` (or `exists_derivative_eval_eq_zero`) to match `Polynomial.exists_derivative_root` and the `derivative` spelling used by the rest of the PR.",
+   "issue": "`Rolle.exists_deriv_eq_zero` uses `deriv` for `Polynomial.derivative`; in Mathlib `deriv` names the analytic derivative, and the identical conclusion `\u2203 c \u2208 Ioo a b, p.derivative.eval c = 0` is named `exists_derivative_root` elsewhere in this PR.",
+   "line": "37"
+  },
+  {
+   "evidence": "IVT.lean:54-56 `theorem _root_.Polynomial.linear_eval_mul_pos {p : R[X]} (hdeg : p.natDegree = 1) ... (hroot : \u2200 x \u2208 Set.Icc a b, p.eval x \u2260 0) : 0 < p.eval a * p.eval b`; contrast IVT.lean:77 `eval_mul_pos_of_no_roots`.",
+   "file": "TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "fix": "Rename to include the interval hypothesis, e.g. `Polynomial.linear_eval_mul_pos_of_no_roots` or `Polynomial.eval_mul_pos_of_natDegree_eq_one_of_no_roots`, matching the sibling `eval_mul_pos_of_no_roots` (IVT.lean:77).",
+   "issue": "`Polynomial.linear_eval_mul_pos` omits the essential no-roots hypothesis, so the name asserts something false for linear polynomials in general (`p = X`, `a = -1`, `b = 1` gives `eval a * eval b = -1 < 0`). This is the same defect as the previously fixed `quadratic_eval_mul_pos` (now `irreducible_quadratic_eval_mul_pos`), where the hypothesis carrying the truth is in the name.",
+   "line": "54"
+  },
+  {
+   "evidence": "LinearFactor.lean:60 adjacent `exists_eq_C_mul_X_sub_C_of_natDegree_le_one`; mathlib/Mathlib/Algebra/Polynomial/Div.lean:551 `exists_eq_pow_rootMultiplicity_mul_and_not_dvd`, mathlib/Mathlib/Data/Nat/Factorization/Basic.lean:279 `exists_eq_pow_mul_and_not_dvd`.",
+   "file": "TauCeti/Algebra/Polynomial/LinearFactor.lean",
+   "fix": "Rename to `IsRoot.exists_eq_pow_succ_mul` (or `exists_eq_pow_mul_and_eval_ne_zero`).",
+   "issue": "`Polynomial.IsRoot.exists_pow_mul` drops the `eq` from a conclusion that is an equation (`p = (X - C a) ^ (m + 1) * q \u2227 q.eval a \u2260 0`), so the name does not describe the conclusion and diverges from the file's and Mathlib's pattern.",
+   "line": "71"
+  },
+  {
+   "evidence": "Naming conventions, \"Identifiers and theorem names\": hypotheses are separated by the word \"of\" (`lt_of_le_of_ne`); this PR follows that elsewhere (`finrank_eq_one_of_odd`, FiniteExtension.lean:38; `finrank_ne_two_of_forall_isSquare`, :55).",
+   "file": "TauCeti/FieldTheory/RealClosure/AbstractRolle.lean",
+   "fix": "Rename to `rolle_of_isRealClosed` (or `polynomialRolle_of_isRealClosed` after the namespace fix above).",
+   "issue": "`rolle_realClosed` attaches the instance hypothesis `[IsRealClosed R]` to the name without the `of` separator and drops the `Is` of the class it refers to.",
+   "line": "111"
+  }
+ ],
+ "head_sha": "76a63dad2476063d364a027ff50e5c014126183e",
+ "merge_base_sha": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9580,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "b2c55a0ccc4202b19a39ac04c45d5d102788a9089a89f88bcc0d5b35c244a52e",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 3,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260928T003218Z-9580-naming-31478d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-28T00:32:18Z",
+ "submitted_by": "kim-em",
+ "summary": "The prior round's names are largely fixed (exists_root_Ioo/Icc, monotoneOn family, irreducible_quadratic_*, explicit forall_isSquare, Polynomial namespace for polynomial lemmas). Remaining: the Rolle Prop is planted in Mathlib's Polynomial namespace under a bare proper-noun name, one lemma abbreviates the formal derivative as `deriv`, `linear_eval_mul_pos` overstates its statement, and two names drop the conclusion's `eq`/hypothesis `of`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Rolle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/AbstractRolle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Ring/Ordering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/QuadraticAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/TriangulationConjecture.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sequence.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/LinearFactor.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "75ac4595c3f454e4555e05ab50d459121f23bc29d1d54882a5a4553f06954828",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 84954,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 84954,
+  "cache_read_input_tokens": 872543,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4809,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4809,
+    "cache_read_input_tokens": 95717,
+    "input_tokens": 2,
+    "output_tokens": 2476,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17436,
+  "output_tokens_details": {
+   "thinking_tokens": 11572
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
