@@ -1,0 +1,200 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3531285,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 205.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 79037,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 79037,
+    "cache_read_input_tokens": 348747,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1592,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1592,
+      "cache_read_input_tokens": 80446,
+      "input_tokens": 2,
+      "output_tokens": 6611,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15533,
+    "output_tokens_details": {
+     "thinking_tokens": 12050
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9ab88a51a6e1d3a32ce5b7b52e6f32bd9efbb542",
+ "cost_usd": 1.353128,
+ "dedupe_key": "TauCetiProject/TauCeti|9645|18d59c20838302919b87fc0d764e2e5e88cfccf7|documentation|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "b2a56a04fb83857dac93fbda00e4d9df578d1913152954a2c1222931e7ef0976",
+ "diff_sha256": "b2a56a04fb83857dac93fbda00e4d9df578d1913152954a2c1222931e7ef0976",
+ "duration_s": 205.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep '^/-! # .*-/$' over TauCeti/ returns exactly these three files; every other file in the directory, e.g. SturmSigns.lean:11-15, SignedRemainders.lean:11-18, SturmTarski.lean:10-19 and the pre-existing Sturm/GCD.lean:11-19, has a substantive body.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/SturmLocal.lean",
+   "fix": "Add a body to each: what material lives there (for SturmLocal: the `Regular` chain conditions plus the local jump lemmas `interior`/`root_jump`; for SturmSum: the telescoped signed-root-sum identity for a regular chain; for SturmInfinity: variations at \u00b1\u221e via leading coefficients and the half-line/whole-field Sturm\u2013Tarski statements) and what it feeds. Keep roadmap/layer references out, as the sibling files correctly do.",
+   "issue": "Module docstring is a bare heading (`/-! # Local variation jumps for regular signed polynomial chains -/`) with no body, in a 166-line file that introduces the central `Regular` structure used by SturmSum, SignedRemainders and SturmTarski. Same defect at SturmSum.lean:11 (`# Signed root sums for regular Sturm chains`, home of the main `Regular.sum`) and SturmInfinity.lean:11 (`# Sturm\u2013Tarski with infinite endpoints`, 196 lines, the PR's top-level API).",
+   "line": "10"
+  },
+  {
+   "evidence": "SturmInfinity.lean:31-32 `... := (rfl)`; SturmInfinity.lean:36-38 `... := (rfl)`; the substantive result is SturmInfinity.lean:75-85 `exists_top`.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/SturmInfinity.lean",
+   "fix": "Document both as definitional unfolding lemmas (cf. the honest `variation_eq` docstring in SturmSigns.lean:47-49, \"Variations are computed on the list of evaluations\"), and point the reader to `exists_top`/`exists_bot` for the statement that these really are the signs at \u00b1\u221e.",
+   "issue": "`variationTop_eq` is documented \"Leading coefficients give the signs at positive infinity\", but the statement is `variationTop cs = signVariations (cs.map leadingCoeff)` proved by `rfl` \u2014 it unfolds the definition and says nothing about signs at infinity. Same at line 35: `variationBot_eq` (\"Degree parity modifies the leading signs at negative infinity\") is also `rfl`. The claimed content is actually `sign_at_top`/`signs_top` and `exists_top`/`exists_bot`.",
+   "line": "30"
+  },
+  {
+   "evidence": "SignedRemainders.lean:298-299: `theorem variation_mul (cs) {d : Polynomial R} {x : R} (hd : d.eval x \u2260 0) : variation (cs.map (d * \u00b7)) x = variation cs x`.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/SignedRemainders.lean",
+   "fix": "\"Multiplying every entry by a polynomial that does not vanish at the point preserves the variations at that point.\"",
+   "issue": "`variation_mul` is documented \"Multiplying all entries by a common nonzero value preserves variations\", but `d` is a polynomial and the hypothesis is `d.eval x \u2260 0` at the specific point `x`; a nonzero `d` vanishing at `x` does not preserve variations, so \"common nonzero value\" misstates the hypothesis.",
+   "line": "297"
+  },
+  {
+   "evidence": "SignedRemainders.lean:263-264: `theorem cancel {d} {cs} (hd : d \u2260 0) (h : Signed (cs.map (d * \u00b7))) : Signed cs`.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/SignedRemainders.lean",
+   "fix": "\"Dividing out a nonzero common factor preserves the signed chain conditions: if the scaled chain `cs.map (d * \u00b7)` is signed, so is `cs`.\"",
+   "issue": "`Signed.cancel`'s docstring (\"Exact cancellation preserves the positive scaling in every recurrence\") describes a proof ingredient (`Remainder.cancel` keeping `a`, `b` positive) rather than the result, and never says what is cancelled or in which direction: the statement takes `Signed (cs.map (d * \u00b7))` to `Signed cs`.",
+   "line": "262"
+  },
+  {
+   "evidence": "SignedRemainders.lean:57-58, 90-91, 249-250 each have only an `omit ... in` line above the `theorem`, whereas lines 47, 53 and 66 carry docstrings.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/SignedRemainders.lean",
+   "fix": "Add a one-line docstring to each stating the relation, as done for `of_identity`, `exists_identity` and `alternate` in the same namespace.",
+   "issue": "Public lemmas with no docstring in a file that documents every neighbour: `Remainder.zero_next` (line 91; the name does not convey \"if the first two entries vanish at `x`, so does the third\"), `Remainder.dvd` (line 58; content is \"a common divisor of the two later entries divides the earlier one\"), and `Remainder.cancel` (line 250).",
+   "line": "91"
+  }
+ ],
+ "head_sha": "18d59c20838302919b87fc0d764e2e5e88cfccf7",
+ "merge_base_sha": "9ab88a51a6e1d3a32ce5b7b52e6f32bd9efbb542",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9645,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "af0c2817628aaa2f580406daaa49e2fa5597998860501cd4418c838520639b82",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260928T040411Z-9645-documentation-0a35d9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-28T04:04:11Z",
+ "submitted_by": "kim-em",
+ "summary": "Three of the new files carry a heading-only module docstring with no body, and several docstrings describe something other than what the declaration states (two rfl unfolding lemmas documented as the signs-at-infinity theorem, a nonvanishing-at-a-point hypothesis described as a nonzero value, one docstring about the proof). A few public lemmas in SignedRemainders are undocumented while their neighbours are not.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/SturmLocal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/SturmSum.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/SignedRemainders.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/SturmInfinity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/GCD.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/SturmSigns.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b3046c3e4eeab4d8b312932a594f4ce85f247ae75a3ad2080a1e20ae5936d407",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79037,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 79037,
+  "cache_read_input_tokens": 348747,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1592,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1592,
+    "cache_read_input_tokens": 80446,
+    "input_tokens": 2,
+    "output_tokens": 6611,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15533,
+  "output_tokens_details": {
+   "thinking_tokens": 12050
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
