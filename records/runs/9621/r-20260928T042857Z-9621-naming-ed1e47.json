@@ -1,0 +1,221 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.728822,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 392.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 86548,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 86548,
+    "cache_read_input_tokens": 582514,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2664,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2664,
+      "cache_read_input_tokens": 86885,
+      "input_tokens": 2,
+      "output_tokens": 4035,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22879,
+    "output_tokens_details": {
+     "thinking_tokens": 18836
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "decbbae48149972679931828baf223259a86f284",
+ "cost_usd": 1.728822,
+ "dedupe_key": "TauCetiProject/TauCeti|9621|8dd317f7c17752f56597d4596ac2c1a7010aed76|naming|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "1f9a0695c56b7c667ed93ec12425775dc93b6e5016b979b88da0736877adb212",
+ "diff_sha256": "1f9a0695c56b7c667ed93ec12425775dc93b6e5016b979b88da0736877adb212",
+ "duration_s": 392.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The standard noun is available from the project's own sources: roadmap README:304 \"Prove the BKR matrix identity\" / :310 \"The one-coordinate matrix \u2026 entries `\u03c3^e`\", and Suggested.lean:57 names the target theorem `sign_matrix`; BPR Ch. 10 calls it the matrix of signs. The PR's own docstring reads \"The full ternary moment matrix\", i.e. the noun is omitted from the name.",
+   "file": "TauCeti/Geometry/RealAlgebraic/SignDetermination/Moments.lean",
+   "fix": "Rename to `fullSignMatrix` and `fullSignMatrixInv` (or `signMomentMatrix`/`\u2026Inv`) and update the derived names (`fullSignMatrixInv_mul_fullSignMatrix`, `\u2026_mulVec_signSum`, `\u2026_mulVec_tarskiQuery`, `fullSignMatrix_apply`, \u2026).",
+   "issue": "`fullMatrix`/`fullInverse` (lines 78, 82) name no object: a definition should be named after its return value, and `full` is only a qualifier (presumably against a later reduced/adapted submatrix). The opaque names propagate into other namespaces, where nothing ties them to signs: `Finset.fullInverse_mulVec_signSum`, `Finset.fullInverse_mulVec_signSum_pos` (Polynomial.lean:226,245) and `Polynomial.fullInverse_mulVec_tarskiQuery` (Roots.lean:88).",
+   "line": "78"
+  },
+  {
+   "evidence": "Docstring at Moments.lean:42 describes it as \"Coefficients of the three Lagrange indicator polynomials on `{-1,0,1}`\" \u2014 neither \"Lagrange\" nor \"sign matrix\" appears in the name, while the only word that does (\"inverse\") has no referent inside `SignType`. Mathlib's `SignType` namespace (Mathlib/Basic/Sign/Basic.lean:26-82) holds only self-describing names (`castHom`, `univ_eq`, `coe_pow`).",
+   "file": "TauCeti/Geometry/RealAlgebraic/SignDetermination/Moments.lean",
+   "fix": "Qualify the object in the name, e.g. `SignType.signMatrixInvCoeff` (matching the matrix rename above) or `SignType.lagrangeCoeff` per its own docstring, renaming the four dependent lemmas correspondingly.",
+   "issue": "`SignType.inverseCoeff` sits in Mathlib's `SignType` namespace under a name that does not say inverse of what; in that namespace `SignType.inverseCoeff s e` is undiscoverable and unqualified. Same for the dependent names `inverseCoeff_zero`/`inverseCoeff_neg_one`/`inverseCoeff_one` (lines 50, 54, 58) and `sum_inverseCoeff_mul_pow` (line 63).",
+   "issue_note": "",
+   "line": "43"
+  },
+  {
+   "evidence": "Mathlib/Basic/Sign/Basic.lean:124 `def signHom : \u03b1 \u2192*\u2080 SignType`, :57 `def castHom : SignType \u2192*\u2080 \u03b1`, Mathlib/Algebra/Polynomial/Eval/Defs.lean:616 `def evalRingHom : R \u2192 R[X] \u2192+* R` \u2014 the three ingredients of this definition are all `Hom`-suffixed.",
+   "file": "TauCeti/Geometry/RealAlgebraic/SignDetermination/Polynomial.lean",
+   "fix": "Rename to `signEvalHom` (and `signEvalHom_apply` for the line 147 lemma).",
+   "issue": "`signEval` is a bundled `R[X] \u2192*\u2080 K`, but is named as if it were the plain function `fun p => sign (p.eval x)`; at use sites `signEval x.val (\u220f j, Q j)` is a coercion application, not function application. It composes exactly two Mathlib declarations that do carry the suffix.",
+   "line": "143"
+  }
+ ],
+ "head_sha": "8dd317f7c17752f56597d4596ac2c1a7010aed76",
+ "merge_base_sha": "decbbae48149972679931828baf223259a86f284",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9621,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "46e2687f7963180b4714f73786d386e096839be5ea2c473588855691c7d65388",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260928T042857Z-9621-naming-ed1e47",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-28T04:28:57Z",
+ "submitted_by": "kim-em",
+ "summary": "Names and namespaces are mostly sound (`tarskiQuery` matches the roadmap's suggested signature and BPR's TaQ; no new notation), but the three central new definitions are named by qualifier rather than by the object they return: `fullMatrix`/`fullInverse`, `SignType.inverseCoeff`, and the bundled hom `signEval`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Data/Fintype/Fiber.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Data/Matrix/OccCount.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Basic/Sign/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Basic/Sign/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "replies.json",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Basic/Sign/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RealAlgebraicGeometry/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/RealAlgebraic/SignDetermination",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "65b756224bc6b6441373105262958d8fa068d5e472aa1c65abf228db50e9d553",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 86548,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 86548,
+  "cache_read_input_tokens": 582514,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2664,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2664,
+    "cache_read_input_tokens": 86885,
+    "input_tokens": 2,
+    "output_tokens": 4035,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22879,
+  "output_tokens_details": {
+   "thinking_tokens": 18836
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
