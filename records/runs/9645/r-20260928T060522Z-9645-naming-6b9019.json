@@ -1,0 +1,246 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6023345,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 1240.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 132545,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 132545,
+    "cache_read_input_tokens": 1225559,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3642,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3642,
+      "cache_read_input_tokens": 131904,
+      "input_tokens": 2,
+      "output_tokens": 2512,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 26559,
+    "output_tokens_details": {
+     "thinking_tokens": 21370
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9ab88a51a6e1d3a32ce5b7b52e6f32bd9efbb542",
+ "cost_usd": 2.602334,
+ "dedupe_key": "TauCetiProject/TauCeti|9645|775dc61bdbc53ec7afa24ed43588df626fde7f1f|naming|claude-opus-5|7b72cafe03b2af65|production|3",
+ "diff_blob": "f40e4ee7f2157fb5adacdf8ec45554d7b0939970ba31189fa30328fa281a6129",
+ "diff_sha256": "f40e4ee7f2157fb5adacdf8ec45554d7b0939970ba31189fa30328fa281a6129",
+ "duration_s": 1240.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Sum.lean:130-136 concludes `(signVariationsAt \u2026 a : \u2124) - signVariationsAt \u2026 b = \u2211 r \u2208 \u2026, sign (p.derivative.eval r * q.eval r)`; Tarski.lean:132 is the same identity named `sum_sign`. Naming doc: \"we rely on descriptive names. Often the name of theorem simply describes the conclusion.\"",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Sum.lean",
+   "fix": "Rename to `Regular.sum_sign` (matching `TauCeti.Sturm.sum_sign`); rename the private helper `sum_of_regular_endpoints` (Sum.lean:74) accordingly, since \"regular\" stutters inside `namespace Regular`.",
+   "issue": "`Regular.sum` is named after one operation appearing on the RHS and nothing else; its sibling for the same statement with a query polynomial is `sum_sign` (Tarski.lean:132), and `h.sum` on a `Regular` hypothesis reads as \"the sum of a regular chain\".",
+   "line": 130
+  },
+  {
+   "evidence": "Local.lean:55-62, 78-83; Sum.lean:42-45, 59-62 \u2014 all four conclude `signVariationsAt cs _ = signVariationsAt cs _`. The author already accepted this standard one round earlier by renaming `signVariationsAt_eq` to `signVariationsAt_eq_of_alternate` (Signs.lean:188) to separate it from `signVariationsAt_const` (Signs.lean:203).",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Local.lean",
+   "fix": "Use the spelling already adopted elsewhere in the PR and distinguish by hypothesis, e.g. `signVariationsAt_eq_of_sign_eq`, `signVariationsAt_eq_of_nonroot`, `signVariationsAt_eq_of_notMem_rootsFinset_right`/`_left`.",
+   "issue": "Four public lemmas in `namespace Regular` share the conclusion shape `signVariationsAt cs x = signVariationsAt cs y` under different hypotheses and none names the quantity consistently: `variations_eq` (Local.lean:55) abbreviates `signVariationsAt` as `variations` \u2014 the only place in the PR that does \u2014 while `eq_at_nonroot` (Local.lean:78), `eq_right` (Sum.lean:42) and `eq_left` (Sum.lean:59) drop it entirely, so `h.eq_right` states no subject. `left`/`right` here mean the direction of extension, not Mathlib's \"which argument changes\".",
+   "line": 55
+  },
+  {
+   "evidence": "Tarski.lean:250 `= (p.roots.toFinset.filter (fun r => a < r \u2227 r < b)).card`; Mathlib names the identical expression shape with `card`: mathlib/Mathlib/Algebra/CubicDiscriminant.lean:400 `theorem card_roots_le \u2026 : P.roots.toFinset.card \u2264 3`, and mathlib/Mathlib/Algebra/Polynomial/Roots.lean:74,80 `card_roots`, `card_roots'`.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Tarski.lean",
+   "fix": "Rename to `card_roots`, `card_roots_Ioi`, `card_roots_Iio`, `card_roots_univ`.",
+   "issue": "`count_roots` (and `count_roots_Ioi`/`count_roots_Iio`/`count_roots_univ`, Infinity.lean:230,240,250) conclude in `Finset.card`, but in Mathlib the name component `count` denotes `List.count`/`Multiset.count`/`Nat.count`, none of which occurs in the statement; `card` is the spelling for a `.card` conclusion.",
+   "line": 245
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Polynomial/Sturm/Sequence.lean:13 \"defines the *Sturm sequence* (signed remainder sequence)\". Naming doc, Prop-valued classes: \"If the class is a noun then its name should begin with `Is`.\" `Signed`'s fields are `nonzero`/`relation`/`terminal` (SignedRemainders.lean:37-46, no signs); `Regular`'s key field is `alternate`, the opposite-sign condition (Local.lean:35-37).",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/SignedRemainders.lean",
+   "fix": "Name them for what they assert, e.g. `IsSignedRemainderSeq` (or `IsSignedRemainderChain`) and `IsAlternating`, matching the `IsRemainder` convention in the same namespace.",
+   "issue": "The PR's two central predicates are bare adjectives that do not identify their content and invert the reader's expectation: `Signed cs` (SignedRemainders.lean:35) holds the *algebraic* remainder identities and exact termination, while the *sign* conditions live in `Regular cs` (Local.lean:29). `Signed` also truncates Mathlib's noun \"signed remainder sequence\" to a modifier, and both sit beside `IsRemainder` (SignedRemainders.lean:29), which does carry the `Is` prefix.",
+   "line": 35
+  }
+ ],
+ "head_sha": "775dc61bdbc53ec7afa24ed43588df626fde7f1f",
+ "merge_base_sha": "9ab88a51a6e1d3a32ce5b7b52e6f32bd9efbb542",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9645,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "e6bc6cfe280f24505ee5faa20602907e176af3e7041cc9a33d770d37e3a57081",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 3,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260928T060522Z-9645-naming-6b9019",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-28T06:05:22Z",
+ "submitted_by": "kim-em",
+ "summary": "Prior-round findings are fixed; four naming issues remain: a theorem named just `sum`, four same-conclusion equality lemmas in `Regular` with inconsistent naming of the quantity, `count_roots` for a `Finset.card` conclusion, and the bare adjective predicates `Signed`/`Regular` next to `IsRemainder`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/GCD.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Infinity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Signs.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Data/List/SignVariations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/List/SignVariations.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Local.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Tarski.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial/Sturm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/RealClosed/Sign.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Sum.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/FieldTheory/Separable.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/SignedRemainders.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 21,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e769867fda5f1f74740cbe7e460f68bddaf9cb35c5101d6ea4a21e62e3679839",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 132545,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 132545,
+  "cache_read_input_tokens": 1225559,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3642,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3642,
+    "cache_read_input_tokens": 131904,
+    "input_tokens": 2,
+    "output_tokens": 2512,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 26559,
+  "output_tokens_details": {
+   "thinking_tokens": 21370
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
