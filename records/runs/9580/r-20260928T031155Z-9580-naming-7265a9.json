@@ -1,0 +1,247 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.122723,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 316.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 98646,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 98646,
+    "cache_read_input_tokens": 1012146,
+    "inference_geo": "not_available",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1814,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1814,
+      "cache_read_input_tokens": 99833,
+      "input_tokens": 2,
+      "output_tokens": 4839,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25202,
+    "output_tokens_details": {
+     "thinking_tokens": 19234
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "cost_usd": 2.122723,
+ "dedupe_key": "TauCetiProject/TauCeti|9580|1a48c27594a0b9f48293483af4016bad3a136804|naming|claude-opus-5|7b72cafe03b2af65|production|5",
+ "diff_blob": "ea02d53feefa59fb8646e37efedfee89ccc8330ff4feac9bee5f503f0fbeb9ba",
+ "diff_sha256": "ea02d53feefa59fb8646e37efedfee89ccc8330ff4feac9bee5f503f0fbeb9ba",
+ "duration_s": 316.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Polynomial/Derivative.lean:684 `theorem derivative_X_sub_C_pow (c : R) (m : \u2115)` and :688 `derivative_X_sub_C_sq` spell the LHS; `Polynomial.factors`/`roots` are unrelated existing notions in the same namespace.",
+   "file": "TauCeti/Algebra/Polynomial/LinearFactor.lean",
+   "fix": "Rename from the differentiated expression as Mathlib does, e.g. `derivative_X_sub_C_pow_succ_mul_X_sub_C_pow_succ_mul`, and update the docstring bullet and the use at AbstractRolle.lean:80.",
+   "issue": "`Polynomial.derivative_root_factors` names neither side of its conclusion; \"root factors\" is not Mathlib terminology, and `factors` in the `Polynomial` namespace already means the multiset of irreducible factors, so the name reads as a statement about `p.factors`/`p.roots` rather than the equation `derivative ((X - C a)^(m+1) * ((X - C b)^(n+1) * r)) = \u2026`. Also advertised under this name in the module docstring (line 40).",
+   "line": "111"
+  },
+  {
+   "evidence": "Complexification.lean:83 signature; every other lemma in Mathlib's `QuadraticAlgebra` namespace is general in `a b` (mathlib/Mathlib/Algebra/QuadraticAlgebra/Discriminant.lean:72 `exists_sq_eq_iff_isSquare_discr {a b : R}`, :180 `not_isField_of_isSquare_discr {a b : K}`); grep shows no Mathlib `QuadraticAlgebra.isSquare`.",
+   "file": "TauCeti/FieldTheory/RealClosure/Complexification.lean",
+   "fix": "Encode the specialisation, e.g. `QuadraticAlgebra.isSquare_neg_one_zero`, or file it as `TauCeti.RealClosure.isSquare_quadraticAlgebra` to match `isAlgClosed_quadraticAlgebra` in the same development; update the use at AlgebraicClosed.lean:80.",
+   "issue": "`_root_.QuadraticAlgebra.isSquare (z : QuadraticAlgebra R (-1) 0) : IsSquare z` takes the unqualified name in Mathlib's `QuadraticAlgebra` namespace, but holds only for the parameters `(-1) 0` over a real closed `R`; read as a general `QuadraticAlgebra` lemma the name asserts something false (over `QuadraticAlgebra \u211d 1 0 \u2245 \u211d \u00d7 \u211d`, `(-1, 1)` is not a square), and `z.isSquare` fails to elaborate for any other `a b`.",
+   "line": "83"
+  },
+  {
+   "evidence": "Galois.lean:53-55 `(hsq : \u2200 x : K, IsSquare x) (hG : IsPGroup 2 (L \u2243\u2090[K] L)) : finrank K L = 1`; FiniteExtension.lean:53 `finrank_ne_two_of_forall_isSquare`, AlgebraicClosed.lean:47 `finrank_eq_one_of_forall_isSquare`, Galois.lean:67 `finrank_eq_one_of_isGalois_of_forall_isSquare`. Naming conventions, \"Identifiers and theorem names\": hypotheses are listed after `of` in the order they appear.",
+   "file": "TauCeti/FieldTheory/RealClosure/Galois.lean",
+   "fix": "Rename to `finrank_eq_one_of_forall_isSquare_of_isPGroup`, listing hypotheses in argument order, and update the use at Galois.lean:73.",
+   "issue": "`finrank_eq_one_of_isPGroup` names only the secondary hypothesis `hG : IsPGroup 2 (L \u2243\u2090[K] L)` and drops `hsq : \u2200 x : K, IsSquare x`, which appears first and is essential \u2014 a 2-group Galois group alone does not give `finrank K L = 1`. Its three siblings in this PR all carry the square-closedness: `finrank_ne_two_of_forall_isSquare`, `finrank_eq_one_of_forall_isSquare`, `finrank_eq_one_of_isGalois_of_forall_isSquare`.",
+   "line": "53"
+  }
+ ],
+ "head_sha": "1a48c27594a0b9f48293483af4016bad3a136804",
+ "merge_base_sha": "7b70c4e92e2ee3246b645af27b1d4fc890b57573",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9580,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5d7f78b857aac0a802750900afce633c325ab066f020309e4f35a5f3bda94c41",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 5,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "95fa10ea655e8dacfcc84b8cd3f3e482e8c852ae",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260928T031155Z-9580-naming-7265a9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-28T03:11:55Z",
+ "submitted_by": "kim-em",
+ "summary": "Both prior findings are fixed: `Polynomial.exists_derivative_root` is now the equal-values Rolle statement matching `PolynomialRolle.exists_derivative_root`, and `natDegree_le_two_of_irreducible` takes `p` explicitly, so it is real dot notation. Three other names remain wrong: `derivative_root_factors` uses non-Mathlib terminology for an equation Mathlib names from its LHS, `QuadraticAlgebra.isSquare` takes the general Mathlib-namespace name for a statement true only of `QuadraticAlgebra R (-1) 0`, and `finrank_eq_one_of_isPGroup` drops the essential square-closedness its three siblings name.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/AbstractRolle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/IVT.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/LinearFactor.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Rolle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Order/Ring/Ordering/Semireal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/QuadraticAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/QuadraticAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/RealClosure/Galois.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/RealClosed/Quadratic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fc0495100851ac5156d0118d22b834d87209e35b681f0ed0e7558a003fa345a1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 98646,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 98646,
+  "cache_read_input_tokens": 1012146,
+  "inference_geo": "not_available",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1814,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1814,
+    "cache_read_input_tokens": 99833,
+    "input_tokens": 2,
+    "output_tokens": 4839,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25202,
+  "output_tokens_details": {
+   "thinking_tokens": 19234
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
