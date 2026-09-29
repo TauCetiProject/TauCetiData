@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.642801,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 230.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 94202,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 94202,
+    "cache_read_input_tokens": 501832,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2573,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2573,
+      "cache_read_input_tokens": 94630,
+      "input_tokens": 2,
+      "output_tokens": 4593,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17991,
+    "output_tokens_details": {
+     "thinking_tokens": 14235
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "77325b55de41aa8bdb88d04c3c88343b92d1e09d",
+ "cost_usd": 1.642801,
+ "dedupe_key": "TauCetiProject/TauCeti|9924|392bca8e00db71cb3e2bc5492e7606a548b86741|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "ca50b7423ee348101f8b9733bce8cfd6fcba61a84cfb15dd854a9c89a973ef69",
+ "diff_sha256": "ca50b7423ee348101f8b9733bce8cfd6fcba61a84cfb15dd854a9c89a973ef69",
+ "duration_s": 230.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Ball.lean:204-206 vs Ball.lean:310-311; grep of `HarmonicOnNhd` across TauCeti shows plain sets everywhere (`closedBall x\u2080 R`, `ball c R`, `{0}\u1d9c`), the only `Opens` occurrence being Laplacian.lean:165 where `\ud835\udcd3(\u03a9, \u211d)` forces it.",
+   "file": "TauCeti/Analysis/PDE/GreenFunction/Ball.lean",
+   "fix": "State `HarmonicOnNhd (ballGreenCorrector n x) (ball (0 : EuclideanSpace \u211d (Fin n)) 1)` and drop the `Opens` wrapper (and the added `TopologicalSpace` open if unused otherwise); the uses in DistributionalLaplacian.lean:50,79 still elaborate, since `\u2191\u27e8ball 0 1, isOpen_ball\u27e9` reduces to `ball 0 1` by projection on a constructor.",
+   "issue": "`harmonicOnNhd_ballGreenCorrector` states the domain as `\u2191(\u27e8ball 0 1, isOpen_ball\u27e9 : Opens (EuclideanSpace \u211d (Fin n)))`, packaging that exists only because the single consumer's `integral_laplacian_smul_eq_zero` takes `\u03a9 : Opens E`. Every other `HarmonicOnNhd` statement in the repo uses a plain set, including `harmonicOnNhd_ballGreenKernel` in the same file (line 311: `ball (0 : EuclideanSpace \u211d (Fin n)) 1 \\ {x}`), so the kernel file now exposes two inconsistent domain shapes and needed a new `open TopologicalSpace` (line 70) for the statement alone.",
+   "line": 205
+  },
+  {
+   "evidence": "Laplacian.lean:63-73: statement mentions only Mathlib types; proof is `\u03c6.contDiff.differentiable ... |>.lineDeriv_eq_fderiv` plus `ContDiff.fderiv_right`/`clm_apply`. It is already used in two unrelated places in the file (lines 102/142 and the new line 192).",
+   "file": "TauCeti/Analysis/Sobolev/WeakDeriv/Laplacian.lean",
+   "fix": "Make it public in the same root namespace as the other test-function lemma, e.g. `theorem _root_.TestFunction.lineDeriv_lineDeriv_eq_fderiv_fderiv (\u03c6 : \ud835\udcd3(\u03a9, F)) (v x : E) : ...`.",
+   "issue": "`lineDeriv_lineDeriv_testFunction` is generalized by this PR from `\ud835\udcd3(\u03a9, \u211d)` to `\ud835\udcd3(\u03a9, F)` and is now a fully general statement about Mathlib's test-function API (`lineDeriv`, `fderiv`, `\ud835\udcd3(\u03a9, F)`) whose proof uses nothing from this file's weak-derivative subject, yet it stays `private` while the equally general `TestFunction.laplacianCLM_apply` right below it is public.",
+   "line": 66
+  }
+ ],
+ "head_sha": "392bca8e00db71cb3e2bc5492e7606a548b86741",
+ "merge_base_sha": "28b58f4e436f8a1c0a6807d880e25928a050e58e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9924,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0c3366bde09138e19858a34a6c9e3b508b54bca5da7798fa2757024e6dd06e31",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "dcc918abe55f0300e74aabda317d0cc00ecaca10",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260929T203231Z-9924-api-design-4b68e9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-29T20:32:31Z",
+ "submitted_by": "kim-em",
+ "summary": "The new corrector-harmonicity lemma states its domain as a bundled `Opens` coercion rather than the plain set every other `HarmonicOnNhd` statement in the repo uses, leaking the consumer's packaging into Ball.lean's public API; and the now-`F`-general test-function lemma `lineDeriv_lineDeriv_testFunction` stays `private` although it is pure Mathlib-level infrastructure.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/GreenFunction/DistributionalLaplacian.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Sobolev/WeakDeriv/Laplacian.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/GreenFunction/Ball.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/FundamentalSolution/Euclidean/DistributionalLaplacian.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Distribution",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Distribution/SchwartzSpace/Deriv.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/FundamentalSolution/Euclidean/Distribution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/GreenFunction/Disk.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9c9e74cf6d0e49c97db8a20e4a45f3da9e961dfe89d5ccdf63a077aff76390bf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 94202,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 94202,
+  "cache_read_input_tokens": 501832,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2573,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2573,
+    "cache_read_input_tokens": 94630,
+    "input_tokens": 2,
+    "output_tokens": 4593,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17991,
+  "output_tokens_details": {
+   "thinking_tokens": 14235
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
