@@ -1,0 +1,244 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2617615,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 338.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105439,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105439,
+    "cache_read_input_tokens": 1241653,
+    "inference_geo": "not_available",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 385,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 385,
+      "cache_read_input_tokens": 108055,
+      "input_tokens": 2,
+      "output_tokens": 4199,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23455,
+    "output_tokens_details": {
+     "thinking_tokens": 17911
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3793d988cc7cc37159ab20e70b214552559eb89e",
+ "cost_usd": 2.261761,
+ "dedupe_key": "TauCetiProject/TauCeti|10318|b182bdccadd3ec37b7f22b54bcce1e9befeff504|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "37eb40459c405a28a4bbbbabb58e2dd00adc41512c27ba9d1711d9a8e1d54c51",
+ "diff_sha256": "37eb40459c405a28a4bbbbabb58e2dd00adc41512c27ba9d1711d9a8e1d54c51",
+ "duration_s": 338.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Point.lean:188 `lemma map_mk (f : R \u2192+* S) (x : R[X][Y]) : map W' f (mk W' x) = mk (W'.map f) (x.map <| mapRingHom f)`; Point.lean:111 `noncomputable abbrev mk : R[X][Y] \u2192+* W'.CoordinateRing`. The new file exposes only `coordinateRingGaloisAction_of` (Galois.lean:147, `p : K[X]`) and `_root` (Galois.lean:137); no `_mk`.",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/Affine/FunctionField/Galois.lean",
+   "fix": "Add `@[simp] theorem coordinateRingGaloisAction_mk (\u03c3 : K \u2243\u2090[F] K) (p : K[X][Y]) : coordinateRingGaloisAction W \u03c3 (CoordinateRing.mk _ p) = CoordinateRing.mk _ (p.map (mapRingHom \u03c3))`, mirroring `CoordinateRing.map_mk`, and the function-field corollary through `functionFieldGaloisAction_algebraMap_coordinateRing` (the analogue of `translation_apply_mk`).",
+   "issue": "The characteristic API for `coordinateRingGaloisAction` stops at the two generators (`_of` for `p : K[X]`, `_root`). There is no rule for a general element `CoordinateRing.mk _ p` with `p : K[X][Y]`, which is how every other coordinate-ring lemma in scope presents elements (Mathlib `WeierstrassCurve.Affine.CoordinateRing.map_mk`, this repo's `CoordinateRing.map_XClass`/`map_YClass`, `translation_apply_mk`). A consumer holding `mk _ p` must re-derive the ring-hom equality via `AdjoinRoot.ringHom_ext` and `RingHom.congr_fun` \u2014 exactly the 50-line pattern this file itself repeats at lines 294-345 \u2014 instead of rewriting.",
+   "line": 147
+  },
+  {
+   "evidence": "Galois.lean:72-107 (`@[simp] private theorem coordinateRingGaloisEquiv_*`) versus Galois.lean:126-153 (`@[simp] theorem coordinateRingGaloisAction_*`), whose bodies are `change coordinateRingGaloisEquiv W \u03c3 ... = _; exact coordinateRingGaloisEquiv_* ...`.",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/Affine/FunctionField/Galois.lean",
+   "fix": "Drop `@[simp]` from the three private lemmas and pass them explicitly in the two proofs that need them (`coordinateRingGaloisAction.map_one'`/`map_mul'`, lines 114-123, currently bare `simp`); keep `@[simp]` only on the public `coordinateRingGaloisAction_algebraMap`/`_root`/`_of`.",
+   "issue": "`coordinateRingGaloisEquiv_algebraMap` (line 72), `coordinateRingGaloisEquiv_root` (line 94) and `coordinateRingGaloisEquiv_of` (line 102) are `private` yet `@[simp]`. Their LHS mentions the private `coordinateRingGaloisEquiv`, which no downstream goal can contain, and each is a verbatim duplicate of the public `coordinateRingGaloisAction_*` rule (the public proofs are `change ...; exact ...`, so the two are the same rewrite up to a def simp will not unfold). The annotations are dead weight in the default simp set.",
+   "line": 72
+  }
+ ],
+ "head_sha": "b182bdccadd3ec37b7f22b54bcce1e9befeff504",
+ "merge_base_sha": "73cddd83c1dc824124e6f62ccbe8da23146afb26",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 10318,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e3f3010011e2fc1b035967c8b8cdbe2e55a93b7db9be8e5baa6acbf0f45a9646",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "dcc918abe55f0300e74aabda317d0cc00ecaca10",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260930T205105Z-10318-api-design-0662a8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-30T20:51:05Z",
+ "submitted_by": "kim-em",
+ "summary": "The new Galois action lacks the `mk`-level computation rule that Mathlib's `CoordinateRing.map_mk` and this repo's `translation_apply_mk` both provide, so a general regular function cannot be pushed through the action without redoing the `AdjoinRoot.ringHom_ext` argument by hand. Three private lemmas also carry dead `@[simp]` annotations duplicating their public counterparts.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/Affine/FunctionField/Galois.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/Affine/Point/Galois.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/Affine/FunctionField/Translation/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/Affine/CoordinateRing.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/Affine/FunctionField/Map.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/Affine/FunctionField/GenericPoint/Reduction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/EllipticCurves",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/EllipticCurve/Affine/CoordinateRingMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/.github",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry/EllipticCurve/Affine",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry/EllipticCurve",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Ring/Aut.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Ring/Aut.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 23,
+  "trace_truncated": false
+ },
+ "transcript_blob": "93751e974ebe7c3b274590c37306df0fd9071d08316ea8aeb9c1653f43cc9539",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105439,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105439,
+  "cache_read_input_tokens": 1241653,
+  "inference_geo": "not_available",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 385,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 385,
+    "cache_read_input_tokens": 108055,
+    "input_tokens": 2,
+    "output_tokens": 4199,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23455,
+  "output_tokens_details": {
+   "thinking_tokens": 17911
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
