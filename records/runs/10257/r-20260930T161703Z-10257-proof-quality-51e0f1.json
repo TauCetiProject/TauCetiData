@@ -1,0 +1,74 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.218628,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 80.0,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 70656,
+    "input_tokens": 98796,
+    "output_tokens": 1420,
+    "reasoning_output_tokens": 694
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bec90467e5a4b1124c7e2812b10ca4e57946b9e3",
+ "cost_estimated": true,
+ "cost_usd": 0.218628,
+ "dedupe_key": "TauCetiProject/TauCeti|10257|189de650f67b1bd5f5d99f9cfc44dcb622b416c6|proof-quality|gpt-5.6-sol|7b72cafe03b2af65|production|1",
+ "diff_blob": "44614141ccba86f90516b7290308f64de44ca7b518a3b4feb1ce98e6a00ae669",
+ "diff_sha256": "44614141ccba86f90516b7290308f64de44ca7b518a3b4feb1ce98e6a00ae669",
+ "duration_s": 80.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 715\u2013721 state goals using `x` and `x.transpose`, but provide terms about `x.toPerm` and `x.toPerm.symm`; the type match therefore depends on definitional reduction across both wrappers.",
+   "file": "TauCeti/KnotTheory/Grid/Diagram/Basic.lean",
+   "fix": "Prove both with an explicit `simpa only [transpose_apply]` from the corresponding `Equiv.apply_symm_apply`/`symm_apply_apply` theorem.",
+   "issue": "`apply_transpose_apply` and `transpose_apply_apply` (line 720) use `Equiv` proof terms directly, so elaboration silently unfolds the `GridState` coercion and `transpose` wrapper.",
+   "line": "715"
+  },
+  {
+   "evidence": "The declaration at lines 72\u201375 equates `G.componentPerm c` with `G.X.transpose (G.O c)` and closes with `(rfl)` despite those expressions crossing several named API wrappers.",
+   "file": "TauCeti/KnotTheory/Grid/Diagram/Components.lean",
+   "fix": "Replace `rfl` with explicit rewrites using `componentPerm_def`, `Equiv.Perm.mul_apply`, `Equiv.Perm.inv_def`, and `GridState.transpose_apply`.",
+   "issue": "`componentPerm_apply` is proved by `rfl`, relying on unfolding `componentPerm`, permutation multiplication/inversion, the `GridState` coercion, and `transpose`.",
+   "line": "72"
+  }
+ ],
+ "head_sha": "189de650f67b1bd5f5d99f9cfc44dcb622b416c6",
+ "merge_base_sha": "341456cdc12a73608d8cc2d1db2275822e8b98e2",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 10257,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7a82f2f210e37155003613ec8b2551ba77d8c9c9b32fbefb6738c6b4970244cc",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "dcc918abe55f0300e74aabda317d0cc00ecaca10",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260930T161703Z-10257-proof-quality-51e0f1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-30T16:17:03Z",
+ "submitted_by": "kim-em",
+ "summary": "Several changed proofs close through undocumented definitional equality across `GridState`, `toPerm`, `transpose`, and permutation multiplication wrappers. Use the public rewrite lemmas so these proofs remain stable if representation details change.",
+ "transcript_blob": "4004c6741ce489ec64f31f31c6ca20d2e22c0472d5fc02d44231abe92bf48025",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 70656,
+  "input_tokens": 98796,
+  "output_tokens": 1420,
+  "reasoning_output_tokens": 694
+ },
+ "verdict": "request_changes"
+}
