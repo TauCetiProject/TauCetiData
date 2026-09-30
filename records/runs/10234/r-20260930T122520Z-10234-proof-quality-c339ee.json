@@ -1,0 +1,220 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7747005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 219.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 99491,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 99491,
+    "cache_read_input_tokens": 657541,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 734,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 734,
+      "cache_read_input_tokens": 101758,
+      "input_tokens": 2,
+      "output_tokens": 1896,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18036,
+    "output_tokens_details": {
+     "thinking_tokens": 13384
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a1facc0c848d95abbf4bf56a5eee0a0e2cc840f1",
+ "cost_usd": 1.774701,
+ "dedupe_key": "TauCetiProject/TauCeti|10234|e937c8f76a1cbf3afa671d8a6eaa47f4fee86b5a|proof-quality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "76375b78f45a59892d88b670e206ebd97a23d2a1bddb9a75943ccc5f2ba9c878",
+ "diff_sha256": "76375b78f45a59892d88b670e206ebd97a23d2a1bddb9a75943ccc5f2ba9c878",
+ "duration_s": 219.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep over `code/TauCeti` for `eq_of_forall_exp_smul|forall_exp_smul_eq` returns nothing; `OneParameter.lean` exposes only `expUnitHom_injective` (:129) and `expUnitHom_inj` (:138), neither of which is stated pointwise in `exp`. The same `rw [\u2190 ofAdd_toAdd t]` / `Units.ext` / `expUnit_coe` juggling also closes `continuousMonoidHom_eq_expUnitHom_of_hasDerivAt` at OneParameter.lean:119-124.",
+   "file": "TauCeti/Geometry/Lie/Exponential/Matrix/Symplectic.lean",
+   "fix": "Add `theorem TauCeti.eq_of_forall_exp_smul_eq {x y : R} (h : \u2200 t : \u211d, NormedSpace.exp (t \u2022 x) = NormedSpace.exp (t \u2022 y)) : x = y` next to `expUnitHom_injective` in `TauCeti/Geometry/Lie/Exponential/OneParameter.lean`, and replace both blocks with `refine TauCeti.eq_of_forall_exp_smul_eq fun s => ?_` (dropping the now-pointless `set s := Multiplicative.toAdd t with hs`, whose `hs` is unused).",
+   "issue": "Lines 93-98 open-code the reduction of `x = y` to `\u2200 t : \u211d, exp (t \u2022 x) = exp (t \u2022 y)` (`expUnitHom_injective` + `ContinuousMonoidHom.ext` + `Units.ext` + `\u2190 ofAdd_toAdd` + `simp only [expUnitHom_apply, expUnit_coe]`). This is a reusable lemma hidden in a proof, and it is now the second verbatim copy: `TauCeti/Geometry/Lie/Exponential/Matrix/SpecialOrthogonal.lean:93-98` is the identical six lines with `Matrix n n \u211d` for `Matrix (l \u2295 l) (l \u2295 l) \u211d`.",
+   "line": 93
+  },
+  {
+   "evidence": "Basic.lean:77-79, 103-105, 108-110 and Exponential/Matrix/Symplectic.lean:72-77 all consist of the same `J * (-J) = 1` insertion plus `noncomm_ring`; `grep` in `mathlib/Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean:269,274` shows the only Mathlib forms require `[Invertible A]`.",
+   "file": "TauCeti/Algebra/Lie/Symplectic/Basic.lean",
+   "fix": "State the cancellation once, e.g. `theorem Matrix.eq_conj_iff_mul_eq {U : Matrix m m R} (hU : IsUnit U) (X Y : Matrix m m R) : X = U * Y * U\u207b\u00b9 \u2194 X * U = U * Y` (or the `J`-specialised `Matrix.eq_J_conj_iff_mul_J_eq` using `isUnit_J`), and reduce all four sites to one `rw`/`exact` each.",
+   "issue": "The equivalence \"`X = J * Y * J\u207b\u00b9` iff `X * J = J * Y`\" is re-derived by hand four times by inserting `J * (-J) = 1` and calling `noncomm_ring`: `transpose_eq_J_conj_inv` (lines 77-79), both directions of `mem_sp_iff_transpose_eq_conj` (lines 103-105 and 108-110), and the calc in `Matrix.exp_mem_symplecticGroup_of_mem_sp` (`TauCeti/Geometry/Lie/Exponential/Matrix/Symplectic.lean:72-77`, which re-does the mpr direction for `exp A`). Mathlib's `Matrix.mul_inv_eq_iff_eq_mul_of_invertible` needs an `Invertible` instance and so does not apply, so the shared step has no existing home.",
+   "line": 77
+  }
+ ],
+ "head_sha": "e937c8f76a1cbf3afa671d8a6eaa47f4fee86b5a",
+ "merge_base_sha": "6abf6f1aed27179b07729b6751e2ade789a35fc3",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 10234,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "06b46148c3c21929063ff197c82870b28c555afe1cd6e144b7cdaa9ada8cdf98",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "dcc918abe55f0300e74aabda317d0cc00ecaca10",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260930T122520Z-10234-proof-quality-c339ee",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-30T12:25:20Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are otherwise robust (noncomm_ring, no change/show, no undocumented defeq), but two reusable facts are re-derived inline: the \"generators agree because the exponential lines agree\" unwrapping, and the \"conjugation by the unit J\" cancellation, which is open-coded four times in this PR.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/Symplectic/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Lie/Exponential/Matrix/Symplectic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Lie/Exponential/Matrix/SpecialOrthogonal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Lie/Subgroup/SpecialOrthogonal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Lie/Subgroup/Symplectic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/SymplecticGroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Lie/Classical.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Lie/Classical.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Lie/Exponential/OneParameter.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Symplectic/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Complex/ArchimedeanCharacter.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "000f1a4a7611fb60a94759c5710a8a0e66718e0f229d2ecb9041a727f279b0a2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 99491,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 99491,
+  "cache_read_input_tokens": 657541,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 734,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 734,
+    "cache_read_input_tokens": 101758,
+    "input_tokens": 2,
+    "output_tokens": 1896,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18036,
+  "output_tokens_details": {
+   "thinking_tokens": 13384
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
