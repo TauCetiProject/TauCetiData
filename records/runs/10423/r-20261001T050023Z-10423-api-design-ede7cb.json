@@ -1,0 +1,212 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8145885000000004,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 257.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 91450,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 91450,
+    "cache_read_input_tokens": 851847,
+    "inference_geo": "not_available",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3558,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3558,
+      "cache_read_input_tokens": 90893,
+      "input_tokens": 2,
+      "output_tokens": 4589,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18961,
+    "output_tokens_details": {
+     "thinking_tokens": 14567
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bd994f912255d4b4810971b95f8d99753e8a6e47",
+ "cost_usd": 1.814589,
+ "dedupe_key": "TauCetiProject/TauCeti|10423|a0af99e4109e2ce38a3c3a294479d1fbe1cabdb6|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "489c7a2d09c26a5599acf06cdc36336a447985fbc917acff1f2277aef9d44afc",
+ "diff_sha256": "489c7a2d09c26a5599acf06cdc36336a447985fbc917acff1f2277aef9d44afc",
+ "duration_s": 257.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Classification.lean:187-191, 268-272, 360-364` add only `_apply`. In-repo precedent for a classification equiv characterizes both directions: `TauCeti/GroupTheory/TriangleGroup/Regular.lean:214` `coe_regularIsoClassEquiv_symm_apply` together with `Regular.lean:223` `coe_regularIsoClassEquiv_mk`, with the docstring at `Regular.lean:204-206` naming both as the characterization.",
+   "file": "TauCeti/AlgebraicTopology/ThricePuncturedSphere/Classification.lean",
+   "fix": "Add the three inverse-direction lemmas as `@[simp]`, each next to its `_apply`: `(tripleEquiv.symm t).triple = t`, `(ConnectedCoverClass.isoClassEquiv.symm c).isoClass = c`, `(ConnectedPointedCoverClass.markedClassEquiv.symm c).markedClass = c` (proof: `rw [\u2190 tripleEquiv_apply, Equiv.apply_symm_apply]` and analogues). This restores simp confluence with the `_apply` lemmas and gives downstream the realisation statement through the equiv.",
+   "issue": "`tripleEquiv` (line 182), `ConnectedCoverClass.isoClassEquiv` (264) and `ConnectedPointedCoverClass.markedClassEquiv` (355) each get only the forward `@[simp] _apply` lemma (191, 269, 361). The inverse \u2014 the realisation direction, which is the point of the surjectivity half \u2014 has no characteristic lemma, and because `tripleEquiv C = C.triple` is `@[simp]`, `Equiv.apply_symm_apply`/`symm_apply_apply` can no longer fire on these equivs: a goal `(tripleEquiv.symm t).triple = t` matches neither `tripleEquiv ?C` nor `tripleEquiv (tripleEquiv.symm ?x)`, so `simp` cannot close it and a consumer must hand-rewrite `\u2190 tripleEquiv_apply` before `Equiv.apply_symm_apply`. Same for `(isoClassEquiv.symm c).isoClass = c` and `(markedClassEquiv.symm c).markedClass = c`.",
+   "line": "191"
+  }
+ ],
+ "head_sha": "a0af99e4109e2ce38a3c3a294479d1fbe1cabdb6",
+ "merge_base_sha": "6b3ac3e1c7b7fe9324d9385c6f1412126ce9170b",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 10423,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8286a4a2f674065876745337062f00588606e1c491d04d9f16b6706c7e04a77d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "dcc918abe55f0300e74aabda317d0cc00ecaca10",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261001T050023Z-10423-api-design-ede7cb",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-01T05:00:23Z",
+ "submitted_by": "kim-em",
+ "summary": "The surface is minimal, bodies are unexposed, and the `_surjective`/`_bijective`/`_apply` lemmas are correctly annotated; but none of the three new equivs has an elimination lemma for its inverse, and the `@[simp] _apply` lemmas block the generic `Equiv` round-trip lemmas, so the realisation direction is unusable through the new API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/ThricePuncturedSphere/Classification.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/ThricePuncturedSphere/MonodromyTriple.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/UniversalCover/Classification/NumberedFiber.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/UniversalCover/Classification/Reconstruction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/BelyiMaps/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/BelyiMaps/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/UniversalCover/Classification/FundamentalGroupAction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/UniversalCover/Classification/MonodromyEquivalence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/UniversalCover/Classification/NumberedFiber.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/ThricePuncturedSphere",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/ThricePuncturedSphere/BranchPointAction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/TriangleGroup/Regular.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bbadd776b075b37078dd3da75939d3d1b5eb603732c7795ad58faa80ea5f98a7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 91450,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 91450,
+  "cache_read_input_tokens": 851847,
+  "inference_geo": "not_available",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3558,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3558,
+    "cache_read_input_tokens": 90893,
+    "input_tokens": 2,
+    "output_tokens": 4589,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18961,
+  "output_tokens_details": {
+   "thinking_tokens": 14567
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
