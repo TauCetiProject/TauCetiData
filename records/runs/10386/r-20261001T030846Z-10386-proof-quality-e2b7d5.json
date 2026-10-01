@@ -1,0 +1,229 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0436,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 312.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 102748,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 102748,
+    "cache_read_input_tokens": 847880,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4384,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4384,
+      "cache_read_input_tokens": 101365,
+      "input_tokens": 2,
+      "output_tokens": 4016,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23682,
+    "output_tokens_details": {
+     "thinking_tokens": 18272
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9582ef7d89b3cfc2be36820e7cf4e9bd4ec28593",
+ "cost_usd": 2.0436,
+ "dedupe_key": "TauCetiProject/TauCeti|10386|ac040ab91b415f7f1315e58f4277ea43603d4605|proof-quality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "a5fcc9aa783536b2b03ab6a98183c3b6c930d56d1e993dfa463496f4a0adcaf1",
+ "diff_sha256": "a5fcc9aa783536b2b03ab6a98183c3b6c930d56d1e993dfa463496f4a0adcaf1",
+ "duration_s": 312.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Truncation.lean:229-238 vs LocalBoundedness.lean:127-136 are character-identical modulo `hts`/`hts\u03a9` and `hwl`/`hwLp`; both callers have the same `hu` hypothesis shape (LocalBoundedness.lean:91-93).",
+   "file": "TauCeti/Analysis/PDE/Caccioppoli/Truncation.lean",
+   "fix": "Add a zero-forcing variant in this file, e.g. `UniformlyEllipticOn.setIntegral_sq_mul_norm_gradient_posPartAbove_sq_le_of_memLp_of_nonpos` concluding `\u222b \u03c8\u00b2 \u2016\u2207w\u2016\u00b2 \u2264 (2\u039b/\u03bb)\u00b2 \u222b \u2016\u2207\u03c8\u2016\u00b2 w\u00b2` from `\u2200 v, 0 \u2264 v \u2192 energyFormH1 a 0 0 u v \u2264 0`, and use it both here and in LocalBoundedness.lean.",
+   "issue": "Lines 229-238 (casting the `energyFormH1 a 0 0 u v \u2264 0` subsolution hypothesis into the `f`-version, plus `hzero` to kill the forcing term) are a verbatim copy of LocalBoundedness.lean:127-136; within this proof the `filter_upwards [Lp.coeFn_zero ...]` block is itself written twice (230-232 and 233-236). The `hI2` `bdd_mul` block at 261-266 likewise duplicates LocalBoundedness.lean:145-148.",
+   "line": "229"
+  },
+  {
+   "evidence": "grep for `memLp_posPartAbove` finds only ChainRule.lean:562, which requires `0 \u2264 k`; LevelSetDecay.lean:232-237 and LocalBoundedness.lean:114-117 are the same `hwLp.of_le \u2026 max_le_max` argument.",
+   "file": "TauCeti/Analysis/PDE/Regularity/LevelSetDecay.lean",
+   "fix": "Add `W1p.memLp_posPartAbove_of_le` (monotonicity of the truncation level) next to `W1p.memLp_posPartAbove` in Analysis/Sobolev/W1p/ChainRule.lean:562 and use it at both sites.",
+   "issue": "`hwj` \u2014 `MemLp (u - k)\u207a \u2192 k \u2264 l \u2192 MemLp (u - l)\u207a` \u2014 is proved inline and duplicates LocalBoundedness.lean:114-117. This is a reusable fact about truncations with no existing lemma.",
+   "line": "232"
+  },
+  {
+   "evidence": "LevelSetDecay.lean:139-141 and :205-206 are the same rewrite chain; Mathlib has `Measure.addHaar_real_ball_center` but no `measureReal` version of `addHaar_ball_of_pos`, so the repo re-derives it (Morrey.lean:209, MaximalFunction.lean:243, Harnack/Basic.lean:80).",
+   "file": "TauCeti/Analysis/PDE/Regularity/LevelSetDecay.lean",
+   "fix": "Hoist a file-level private lemma `mu.real (ball x \u03c1) = \u03c1 ^ finrank \u211d E * mu.real (ball 0 1)` (for `0 < \u03c1`) plus its positivity corollary, and obtain `h\u03c9` from it by `ring`.",
+   "issue": "The Haar ball-volume scaling is unfolded twice in this file: `h\u03c9` (138-141) and `hball_real` (203-206) both expand `Measure.addHaar_ball_of_pos` through `measureReal_def`/`ENNReal.toReal_mul`; `0 < V` is likewise reproved at 142 and 211-214.",
+   "line": "138"
+  },
+  {
+   "evidence": "Proof body spans lines 186-305; `hstep` at 227-275 is a closed sub-argument whose only external inputs are `hcacc`, `hM`, `h\u03b8k` and the level definitions, and the PR description states the oscillation-decay step consumes this estimate again.",
+   "file": "TauCeti/Analysis/PDE/Regularity/LevelSetDecay.lean",
+   "fix": "Extract `hE` (and preferably the whole one-step inequality `A (j+1)\u00b2 \u2264 K V D j`) as a private lemma beside `sq_mul_sq_sub_mul_measureReal_le`, leaving the main proof as constant bookkeeping plus the summation.",
+   "issue": "The main proof is ~120 lines, with the 49-line `hstep` block (227-275) inline. Its sub-step `hE` (240-252) \u2014 `\u222b_{B_R} \u2016\u2207(u-k)\u207a\u2016\u00b2 \u2264 (2\u039b/\u03bb)\u00b2 (c/R)\u00b2 (M-k)\u00b2 |B_{2R}|`, i.e. Caccioppoli combined with the one-sided bound `u \u2264 M` \u2014 is a self-contained reusable estimate that the planned oscillation-decay step needs again.",
+   "line": "186"
+  }
+ ],
+ "head_sha": "ac040ab91b415f7f1315e58f4277ea43603d4605",
+ "merge_base_sha": "251bf7629b487df69763051ebfe38b56abd9cd89",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 10386,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "397e8e262cabfdedee3e2865931252caadc9e22b2b6e8fbaebe3f1bba27c1783",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "dcc918abe55f0300e74aabda317d0cc00ecaca10",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261001T030846Z-10386-proof-quality-e2b7d5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-01T03:08:46Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are robust in their automation and free of undocumented defeq tricks, but three blocks of substantial reasoning are copy-pasted rather than factored into lemmas (two of them duplicating LocalBoundedness.lean verbatim), and the main 120-line proof keeps a reusable energy estimate inline.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/Regularity/LevelSetDecay.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/Caccioppoli/Truncation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/Gradient/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/Gradient/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/Harnack/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/Regularity/LocalBoundedness.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0330770ca244e083242b0c27568ab9a4c55aeae19fc409a96f8580d28b48e066",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 102748,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 102748,
+  "cache_read_input_tokens": 847880,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4384,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4384,
+    "cache_read_input_tokens": 101365,
+    "input_tokens": 2,
+    "output_tokens": 4016,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23682,
+  "output_tokens_details": {
+   "thinking_tokens": 18272
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
