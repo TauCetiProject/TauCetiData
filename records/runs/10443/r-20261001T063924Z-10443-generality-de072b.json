@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0924199999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 258.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 111947,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 111947,
+    "cache_read_input_tokens": 934010,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3451,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3451,
+      "cache_read_input_tokens": 111497,
+      "input_tokens": 2,
+      "output_tokens": 7827,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20233,
+    "output_tokens_details": {
+     "thinking_tokens": 15882
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "66ce614ff4d897608e40570c7e6f124082796d7b",
+ "cost_usd": 2.09242,
+ "dedupe_key": "TauCetiProject/TauCeti|10443|c7fdede9e8772834282d07cb1ab3f341fcdd6c09|generality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "f78285d761bb8bc26b4d35d64b3ed9ec0c7309761df80ea4f5e87fac3a239c8d",
+ "diff_sha256": "f78285d761bb8bc26b4d35d64b3ed9ec0c7309761df80ea4f5e87fac3a239c8d",
+ "duration_s": 258.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Proofs use only `hr i`/`hr j` (RamificationIndex.lean:97-104) and no family structure at all in lines 84-89. The sibling lemmas in the same development are already pointwise: `apply_eq_self_of_mem_inertia {x : K} {c : \u2124} (hx : x ^ 2 = algebraMap \u2124 K c)` (ResidueDegree.lean:131) and `NumberField.isArithFrobAt_apply_sqrt_eq_self_iff (hodd) {d : \u2124} (hd) {x : K} (hx : x ^ 2 = algebraMap \u2124 K d)` (Frobenius.lean:188-191), the latter stated for `[Field K] [CharZero K]` in its dyadic companion (Frobenius.lean:235).",
+   "file": "TauCeti/NumberTheory/Multiquadratic/RamificationIndex.lean",
+   "fix": "State `not_dvd_ediv_mul_ediv {a b : \u2124} (ha : (p:\u2124) \u2223 a) (ha2 : \u00ac (p:\u2124)^2 \u2223 a) (hb : (p:\u2124) \u2223 b) (hb2 : \u00ac (p:\u2124)^2 \u2223 b) : \u00ac (p:\u2124) \u2223 a / p * (b / p)` and `mul_div_natCast_sq {K : Type*} [Field K] [CharZero K] {x y : K} {a b : \u2124} (hx : x ^ 2 = algebraMap \u2124 K a) (hy : y ^ 2 = algebraMap \u2124 K b) (ha : (p:\u2124) \u2223 a) (hb : (p:\u2124) \u2223 b) : (x * y / p) ^ 2 = algebraMap \u2124 K (a / p * (b / p))`; call sites pass `hr i`, `hr j`, `hi`, `hj` unchanged.",
+   "issue": "`not_dvd_ediv_mul_ediv` is a pure statement about two integers but is stated as `\u00ac (p:\u2124) \u2223 d i / p * (d j / p)` for a family `d : \u03b9 \u2192 \u2124` and indices `i j : \u03b9`; a caller holding two integers must manufacture a family and two indices. Same under-generalization in `mul_div_natCast_sq` (line 94), which in addition is about two elements `x y : K` with `x ^ 2 = algebraMap \u2124 K a`, `y ^ 2 = algebraMap \u2124 K b`, and needs only `p \u2260 0` in `K` (so `[Field K] [CharZero K]`, not `[NumberField K]`).",
+   "line": 84
+  },
+  {
+   "evidence": "The proof (lines 110-112) consumes `hr` only through `mul_div_natCast_sq hr hi hj`, i.e. via `hr i` and `hr j`, and rewrites with the pointwise `isArithFrobAt_apply_sqrt_eq_self_iff`, which it directly parallels.",
+   "file": "TauCeti/NumberTheory/Multiquadratic/DecompositionType.lean",
+   "fix": "State it as `{x y : K} {a b : \u2124} (hx : x ^ 2 = algebraMap \u2124 K a) (hy : y ^ 2 = algebraMap \u2124 K b) (hodd : p \u2260 2) (ha : (p:\u2124) \u2223 a) (ha2 : \u00ac (p:\u2124)^2 \u2223 a) (hb : (p:\u2124) \u2223 b) (hb2 : \u00ac (p:\u2124)^2 \u2223 b) (Q) [Q.LiesOver (span {(p:\u2124)})] {\u03c3} (h\u03c3) : \u03c3 x * \u03c3 y = x * y \u2194 legendreSym p (a / p * (b / p)) = 1`; the uses at lines 141 and 158 then pass `(hr i) (hr j)`.",
+   "issue": "`isArithFrobAt_apply_mul_apply_eq_mul_iff` has the same unnecessary indexing: it takes the whole family hypothesis `hr : \u2200 i, r i ^ 2 = algebraMap \u2124 K (d i)` and indices `i j : \u03b9` while the statement concerns only `\u03c3 x * \u03c3 y = x * y \u2194 legendreSym p (a / p * (b / p)) = 1` for two roots.",
+   "line": 105
+  },
+  {
+   "evidence": "`IsArithFrobAt.ne_bot` is available in exactly this setting (`code/TauCeti/RingTheory/Frobenius.lean:96`, needs `[FaithfulSMul R S] [Infinite R]` with `R = \ud835\udcde K`) and is already used this way in the same file: `zpowers_sup_inertia_eq_top_of_isArithFrobAt` line 290, `have hQ : Q \u2260 \u22a5 := h\u03c3.ne_bot`, with no `hQ` argument.",
+   "file": "TauCeti/NumberTheory/NumberField/Frobenius/DecompositionGroup.lean",
+   "fix": "Drop `hQ` from both and open each proof with `have hQ : Q \u2260 \u22a5 := h\u03c3.ne_bot`; then delete the `hp0`/`hQ` preambles in the two `IntegersRat.lean` wrappers. (`orderOf_stabilizerHom_eq_inertiaDeg_of_isArithFrobAt` genuinely needs `hQ` in its statement for the `IsMaximal`/`Fintype` `let`s, so it can keep it \u2014 or use `h\u03c3.ne_bot` there too.)",
+   "issue": "`inertiaDeg_dvd_orderOf_of_isArithFrobAt` and `inertiaDeg_eq_one_iff_mem_inertia_of_isArithFrobAt` (line 215) take `(hQ : Q \u2260 \u22a5)`, which does not occur in either statement and is implied by `h\u03c3`. Callers pay for it: the `\u2124`-level wrappers `Ideal.inertiaDeg_dvd_orderOf` and `Ideal.inertiaDeg_eq_one_iff_mem_inertia` each build `hp0`/`hQ` by hand (IntegersRat.lean:237-241, 251-255) only to feed this argument.",
+   "line": 201
+  }
+ ],
+ "head_sha": "c7fdede9e8772834282d07cb1ab3f341fcdd6c09",
+ "merge_base_sha": "8f4ad1f7b7e56f3a9005d0154e477d034371c2e2",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 10443,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "463ae4e1176153432654b18dd184dec01ba3b0a996edec8862030d1317b3cfc1",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "dcc918abe55f0300e74aabda317d0cc00ecaca10",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261001T063924Z-10443-generality-de072b",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-01T06:39:24Z",
+ "submitted_by": "kim-em",
+ "summary": "The three new per-pair lemmas (`not_dvd_ediv_mul_ediv`, `mul_div_natCast_sq`, `isArithFrobAt_apply_mul_apply_eq_mul_iff`) are stated through an indexed family `d : \u03b9 \u2192 \u2124`, `r : \u03b9 \u2192 K` although their content is about two integers and two square roots; the neighbouring lemmas they are built from are already pointwise. The two new Frobenius lemmas also carry a `Q \u2260 \u22a5` hypothesis derivable from the Frobenius hypothesis.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/Multiquadratic/DecompositionType.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/Multiquadratic/RamificationIndex.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/Multiquadratic/ResidueDegree.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/Multiquadratic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/NumberField/Frobenius/DecompositionGroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Frobenius.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/NumberField/Ideal/IntegersRat.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/NumberField/Ideal/IntegersRat.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "562d4b3a9326f5bb959f25e5a8ede56388ca08a25921f3ea04dc6de7ef39c4ed",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 111947,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 111947,
+  "cache_read_input_tokens": 934010,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3451,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3451,
+    "cache_read_input_tokens": 111497,
+    "input_tokens": 2,
+    "output_tokens": 7827,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20233,
+  "output_tokens_details": {
+   "thinking_tokens": 15882
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
