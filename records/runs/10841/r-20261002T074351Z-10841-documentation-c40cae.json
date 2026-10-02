@@ -1,0 +1,188 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.787471,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 125.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 42386,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 42386,
+    "cache_read_input_tokens": 263542,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1054,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1054,
+      "cache_read_input_tokens": 44333,
+      "input_tokens": 2,
+      "output_tokens": 1262,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9270,
+    "output_tokens_details": {
+     "thinking_tokens": 6687
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "660da5147767363df90205d67b19203c66788596",
+ "cost_usd": 0.787471,
+ "dedupe_key": "TauCetiProject/TauCeti|10841|702639b3413d666356589e8286ec37f5bd21e2da|documentation|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "4e0a18e4c755c76afd64e69b20d57338c993207e389da194a6c2e435fbfab66a",
+ "diff_sha256": "4e0a18e4c755c76afd64e69b20d57338c993207e389da194a6c2e435fbfab66a",
+ "duration_s": 125.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "scripts/lean_source.py:849-852 help text vs. scripts/test_lint_dot_notation.py:473 `test_scoped_run_catches_violations_exposed_by_a_removed_owning_type`, which asserts result == 1 and \"TauCeti.Foo.bar\" for an unlisted `User.lean`.",
+   "file": "scripts/lean_source.py",
+   "fix": "Qualify it: a PR can also add a violation in an unchanged file by altering which namespaces Tau Ceti owns, which is why `--base-source-root` is required and forces a full check when ownership differs.",
+   "issue": "The `--only-modules` help still claims \"A PR can add a violation only where it changes a file, as long as the Mathlib pin is unchanged\". That is false and is exactly what this PR's new test disproves: editing or deleting a sort-valued owning type adds a violation in an unchanged, unlisted file. The author qualified the neighbouring `--base-source-root` help but left this one asserting the old invariant.",
+   "line": "848"
+  },
+  {
+   "evidence": "scripts/test_lint_dot_notation.py:437-452: the `for tree in (\"base\", \"head\")` loop and the returned `[\"--mathlib-root\", ..., \"--baseline\", ...]` list.",
+   "file": "scripts/test_lint_dot_notation.py",
+   "fix": "State it: builds identical base and head trees in which `Own.lean` owns `TauCeti.Foo` and `User.lean` relies on that, plus an empty baseline, and returns the shared lint arguments.",
+   "issue": "`_scoped_tree`'s docstring (\"A merge base where `Own.lean` owns `TauCeti.Foo` and `User.lean` relies on that\") describes only half the helper: it builds both `base/` and `head/` with identical contents, writes an empty baseline, and returns the common CLI args. The fact each test depends on \u2014 head starts identical to base, so a mutation of `head/` is the only ownership difference \u2014 is not stated.",
+   "line": "437"
+  },
+  {
+   "evidence": "scripts/test_lint_dot_notation.py:474 `for how in (\"delete\", \"edit\")`, with the edit branch writing `def Foo : Nat := 0`.",
+   "file": "scripts/test_lint_dot_notation.py",
+   "fix": "Name it for both cases (e.g. `..._by_a_changed_owning_type`) or add a one-line docstring saying it pins both the deleted and the edited owning type.",
+   "issue": "`test_scoped_run_catches_violations_exposed_by_a_removed_owning_type` has no docstring, and its name covers only one of its two subtests; the `how == \"edit\"` branch exercises an owning type rewritten to a non-sort-valued `def`, not a removal.",
+   "line": "473"
+  }
+ ],
+ "head_sha": "702639b3413d666356589e8286ec37f5bd21e2da",
+ "merge_base_sha": "660da5147767363df90205d67b19203c66788596",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 10841,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a502e9e2c2d5d7185fea12c8ae050e035653a960c04a3f33f2a569f2be71acfc",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "0f3f54e3931d2cdba6af69bec434b27e0632f327",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261002T074351Z-10841-documentation-c40cae",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-02T07:43:51Z",
+ "submitted_by": "kim-em",
+ "summary": "The Axioms.lean docstrings and the lint-scope.sh comment are accurate against the code and the pr-build.yml caller, but the `--only-modules` help text still states the false invariant this PR exists to correct, and the new test helper's docstring misdescribes what it builds.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/scripts/Axioms.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lint-scope.sh",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lean_source.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-build.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lean_source.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lint-dot-notation.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lean_source.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/test_lint_dot_notation.py",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6110c99cf8f3ef0ac2ccf16905d983207118256801790ca1fbb9db9f98798412",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 42386,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 42386,
+  "cache_read_input_tokens": 263542,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1054,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1054,
+    "cache_read_input_tokens": 44333,
+    "input_tokens": 2,
+    "output_tokens": 1262,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9270,
+  "output_tokens_details": {
+   "thinking_tokens": 6687
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
