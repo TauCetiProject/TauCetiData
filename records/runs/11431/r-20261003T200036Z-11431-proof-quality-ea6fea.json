@@ -1,0 +1,227 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9971830000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 319.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 92129,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 92129,
+    "cache_read_input_tokens": 876626,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 946,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 946,
+      "cache_read_input_tokens": 94184,
+      "input_tokens": 2,
+      "output_tokens": 10493,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25498,
+    "output_tokens_details": {
+     "thinking_tokens": 20649
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9e6d4006c12edc2f9f0ce69001828727557b86e3",
+ "cost_usd": 1.997183,
+ "dedupe_key": "TauCetiProject/TauCeti|11431|640f6a623cbb6347905e9f0b26b6abbc96f5e556|proof-quality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "017e5ec25901e360e5985f9b13b3daefa1df501373eb0dab19dd471d7c98f202",
+ "diff_sha256": "017e5ec25901e360e5985f9b13b3daefa1df501373eb0dab19dd471d7c98f202",
+ "duration_s": 319.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 278-280, 285-287, 354-356, 362-364, 376-378 are the same three-line incantation; lines 353 and 280/287 compute the same scale/translation composition `(c * c', c \u2022 b' + b)`.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "fix": "Prove one private lemma `similarityMap c hc b (similarityMap c' hc' b' x) = similarityMap (c * c') _ (c \u2022 b' + b) x` plus a small congruence/identity lemma (`c = 1`, `b = 0` \u21d2 `similarityMap c hc b x = x`) to work around the dependent `0 < c` argument, and derive `left_inv`, `right_inv`, `similarity_mul`, `similarity_inv` from them. Also add one `coe`-level extensionality lemma (fst and `height`) so the repeated `ext : 1; rw [WithLp.ext_iff]; ext` block disappears; the remaining goals are module algebra in `WithLp 2 (E \u00d7 \u211d)` and need no component split.",
+   "issue": "The composition law of similarities is never stated; the same `ext : 1; rw [WithLp.ext_iff]; ext <;> simp [coe_similarityMap, smul_smul, ...]` component-wise computation is repeated five times: `similarityMap_inv_similarityMap` (275-280), `similarityMap_similarityMap_inv` (282-287), `similarity_mul` (351-356), `similarity_inv` (359-364), `isPretransitive_isom` (369-378). `similarity_mul` in particular redoes at the `Isom` level the arithmetic already done twice at the `similarityMap` level.",
+   "line": "275"
+  },
+  {
+   "evidence": "`RiemannianIsometry`'s coe is the `EquivLike` instance at Isometry/Basic.lean:56-60 via `toDiffeomorph`, for which Mathlib/TauCeti already provide rewrite lemmas (`RiemannianIsometry.coe_toDiffeomorph`, Isometry/Basic.lean:71). The same pattern of silent synonym crossing appears at line 184 (`let y : upperHalfSpace E := x`, then `exact h`) and line 239 (`(f : HyperbolicSpace E \u2192 upperHalfSpace E)` ascription making `coe \u2218 f` match `Subtype.val \u2218 f`); those are at least covered by the file comment at 82-84, the three `similarity` lemmas are not.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "fix": "State the defeq once: `@[simp] theorem coe_similarity (c : \u211d) (hc : 0 < c) (b : E) : \u21d1(similarity c hc b) = similarityMap c hc b := rfl`, with a one-line comment that the coercion is the structure projection, and prove the three lemmas by rewriting with it (and `coe_similarityMap`) instead of re-crossing the wrappers.",
+   "issue": "`coe_similarity_apply := (rfl)` (331-334) closes a goal that traverses the `EquivLike` coe of `RiemannianIsometry`, `Diffeomorph`'s coe, `Equiv.toFun`, `mk`/`coe`, and the `HyperbolicSpace` synonym, with no comment. `height_similarity_apply` (338-340) and `tangentSpaceCastModel_mfderiv_similarity` (343-348) each independently re-rely on the same unfolding by applying the `similarityMap`-level lemma directly to a `similarity`-level statement.",
+   "line": "331"
+  }
+ ],
+ "head_sha": "640f6a623cbb6347905e9f0b26b6abbc96f5e556",
+ "merge_base_sha": "6751a1980f2c63e0796a378b845176e1ed87f024",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11431,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "19d8773b97f100e25fcd8839402f349a41be4e796d240819fe610a44a8431239",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be3717ec5f5b525689e17f7f20e3d8ac48d13256",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261003T200036Z-11431-proof-quality-ea6fea",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T20:00:36Z",
+ "submitted_by": "kim-em",
+ "summary": "The similarity algebra re-derives the same affine composition computation coordinate-by-coordinate in five places instead of proving the composition law once, and three public `similarity` lemmas each rest on an undocumented `rfl` chain through the `RiemannianIsometry`/`Diffeomorph`/`Equiv` coercions and the type synonym rather than going through one explicit coercion lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Riemannian/Conformal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Restriction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/ContMDiff/Subtype.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Action.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Euclidean.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/ContDiff/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/VectorBundle/ContMDiffSection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/PoincareMetric.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/PoincareMetric.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/VectorBundle/Riemannian.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/Riemannian/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/VectorBundle/Riemannian.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/VectorBundle/Riemannian.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f12534c5c141b8ba1a5cd754d848aa2c815aa1e07bc30e5e03c8d2126aeba968",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 92129,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 92129,
+  "cache_read_input_tokens": 876626,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 946,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 946,
+    "cache_read_input_tokens": 94184,
+    "input_tokens": 2,
+    "output_tokens": 10493,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25498,
+  "output_tokens_details": {
+   "thinking_tokens": 20649
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

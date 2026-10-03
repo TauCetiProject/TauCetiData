@@ -1,0 +1,245 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0946495,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 293.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 104283,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 104283,
+    "cache_read_input_tokens": 956409,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1969,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1969,
+      "cache_read_input_tokens": 105315,
+      "input_tokens": 2,
+      "output_tokens": 6594,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22939,
+    "output_tokens_details": {
+     "thinking_tokens": 17493
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9e6d4006c12edc2f9f0ce69001828727557b86e3",
+ "cost_usd": 2.09465,
+ "dedupe_key": "TauCetiProject/TauCeti|11431|640f6a623cbb6347905e9f0b26b6abbc96f5e556|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "017e5ec25901e360e5985f9b13b3daefa1df501373eb0dab19dd471d7c98f202",
+ "diff_sha256": "017e5ec25901e360e5985f9b13b3daefa1df501373eb0dab19dd471d7c98f202",
+ "duration_s": 293.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`private theorem contMDiff_of_contMDiff_coe_comp {f : HyperbolicSpace E \u2192 HyperbolicSpace E}`; its body needs the ascription `(f : HyperbolicSpace E \u2192 upperHalfSpace E)`, which only elaborates because the synonym is defeq-unfolded inside this file.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "fix": "Make it public and state it as an iff for `f : M \u2192 HyperbolicSpace E` from an arbitrary manifold `M`, not just for self-maps.",
+   "issue": "`contMDiff_of_contMDiff_coe_comp` is `private` and restricted to self-maps, yet it is the only bridge for `C^n` maps *into* `HyperbolicSpace E`. Since `HyperbolicSpace` is a semireducible `def` (line 80), consumers cannot apply `TauCeti.ContMDiff.subtypeVal_comp_iff` (Subtype.lean:77) without unfolding the synonym, so no curve `\u211d \u2192 HyperbolicSpace E` can be shown smooth with the public API \u2014 exactly what later length/geodesic/volume work needs.",
+   "line": "234"
+  },
+  {
+   "evidence": "Lines 252-258: `hcoe`, `mfderiv_comp_apply`, `rw [hcomp, h\u2082, mfderiv_coe_apply, mfderiv_coe_apply, hA.hasMFDerivAt.mfderiv]`; `TauCeti.Manifold.mfderiv_subtype_val` (Tangent.lean:550) is the only ingredient behind `mfderiv_coe_apply`.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "fix": "Relocate the general form (`U V : Opens F`, `f : U \u2192 V`, `HasFDerivAt A L \u2191x`, `Subtype.val \u2218 f = A \u2218 Subtype.val`, conclusion via `TauCeti.Manifold.tangentSpaceOpenEquiv`) to `TauCeti/Geometry/Manifold/ContMDiff/Subtype.lean` or `VectorBundle/Tangent.lean`, public, and keep a public hyperbolic restatement here since the synonym blocks direct use.",
+   "issue": "`tangentSpaceCastModel_mfderiv_apply` is general infrastructure hidden as `private`: its proof uses only `contMDiff_coe`, `mfderiv_coe_apply` and `mfderiv_comp_apply` \u2014 nothing about the half-space, the height, or the metric. The deferred isometries (inversions in spheres) and any other open-subset model space must re-prove it.",
+   "line": "243"
+  },
+  {
+   "evidence": "Restriction.lean:318-348 provides the parallel trio `inner_tangentSpace_open`, `norm_tangentSpace_open`, `enorm_tangentSpace_open`, all `@[simp]`; Restriction.lean:369 shows `pathELength_eq_lintegral_mfderiv_Icc` consuming the enorm form.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "fix": "Tag `inner_def` `@[simp]` and add `\u2016v\u2016 = \u2016tangentSpaceCastModel \ud835\udcd8(\u211d, WithLp 2 (E \u00d7 \u211d)) x v\u2016 / height x` plus its `\u2016\u00b7\u2016\u2091` form, mirroring `TauCeti.Manifold.norm_tangentSpace_open`/`enorm_tangentSpace_open`.",
+   "issue": "Characteristic API of the installed metric is incomplete: `inner_def` is the only instance-level lemma and it carries no `@[simp]` (the bundled `riemannianMetric_inner` cannot fire on `inner \u211d v w`), and there is no `norm`/`enorm` form, which every length computation needs since `pathELength` is a `lintegral` of `\u2016mfderiv \u2026\u2016\u2091`.",
+   "line": "226"
+  },
+  {
+   "evidence": "Lines 351-364: only `*` and `\u207b\u00b9` are covered, both untagged; `RiemannianIsometry.one_apply`/`mul_apply`/`inv_apply` are all `@[simp]` in Isometry/Group.lean:99-109, and `similarity_inv`'s proof re-derives the unit case inline.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "fix": "Add `@[simp] theorem similarity_one : similarity 1 one_pos (0 : E) = 1` and tag `similarity_mul`/`similarity_inv` `@[simp]`.",
+   "issue": "`similarity`'s interaction with the group operations is incomplete and unannotated: `similarity_mul` and `similarity_inv` are normal-form reductions but carry no `@[simp]` (unlike `coe_similarity_apply`/`height_similarity_apply`), and the unit law `similarity 1 _ 0 = 1` is missing, so the `1` of `Isom` is unconnected to the family.",
+   "line": "351"
+  }
+ ],
+ "head_sha": "640f6a623cbb6347905e9f0b26b6abbc96f5e556",
+ "merge_base_sha": "6751a1980f2c63e0796a378b845176e1ed87f024",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11431,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5b917089c481b5ca03a6778bd921c127e2d18085d1f943ccf49b566d576c7147",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be3717ec5f5b525689e17f7f20e3d8ac48d13256",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261003T194045Z-11431-api-design-6d55a9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T19:40:45Z",
+ "submitted_by": "kim-em",
+ "summary": "The metric and similarity surface is mostly right, but the type synonym hides the two bridges a consumer needs (maps into `HyperbolicSpace`, differentials of restricted ambient maps) behind `private`, and the characteristic API is incomplete: no `norm`/`enorm` form of the metric, `inner_def` unannotated, and no `similarity_one`/`simp` on the group laws.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Riemannian/Conformal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Examples/OpenUnitBall.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Euclidean.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Action.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Restriction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Restriction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/PoincareMetric.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/ContMDiff/Subtype.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Tangent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Hyperbolic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/GeometricTopology",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Group.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7550affeedd98fbe485992bc5fa67fb19daabcbe3c2a6b84da6d3399514cfb75",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 104283,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 104283,
+  "cache_read_input_tokens": 956409,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1969,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1969,
+    "cache_read_input_tokens": 105315,
+    "input_tokens": 2,
+    "output_tokens": 6594,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22939,
+  "output_tokens_details": {
+   "thinking_tokens": 17493
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
