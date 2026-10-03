@@ -1,0 +1,261 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9677765000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 372.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 126443,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 126443,
+    "cache_read_input_tokens": 1885923,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 42,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1186,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1186,
+      "cache_read_input_tokens": 128258,
+      "input_tokens": 2,
+      "output_tokens": 4433,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 30407,
+    "output_tokens_details": {
+     "thinking_tokens": 24326
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9e6d4006c12edc2f9f0ce69001828727557b86e3",
+ "cost_usd": 2.967777,
+ "dedupe_key": "TauCetiProject/TauCeti|11431|ac09083c0dd78c77b110e636dd0190727cf3ad06|api-design|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "da1c5e635f1576345eb6d5f5192228568ce04010e5cff77069766ad5877ff9d5",
+ "diff_sha256": "da1c5e635f1576345eb6d5f5192228568ce04010e5cff77069766ad5877ff9d5",
+ "duration_s": 372.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`inner_def`'s proof needs `change riemannianMetric.inner x v w = _` (line 342), which only elaborates where the instance body is visible; bodies are not exposed by default in this repo (`@[expose]` is used in 483 files). The parallel file states the bundled-level lemma instead: `UpperHalfPlane.poincareRiemannianMetric_inner` (PoincareMetric.lean:121), and `Restriction.lean:308` states `riemannianBundleOpen_g` for exactly this bridge. `HyperbolicMetric` (Hyperbolic.lean:45-54) stores `metric : ContMDiffRiemannianMetric \u2026` and states `curvatureTensor_eq`/`hasConstantSectionalCurvature` under `letI : RiemannianBundle \u2026 := \u27e8g.metric.toRiemannianMetric\u27e9` (lines 68-73, 79-84), so this is the exact form the module docstring's deferred target needs.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "fix": "Add public `@[simp] theorem riemannianMetric_inner (x) (v w) : riemannianMetric.inner x v w = inner \u211d (tangentSpaceCastModel \u2026 x v) (tangentSpaceCastModel \u2026 x w) / height x ^ 2` (the current `inner_def` body proves it) plus `riemannianBundle_g : RiemannianBundle.g = riemannianMetric.toRiemannianMetric`, and derive `inner_def` from them.",
+   "issue": "`riemannianMetric` is public and listed under \"Main definitions\", but has no characteristic lemma: its body is unexposed, `euclideanMetric`/`euclideanMetric_inner` are `private`, and the only metric lemmas (`inner_def`, `norm_def`, `enorm_def`) are stated for the global `RiemannianBundle` instance with no public lemma identifying it with `riemannianMetric.toRiemannianMetric`. A consumer holding `riemannianMetric` as a `ContMDiffRiemannianMetric` cannot compute `riemannianMetric.inner x v w`, and after `letI : RiemannianBundle \u2026 := \u27e8riemannianMetric.toRiemannianMetric\u27e9` cannot use `inner_def` either.",
+   "line": "314"
+  },
+  {
+   "evidence": "`EMetricSpace.ofRiemannianMetric` is `@[reducible] def \u2026 [T3Space M]` (mathlib/Mathlib/Geometry/Manifold/Riemannian/Basic.lean:545), and `HyperbolicMetric` \u2014 the deferred target the module docstring names at line 34 \u2014 requires `[MetricSpace M]` (Hyperbolic.lean:38). `T3Space (upperHalfSpaceOpens E)` is inferable (`Subtype.t3Space`, Regular.lean:463, over `instT3Space` at Regular.lean:441), so each is a one-liner; regularity is already covered by Mathlib's `instance {a} [IsManifold I \u03c9 M] : IsManifold I a M` (IsManifold/Basic.lean:848).",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "fix": "Add `instance : T3Space (UpperHalfSpace E) := inferInstanceAs (T3Space (upperHalfSpaceOpens E))` (plus `LocallyCompactSpace`/`SecondCountableTopology` if wanted). Do not inherit the ambient `MetricSpace`: the restricted Euclidean distance is not the hyperbolic one, so that instance must come from `EMetricSpace.ofRiemannianMetric`.",
+   "issue": "The type synonym re-declares by `inferInstanceAs` only the three instances this file's own proofs use (`TopologicalSpace`, `ChartedSpace`, `IsManifold`). Purely topological instances of `upperHalfSpaceOpens E` \u2014 `T3Space` above all \u2014 are not re-declared, and since `UpperHalfSpace E` is a semireducible `def` instance search cannot recover them, so the hyperbolic Riemannian distance that the metric exists to define is unreachable by instance resolution.",
+   "line": "96"
+  }
+ ],
+ "head_sha": "ac09083c0dd78c77b110e636dd0190727cf3ad06",
+ "merge_base_sha": "6751a1980f2c63e0796a378b845176e1ed87f024",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11431,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "5090d2cbefe42b23cccfcab8f55df75e77c16ddcdf6e2789ce42b698dfa304dd",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be3717ec5f5b525689e17f7f20e3d8ac48d13256",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261003T205852Z-11431-api-design-69cddc",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T20:58:52Z",
+ "submitted_by": "kim-em",
+ "summary": "The metric and similarity API is now complete at the instance level, but `riemannianMetric` is a declared main definition with no characteristic lemma and nothing publicly connecting it to the installed `RiemannianBundle` instance, so the named downstream consumer `HyperbolicMetric` cannot evaluate it. The type synonym also re-declares only the instances this file's own proofs need, leaving `T3Space` unreachable and with it the Riemannian distance.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Hyperbolic/UpperHalfSpace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Riemannian/Conformal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Restriction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/ContMDiff/Subtype.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Euclidean.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Tangent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Tangent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Tangent.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/GeometricTopology/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Action.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/PoincareMetric.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Hyperbolic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/IsManifold/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 26,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c2f03bde3cc63e89b90fd801699c01ccbbd6daa5c2289cb712cec5b218d0e637",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 126443,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 126443,
+  "cache_read_input_tokens": 1885923,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 42,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1186,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1186,
+    "cache_read_input_tokens": 128258,
+    "input_tokens": 2,
+    "output_tokens": 4433,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 30407,
+  "output_tokens_details": {
+   "thinking_tokens": 24326
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
