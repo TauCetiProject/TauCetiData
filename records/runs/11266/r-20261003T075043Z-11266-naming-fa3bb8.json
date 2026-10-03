@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3158845000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 249.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 65652,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 65652,
+    "cache_read_input_tokens": 348169,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4631,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4631,
+      "cache_read_input_tokens": 64022,
+      "input_tokens": 2,
+      "output_tokens": 3992,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19408,
+    "output_tokens_details": {
+     "thinking_tokens": 15449
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e29d04bd4f2a9a929f0db5f38b1709663193c474",
+ "cost_usd": 1.315885,
+ "dedupe_key": "TauCetiProject/TauCeti|11266|ceec6f817a8914482f77edff4626879b29db6e31|naming|claude-opus-5|7b72cafe03b2af65|production|2",
+ "diff_blob": "c20c520a714691b7cfffe85019f0bfee7068895c356079070f01eac3100078e8",
+ "diff_sha256": "c20c520a714691b7cfffe85019f0bfee7068895c356079070f01eac3100078e8",
+ "duration_s": 249.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/Spectrum/Prime/Basic.lean:509-513 defines the `MulAction G (PrimeSpectrum R)` with `asIdeal_smul : (g \u2022 P).asIdeal = g \u2022 P.asIdeal`; the file's own docstring at line 70 concedes \"these morphisms form a right action\".",
+   "file": "TauCeti/AlgebraicGeometry/Quotient/FiniteGroup/Affine.lean",
+   "fix": "Define `translate g := Spec.map (CommRingCat.ofHom (MulSemiringAction.toRingEquiv G A g\u207b\u00b9).toRingHom)`, so `translate_base_apply` reads `= g \u2022 x` and `translate_mul` becomes the left action `translate (g * h) = translate h \u226b translate g`; or keep the definition and rename to something contravariant (e.g. `specComap`), dropping the \"translate\" wording.",
+   "issue": "`translate A G g` advertises translation by `g`, but `translate_apply` (line 84) proves `(translate A G g).base x = g\u207b\u00b9 \u2022 x`: it is translation by `g\u207b\u00b9` with respect to Mathlib's canonical left action `MulAction G (PrimeSpectrum R)`, hence `translate_mul` (line 71) is an anti-homomorphism. A consumer reading `translate A G g` will take the wrong point map.",
+   "line": "62"
+  },
+  {
+   "evidence": "Mathlib names such lemmas with `_base_apply`: mathlib/Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean:664 `toSpec_base_apply_eq_comap`; map-level form mathlib/Mathlib/AlgebraicGeometry/Scheme.lean:538 `Spec.map_base`.",
+   "file": "TauCeti/AlgebraicGeometry/Quotient/FiniteGroup/Affine.lean",
+   "fix": "Rename to `translate_base_apply` (or `translate_base` for the map-level form).",
+   "issue": "`translate_apply` states a fact about `(translate A G g).base` applied to a point, not about `translate` applied to an argument; `_apply` per the suffix convention means `foo x = \u2026`.",
+   "line": "83"
+  },
+  {
+   "evidence": "mathlib/Mathlib/AlgebraicGeometry/Scheme.lean:490 defines `Spec.algebraMap`; lemmas about it are named after it, e.g. mathlib/Mathlib/AlgebraicGeometry/AffineScheme.lean:1295 `Spec.algebraMap_stalkIso_inv`. Only hit for `structureMap` in Mathlib is mathlib/Mathlib/Topology/Algebra/RestrictedProduct/Basic.lean:130.",
+   "file": "TauCeti/AlgebraicGeometry/Quotient/FiniteGroup/Affine.lean",
+   "fix": "Rename to `projection_specAlgebraMap` (namespace folded in per the convention, since bare `algebraMap` is ambiguous).",
+   "issue": "`projection_structureMap` names its right factor \"structureMap\", which is not the declaration in the statement (`Spec.algebraMap R (FixedPoints.subalgebra R A G)`); `structureMap` in Mathlib is `RestrictedProduct.structureMap`, unrelated. Inconsistent with `translate_projection` (line 94), which names its factor after the declaration.",
+   "line": "55"
+  },
+  {
+   "evidence": "Mathlib's corresponding instances are anonymous: mathlib/Mathlib/RingTheory/Invariant/Basic.lean:78-79 `instance (H : Subgroup G) \u2026 : Algebra.IsInvariant A (FixedPoints.subalgebra A B H) (G \u29f8 H)`; mathlib/Mathlib/Algebra/Algebra/Subalgebra/Operations.lean:110 `instance : SMulCommClass G (FixedPoints.subalgebra A B' G) B'`.",
+   "file": "TauCeti/RingTheory/Invariant/Basic.lean",
+   "fix": "Move it into the `TauCeti.Algebra.IsInvariant` namespace beside `finite_of_finiteType` and leave it anonymous, as Mathlib's analogues are.",
+   "issue": "`TauCeti.MulSemiringAction.fixedPointsSubalgebraIsInvariant` is an `Algebra.IsInvariant` instance about `FixedPoints.subalgebra`, filed in the `MulSemiringAction` namespace (whose other contents are `charpoly` lemmas) and carrying a stuttering class suffix; nobody searching for it will look there.",
+   "line": "40"
+  }
+ ],
+ "head_sha": "ceec6f817a8914482f77edff4626879b29db6e31",
+ "merge_base_sha": "7ff68c7f114759cd6c37d4617a6d2f3a763077e9",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11266,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f969a32f4f849f36dac04d3d8695a174008e9b1d35e980c270a7dc3493522e9c",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be3717ec5f5b525689e17f7f20e3d8ac48d13256",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261003T075043Z-11266-naming-fa3bb8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T07:50:43Z",
+ "submitted_by": "kim-em",
+ "summary": "`translate g` is named for translation by `g` but its base map is `g\u207b\u00b9 \u2022 \u00b7`, the inverse of Mathlib's existing left action on `PrimeSpectrum`; plus two convention slips (`translate_apply` for a `.base` lemma, `structureMap` for `Spec.algebraMap`) and an invariance instance filed under the `MulSemiringAction` namespace.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/Quotient/FiniteGroup/Affine.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Invariant/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5ce6066d9553d2727635ff80180f158a6d5513eaf621d9facb4a6ae36d465af1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 65652,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 65652,
+  "cache_read_input_tokens": 348169,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4631,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4631,
+    "cache_read_input_tokens": 64022,
+    "input_tokens": 2,
+    "output_tokens": 3992,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19408,
+  "output_tokens_details": {
+   "thinking_tokens": 15449
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
