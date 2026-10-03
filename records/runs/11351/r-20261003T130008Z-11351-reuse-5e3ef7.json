@@ -1,0 +1,315 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.8332815000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 310.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 123095,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 123095,
+    "cache_read_input_tokens": 1992743,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 52,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2574,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2574,
+      "cache_read_input_tokens": 123522,
+      "input_tokens": 2,
+      "output_tokens": 2944,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24228,
+    "output_tokens_details": {
+     "thinking_tokens": 15921
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "70538d56926236337bda27bfc91c6726aa279a15",
+ "cost_usd": 2.833282,
+ "dedupe_key": "TauCetiProject/TauCeti|11351|a0bac04a427e43c193f6a32cd5e914b123647cd7|reuse|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "0ae2de42e5d5b32b6cfc68e596e8840a8b1ae083c554f09b282e06c05582bfed",
+ "diff_sha256": "0ae2de42e5d5b32b6cfc68e596e8840a8b1ae083c554f09b282e06c05582bfed",
+ "duration_s": 310.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 77-81 and 103-106 have identical RHS (`\u2200 (P : Ideal A) [P.IsMaximal], let B := Localization.subalgebra F P.primeCompl \u2026; \u03c9 \u2208 ((map R R B F).restrictScalars A).range`); the proof body at lines 111-113 adds nothing beyond `hinj`. Mathlib has no such injectivity lemma: grep of `Mathlib/Algebra/Module/LocalizedModule/Basic.lean` shows only `IsLocalizedModule.injective_iff_isRegular` (line 552), and `isTorsionFree`/`isTorsionFree_of_forall_isRegular` (lines 1422, 1438) transport torsion-freeness to the localization rather than giving injectivity.",
+   "file": "TauCeti/RingTheory/Kaehler/FractionRing.lean",
+   "fix": "Export the injectivity as its own theorem, e.g. `theorem injective_map_fractionRing [Module.IsTorsionFree A \u03a9[A\u2044R]] : Function.Injective (map R R A F) := (IsLocalizedModule.injective_iff_isRegular A\u2070 _).mpr fun s \u21a6 IsSMulRegular.of_ne_zero (nonZeroDivisors.ne_zero s.2)`, and drop the `\u2203!` restatement; a caller gets it in one line from that lemma, `LinearMap.mem_range`, and `mem_range_kaehler_map_fractionRing_iff`.",
+   "issue": "`existsUnique_kaehler_preimage_iff` duplicates `mem_range_kaehler_map_fractionRing_iff`: its RHS is the same four lines verbatim, and its proof is `rw [\u2190 mem_range_kaehler_map_fractionRing_iff, LinearMap.mem_range]` plus the unexported `hinj`. The only new fact, `Function.Injective (map R R A F)` from `[Module.IsTorsionFree A \u03a9[A\u2044R]]` (lines 107-110) \u2014 which the module docstring advertises at line 21 \u2014 is not a declaration, so consumers that need the embedding `\u03a9[A\u2044R] \u21aa \u03a9[F\u2044R]` (the stated downstream use) must reprove it.",
+   "line": "102"
+  }
+ ],
+ "head_sha": "a0bac04a427e43c193f6a32cd5e914b123647cd7",
+ "merge_base_sha": "6a0186c386d6830da89d664eb3dc0fd4de1b894e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11351,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "15dd2bee2f649bd5a3ddf51631cc8dae746951ccd64a94b33aee3bc5a59fd5c3",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be3717ec5f5b525689e17f7f20e3d8ac48d13256",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261003T130008Z-11351-reuse-5e3ef7",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T13:00:08Z",
+ "submitted_by": "kim-em",
+ "summary": "No duplication of existing Mathlib or TauCeti material: the localization-image identification and the maximal-ideal criterion are new, and the generic machinery (range_localizedMap_eq_localized\u2080_range, mem_of_localization_maximal, isLocalizedModule_id/map, injective_iff_isRegular) is reused rather than reproved. The third theorem, however, is the second one restated under an extra hypothesis, with its only new content \u2014 injectivity of `map R R A F` \u2014 buried in the proof.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Torsion/Free.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Kaehler",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/FunctionField/Differential",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Kaehler",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Kaehler/MapSemilinear.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Flat/TorsionFree.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Derivation/Localization.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Derivation/Localization.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/FunctionField/Differential",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Localization/Module.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/LocalizedModule",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/LocalizedModule/Submodule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Etale/Kaehler.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Kaehler/FractionRing.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/LocalProperties/Submodule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Localization/AsSubring.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/Modules/Differentials/Quasicoherent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Smooth/Regular.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Logic",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Kaehler",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Etale/Kaehler.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/LocalizedModule/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 38,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e1596e28a3ec54f4e9ba86ea630f33816113345fbadaf4d3d9cea0a91865a8b5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 123095,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 123095,
+  "cache_read_input_tokens": 1992743,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 52,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2574,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2574,
+    "cache_read_input_tokens": 123522,
+    "input_tokens": 2,
+    "output_tokens": 2944,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24228,
+  "output_tokens_details": {
+   "thinking_tokens": 15921
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

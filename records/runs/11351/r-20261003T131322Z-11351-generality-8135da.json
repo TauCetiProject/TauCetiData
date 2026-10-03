@@ -1,0 +1,257 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.8811815,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 306.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 80625,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 80625,
+    "cache_read_input_tokens": 985383,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 38,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3874,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3874,
+      "cache_read_input_tokens": 79752,
+      "input_tokens": 2,
+      "output_tokens": 6498,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23282,
+    "output_tokens_details": {
+     "thinking_tokens": 16440
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "70538d56926236337bda27bfc91c6726aa279a15",
+ "cost_usd": 1.881182,
+ "dedupe_key": "TauCetiProject/TauCeti|11351|a0bac04a427e43c193f6a32cd5e914b123647cd7|generality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "0ae2de42e5d5b32b6cfc68e596e8840a8b1ae083c554f09b282e06c05582bfed",
+ "diff_sha256": "0ae2de42e5d5b32b6cfc68e596e8840a8b1ae083c554f09b282e06c05582bfed",
+ "duration_s": 306.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Submodule.mem_of_localization_maximal`, the lemma used at line 92, is itself stated for abstract families: `mathlib/Mathlib/RingTheory/LocalProperties/Submodule.lean:28-38` binds `(R\u209a : \u2200 (P : Ideal R) [P.IsMaximal], Type*) \u2026 [IsLocalization.AtPrime (R\u209a P) P]` and `(M\u209a \u2026)`. `IsDomain`/`IsFractionRing` enter only via `Localization.subalgebra`, which requires `[IsFractionRing A K]` and `S \u2264 A\u2070` (`mathlib/Mathlib/RingTheory/Localization/AsSubring.lean:29-33,83`). The repo's own curve code works with abstract subrings of `F` (`TauCeti/FieldTheory/FunctionField/AffineModel/Place.lean:123`: `{B} [CommRing B] [Algebra B F] [IsFractionRing B F]`), and 36 files use `IsLocalization.AtPrime`-style local rings.",
+   "file": "TauCeti/RingTheory/Kaehler/FractionRing.lean",
+   "fix": "State it over a family, as Mathlib does: `variable (A\u209a : \u2200 (P : Ideal A) [P.IsMaximal], Type*)` with `[CommRing (A\u209a P)] [Algebra A (A\u209a P)] [IsLocalization.AtPrime (A\u209a P) P] [Algebra R (A\u209a P)] [Algebra (A\u209a P) F]` and the three towers, concluding `\u03c9 \u2208 (map R R A F).range \u2194 \u2200 P [P.IsMaximal], \u03c9 \u2208 ((map R R (A\u209a P) F).restrictScalars A).range`, with no `IsDomain`/`IsFractionRing`. The existing proof goes through verbatim (`range_kaehler_map_localization` is already stated for abstract `B`); the current statement is then the instantiation `A\u209a P := Localization.subalgebra F P.primeCompl P.primeCompl_le_nonZeroDivisors`.",
+   "issue": "`mem_range_kaehler_map_fractionRing_iff` (and the right-hand side of `existsUnique_kaehler_preimage_iff`, line 102) fixes the local ring to `let B := Localization.subalgebra F P.primeCompl _`. The mathematical content needs only an abstract localization of `A` at `P.primeCompl` sitting inside `F`; the `[IsDomain A]`/`[IsFractionRing A F]` hypotheses (line 72) exist solely to construct that one model, so the criterion as stated cannot be applied to local rings presented as `IsLocalization.AtPrime` (how they arrive in this repo) without transport.",
+   "line": "77"
+  },
+  {
+   "evidence": "Lines 107-110 prove injectivity via `IsLocalizedModule.injective_iff_isRegular` (`mathlib/Mathlib/Algebra/Module/LocalizedModule/Basic.lean:552`), which only needs `IsLocalizedModule S (map R R A B)` \u2014 available for every `[IsLocalization S B]` by the instance `KaehlerDifferential.isLocalizedModule_map` (`mathlib/Mathlib/RingTheory/Etale/Kaehler.lean:63`), not just for `S = A\u2070`. `hinj` is used at line 113 only in the uniqueness component.",
+   "file": "TauCeti/RingTheory/Kaehler/FractionRing.lean",
+   "fix": "Add the general lemma first, e.g. `theorem injective_kaehler_map (S : Submonoid A) [IsLocalization S B] [Module.IsTorsionFree A \u03a9[A\u2044R]] (hS : S \u2264 A\u2070) : Function.Injective (map R R A B)`, and derive `existsUnique_kaehler_preimage_iff` from it plus the membership criterion (the current file's case is `S = A\u2070`, `B = F`).",
+   "issue": "The general result \u2014 `Module.IsTorsionFree A \u03a9[A\u2044R]` implies `Function.Injective (map R R A B)` for any localization `B` of `A` at regular elements \u2014 is proved inline as `hinj` and never stated, while the specialized `\u2203!` wrapper is the public API. The module docstring (line 21) advertises exactly that injectivity as a result of the file, but no user can get it; and since existence is already `mem_range_kaehler_map_fractionRing_iff`, the torsion-free hypothesis of `existsUnique_kaehler_preimage_iff` buys only uniqueness.",
+   "line": "107"
+  }
+ ],
+ "head_sha": "a0bac04a427e43c193f6a32cd5e914b123647cd7",
+ "merge_base_sha": "6a0186c386d6830da89d664eb3dc0fd4de1b894e",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11351,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "481a660751778df68aca9138c6b6df95b0e77056e90d825aa688028567602b80",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be3717ec5f5b525689e17f7f20e3d8ac48d13256",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261003T131322Z-11351-generality-8135da",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-03T13:13:22Z",
+ "submitted_by": "kim-em",
+ "summary": "The two maximal-ideal theorems are stated only for the hard-coded model `Localization.subalgebra F P.primeCompl`, which forces `[IsDomain A] [IsFractionRing A F]` on a statement that needs neither; and the general injectivity of `map R R A F` from torsion-freeness is proved inline instead of being the lemma from which the `\u2203!` form is derived.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Kaehler/FractionRing.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Localization/AsSubring.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/LocalProperties/Submodule.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Flat/TorsionFree.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Regular",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Kaehler/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Kaehler/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Etale/Kaehler.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/LocalizedModule",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/LocalizedModule/Submodule.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/FunctionField/AffineModel/Place.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Smooth/Kaehler.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Smooth/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3200170ce9beb95348a5e70694c69085a63539155e4ec4b29ccdee1eb92a54e1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 80625,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 80625,
+  "cache_read_input_tokens": 985383,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 38,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3874,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3874,
+    "cache_read_input_tokens": 79752,
+    "input_tokens": 2,
+    "output_tokens": 6498,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23282,
+  "output_tokens_details": {
+   "thinking_tokens": 16440
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
