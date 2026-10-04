@@ -1,0 +1,229 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5030709999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 209.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 79257,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 79257,
+    "cache_read_input_tokens": 622312,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2575,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2575,
+      "cache_read_input_tokens": 79683,
+      "input_tokens": 2,
+      "output_tokens": 1665,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15969,
+    "output_tokens_details": {
+     "thinking_tokens": 11794
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9268a4172aa3d414dbd4b34f059761f7353e17b5",
+ "cost_usd": 1.503071,
+ "dedupe_key": "TauCetiProject/TauCeti|11750|ea54a32b6c1f9190b399dabf2187f8059a456696|placement|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "ea98fdbd0233e7ac31326031295fcff0ef4df6001b0d63268e1d4f1cfdc23de3",
+ "diff_sha256": "ea98fdbd0233e7ac31326031295fcff0ef4df6001b0d63268e1d4f1cfdc23de3",
+ "duration_s": 209.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The diff's only use of the new module in its existing consumer is the coordinate fact: `AllRootSubgroups/Basic.lean:336` calls `TauCeti.GeneralLinear.rootSubgroupCoordinateMap_surjective hij`, and the PR had to upgrade that file's import from `Root.Subgroup` to `Root.ClosedImmersion` solely to reach it; `grep GeneralLinear\\.(rootSubgroupClosedSubgroup|isClosedImmersion_rootSubgroup)` in that file returns nothing.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/ClosedImmersion.lean",
+   "fix": "Move `rootSubgroupCoordinateMap_surjective` into `GeneralLinear/Root/Subgroup.lean` after `rootSubgroupCoordinateMap_apply_X` (that file is 276 lines, ample room), leaving only the scheme-level material in `Root/ClosedImmersion.lean`, and restore `AllRootSubgroups/Basic.lean`'s import to `...GeneralLinear.Root.Subgroup`.",
+   "issue": "`GeneralLinear.rootSubgroupCoordinateMap_surjective` is a statement about the coordinate Hopf-algebra morphism only: it uses `rootSubgroupCoordinateMap`, `coordinateHopfAlgebraAlgEquiv`, `coordinateRingMap`, `rootSubgroupCoordinateMap_apply_X` (Root/Subgroup.lean:191) plus Mathlib's `SymmetricAlgebra.induction`, and nothing from `ClosedSubgroup`/`AffineGroupScheme.ClosedImmersion`. Its canonical home is the earlier file `GeneralLinear/Root/Subgroup.lean`, next to `rootSubgroupCoordinateMap_apply_X`.",
+   "line": 47
+  },
+  {
+   "evidence": "The proof body uses only `GeneralLinear.rootSubgroupCoordinateMap_surjective`, `CommHopfAlgCat.comp_apply`, and `coordinateMap_comp_rootSubgroupCoordinateMap`; `RootSubgroup/Basic.lean:9` already has `public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.Root.Subgroup`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/ClosedImmersion.lean",
+   "fix": "After moving the general-linear lemma to `GeneralLinear/Root/Subgroup.lean` (already a public import of `RootSubgroup/Basic.lean`, line 9), move this lemma next to `coordinateMap_comp_rootSubgroupCoordinateMap` in `RootSubgroup/Basic.lean` (299 lines) and keep only `isClosedImmersion_rootSubgroup`, `rootSubgroupClosedSubgroup`, and the iso lemmas here.",
+   "issue": "Same problem on the special-linear side: `SpecialLinear.rootSubgroupCoordinateMap_surjective` depends only on `coordinateMap_comp_rootSubgroupCoordinateMap` (RootSubgroup/Basic.lean:182) and the general-linear surjectivity, so it belongs in the earlier `SpecialLinear/RootSubgroup/Basic.lean` rather than in the closed-immersion file.",
+   "line": 40
+  }
+ ],
+ "head_sha": "ea54a32b6c1f9190b399dabf2187f8059a456696",
+ "merge_base_sha": "6a0b39f93cf134d7d6f8ab7b5ee0bfcdbb1ce9ad",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11750,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fc245ab9d71d54ae7f3f18863d8f779919db33b1f0075dc6e1d9a01f0e941b40",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "placement",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "934909f31e582a296f5e59b11001f9a7e56df698",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261004T162654Z-11750-placement-747ede",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T16:26:54Z",
+ "submitted_by": "kim-em",
+ "summary": "Placement and the directory promotion of SpecialLinear/RootSubgroup are otherwise correct, but both new rootSubgroupCoordinateMap_surjective lemmas are coordinate-level corollaries that belong next to the coordinate morphisms they elaborate, not in the closed-immersion modules.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Comma/Over.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Scheme/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/AllRootSubgroups/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/Subgroup.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/Subgroup.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/Subgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/Subgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/GroupScheme/ClosedSubgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/AffineGroupScheme/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/AllRootSubgroups/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a3eb9c83f19dec43b9219cb3e16da4b8016b68f292abd863a1bf2802748be7d5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 79257,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 79257,
+  "cache_read_input_tokens": 622312,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2575,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2575,
+    "cache_read_input_tokens": 79683,
+    "input_tokens": 2,
+    "output_tokens": 1665,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15969,
+  "output_tokens_details": {
+   "thinking_tokens": 11794
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

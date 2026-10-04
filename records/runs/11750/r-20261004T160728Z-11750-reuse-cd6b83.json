@@ -1,0 +1,293 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5715665,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 250.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 108414,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 108414,
+    "cache_read_input_tokens": 1994283,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 52,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2301,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2301,
+      "cache_read_input_tokens": 109114,
+      "input_tokens": 2,
+      "output_tokens": 4307,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19601,
+    "output_tokens_details": {
+     "thinking_tokens": 12615
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9268a4172aa3d414dbd4b34f059761f7353e17b5",
+ "cost_usd": 2.571566,
+ "dedupe_key": "TauCetiProject/TauCeti|11750|ea54a32b6c1f9190b399dabf2187f8059a456696|reuse|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "ea98fdbd0233e7ac31326031295fcff0ef4df6001b0d63268e1d4f1cfdc23de3",
+ "diff_sha256": "ea98fdbd0233e7ac31326031295fcff0ef4df6001b0d63268e1d4f1cfdc23de3",
+ "duration_s": 250.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -n '\u03b9 R R 1 \u2208|\u03b9 \u2124 \u2124 1 \u2208'` returns exactly these three sites; no shared helper exists. `AdditiveGroup/Scheme.lean:138` defines `coordinateHopfAlgebra := CommHopfAlgCat.of R (SymmetricAlgebra R R)`. The \u2124 bodies differ from the new one only in `zsmul_mem`/`map_zsmul` vs `Submodule.smul_mem`/`map_smul`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/ClosedImmersion.lean",
+   "fix": "Factor the generic step into one lemma next to `AdditiveGroup.coordinateHopfAlgebra` (e.g. `AdditiveGroup.surjective_of_\u03b9_one_mem_range (f : A \u27f6 coordinateHopfAlgebra R) (h : SymmetricAlgebra.\u03b9 R R 1 \u2208 f.hom.toAlgHom.range) : Function.Surjective f.hom`), prove this theorem as `surjective_of_\u03b9_one_mem_range _ hgen`, and repoint the two \u2124-only clones (which the general-R lemma subsumes) at it.",
+   "issue": "Lines 56\u201368 are a clone of two existing proofs of the same generic step: a Hopf-algebra morphism into `AdditiveGroup.coordinateHopfAlgebra R = SymmetricAlgebra R R` whose range contains `SymmetricAlgebra.\u03b9 R R 1` is surjective. Identical `intro y` / `SymmetricAlgebra.induction` / `algebraMap|\u03b9|mul|add` blocks appear at `Kostant/RootSubgroup/Scheme/ClosedImmersion.lean:390-404` and `GeckLattice/ClosedRootSubgroup.lean:224-238`.",
+   "line": 56
+  },
+  {
+   "evidence": "`grep -n \"Grp.comp', Mon.comp_hom', Over.comp_left\"` plus `cancel_left_of_respectsIso`/`cancel_right_of_respectsIso` matches exactly `Symplectic/DiagonalTorus/ClosedImmersion.lean:38-42` and the two new files; the existing one-sided lemmas are used at 15 call sites, so the module is the established home for this criterion.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/ClosedImmersion.lean",
+   "fix": "Add the two-sided sibling `isClosedImmersion_eqToHom_comp_hopfSpec_map_comp_eqToHom_iff` to `AffineGroupScheme/ClosedImmersion.lean` (same proof as its siblings: `simp only [Grp.comp', Mon.comp_hom', Over.comp_left]` then both `cancel_left/right_of_respectsIso`), list it in that module's Main declarations, and reduce both new instances to `rw [rootSubgroup_def]; exact (CommHopfAlgCat.isClosedImmersion_eqToHom_comp_hopfSpec_map_comp_eqToHom_iff ..).mpr (rootSubgroupCoordinateMap_surjective hij)`; the pre-existing third copy at `Symplectic/DiagonalTorus/ClosedImmersion.lean:37-42` can then consume it too.",
+   "issue": "Lines 73\u201378 and the identical block at `SpecialLinear/RootSubgroup/ClosedImmersion.lean:56-61` hand-roll the closed-immersion criterion for `eqToHom \u226b hopfSpec.map f.op \u226b eqToHom`, which the hosting module `AlgebraicGeometry/AffineGroupScheme/ClosedImmersion.lean` already covers on each side separately (`isClosedImmersion_hopfSpec_map_comp_eqToHom_iff:68`, `isClosedImmersion_eqToHom_comp_hopfSpec_map_iff:82`) \u2014 neither matches the two-sided shape, so the same 4 lines get rewritten at every such site.",
+   "line": 73
+  }
+ ],
+ "head_sha": "ea54a32b6c1f9190b399dabf2187f8059a456696",
+ "merge_base_sha": "6a0b39f93cf134d7d6f8ab7b5ee0bfcdbb1ce9ad",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11750,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "47d9175d2d078604ee0d79290a3ff746f696e4ff6b13d0ebc101ee97fac899ec",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "934909f31e582a296f5e59b11001f9a7e56df698",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261004T160728Z-11750-reuse-cd6b83",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T16:07:28Z",
+ "submitted_by": "kim-em",
+ "summary": "The new material is not duplicated by existing declarations, but the surjectivity proof adds a third verbatim copy of an already-twice-written \"generator in range \u27f9 surjective onto O(\ud835\udd3e\u2090)\" argument, and both new closed-immersion instances re-derive inline the two-sided eqToHom criterion whose one-sided siblings already live in AffineGroupScheme/ClosedImmersion.lean.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/AffineGroupScheme/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/E6/Minuscule/ClosedRootSubgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/Symplectic/DiagonalTorus/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Logic/Function/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Logic/Function/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry/Morphisms/ClosedImmersion.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/AllRootSubgroups/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/SymmetricAlgebra/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/SymmetricAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Scheme/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/RootSystem/SimplyConnectedRootDatum/GeckLattice/ClosedRootSubgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/AdditiveGroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/AdditiveGroup",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 33,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a94d087dea8dea9a32b20272e766a09b1b73128500c987e04391d41fcfc9f34b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 108414,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 108414,
+  "cache_read_input_tokens": 1994283,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 52,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2301,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2301,
+    "cache_read_input_tokens": 109114,
+    "input_tokens": 2,
+    "output_tokens": 4307,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19601,
+  "output_tokens_details": {
+   "thinking_tokens": 12615
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

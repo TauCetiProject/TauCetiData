@@ -1,0 +1,295 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5007000000000006,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 288.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 108292,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 108292,
+    "cache_read_input_tokens": 1705120,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 44,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 893,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 893,
+      "cache_read_input_tokens": 110400,
+      "input_tokens": 2,
+      "output_tokens": 2150,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 22600,
+    "output_tokens_details": {
+     "thinking_tokens": 15914
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9268a4172aa3d414dbd4b34f059761f7353e17b5",
+ "cost_usd": 2.5007,
+ "dedupe_key": "TauCetiProject/TauCeti|11750|ea54a32b6c1f9190b399dabf2187f8059a456696|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "ea98fdbd0233e7ac31326031295fcff0ef4df6001b0d63268e1d4f1cfdc23de3",
+ "diff_sha256": "ea98fdbd0233e7ac31326031295fcff0ef4df6001b0d63268e1d4f1cfdc23de3",
+ "duration_s": 288.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "17 modules import this helper non-publicly, including both direct templates: `Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Scheme/ClosedImmersion.lean:11` and `LinearAlgebra/RootSystem/SimplyConnectedRootDatum/GeckLattice/ClosedRootSubgroup.lean:10` (`import TauCeti.CategoryTheory.Comma.Over`), the latter while publicly importing only its `ClosedSubgroupScheme` chain and defining the identical `rootSubgroupClosedSubgroup`/`rootSubgroupClosedSubgroupIso` API; `Algebra/AlgebraicGroup/Symplectic/DiagonalTorus/ClosedImmersion.lean:11` does the same. The new file is the only closed-immersion module making it public; TauCeti/CategoryTheory/Comma/Over.lean:35 shows its sole content is the `isIso_left` instance.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/ClosedImmersion.lean",
+   "fix": "Demote to `import TauCeti.CategoryTheory.Comma.Over` and add the same non-public `import TauCeti.CategoryTheory.Comma.Over` to TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/ClosedImmersion.lean, which needs the instance in its own proof. Keep the `public import` of `...GroupScheme.ClosedSubgroup` there, since `ClosedSubgroupScheme` does occur in statements.",
+   "issue": "`public import TauCeti.CategoryTheory.Comma.Over` re-exports a proof-only dependency: that module supplies only the `CategoryTheory.Over.isIso_left` instance, used in the `MorphismProperty.cancel_left_of_respectsIso`/`cancel_right_of_respectsIso` steps at lines 75-76; no statement in the file mentions anything from it. The same header already marks its other proof-only dependency (`TauCeti.AlgebraicGeometry.AffineGroupScheme.ClosedImmersion`, line 10) non-public, so the instance leaks to every downstream importer by oversight, including the new SpecialLinear module which relies on the leak for its own line 58-59 proof.",
+   "line": "11"
+  }
+ ],
+ "head_sha": "ea54a32b6c1f9190b399dabf2187f8059a456696",
+ "merge_base_sha": "6a0b39f93cf134d7d6f8ab7b5ee0bfcdbb1ce9ad",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11750,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "55fcc2c7b145edd88323196280973bb95c4d84be597b7c4d8b23cf168b4e42cc",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "934909f31e582a296f5e59b11001f9a7e56df698",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261004T161648Z-11750-api-design-190454",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T16:16:48Z",
+ "submitted_by": "kim-em",
+ "summary": "The declaration-level surface is minimal, complete, and matches the established closed-root-subgroup pattern, and the module move leaves no compatibility artifact. One proof-only dependency is re-exported as a public import, over-exposing the new module's interface.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/GroupScheme/ClosedSubgroup.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/GroupScheme/ClosedSubgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Scheme/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/Orthogonal/TypeD/SpinCarrier/ClosedRootSubgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/Subgroup.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/Subgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Root/Subgroup.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/AllRootSubgroups/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/AllRootSubgroups/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Comma/Over.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Comma/Over.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/DiagonalTorus/ClosedImmersion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/Symplectic/DiagonalTorus/ClosedImmersion.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/SpecialLinear/RootSubgroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/Symplectic/DiagonalTorus/ClosedImmersion.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/RootSystem/SimplyConnectedRootDatum/GeckLattice/ClosedRootSubgroup.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/Orthogonal/TypeD/SpinCarrier/ClosedRootSubgroup.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 35,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e3f8c2bbf8c460c96d51ea37475461d87a63bf56bbe6df0aeb07df0cc475b6ca",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 108292,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 108292,
+  "cache_read_input_tokens": 1705120,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 44,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 893,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 893,
+    "cache_read_input_tokens": 110400,
+    "input_tokens": 2,
+    "output_tokens": 2150,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 22600,
+  "output_tokens_details": {
+   "thinking_tokens": 15914
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
