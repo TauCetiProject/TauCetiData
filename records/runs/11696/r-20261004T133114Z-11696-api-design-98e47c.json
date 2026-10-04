@@ -1,0 +1,234 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4312324999999997,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 217.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 71563,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 71563,
+    "cache_read_input_tokens": 582145,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 26,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2915,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2915,
+      "cache_read_input_tokens": 71649,
+      "input_tokens": 2,
+      "output_tokens": 4651,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16976,
+    "output_tokens_details": {
+     "thinking_tokens": 11203
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ce1dd60a8c038da05eb32c8e042f86fe05ddd02b",
+ "cost_usd": 1.431232,
+ "dedupe_key": "TauCetiProject/TauCeti|11696|05f462aea9b0879375ab3d680612d0e36f32a9ea|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "22aec526afe72d7d0302fd54f3ca112f66f25e32d42411192966dfcb53a3a89e",
+ "diff_sha256": "22aec526afe72d7d0302fd54f3ca112f66f25e32d42411192966dfcb53a3a89e",
+ "duration_s": 217.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "roadmap/TauCetiRoadmap/OrthogonalSpinGroups/README.md:574 names the dim-6 content as \"`\u03c3` sends `\u03c9` to `-\u03c9`\". The sign is computed inline at Center.lean:56-57 and 85-87 but never stated; Spin/LowRank/Six.lean:131-132 and :176-177 re-derive `reverse (l.map (\u03b9 Q)).prod = -(l.map (\u03b9 Q)).prod` by hand.",
+   "file": "TauCeti/LinearAlgebra/CliffordAlgebra/Reversal/Center.lean",
+   "fix": "Expose the characteristic action lemma: `reverseEven Q \u27e8(l.map (\u03b9 Q)).prod, prod_map_\u03b9_mem_even_of_even_length hlen\u27e9 = ((-1) ^ l.length.choose 2) \u2022 \u27e8\u2026\u27e9` (CommRing-level, immediate from `reverse_prod_map_\u03b9_of_pairwise_isOrtho`), plus the coordinate form `a + b \u2022 \u03c9 \u21a6 a - b \u2022 \u03c9` in the odd-sign case; derive the dimension-six existential from it or drop it.",
+   "issue": "No lemma gives the action of reversal on the centre: `exists_mem_center_reverseEven_ne_of_finrank_eq_six` is a witness-free existential (a one-line negation of `forall_reverseEven_eq_self_on_center_iff` at 6), and the docstring claim \"reversal is conjugation on that quadratic algebra\" is unsupported by any exposed declaration. A consumer cannot obtain `reverseEven \u03c9 = -\u03c9` or `reverseEven (a + b \u2022 \u03c9) = a - b \u2022 \u03c9` without redoing the computation.",
+   "line": "145"
+  },
+  {
+   "evidence": "Its companions at the identical generality are public: `Even/Center.lean:145 add_smul_volume_injective_of_even_length` and `Even/Center.lean:116 prod_map_\u03b9_ne_algebraMap_of_even_length`. Its statement mentions only `reverse`, `algebraMap`, `\u03b9`, `List` \u2014 no `even Q`, no centre.",
+   "file": "TauCeti/LinearAlgebra/CliffordAlgebra/Reversal/Center.lean",
+   "fix": "Split off the general reversal-on-coordinates computation as a public lemma (CommRing, `namespace CliffordAlgebra`, this file or `Reversal/Basic.lean`) and derive the `b = 0` criterion from it; private is then unnecessary for the criterion too.",
+   "issue": "`private theorem reverse_fixed_volume_coordinates` hides a statement at the same level of generality as the public coordinate API it consumes, and bundles into one private step a computation (`reverse (algebraMap a + b \u2022 \u03c9) = algebraMap a + ((-1) ^ (n.choose 2) * b) \u2022 \u03c9`) that needs no field, no anisotropy and no centre.",
+   "line": "51"
+  },
+  {
+   "evidence": "Line 129-130: hypotheses `(hQ : Q.Nondegenerate) (hV : finrank K V = 4) (hx : x \u2208 Subalgebra.center K (even Q))`; plain `simp` does not use local hypotheses to discharge conditional rewrites, and `Q.Nondegenerate` / centre membership have no simp normal form.",
+   "file": "TauCeti/LinearAlgebra/CliffordAlgebra/Reversal/Center.lean",
+   "fix": "Drop `@[simp]`; keep it as a plain theorem (consistent with the dimension-six sibling at line 137, which is not annotated).",
+   "issue": "`@[simp]` on `reverseEven_eq_self_of_mem_center_of_finrank_eq_four` is a wrong annotation: the LHS `reverseEven Q x` matches every reversal term, while the three side conditions `Q.Nondegenerate`, `finrank K V = 4` and `x \u2208 Subalgebra.center K (even Q)` are not simp-dischargeable, so the rule costs failed discharge attempts on every `reverseEven` application and effectively never fires.",
+   "line": "128"
+  },
+  {
+   "evidence": "`namespace CliffordAlgebra` in every neighbour: Reversal/Basic.lean:26, Reversal/Three.lean:24, Reversal/Four.lean:46, Reversal/Five.lean:49, Even/Center.lean:62. The bare-`TauCeti` files in this directory name new objects instead (RealForm/Four.lean:98 `realCliffordFourZeroEvenEquivQuaternionProd`).",
+   "file": "TauCeti/LinearAlgebra/CliffordAlgebra/Reversal/Center.lean",
+   "fix": "Declare these in `namespace CliffordAlgebra` (or `TauCeti.CliffordAlgebra`, as `Even/Scaling.lean` does) and drop the `open _root_.CliffordAlgebra`.",
+   "issue": "The declarations land in bare `namespace TauCeti` although they are named in the `reverseEven_*` / `mem_center_even_*` nomenclature of `CliffordAlgebra`, so the public names are `TauCeti.reverseEven_eq_self_iff_of_mem_center` next to `CliffordAlgebra.reverseEven_mul`, splitting the reversal API across two namespaces.",
+   "line": "40"
+  }
+ ],
+ "head_sha": "05f462aea9b0879375ab3d680612d0e36f32a9ea",
+ "merge_base_sha": "9eafe2d6064634475918ee9277c6351658a9cb6b",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11696,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fcf902eaefe481d0d76e46a12de317271aca836ddffe9393c971189586c8599a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "934909f31e582a296f5e59b11001f9a7e56df698",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261004T133114Z-11696-api-design-98e47c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T13:31:14Z",
+ "submitted_by": "kim-em",
+ "summary": "The file exposes fixed-point predicates but no lemma computing reversal's action on the centre, so the roadmap's dimension-six content (\"\u03c3 sends \u03c9 to -\u03c9\") is only available as a witness-free existential and the general coordinate computation stays private. Also a non-firing `@[simp]` and a namespace inconsistent with every sibling reversal module.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/Reversal/Center.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/Even/Center.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/Reversal/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/Reversal/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/Reversal/Four.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/Even/Center.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/VolumeElement.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/OrthogonalSpinGroups/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/RealForm/Four.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/CliffordAlgebra/Even/Scaling.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ab44e4d7db8dd2fca7ac2c196f30d014952b075fc4fc83ae148cf456a03f4085",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 71563,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 71563,
+  "cache_read_input_tokens": 582145,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 26,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2915,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2915,
+    "cache_read_input_tokens": 71649,
+    "input_tokens": 2,
+    "output_tokens": 4651,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16976,
+  "output_tokens_details": {
+   "thinking_tokens": 11203
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
