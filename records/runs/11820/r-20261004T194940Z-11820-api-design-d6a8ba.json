@@ -1,0 +1,220 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.423247,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 204.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 75977,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 75977,
+    "cache_read_input_tokens": 494534,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8740,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8740,
+      "cache_read_input_tokens": 70238,
+      "input_tokens": 2,
+      "output_tokens": 3132,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16644,
+    "output_tokens_details": {
+     "thinking_tokens": 12256
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8d0626f913c295b84443a48c09fad2334f1f231a",
+ "cost_usd": 1.423247,
+ "dedupe_key": "TauCetiProject/TauCeti|11820|5f949fadb07c49b61cf7f9fd3db3a6d8c07505db|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "75f2e50ea5e10d23c566a18e693171e141bdd8c4683489ea55dbed18263a3ba6",
+ "diff_sha256": "75f2e50ea5e10d23c566a18e693171e141bdd8c4683489ea55dbed18263a3ba6",
+ "duration_s": 204.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mem_galoisSubgroup_iff at FiniteExtension.lean:126; Subgroup.mem_map_equiv and Subgroup.map_equiv_eq_comap_symm' at mathlib/Mathlib/Algebra/Group/Subgroup/Map.lean:157,167 make both forms immediate from the current statement.",
+   "file": "TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/FiniteExtension.lean",
+   "fix": "State it in comap form `(absoluteGaloisGroupExtend K L \u03c3).range = (galoisSubgroup K L \u03c3).toSubgroup.comap (absoluteGaloisGroupRestrictEquiv K).toMulEquiv.toMonoidHom` and/or add `@[simp] mem_range_absoluteGaloisGroupExtend_iff : g \u2208 (absoluteGaloisGroupExtend K L \u03c3).range \u2194 \u2200 x : L, absoluteGaloisGroupRestrictEquiv K g (\u03c3 x) = \u03c3 x`, matching the existing `@[simp] mem_galoisSubgroup_iff`.",
+   "issue": "range_absoluteGaloisGroupExtend expresses the image as a Subgroup.map along (absoluteGaloisGroupRestrictEquiv K).symm; a consumer cannot decide `g \u2208 range` without unfolding Subgroup.mem_map and the equiv, so the docstring's claim ('the subgroup fixing \u03c3(L)') is not available as API.",
+   "line": "219"
+  },
+  {
+   "evidence": "The file's own next proof needs it: line 82 `simpa only [range_localCyclotomicCharacter_ratPadic, Subgroup.relIndex_top_right] using h`. No looping risk: the RHS is \u22a4.",
+   "file": "TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Cyclotomic/Index.lean",
+   "fix": "Add `@[simp]`.",
+   "issue": "range_localCyclotomicCharacter_ratPadic is a hypothesis-free normal form `(localCyclotomicCharacter p \u211a_[p]).range = \u22a4` but carries no @[simp]; every downstream specialization to \u211a_p must rewrite by hand.",
+   "line": "71"
+  },
+  {
+   "evidence": "The only use is `localCyclotomicCharacter_surjective_of_irreducible` inside the proof at line 74; the statements use only localCyclotomicCharacter, absoluteGaloisGroupExtend, SeparableClosure, \u211a_[p], Module.finrank, all reachable through the public import of Cyclotomic.FiniteExtension. Line 10 already imports Irreducible non-publicly for the same reason.",
+   "file": "TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Cyclotomic/Index.lean",
+   "fix": "Demote to `import TauCeti.FieldTheory.Galois.AbsoluteGaloisGroup.Cyclotomic.Surjectivity`.",
+   "issue": "`public import ...Cyclotomic.Surjectivity` re-exports that module to every downstream importer although no statement in Index.lean mentions a declaration from it; it is a proof-only dependency.",
+   "line": "9"
+  },
+  {
+   "evidence": "Sibling files follow the convention: Cyclotomic/Range.lean:32, Cyclotomic/FiniteExtension.lean:38; galoisSubgroup_index is listed at FiniteExtension.lean:72 while the parallel range-index result is not.",
+   "file": "TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/FiniteExtension.lean",
+   "fix": "Add both theorems to the list at FiniteExtension.lean:70\u201387 and give Index.lean a `## Main results` section naming its four public theorems.",
+   "issue": "The `## Main results` list is not extended with range_absoluteGaloisGroupExtend or index_range_absoluteGaloisGroupExtend, so the headline index formula for the image is undiscoverable from the module header; Index.lean (new, four public theorems) has no Main results section at all.",
+   "line": "70"
+  }
+ ],
+ "head_sha": "5f949fadb07c49b61cf7f9fd3db3a6d8c07505db",
+ "merge_base_sha": "45680ab9b6a6f9993b333d6c053fa1d8218742b0",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11820,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ed4cff22db8fdc5209028e6a183d4ff17286cd77507b5336c110c6217f38de95",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "934909f31e582a296f5e59b11001f9a7e56df698",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261004T194940Z-11820-api-design-d6a8ba",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T19:49:40Z",
+ "submitted_by": "kim-em",
+ "summary": "The new range lemma for absoluteGaloisGroupExtend has no membership characterization, so its advertised content (the image is the subgroup fixing \u03c3(L)) is unusable without unfolding; plus a missing simp annotation and an unnecessary public re-export.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Cyclotomic/Index.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/FiniteExtension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Cyclotomic/Range.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/LocalGaloisGroups/Suggested.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Cyclotomic/FiniteExtension.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Cyclotomic/Surjectivity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Cyclotomic/OddDegree.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Cyclotomic/Character.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/Galois/AbsoluteGaloisGroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "40209b7e9781d056c04a0913f711d6d22ec6a0574280f93220eeed27229a08f0",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 75977,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 75977,
+  "cache_read_input_tokens": 494534,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8740,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8740,
+    "cache_read_input_tokens": 70238,
+    "input_tokens": 2,
+    "output_tokens": 3132,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16644,
+  "output_tokens_details": {
+   "thinking_tokens": 12256
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
