@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4866805,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 224.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 84894,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 84894,
+    "cache_read_input_tokens": 416671,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5841,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5841,
+      "cache_read_input_tokens": 82054,
+      "input_tokens": 2,
+      "output_tokens": 2897,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17173,
+    "output_tokens_details": {
+     "thinking_tokens": 12927
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8d0626f913c295b84443a48c09fad2334f1f231a",
+ "cost_usd": 1.486681,
+ "dedupe_key": "TauCetiProject/TauCeti|11818|66e2f5ac0fa8ae44250559c0f7739fd2b9f10c5e|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "62c536a02fc478748ad6aab14eee30a9e47c071ff57ec5cef3c7586054e350f6",
+ "diff_sha256": "62c536a02fc478748ad6aab14eee30a9e47c071ff57ec5cef3c7586054e350f6",
+ "duration_s": 224.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "RootCount.lean:98 `private noncomputable def renameSucc`; RootCount.lean:103,111 `private theorem map_eval_renameSucc` / `eval_eval_renameSucc`; CAD.lean:93 `eval y (rename Fin.succ (p i)) = eval (Fin.tail y) (p i)` proved inline by `simp only [eval_rename, Fin.tail_def, comp_def]`.",
+   "file": "TauCeti/Geometry/RealAlgebraic/Semialgebraic/RootCount.lean",
+   "fix": "Relocate the two shift lemmas, public, to a polynomial file (e.g. under `TauCeti/Algebra/Polynomial/` or alongside `MvPolynomial` glue) stated for `P.map (rename Fin.succ).toRingHom` or a general `rename f`, and have `CAD.lean:97,106-107` use them instead of its local `hq`. Keep `renameSucc` only if it is exported with them.",
+   "issue": "`renameSucc`, `map_eval_renameSucc` (line 103) and `eval_eval_renameSucc` (line 111) are private, yet their statements mention only Mathlib types (`MvPolynomial`, `Polynomial.map`, `rename Fin.succ`, `Fin.tail`) and their proofs have nothing to do with semialgebraicity. The same shift fact is already re-proved inline in `CAD.lean:92-94`, and the follow-up work named in the PR description (matching `Delineation.root` graphs) needs it again.",
+   "line": 98
+  },
+  {
+   "evidence": "`Polynomial.roots` is defined in mathlib/Mathlib/Algebra/Polynomial/Roots.lean:56, and Semialgebraic/Basic.lean:9 publicly imports only `Mathlib.Algebra.Polynomial.Basic`; `IsRealClosed` arrives via Subresultant/CauchyIndex.lean:8 \u2192 Sturm/CauchyIndex/Sequence.lean:9. `grep signedPsc RootCount.lean` hits only lines 128-142, all inside the proof.",
+   "file": "TauCeti/Geometry/RealAlgebraic/Semialgebraic/RootCount.lean",
+   "fix": "Demote line 9 to a plain `import`, and add the imports the statements actually need: `public import Mathlib.Algebra.Polynomial.Roots` and `public import Mathlib.FieldTheory.IsRealClosed.Basic` (or make the `RootsBelow` import on line 10 public, since it already exports both).",
+   "issue": "`public import TauCeti.RingTheory.Polynomial.Subresultant.CauchyIndex` re-exports the whole signed-subresultant/Cauchy-index API to every downstream importer although no statement in the file mentions `signedPsc` or `cauchyIndex` \u2014 it is used only inside the proof of `isSemialgebraic_setOf_card_roots_map_eval`. Conversely the public statements use `Polynomial.roots` and `IsRealClosed`, which the file never imports publicly in its own right; they reach it only transitively through that import.",
+   "line": 9
+  },
+  {
+   "evidence": "Basic.lean:26-36 enumerates the file's closure properties; none of the three new declarations at lines 233, 247, 261 is mentioned there.",
+   "file": "TauCeti/Geometry/RealAlgebraic/Semialgebraic/Basic.lean",
+   "fix": "Add bullets for the arbitrary sign condition on finitely many polynomials, the permanences-minus-variations condition, and the vanishing of a set of family coefficients.",
+   "issue": "Three public theorems were added (`isSemialgebraic_setOf_sign_eval:233`, `isSemialgebraic_setOf_permanencesMinusVariations_eval:247`, `isSemialgebraic_setOf_forall_coeff_eq_zero:261`) without any entry in the module docstring, whose bullet list is the file's index of its public content. The last two are not instances of the listed \"polynomial sign condition\" bullet (one is about a `List` statistic, one about the coefficients of a `Polynomial (MvPolynomial \u03c3 R)`), so they are undiscoverable and invite re-proof.",
+   "line": 26
+  }
+ ],
+ "head_sha": "66e2f5ac0fa8ae44250559c0f7739fd2b9f10c5e",
+ "merge_base_sha": "45680ab9b6a6f9993b333d6c053fa1d8218742b0",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11818,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "08f6fc9005774e60ae27a6671e59c6ccc82f25ee0fb0b9a387e0aed930397a3d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "934909f31e582a296f5e59b11001f9a7e56df698",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261004T232552Z-11818-api-design-5475bb",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T23:25:52Z",
+ "submitted_by": "kim-em",
+ "summary": "The exposed theorem surface is adequate and bodies stay hidden, but three private helpers are general polynomial coordinate-shift infrastructure duplicating glue already inlined in CAD.lean, the public statements of RootCount.lean reach Polynomial.roots and IsRealClosed only through a proof-only public import of the Cauchy-index module, and Basic.lean's documented content list omits its three new public lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/RealAlgebraic/Semialgebraic/RootCount.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/RealClosed/RootsBelow.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/RealAlgebraic/Semialgebraic/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/RealAlgebraic/CAD.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Infinity.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Polynomial/Subresultant/CauchyIndex.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Polynomial/Reductum.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Polynomial/Subresultant/CauchyIndex.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/CauchyIndex/Sequence.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1abad1c8115fa34355f8abf1fe89243520a06cb81f681a61a25a725bd3d442d3",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 84894,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 84894,
+  "cache_read_input_tokens": 416671,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5841,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5841,
+    "cache_read_input_tokens": 82054,
+    "input_tokens": 2,
+    "output_tokens": 2897,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17173,
+  "output_tokens_details": {
+   "thinking_tokens": 12927
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
