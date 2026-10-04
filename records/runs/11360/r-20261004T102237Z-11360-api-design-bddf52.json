@@ -1,0 +1,227 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0011249999999996,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 297.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 97029,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 97029,
+    "cache_read_input_tokens": 888170,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4964,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4964,
+      "cache_read_input_tokens": 95066,
+      "input_tokens": 2,
+      "output_tokens": 7540,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23464,
+    "output_tokens_details": {
+     "thinking_tokens": 18787
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2029d38ad6ca6930a47775751774ba42d9eac120",
+ "cost_usd": 2.001125,
+ "dedupe_key": "TauCetiProject/TauCeti|11360|2ac3c590ad36623e05124205e22ce588039a77a0|api-design|claude-opus-5|7b72cafe03b2af65|production|4",
+ "diff_blob": "50642dc27053fa8e2b47686b1a1f27457617876979a13fc541954d8b67828c67",
+ "diff_sha256": "50642dc27053fa8e2b47686b1a1f27457617876979a13fc541954d8b67828c67",
+ "duration_s": 297.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Established pattern: `geodesicBetween_smul` (Geodesic/Between.lean:89), `smul_geodesicLine` (Geodesic.lean:112), `smul_geodesicSegment` (Geodesic/Segment.lean:108), `smul_leftHalfPlane`/`smul_rightHalfPlane` (HalfPlane.lean:134,140), `smul_dirichletDomain` (MeasureTheory/Group/DirichletDomain.lean:169). Polygon/SidePairing.lean:126 already relies on `smul_geodesicSegment` for exactly this kind of step.",
+   "file": "TauCeti/Analysis/Complex/UpperHalfPlane/Bisector/Geometry.lean",
+   "fix": "Add `bisector_smul (h : PSL(2, \u211d)) {p q : \u210d} (hpq : p \u2260 q) : bisector (h \u2022 p) (h \u2022 q) = h * bisector p q`, from `bisector_def`, `geodesicBetween_smul h hpq`, `(isometry_smul \u210d h).dist_eq` and `mul_assoc`.",
+   "issue": "`bisector` has no equivariance lemma, unlike every other geodesic-valued construction in the surrounding API. Consumers that push bisectors by group elements (Dirichlet-polygon side pairings, which the PR names as the consumer) can only redo it set-by-set with `ext` plus `dist_smul`.",
+   "line": "47"
+  },
+  {
+   "evidence": "`leftHalfPlane_mul_dilation`/`rightHalfPlane_mul_dilation` (HalfPlane.lean:285,295) and `range_geodesicLine_mul_dilation` (Geodesic.lean:204) show each characterized set is unchanged by `* \u2191(dilation s)`; `geodesicLine_zero` (Geodesic.lean:107) and `rotation_smul_I` (used at Geodesic.lean:222) give the midpoint lemma in three lines.",
+   "file": "TauCeti/Analysis/Complex/UpperHalfPlane/Bisector/Geometry.lean",
+   "fix": "Add `geodesicLine_bisector_zero {p q : \u210d} : geodesicLine (bisector p q) 0 = geodesicLine (geodesicBetween p q) (dist p q / 2)` (from `geodesicLine_zero`, `rotation_smul_I`, `geodesicLine_mul_dilation`) and the one-line `mem_leftHalfPlane_bisector_self {p q : \u210d} (hpq : p \u2260 q) : p \u2208 leftHalfPlane (bisector p q)`.",
+   "issue": "All five characterizations (lines 122, 131, 138, 145, 151) are invariant under `bisector p q * \u2191(dilation s)`, so the API cannot distinguish `bisector p q` from any reparametrization of it. The basepoint and orientation content asserted in the docstrings \u2014 \"moving to the midpoint of the oriented segment\" (line 50) and \"its left half-plane contains `p`\" (line 45) \u2014 is stated nowhere as a lemma, so no equation about the element is provable without re-unfolding `bisector_def` and redoing the rotation/dilation computation.",
+   "line": "44"
+  },
+  {
+   "evidence": "Both are true and immediate: `mem_leftHalfPlane_bisector_iff hpq.symm z` gives `dist z q < dist z p`, which is `mem_rightHalfPlane_bisector_iff hpq z`; likewise `mem_range_geodesicLine_bisector_iff` on both sides differ only by `eq_comm`.",
+   "file": "TauCeti/Analysis/Complex/UpperHalfPlane/Bisector/Geometry.lean",
+   "fix": "Add `leftHalfPlane_bisector_comm {p q : \u210d} (hpq : p \u2260 q) : leftHalfPlane (bisector q p) = rightHalfPlane (bisector p q)` and `range_geodesicLine_bisector_comm : range (geodesicLine (bisector q p)) = range (geodesicLine (bisector p q))`, each by `ext` plus the existing `mem_*_bisector_iff` lemmas.",
+   "issue": "Same class of gap: no lemma relates `bisector q p` to `bisector p q`, although the file deliberately develops both sides (left and right, open and closed). The Dirichlet-polygon pairing of the side for `g` with the side for `g\u207b\u00b9` needs exactly this.",
+   "line": "138"
+  }
+ ],
+ "head_sha": "2ac3c590ad36623e05124205e22ce588039a77a0",
+ "merge_base_sha": "2029d38ad6ca6930a47775751774ba42d9eac120",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11360,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "22b291e2274ca4ae636e7e4289bcc4d24d336b2e03acd05f7f3780289707fa6b",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "934909f31e582a296f5e59b11001f9a7e56df698",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261004T102237Z-11360-api-design-bddf52",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-04T10:22:37Z",
+ "submitted_by": "kim-em",
+ "summary": "The rename is clean and the half-plane membership characterizations are right, but `bisector` is a new `PSL(2, \u211d)`-valued definition with no group-element-level API: no equivariance, no basepoint lemma, no swap relation, so nothing in the API pins it down beyond right multiplication by a dilation.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/Bisector/Geometry.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/DirichletDomain.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/Bisector/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/HalfPlane.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Group/DirichletDomain.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/Geodesic/Segment.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/Fuchsian/DirichletDomain.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/Geodesic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/UpperHalfPlane/Polygon/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0141e4753fc5dcf8329d9ea4d401a001ed3d9c5e34b76f1fbc6e7c1efad38e3e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 97029,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 97029,
+  "cache_read_input_tokens": 888170,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4964,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4964,
+    "cache_read_input_tokens": 95066,
+    "input_tokens": 2,
+    "output_tokens": 7540,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23464,
+  "output_tokens_details": {
+   "thinking_tokens": 18787
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
