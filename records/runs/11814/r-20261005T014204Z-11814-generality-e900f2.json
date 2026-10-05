@@ -1,0 +1,287 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.7165705,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 726.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 113629,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 113629,
+    "cache_read_input_tokens": 1978531,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 48,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 803,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 803,
+      "cache_read_input_tokens": 115827,
+      "input_tokens": 2,
+      "output_tokens": 3684,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23631,
+    "output_tokens_details": {
+     "thinking_tokens": 16532
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "45680ab9b6a6f9993b333d6c053fa1d8218742b0",
+ "cost_usd": 2.71657,
+ "dedupe_key": "TauCetiProject/TauCeti|11814|e8c31ba79f6120fcc1b35566f338fb9a6d1c2cc1|generality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "d551b3a6f30827a52f0e29808b2a2c8aa8e63909d7c91df1387228dd3ca01fe2",
+ "diff_sha256": "d551b3a6f30827a52f0e29808b2a2c8aa8e63909d7c91df1387228dd3ca01fe2",
+ "duration_s": 726.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Module.Projective.of_split` is in the `Semiring` section of Mathlib (`mathlib/Mathlib/Algebra/Module/Projective.lean:164`, section opened at `:76`, closed `:209`, variables `[Semiring R] [AddCommMonoid P]`); `LinearMap.mulRight` needs only `[Semiring R] [NonUnitalNonAssocSemiring A] [IsScalarTower R A A]` (`Mathlib/Algebra/Module/LinearMap/Defs.lean:1008,1035,1043`); `Ideal.mem_span_singleton'` is in `section Semiring` (`Mathlib/RingTheory/Ideal/Span.lean:40,93`); `LinearMap.codRestrict` is semilinear/semiring-level (`Mathlib/Algebra/Module/Submodule/LinearMap.lean:157`).",
+   "file": "TauCeti/RingTheory/Idempotents/Module.lean",
+   "fix": "State `theorem projective_span_singleton {A : Type*} [Semiring A] {e : A} (he : IsIdempotentElem e) : Module.Projective A (Ideal.span {e} : Ideal A)`; the proof body should go through unchanged.",
+   "issue": "`IsIdempotentElem.projective_span_singleton` assumes `[Ring A]`, but nothing in the proof needs subtraction; the rest of the `Ae` API in this repo is deliberately semiring-level (see the implementation note in `Idempotents/Primitive/Basic.lean:56`, \"the API for the left ideal `Ae` are stated over a semiring\").",
+   "line": "104"
+  },
+  {
+   "evidence": "`Ideal.isNilpotent_of_mem_ker_endMapQ` has no projectivity hypothesis (`TauCeti/Algebra/Module/LinearMap/EndQuotient.lean:119`), whereas `Ideal.endMapQ_surjective` requires `[Module.Projective R M]` (`:76`) and is used only at `Top.lean:102` in the `mpr` branch; `isIndecomposableModule_iff_nontrivial_and_forall_isIdempotentElem` is projectivity-free (`TauCeti/RingTheory/KrullSchmidt/Indecomposable.lean:160`), and `IsSimpleModule.isIndecomposableModule` (`:167`) needs no hypotheses either.",
+   "file": "TauCeti/RingTheory/Idempotents/Primitive/Top.lean",
+   "fix": "Extract the reflecting direction without the instance, e.g. `omit [Module.Projective R P] in theorem IsIndecomposableModule.of_quotient_smul_top (hI : IsNilpotent I) (h : IsIndecomposableModule R (P \u29f8 I \u2022 (\u22a4 : Submodule R P))) : IsIndecomposableModule R P`, prove the iff from it, and likewise expose `IsIndecomposableModule.of_isSimpleModule_quotient_jacobson_smul_top` (semiprimary, no projectivity) with the iff at line 108 derived from both halves.",
+   "issue": "`isIndecomposableModule_quotient_smul_top_iff` inherits `[Module.Projective R P]` from the section variables, but the `mp` direction (`P \u29f8 I \u2022 \u22a4` indecomposable \u2192 `P` indecomposable, lines 91\u201397) uses only the nil kernel and `Submodule.mkQ_surjective`; projectivity enters solely in the `mpr` branch. The same under-generalization recurs at line 108: the `mpr` of `isIndecomposableModule_iff_isSimpleModule_quotient_jacobson_smul_top` (top simple \u2192 `P` indecomposable) factors through that projectivity-free direction. As stated, the standard fact \"a module with indecomposable/simple top over a ring with nilpotent radical is indecomposable\" is unavailable for non-projective modules.",
+   "line": "83"
+  }
+ ],
+ "head_sha": "e8c31ba79f6120fcc1b35566f338fb9a6d1c2cc1",
+ "merge_base_sha": "13c2e4b0884bd952eee07cd16a2a8e887a9365d4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 11814,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ecea4b33ca9ca20dde1c5f21ecdd62e3fd6cb73ed0fd3927ea74d258defaf170",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "934909f31e582a296f5e59b11001f9a7e56df698",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261005T014204Z-11814-generality-e900f2",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-05T01:42:04Z",
+ "submitted_by": "kim-em",
+ "summary": "Two statements carry hypotheses stronger than their proofs need: `projective_span_singleton` asks for a ring where a semiring suffices, and the indecomposability-from-the-top direction is locked behind a `Module.Projective` instance it never uses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Idempotents/Primitive/Top.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Idempotents/Module.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Idempotents/Primitive/Decomposition.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Idempotents/Primitive/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Module/LinearMap/EndQuotient.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Module/Projective/Reduction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Module/ProjectiveCover/Existence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Idempotents.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Idempotents.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Projective.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Projective.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Projective.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Projective.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<outside-workspace>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Algebra/Bilinear.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/LinearMap/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/LinearMap/Defs.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Ideal/Quotient/Principal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/KrullSchmidt/Indecomposable.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/KrullSchmidt/AdicComplete.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RepresentationTheory/Quiver/Zigzag/Projective/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Ideal/Span.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/Ideal/Span.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Submodule/LinearMap.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 31,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bebca20dbaa33bb0754ea9f26aae6bd8558a808cc1bdc7de0db5600419263729",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 113629,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 113629,
+  "cache_read_input_tokens": 1978531,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 48,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 803,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 803,
+    "cache_read_input_tokens": 115827,
+    "input_tokens": 2,
+    "output_tokens": 3684,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23631,
+  "output_tokens_details": {
+   "thinking_tokens": 16532
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
