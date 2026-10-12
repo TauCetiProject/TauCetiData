@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.26373320000000006,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 21272,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 21272,
+    "cache_read_input_tokens": 82186,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 414,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 414,
+      "cache_read_input_tokens": 23967,
+      "input_tokens": 2,
+      "output_tokens": 1843,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3854,
+    "output_tokens_details": {
+     "thinking_tokens": 1508
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "69d6d80dee02f42e39de4f46fdcfc135d48f1f20",
+ "cli_dirty": false,
+ "cli_sha": "7f1d28863dcd914f3bcc2ae1d9e2b7ee42a96441",
+ "cost_usd": 0.263733,
+ "dedupe_key": "TauCetiProject/TauCeti|15206|23c4d65b51361faa033521088a11e7e982e473f7|api-design|claude-opus-5-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "46b9ca5f3aa28efe49f71c65e37fbc86b77a233ec85512c297e02fcbad33de85",
+ "diff_sha256": "46b9ca5f3aa28efe49f71c65e37fbc86b77a233ec85512c297e02fcbad33de85",
+ "duration_s": 36.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`BaseChangeModule.toEnd_tmul_apply` (Subfield.lean:177-178) is proved by `simp [toEnd, mul_assoc]`, which works only because the reducible `abbrev` lets Mathlib's `Algebra.TensorProduct.map_tmul` (Maps.lean:542) fire. No lemma about `mapOpOpRight` exists (grep finds only its definition and the uses in Subfield.lean).",
+   "file": "TauCeti/RingTheory/TensorProduct/Opposite.lean",
+   "fix": "Add `@[simp] theorem mapOpOpRight_tmul (l : L) (a : A) : mapOpOpRight K L A (l \u2297\u209c a) = l \u2297\u209c op (op a) := (rfl)` and make the map a plain `def` without `@[expose]`.",
+   "issue": "Public `Algebra.TensorProduct.mapOpOpRight` is an `abbrev` (reducible, definition exposed) with no `mapOpOpRight_tmul` lemma. Consumers can only evaluate it by unfolding the definition.",
+   "line": 22
+  },
+  {
+   "evidence": "Mathlib's `AlgHom.toOpposite` carries `@[simps -fullyApplied]` (Mathlib/Algebra/Algebra/Opposite.lean:94). Grep for `toOppositeOfComm` finds only the definition and its uses in Subfield.lean, and no lemma about it.",
+   "file": "TauCeti/Algebra/Algebra/Opposite.lean",
+   "fix": "Add `@[simp] theorem toOppositeOfComm_apply (x : L) : f.toOppositeOfComm x = op (f x) := (rfl)` and make it a plain unexposed `def`.",
+   "issue": "Public `AlgHom.toOppositeOfComm` is an `abbrev` with no `toOppositeOfComm_apply` lemma. Its only evaluation lemma is Mathlib's `AlgHom.toOpposite_apply`, which reaches it only because the `abbrev` unfolds.",
+   "line": 19
+  }
+ ],
+ "head_sha": "23c4d65b51361faa033521088a11e7e982e473f7",
+ "merge_base_sha": "69d6d80dee02f42e39de4f46fdcfc135d48f1f20",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 15206,
+ "prices_sha": "8d26742ed0d8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "ae660ea056e08e780abec6904df7579be79aecdb5a757114e65661185bcc1087",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "7f1d28863dcd914f3bcc2ae1d9e2b7ee42a96441",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261012T030500Z-15206-api-design-833073",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-12T03:05:00Z",
+ "submitted_by": "kim-em",
+ "summary": "The two new public maps are `abbrev`s with no characteristic lemmas, so `simp` in Subfield.lean depends on unfolding their definitions. Add evaluation lemmas for each map and stop exposing their definitions.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Algebra/Opposite.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/CentralSimple/Subfield.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Algebra/Opposite.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "305b7e811316f24183894655c2559bc842b10463386b3b37f5127c37b97b2fbc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 21272,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 21272,
+  "cache_read_input_tokens": 82186,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 414,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 414,
+    "cache_read_input_tokens": 23967,
+    "input_tokens": 2,
+    "output_tokens": 1843,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3854,
+  "output_tokens_details": {
+   "thinking_tokens": 1508
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
