@@ -1,0 +1,191 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3758145,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 216.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 80392,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 80392,
+    "cache_read_input_tokens": 388759,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 12388,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 12388,
+      "cache_read_input_tokens": 71005,
+      "input_tokens": 2,
+      "output_tokens": 3950,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15097,
+    "output_tokens_details": {
+     "thinking_tokens": 11636
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1a824ad23d820ba80ce87fe04a3497d0a539f900",
+ "cli_dirty": false,
+ "cli_sha": "a8dc8bd760c888ed928ca8fba95484e7fca3f568",
+ "cost_usd": 1.375814,
+ "dedupe_key": "TauCetiProject/TauCeti|12855|e51075db37eeeeb32c5069d55b2e141d09564984|api-design|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "295379fbc07c253f1dd9e130f70a334880f03d1580b719290c4a82d741f9e45e",
+ "diff_sha256": "295379fbc07c253f1dd9e130f70a334880f03d1580b719290c4a82d741f9e45e",
+ "duration_s": 216.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lattice.lean:171-181 defines `hcomp`/`hbij` as local `have`s; BaseChange.lean:341 already exports the one-step-weaker `baseChange_apply_baseChange_apply_of_comp_eq_smul`, showing the file is the canonical home for exactly this material.",
+   "file": "TauCeti/RepresentationTheory/GrothendieckGroup/GroupAlgebra/LatticeDefect/Lattice.lean",
+   "fix": "Export the general statement in `TauCeti/RepresentationTheory/BaseChange.lean`, beside `baseChange_comp` and `baseChange_apply_baseChange_apply_of_comp_eq_smul`: `Representation.IntertwiningMap.bijective_baseChange_of_comp_eq_smul {r : R} (hgf : \u2200 v, g (f v) = r \u2022 v) (hfg : \u2200 w, f (g w) = r \u2022 w) (A) (hr : IsUnit (algebraMap R A r)) : Bijective (f.baseChange A)` (or the derived `Representation.Equiv`), and reduce the char-0 branch here to applying it.",
+   "issue": "`hbij` (lines 171-181) is general infrastructure hidden inside a proof: its statement mentions only `Representation`, `IntertwiningMap`, `baseChange`, `IsUnit` and `Bijective`, and nothing about `reductionK0`/`latticeDefect`. Consequence: the docstring at line 149 asserts \"In characteristic zero the reductions are isomorphic\", but the only exported form is the weaker equality of K-classes, so any consumer wanting the isomorphism (e.g. the `reduction`-to-`FDRep` functor the description says is coming in #12715) must redo the argument.",
+   "line": "177"
+  },
+  {
+   "evidence": "Basic.lean:106-109 (`(e : \u03c1.Equiv \u03c3)`, base-changes internally); Lattice.lean:182-184 (new) and Lattice.lean:102-104 (existing `latticeDefect_eq_reductionK0`) both bypass it via `reductionK0_def` + `ExactK0.of_congr`.",
+   "file": "TauCeti/RepresentationTheory/GrothendieckGroup/GroupAlgebra/LatticeDefect/Lattice.lean",
+   "fix": "Add `reductionK0_congr_baseChange (e : (Representation.baseChange k \u03c1).Equiv (Representation.baseChange k \u03c3)) : reductionK0 k \u03c1 = reductionK0 k \u03c3 := ExactK0.of_congr (Representation.asModuleLinearEquivOfEquiv e).toFGModuleCatIso` to `LatticeDefect/Basic.lean`, restate `reductionK0_congr e := reductionK0_congr_baseChange (e.baseChange k)` through it, and use it at Lattice.lean:182-184 and Lattice.lean:102-104.",
+   "issue": "Incomplete characteristic API for `reductionK0`: `reductionK0_congr` (LatticeDefect/Basic.lean:106-109) only accepts an `Equiv` of the \u2124-representations, so an `Equiv` of the already base-changed representations forces `rw [reductionK0_def, reductionK0_def]; exact ExactK0.of_congr (asModuleLinearEquivOfEquiv _).toFGModuleCatIso`. The same unfolding appears twice in this file.",
+   "line": "182"
+  }
+ ],
+ "head_sha": "e51075db37eeeeb32c5069d55b2e141d09564984",
+ "merge_base_sha": "1a824ad23d820ba80ce87fe04a3497d0a539f900",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 12855,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "875014906622800bcbdf516496c51538bdc7dd87ba0d499691a76fa291ac1e01",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "17b59b39a44a15aaa7ee3913653b82b1112e5f92",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261008T121052Z-12855-api-design-fb4e9a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-08T12:10:52Z",
+ "submitted_by": "kim-em",
+ "summary": "The characteristic-zero argument's general content \u2014 that an intertwining map whose composites are a scalar unit becomes bijective after base change \u2014 is buried in local `have`s instead of being exported next to its two companions in BaseChange.lean, so the stronger isomorphism the docstring advertises is unavailable to consumers. Relatedly, `reductionK0` lacks a congruence lemma for equivalences of the already base-changed representations, which is why the new proof (and the neighbouring one) unfolds `reductionK0_def`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/RepresentationTheory/GrothendieckGroup/GroupAlgebra/LatticeDefect/Lattice.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RepresentationTheory/BaseChange.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/TensorProduct/Tower.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RepresentationTheory/GrothendieckGroup/GroupAlgebra/LatticeDefect/Finite.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RepresentationTheory/Lattice.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 11,
+  "trace_truncated": false
+ },
+ "transcript_blob": "35deb48f5783016330bd8a6eb25bf1a279e7b0109b38cf3ccde91b7494a4d22c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 80392,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 80392,
+  "cache_read_input_tokens": 388759,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 12388,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 12388,
+    "cache_read_input_tokens": 71005,
+    "input_tokens": 2,
+    "output_tokens": 3950,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15097,
+  "output_tokens_details": {
+   "thinking_tokens": 11636
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
