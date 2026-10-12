@@ -1,0 +1,99 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_estimated": true,
+   "cost_usd": 0.448353,
+   "model": "gpt-5.6-sol",
+   "returncode": 0,
+   "secs": 50.3,
+   "usage": {
+    "cache_write_input_tokens": 0,
+    "cached_input_tokens": 189056,
+    "input_tokens": 245331,
+    "output_tokens": 2415,
+    "reasoning_output_tokens": 709
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "fb0a898da2b0809abde2030a29f3cce9c51f3471",
+ "cli_dirty": false,
+ "cli_sha": "7f1d28863dcd914f3bcc2ae1d9e2b7ee42a96441",
+ "cost_estimated": true,
+ "cost_usd": 0.448353,
+ "dedupe_key": "TauCetiProject/TauCeti|15127|89367e46e74b22eebfaecb3ea98096bceef0ebed|reuse|gpt-5.6-sol|7b72cafe03b2af65|production|1",
+ "diff_blob": "f089892e7e6e4eb687ad86582adaa65b1be70501aaf37f6f7ad5670a5ba24ba2",
+ "diff_sha256": "f089892e7e6e4eb687ad86582adaa65b1be70501aaf37f6f7ad5670a5ba24ba2",
+ "duration_s": 50.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The proofs at lines 31, 160, and 310 are exactly `abs_of_nonneg (hf.nonneg ht)`; repository grep finds no consumers outside this new file.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/MixtureEstimates.lean",
+   "fix": "Delete all three declarations and use `abs_of_nonneg (hf.nonneg ht)` at call sites.",
+   "issue": "`abs_value_eq` is duplicated at lines 157 and 307; each directly restates Mathlib's `abs_of_nonneg` after applying the predicate's existing `nonneg` lemma.",
+   "line": 28
+  },
+  {
+   "evidence": "All three proofs are exactly that application of `mul_nonneg`, and grep finds no external consumers.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/MixtureEstimates.lean",
+   "fix": "Delete all three declarations and use `mul_nonneg hc (hf.nonneg ht)`.",
+   "issue": "`nonnegative_weighted_value` and its copies at lines 163 and 313 directly restate Mathlib's `mul_nonneg`.",
+   "line": 34
+  },
+  {
+   "evidence": "The closed and continuous proofs are precisely this Mathlib lemma; the open proof expands the same equivalence manually. No external consumers exist.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/MixtureEstimates.lean",
+   "fix": "Delete them and apply `Finset.sum_eq_zero_iff_of_nonneg (fun i hi => (hf i hi).nonneg ht)` directly.",
+   "issue": "The three `finite_sum_zero_iff` declarations (lines 78, 219, and 340) merely specialize `Finset.sum_eq_zero_iff_of_nonneg`.",
+   "line": 78
+  },
+  {
+   "evidence": "The conclusion differs from line 356 only by rewriting `f t ^ 2` as `f t * f t`; grep finds no consumer requiring the specialized name.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/MixtureEstimates.lean",
+   "fix": "Delete it and use `simpa [pow_two] using hf.product_value_antitone hf`.",
+   "issue": "`square_value_antitone` is the `f = g` specialization of `IsContinuousCompletelyMonotoneOnIoi.product_value_antitone` declared at line 356.",
+   "line": 369
+  },
+  {
+   "evidence": "Lines 389\u2013399 re-prove the mixture construction and then rewrite every `f i s` to `1`; grep finds no consumers outside this declaration.",
+   "file": "TauCeti/Analysis/CompletelyMonotone/MixtureEstimates.lean",
+   "fix": "Use `finite_weighted_mixture u f w hf hw` for the first component and prove the normalization at its consumer with `simpa [hfs _ _] using hws`; remove the conjunction wrapper.",
+   "issue": "`finite_normalized_mixture` unnecessarily bundles `finite_weighted_mixture` from line 349 with a finite-sum simplification.",
+   "line": 381
+  }
+ ],
+ "head_sha": "89367e46e74b22eebfaecb3ea98096bceef0ebed",
+ "merge_base_sha": "291c2e875ec479b6bb8a9ba385143f9cf1727c09",
+ "mode": "commit",
+ "model": "gpt-5.6-sol",
+ "pr": 15127,
+ "prices_sha": "8d26742ed0d8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7b81a84c047ea393560db013a86694607c6bf526e6e6524457ffd68831d1b580",
+ "provider": "codex",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "7f1d28863dcd914f3bcc2ae1d9e2b7ee42a96441",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261011T235023Z-15127-reuse-e47430",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-11T23:50:23Z",
+ "submitted_by": "kim-em",
+ "summary": "Several public declarations are direct, unused restatements of existing Mathlib lemmas, and two later declarations duplicate APIs introduced earlier in the same file.",
+ "transcript_blob": "01f559d98325fec17d2360f6d7075a660863052c46e646736d6ae95ef67c69e6",
+ "usage": {
+  "cache_write_input_tokens": 0,
+  "cached_input_tokens": 189056,
+  "input_tokens": 245331,
+  "output_tokens": 2415,
+  "reasoning_output_tokens": 709
+ },
+ "verdict": "block"
+}
