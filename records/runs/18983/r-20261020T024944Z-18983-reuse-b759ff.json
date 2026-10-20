@@ -1,0 +1,171 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.30784600000000006,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 38.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 26982,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 26982,
+    "cache_read_input_tokens": 138210,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1964,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1964,
+      "cache_read_input_tokens": 30545,
+      "input_tokens": 2,
+      "output_tokens": 1412,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3215,
+    "output_tokens_details": {
+     "thinking_tokens": 998
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0b9d9863ee923bc10a2ce2fded869bdb869bee47",
+ "cli_dirty": false,
+ "cli_sha": "63d6228584cea2a32fdf0e911358d3583031a7a7",
+ "cost_usd": 0.307846,
+ "dedupe_key": "TauCetiProject/TauCeti|18983|a28731fb0a66cd999fa4a81c2623beabd8c18d2e|reuse|claude-opus-5-5|695290ae13d822ef|production|1",
+ "diff_blob": "ae32c8a6ce1cd8e41976fffbbd30b10ac8858717c852ca0185770652127cae1c",
+ "diff_sha256": "ae32c8a6ce1cd8e41976fffbbd30b10ac8858717c852ca0185770652127cae1c",
+ "duration_s": 38.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Topology/Algebra/Module/Equiv/Pi.lean:60 `def piCongrLeft ... (e : \u03b9' \u2243 \u03b9) : ((i' : \u03b9') \u2192 \u03c6 (e i')) \u2243L[R] (i : \u03b9) \u2192 \u03c6 i`; mathlib/Mathlib/Logic/Equiv/Basic.lean:1064,1070 `piCongrLeft'_update`, `piCongrLeft'_symm_update`.",
+   "file": "TauCeti/Analysis/Complex/CauchyIntegralPolydisc.lean",
+   "fix": "Use `let e := ContinuousLinearEquiv.piCongrLeft \u2102 (fun _ : \u03b9 => \u2102) (Fintype.equivFin \u03b9).symm`. Get inverse cancellation from `e.symm_apply_apply`/`e.apply_symm_apply`, and the `update` compatibility from `Equiv.piCongrLeft'_update`/`Equiv.piCongrLeft'_symm_update` (unfold with simp). Then drop `hMN`, `hMupdate` and `hfMN`.",
+   "issue": "`M`, `N`, `hMN` and `hMupdate` hand-build the continuous linear equivalence `(Fin n \u2192 \u2102) \u2243L[\u2102] (\u03b9 \u2192 \u2102)` from `ContinuousLinearMap.pi`/`proj` and prove by hand that it is inverse and commutes with `update`.",
+   "line": 317
+  },
+  {
+   "evidence": "Same proof shape at all three locations; Mathlib has only `hasFDerivAt_update`/`fderiv_update` (mathlib/Mathlib/Analysis/Calculus/FDeriv/Pi.lean:22,35) and no composite lemma.",
+   "file": "TauCeti/Analysis/Complex/CauchyIntegralPolydisc.lean",
+   "fix": "Add one helper, e.g. `DifferentiableAt.comp_update (h : DifferentiableAt \u2102 f y) (i) : DifferentiableAt \u2102 (fun x => f (update y i x)) (y i)`, built from `hasFDerivAt_update`, and use it at all three sites (the `closedBall` site via `.differentiableAt` after restricting to the open ball).",
+   "issue": "The diff proves 'joint differentiability at `y` implies the slice `fun x => f (update y i x)` is differentiable at `y i`' three separate times: in `DifferentiableOn.torusIntegral_prod_sub_inv_smul` (\u2248l.197-203), in `analyticOnNhd_iff_continuousOn_and_differentiableAt_update` (l.349-351) and in `DifferentiableOn.analyticAt_of_finiteDimensional` (l.371-375). Each copy is `DifferentiableAt.comp (y i) _ (hasFDerivAt_update y (y i)).differentiableAt` followed by `rw [update_eq_self]`.",
+   "line": 349
+  }
+ ],
+ "head_sha": "a28731fb0a66cd999fa4a81c2623beabd8c18d2e",
+ "merge_base_sha": "4faf50c84bbcf3bc8b4088c5ceeb975f9ba894fc",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 18983,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "16c5e7dec15552586555ccc1be4a765336fbbe7d73ce4be811296ad593aab1b3",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "63d6228584cea2a32fdf0e911358d3583031a7a7",
+ "rubrics_version": "695290ae13d822ef",
+ "run_id": "r-20261020T024944Z-18983-reuse-b759ff",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-20T02:49:44Z",
+ "submitted_by": "kim-em",
+ "summary": "Osgood's lemma is new: grepping Mathlib and TauCeti for Osgood, Hartogs and separate holomorphy finds no existing version. The transport to `Fin n \u2192 \u2102` hand-builds an equivalence Mathlib already has, and the diff writes the same update-differentiability argument out three times.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/FDeriv/Pi.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module/Equiv/Pi.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "958b5fadf86b218ee10a989dbbf44ddebba60b19aab2b9be506f3a473a374d0b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 26982,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 26982,
+  "cache_read_input_tokens": 138210,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1964,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1964,
+    "cache_read_input_tokens": 30545,
+    "input_tokens": 2,
+    "output_tokens": 1412,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3215,
+  "output_tokens_details": {
+   "thinking_tokens": 998
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
