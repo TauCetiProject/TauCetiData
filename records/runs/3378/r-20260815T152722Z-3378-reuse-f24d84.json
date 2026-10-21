@@ -1,0 +1,139 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1754635,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 289.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 95356,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 95356,
+    "cache_read_input_tokens": 1236285,
+    "inference_geo": "not_available",
+    "input_tokens": 33,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5156,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5156,
+      "cache_read_input_tokens": 106699,
+      "input_tokens": 2,
+      "output_tokens": 7169,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23745,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3bccc7ac8bf1c1fd1ffda441044b0ccbc559f6d8",
+ "cost_usd": 2.175464,
+ "dedupe_key": "TauCetiProject/TauCeti|3378|324ed1a73d8174874bc929a852b44fc3840c0ad9|reuse|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "d73cc2b5cc6491accce41d26097538a0108006521b5b442a122ee235868431ce",
+ "diff_sha256": "d73cc2b5cc6491accce41d26097538a0108006521b5b442a122ee235868431ce",
+ "duration_s": 289.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "New general statement: `theorem existsUnique_dynkinType (b : P.Base) : \u2203! t : DynkinType, t.Valid \u2227 HasCartanType P b t` (FiniteType/Classification.lean:129) with `[Nonempty \u03b9]`; new special case: same conclusion at DoubleEdge/Classification.lean:205-212 with `have : Nonempty \u03b9 := \u27e8u.1\u27e9`. `grep -rn existsUnique_dynkinType TauCeti` shows no use of the root-pairing version anywhere.",
+   "file": "TauCeti/LinearAlgebra/RootSystem/FiniteType/DoubleEdge/Classification.lean",
+   "fix": "Delete `existsUnique_dynkinType_of_apply_mul_apply_eq_two` (the `section RootPairing` block, lines 197-214) and its module-docstring bullet at line 41. Keep the matrix-level `IsFiniteType.existsUnique_dynkinType_of_apply_mul_apply_eq_two`, which is genuinely consumed at FiniteType/Classification.lean:74.",
+   "issue": "The root-pairing `TauCeti.existsUnique_dynkinType_of_apply_mul_apply_eq_two` states exactly `\u2203! t, t.Valid \u2227 HasCartanType P b t` under the same instances as the new general `TauCeti.existsUnique_dynkinType` (FiniteType/Classification.lean:129); `huv` is used only at line 208 to build `Nonempty \u03b9`, which `u.1` gives anyway, and the statement records nothing about B/C/F4 despite the docstring. It has no consumers \u2014 the general theorem goes through the matrix-level version instead.",
+   "line": 205
+  },
+  {
+   "evidence": "Star/Reindex.lean:376-384 and TypeA.lean:145-150 both end in `\u2203! t : DynkinType, t.Valid \u2227 HasCartanType P b t` with variable blocks `[Finite \u03b9] [CharZero R] [IsDomain R] [P.IsRootSystem] [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible]`; `grep -rn existsUnique_dynkinType TauCeti` shows only their own definitions and docstrings.",
+   "file": "TauCeti/LinearAlgebra/RootSystem/FiniteType/Star/Reindex.lean",
+   "fix": "Delete both root-pairing corollaries and their doc bullets (Star/Reindex.lean:31, TypeA.lean:46), leaving the matrix-level branch theorems and `hasCartanType_A_of_isSimplyLaced_of_degree_le_two` (which is used) in place. Keep RankTwo's `existsUnique_dynkinType_of_card_support_eq_two`: it drops `[P.IsCrystallographic]` and is consumed at RankTwo.lean:319.",
+   "issue": "Parallel API: `TauCeti.existsUnique_dynkinType_of_isSimplyLaced_of_degree_eq_three` (Star/Reindex.lean:376) and `TauCeti.existsUnique_dynkinType_of_isSimplyLaced_of_degree_le_two` (TypeA.lean:145) have the identical conclusion `\u2203! t, t.Valid \u2227 HasCartanType P b t` under the same instance hypotheses as the general theorem this PR adds, plus unused extra hypotheses, and neither has any consumer. This PR is what supersedes them, so they should go with it.",
+   "line": 376
+  },
+  {
+   "evidence": "`mathlib/Mathlib/LinearAlgebra/Matrix/Cartan.lean:168: @[simp] theorem C_transpose : (C n).transpose = B n`; `TauCeti/.../DoubleEdge/Basic.lean:131 doubleEdgeCartanMatrix_transpose`, `:370 doubleEdgeCartanMatrix_one_right`, `:391 isFiniteType_doubleEdgeCartanMatrix_one_left` (proved by transposition); Basic.lean:47 states 'the case p = 1 follows by transposition'.",
+   "file": "TauCeti/LinearAlgebra/RootSystem/FiniteType/DoubleEdge/Classification.lean",
+   "fix": "Derive it: from `doubleEdgeCartanMatrix_transpose q 1` and `doubleEdgeCartanMatrix_one_right q`, transpose gives `(doubleEdgeCartanMatrix 1 q).submatrix Sum.swap Sum.swap = ((CartanMatrix.C (q+1))\u1d40).submatrix finSumFinEquiv finSumFinEquiv = (CartanMatrix.B (q+1)).submatrix finSumFinEquiv finSumFinEquiv` by `Matrix.transpose_submatrix` and `CartanMatrix.C_transpose`; resubmatrixing by `Sum.swap` (with `Sum.swap_swap`) yields the statement, since `doubleEdgeBEquiv q = (Equiv.sumComm _ _).trans finSumFinEquiv` is `finSumFinEquiv \u2218 Sum.swap`.",
+   "issue": "`doubleEdgeCartanMatrix_one_left` re-runs the entry-by-entry case bash of `doubleEdgeCartanMatrix_one_right` instead of transposing it, although the transposition lemmas already exist and `isFiniteType_doubleEdgeCartanMatrix_one_left` is proved that way in the same development.",
+   "line": 118
+  },
+  {
+   "evidence": "`TauCeti/LinearAlgebra/RootSystem/FiniteType/Basic.lean:184: lemma apply_eq_zero_iff (h : IsFiniteType A) {i j : B} : A i j = 0 \u2194 A j i = 0`; `TauCeti/.../DoubleEdge/Reindex.lean:388: rcases Int.eq_one_or_neg_one_of_mul_eq_one' hone with hpos | hneg`.",
+   "file": "TauCeti/LinearAlgebra/RootSystem/FiniteType/Classification.lean",
+   "fix": "Replace the `h0` branch with `rcases mul_eq_zero.mp h0 with h' | h'` and `exact Or.inl (h.apply_eq_zero_iff.mpr h')` in the second case, and the `h1` branch with `rcases Int.eq_one_or_neg_one_of_mul_eq_one' h1 with \u27e8h', -\u27e9 | \u27e8h', -\u27e9` discharging the positive case by `omega` against `hle_i`.",
+   "issue": "The `hsl` block re-proves two facts that located lemmas give directly: lines 84-92 re-derive `A i j = 0` from `A i j * A j i = 0` by `by_contra`/`apply_eq_zero_symm` although `IsFiniteType.apply_eq_zero_iff` states this, and lines 93-102 re-derive `A i j = -1` from `A i j * A j i = 1` by `nlinarith`/`omega` although `Int.eq_one_or_neg_one_of_mul_eq_one'` gives it in one step (as already used in DoubleEdge/Reindex.lean:388).",
+   "line": 84
+  },
+  {
+   "evidence": "DoubleEdge/Classification.lean:159-163 and :164-167 are the same three tactic lines up to the value of `q`.",
+   "file": "TauCeti/LinearAlgebra/RootSystem/FiniteType/DoubleEdge/Classification.lean",
+   "fix": "Case on `p = 1` first (`by_cases hp1 : p = 1`), giving `.B (q+1)` once for every `q`, and handle `q = 1 \u2227 2 \u2264 p` with `.C (p+1)` in the remaining branch; the third disjunct `p = q = 2` is unchanged.",
+   "issue": "Inside `doubleEdgeCartanMatrix_existsUnique_dynkinType`, the `p = 1` sub-branch of the `q = 1` case (lines 159-163) repeats verbatim the proof of the `p = 1` case (lines 164-167): same witness shape `.B (q+1)`, same `doubleEdgeBEquiv`, same `rw [DynkinType.cartanMatrix_B, doubleEdgeCartanMatrix_one_left]; rfl`.",
+   "line": 159
+  }
+ ],
+ "head_sha": "324ed1a73d8174874bc929a852b44fc3840c0ad9",
+ "merge_base_sha": "3bccc7ac8bf1c1fd1ffda441044b0ccbc559f6d8",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3378,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "45544d121028f58ef35dab99d8d1cab85d7bce5530b7154608890fc623d36c4f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T152722Z-3378-reuse-f24d84",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T15:27:22Z",
+ "submitted_by": "kim-em",
+ "summary": "The root-system corollary `existsUnique_dynkinType_of_apply_mul_apply_eq_two` added in this PR is a strict instance of the general `TauCeti.existsUnique_dynkinType` added in the same PR (its hypothesis is unused beyond supplying `Nonempty \u03b9`), and the same now holds for two pre-existing branch corollaries. Two proofs also re-derive results that located lemmas already give.",
+ "transcript_blob": "49f564cc1f8a272044069148413cbc9eeda71e2916591f0afd7049fa2d688b91",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 95356,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 95356,
+  "cache_read_input_tokens": 1236285,
+  "inference_geo": "not_available",
+  "input_tokens": 33,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5156,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5156,
+    "cache_read_input_tokens": 106699,
+    "input_tokens": 2,
+    "output_tokens": 7169,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23745,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

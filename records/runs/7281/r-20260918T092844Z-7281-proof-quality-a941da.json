@@ -1,0 +1,160 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.800419,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 121.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 52919,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 52919,
+    "cache_read_input_tokens": 114356,
+    "inference_geo": "not_available",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5728,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5728,
+      "cache_read_input_tokens": 50084,
+      "input_tokens": 2,
+      "output_tokens": 4519,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8221,
+    "output_tokens_details": {
+     "thinking_tokens": 6241
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d950e35f611c781428e6e2be40a83f0d4f6f4057",
+ "cost_usd": 0.800419,
+ "dedupe_key": "TauCetiProject/TauCeti|7281|480066ead7c81b7d2e9e35246c389dd395404c33|proof-quality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "21416b1678bd1eabaadafcdb57e3d8e49c60cf55a9ed278873d4aa4037072fa0",
+ "diff_sha256": "21416b1678bd1eabaadafcdb57e3d8e49c60cf55a9ed278873d4aa4037072fa0",
+ "duration_s": 121.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 546-551 duplicate 535-540; the general version at lines 330-332 is `memLp_one_iff_integrable.1 (by exact_mod_cast memLp_id_of_mgf_trace_mul_eq_det_rpow hmgf 1)`.",
+   "file": "TauCeti/Probability/Distributions/Wishart/Moments.lean",
+   "fix": "Prove it as `memLp_one_iff_integrable.1 (by exact_mod_cast memLp_id_nonsingularWishartMeasure S n 1)`, mirroring `integrable_id_of_mgf_trace_mul_eq_det_rpow`.",
+   "issue": "`integrable_id_nonsingularWishartMeasure` re-runs the whole `by_cases hS`/`by_cases hn` branch analysis that `memLp_id_nonsingularWishartMeasure` (line 532) just performed, instead of deriving integrability from it as the general layer does.",
+   "line": "546"
+  },
+  {
+   "evidence": "`grep -n 'by_cases hS : S.PosDef' Moments.lean` \u2192 512, 524, 535, 546, each followed by the identical `by_cases hn`/`simp [nonsingularWishartMeasure_of_le S (not_lt.1 hn)]`/`simp [nonsingularWishartMeasure_of_not_posDef n hS]` block.",
+   "file": "TauCeti/Probability/Distributions/Wishart/Moments.lean",
+   "fix": "Use one split `by_cases hval : S.PosDef \u2227 (p : \u211d) - 1 < n` (the idiom already at `Nonsingular.lean:330`), passing `hval.1 hval.2` to the mgf lemma and closing the other branch once via `not_and_or`; or add a single `nonsingularWishartMeasure_eq_zero` lemma covering both invalid branches and `simp` with it.",
+   "issue": "The same nested case split with two `simp` closes is repeated at lines 512-517, 524-529, 535-540 and 546-551; the reusable content is the single fact that the law is `0` off the parameter range.",
+   "line": "512"
+  }
+ ],
+ "head_sha": "480066ead7c81b7d2e9e35246c389dd395404c33",
+ "merge_base_sha": "bbba75a19bbd0096aa0250afe2aa7c6e00a12afb",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7281,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "893a0c1a28d9fca65094bc1a2fbc6fc1c80cda1ab1db3b9c6257ddf50b837a0b",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260918T092844Z-7281-proof-quality-a941da",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-18T09:28:44Z",
+ "submitted_by": "kim-em",
+ "summary": "The seven moment lemmas are clean term-mode applications of the general layer, with no defeq manipulation, no brittle rewrite chains and no long proofs. The only issue is the degenerate-branch case split copied verbatim four times, including one copy that the adjacent MemLp lemma already makes unnecessary.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Wishart/Moments.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Wishart/Nonsingular.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Wishart/Transforms.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Wishart",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "48912f02b82aeba965dc9e8526dfb4d6e62d4fea0f8a48fdee57cf6d0e7445b6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 52919,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 52919,
+  "cache_read_input_tokens": 114356,
+  "inference_geo": "not_available",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5728,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5728,
+    "cache_read_input_tokens": 50084,
+    "input_tokens": 2,
+    "output_tokens": 4519,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8221,
+  "output_tokens_details": {
+   "thinking_tokens": 6241
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

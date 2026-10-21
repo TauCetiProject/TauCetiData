@@ -1,0 +1,146 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4895825,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 254.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 65694,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 65694,
+    "cache_read_input_tokens": 645297,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4738,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4738,
+      "cache_read_input_tokens": 77455,
+      "input_tokens": 2,
+      "output_tokens": 4281,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 19975,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bcd304c949a2d75f8c9483bc04d0f6d60729ec53",
+ "cost_usd": 1.489583,
+ "dedupe_key": "TauCetiProject/TauCeti|3257|1a6d1fa862885e1bbc2a56d6f84b9a79cd3cce9b|proof-quality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "3fa57fc92ef22665d73d9fccc87be91bcc8eba210911cc12fad66e539069913a",
+ "diff_sha256": "3fa57fc92ef22665d73d9fccc87be91bcc8eba210911cc12fad66e539069913a",
+ "duration_s": 254.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Dual.lean:195-203 vs Dual.lean:99-100 (`rw [LinearMap.BilinForm.dualSubmoduleToDual_apply_apply, LinearMap.BilinForm.dualSubmoduleParing_spec]`); mathlib DualLattice.lean:62-64, 68-71.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "Route through the named lemma as this file already does at line 99 and as Basic.lean:140 does: `by rw [dualPairing, LinearMap.BilinForm.dualSubmoduleToDual_apply_apply]; simpa using L.form.dualSubmoduleParing_spec x y` (or state the lemma with `algebraMap \u2124 \u211a`).",
+   "issue": "`intCast_dualPairing_apply` is closed by the bare term `L.form.dualSubmoduleParing_spec x y`, whose statement is `algebraMap \u2124 \u211a (B.dualSubmoduleParing x y) = B x y` (Mathlib/LinearAlgebra/BilinearForm/DualLattice.lean:62). It type-checks only by unfolding `dualPairing` and `dualSubmoduleToDual` down to `dualSubmoduleParing` and by identifying `Int.cast` with `algebraMap \u2124 \u211a` \u2014 two undocumented defeqs.",
+   "line": 203
+  },
+  {
+   "evidence": "mathlib Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean:227 `theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm \u2194 B = B.flip` (inside `namespace LinearMap`, line 45).",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "Add `theorem form_flip (L : IntegralLattice V) : L.form.flip = L.form := (LinearMap.isSymm_iff_eq_flip.mp L.isSymm).symm` to `Basic.lean` next to `isSymm`, and use it here.",
+   "issue": "`dualCarrier_dualCarrier` reproves `L.form.flip = L.form` inline by `ext x y; exact L.isSymm.eq y x`. This is a Mathlib fact and a reusable property of every integral lattice that every later duality/discriminant argument will need.",
+   "line": 292
+  },
+  {
+   "evidence": "Dual.lean:106-107, 217, 225-226, 244.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "State the sum as a named `have hx_eq : x = \u2211 i, ...` and rewrite with it instead of `simp only [x]`; drop `simp only [b]` by stating `hform` in terms of `Module.Free.chooseBasis \u2124 N` directly; replace 213-218 with `rfl` (structure eta on `LinearEquiv.ofBijective`); replace 244 with `rfl`; use `LinearEquiv.coe_coe` explicitly at 225.",
+   "issue": "Proofs advance by unfolding definitions/`let`s by name rather than by lemma: `simp only [x, map_sum, ...]` and `simp only [b] at hform \u22a2` (106-107, zeta-delta unfolding of local `let`s), `simp only [dualPairingEquiv, dualSubmoduleEquivDual, dualPairing]` (217), `rw [dualBasisElem]` (244), and `hx` at 225-226 which needs `\u21d1e.toLinearMap = \u21d1e`. None is documented, and each breaks if a definition gains a wrapper.",
+   "line": 106
+  },
+  {
+   "evidence": "mathlib Mathlib/LinearAlgebra/Dimension/Finrank.lean:62 `noncomputable def finrank ... := ...toNat (Module.rank R M)`; Dual.lean:190-192; Basic.lean:103-105.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "Derive it from `Module.finrank_eq_of_rank_eq` / `Module.finrank_eq_rank`, or keep the term proof with a one-line comment stating that it relies on `Module.finrank` being `Cardinal.toNat \u2218 Module.rank`. The same applies to the identical idiom at Basic.lean:105.",
+   "issue": "`finrank_dualCarrier := congr_arg Cardinal.toNat (Submodule.IsLattice.rank' \u211a L.dualCarrier)` type-checks only by delta-unfolding `Module.finrank R M := Cardinal.toNat (Module.rank R M)`; nothing in the proof records that.",
+   "line": 192
+  },
+  {
+   "evidence": "Dual.lean:69-76 vs Dual.lean:166-167; mathlib Mathlib/Algebra/Module/Lattice.lean:152-156 (`@[simp] extendOfIsLattice_apply`).",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "`have hrange : Set.range (b.extendOfIsLattice \u211a) = Set.range (N.subtype \u2218 b) := congrArg Set.range (funext fun i \u21a6 Basis.extendOfIsLattice_apply \u211a b i)` \u2014 the same idiom the author already uses at lines 166-167.",
+   "issue": "`hrange` spends eight lines (`ext`/`simp only`/`constructor`/two `rintro`s) proving an equality of ranges of two pointwise-equal functions, when the `@[simp]` lemma `Basis.extendOfIsLattice_apply` gives it directly.",
+   "line": 69
+  },
+  {
+   "evidence": "Dual.lean:124-135 vs 138-149; mathlib Mathlib/LinearAlgebra/BilinearForm/Basic.lean:138 (`flip_flip`), Mathlib/LinearAlgebra/BilinearForm/Properties.lean:338 (`Nondegenerate.flip`).",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "Derive one from the other by applying it to `B.flip` and rewriting with `LinearMap.BilinForm.flip_flip` and `Nondegenerate.flip`, or factor the shared transport step into a single helper.",
+   "issue": "`dualSubmodule_dualSubmodule_flip` and `dualSubmodule_flip_dualSubmodule` are byte-for-byte identical three-step `calc` proofs differing only in which Mathlib basis-level lemma sits in the middle; the transport `span (range b) \u2194 N` reasoning is written twice.",
+   "line": 124
+  }
+ ],
+ "head_sha": "1a6d1fa862885e1bbc2a56d6f84b9a79cd3cce9b",
+ "merge_base_sha": "bcd304c949a2d75f8c9483bc04d0f6d60729ec53",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3257,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4c3f2cb05d1edbf4fddc2831a60c40defa0da9248d36a376bd71fe73f4e883a8",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T170315Z-3257-proof-quality-f78c46",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T17:03:15Z",
+ "submitted_by": "kim-em",
+ "summary": "Several proofs close goals through undocumented definitional equality (coercion vs `algebraMap`, `finrank` vs `Cardinal.toNat \u2218 rank`, `let`/definition unfolding via `simp only [name]`) where named lemmas the file already uses elsewhere would work, and one reusable Mathlib fact (`form.flip = form`) is reproved inline. Two proofs are also verbose or copy-pasted where a one-liner or a single shared lemma suffices.",
+ "transcript_blob": "cec2a1fbb78f364d7dfb7771a128b7e9cb85cbad2c61ac9750fd76645100f410",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 65694,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 65694,
+  "cache_read_input_tokens": 645297,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4738,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4738,
+    "cache_read_input_tokens": 77455,
+    "input_tokens": 2,
+    "output_tokens": 4281,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 19975,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

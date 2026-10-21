@@ -1,0 +1,146 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.5000375,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 298.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 105393,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 105393,
+    "cache_read_input_tokens": 1694145,
+    "inference_geo": "not_available",
+    "input_tokens": 33,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2440,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2440,
+      "cache_read_input_tokens": 119452,
+      "input_tokens": 2,
+      "output_tokens": 4310,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23206,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e28afb19d468aabb12e10f6bc1d226e6cb5e3f97",
+ "cost_usd": 2.500037,
+ "dedupe_key": "TauCetiProject/TauCeti|3402|47886d51a83a26f76faf283792afd544c6960446|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "add7e7117e86476d289a5bbd52ebfec0d9ce445a85b43c7fa9ae614700c871e2",
+ "diff_sha256": "add7e7117e86476d289a5bbd52ebfec0d9ce445a85b43c7fa9ae614700c871e2",
+ "duration_s": 298.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "JHolomorphic/Energy/Basic.lean:97-103 \"the definition is neither `@[expose]`d nor reducible, so no module ever unfolds the body again\"; Energy/Integral.lean:100-103 repeats it. Every neighbouring manifold file uses plain `public section` (Manifold/AlmostComplex.lean:47, Manifold/JHolomorphic.lean:62, Geometry/Manifold/TwoForm.lean:43).",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Use plain `public section`. The `_def` lemmas plus the `Tames`/`Compatible` lemmas are the intended elimination API; nothing needs to unfold or compute these two defs.",
+   "issue": "`@[expose] public section` exposes the bodies of `stdComplexLineEnergyDensity` (l.109) and `stdComplexLineEnergy` (l.456) to every downstream module, while `attribute [irreducible]` (l.122, l.469) is added as if they were hidden. The linear originals do the opposite and say so explicitly.",
+   "line": 86
+  },
+  {
+   "evidence": "Geometry/Symplectic/AlmostComplex.lean is `public section` with per-declaration `@[expose] def Invariant` (l.425) and `@[expose] def Tames` (l.443). Energy.lean:394 `have hinv_step : form x (J x w) (J x v) = form x w v := hinv x w v` is the only use in the PR that needs an unfolded body.",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/TwoForm.lean",
+   "fix": "Revert to `public section` and put `@[expose]` on the predicate defs a consumer must apply (`Invariant`, and `Tames` if needed), exactly as the linear file does; or add an application lemma `Invariant.apply : form.Invariant J \u2192 form x (J x v) (J x w) = form x v w` and expose nothing.",
+   "issue": "`public section` is flipped to `@[expose] public section`, exposing every body in the file (`IsNondegenerate`, `symplecticFormAt`, `Tames`, `Invariant`, `constSmooth`), apparently only so that Energy.lean:394 can apply `hinv x w v` directly. `symplecticFormAt` and `constSmooth` already have `@[simp]` characterizations (`symplecticFormAt_apply` l.93, `constSmooth_apply` l.179), so their bodies should stay hidden.",
+   "line": 43
+  },
+  {
+   "evidence": "JHolomorphic/Energy/Basic.lean:95 `:= (rfl)`; Energy/Integral.lean:100 `(rfl)`; Geometry/Manifold/TwoForm.lean:88 and :186 `(rfl)`.",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Write `:= (rfl)` in both, matching the repo idiom.",
+   "issue": "`stdComplexLineEnergyDensity_def` is proved `:= rfl`, and `stdComplexLineEnergy_def` (l.467) likewise, letting consumers depend on defeq of the bodies.",
+   "line": 120
+  },
+  {
+   "evidence": "Energy/Integral.lean:28-31: \"The differential is kept explicit: for a differentiable map `u`, consumers use `fun x \u21a6 (fderiv \u211d u x).toLinearMap`. This avoids assigning a misleading energy to a nondifferentiable map, since Mathlib defines `fderiv` to be zero where differentiability fails.\" No `MDifferentiable` hypothesis occurs anywhere in the new file.",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Parameterize over the differential field, `du : \u2200 z, (\u211d \u00d7 \u211d) \u2192\u2097[\u211d] TangentSpace I (u z)`, mirroring `SymplecticForm.stdComplexLineEnergy`, and derive the `mfderiv` statements as lemmas about `fun z \u21a6 (mfderiv \ud835\udcd8(\u211d, \u211d \u00d7 \u211d) I u z).toLinearMap`.",
+   "issue": "`stdComplexLineEnergy` hard-codes `mfderiv` inside the definition, so a curve that is nowhere `MDifferentiable` gets energy `0` (Mathlib's `mfderiv` junk value) and satisfies `Tames.stdComplexLineEnergy_eq_zero_iff` (l.573) vacuously. The linear predecessor deliberately avoids this.",
+   "line": 456
+  },
+  {
+   "evidence": "grep for `map_add\u2082|map_sub|map_neg` in TauCeti/Geometry/Manifold/TwoForm.lean returns only the structure field and the coercion (l.66, 77, 83, 185); no bilinearity lemma exists.",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Add the missing characteristic `@[simp]` lemmas to `TauCeti/Geometry/Manifold/TwoForm.lean` \u2014 `map_zero_left/right`, `map_add_left/right`, `map_sub_right`, `map_neg_right`, and antisymmetry `form x v w = -form x w v` \u2014 and use them here.",
+   "issue": "Proofs bypass the public `form x v w` coercion and reach into `form.toContMDiffSection x` for bilinearity (l.134-135, 226, 389, 391, 393), and re-derive antisymmetry from `LinearMap.IsAlt.neg` + `simpa [bilinFormAt_apply]` three times (l.229-231, 395-397, 398-400). `SmoothTwoForm` has no additivity or antisymmetry lemmas.",
+   "line": 389
+  },
+  {
+   "evidence": "l.262-266 `lemma mfderiv_stdComplexLineEnergyDensity_nonneg (htame : form.Tames J) (u) (z) := htame.stdComplexLineEnergyDensity_nonneg (u z) _`; contrast l.431 `Compatible.two_mul_twoForm_mfderiv_le_stdComplexLineEnergyDensity` in `SmoothTwoForm.Compatible`.",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Move them to `SmoothTwoForm.Tames` (e.g. `SmoothTwoForm.Tames.mfderiv_stdComplexLineEnergyDensity_nonneg`), matching where this PR already puts the equally hypothesis-free `Compatible.two_mul_twoForm_mfderiv_le_stdComplexLineEnergyDensity`.",
+   "issue": "Eight lemmas live in `IsPseudoholomorphicAt` (l.262, 270, 280, 289) and `IsPseudoholomorphicWithinAt` (l.325, 333, 343, 353) but take no pseudoholomorphicity hypothesis \u2014 they are `Tames` specializations with `u`/`z` explicit, so dot notation on the namespace's type is impossible and the names advertise a hypothesis that is not there.",
+   "line": 262
+  }
+ ],
+ "head_sha": "47886d51a83a26f76faf283792afd544c6960446",
+ "merge_base_sha": "e28afb19d468aabb12e10f6bc1d226e6cb5e3f97",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3402,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "017b95a2584219ba68e4cdcd50f402dcd23240aab3a1ca5d5678ae59f6646d75",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T195317Z-3402-api-design-e471b4",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T19:53:17Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR exposes definition bodies file-wide in both the new file and the pre-existing Manifold/TwoForm.lean, contradicting the documented no-expose design of the linear energy files it lifts, and its `_def` lemmas use bare `rfl`. It also bakes `mfderiv` into `stdComplexLineEnergy` (the sibling file deliberately kept the differential a parameter), works around missing `SmoothTwoForm` bilinearity lemmas by reaching into `toContMDiffSection`, and files eight tameness lemmas under `IsPseudoholomorphic*` namespaces they have no hypothesis in.",
+ "transcript_blob": "bfd50b20390982b1128124ed457717fe764a0983e7f85bce797c1f3a6676ed44",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 105393,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 105393,
+  "cache_read_input_tokens": 1694145,
+  "inference_geo": "not_available",
+  "input_tokens": 33,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2440,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2440,
+    "cache_read_input_tokens": 119452,
+    "input_tokens": 2,
+    "output_tokens": 4310,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23206,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

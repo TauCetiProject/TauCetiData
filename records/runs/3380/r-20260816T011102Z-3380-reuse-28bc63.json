@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6741244999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 234.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 76546,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 76546,
+    "cache_read_input_tokens": 873585,
+    "inference_geo": "not_available",
+    "input_tokens": 27,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 865,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 865,
+      "cache_read_input_tokens": 92180,
+      "input_tokens": 2,
+      "output_tokens": 1834,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18407,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d765480c11b67ebf7e43b37c9d3f3805c6816bee",
+ "cost_usd": 1.674124,
+ "dedupe_key": "TauCetiProject/TauCeti|3380|24de10a58346282e628af4fe74b3be28342ea02b|reuse|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "3320ad6d39fde5450fc59f6dc1004ed808e24274153f0ab40b5ecd061c004bda",
+ "diff_sha256": "3320ad6d39fde5450fc59f6dc1004ed808e24274153f0ab40b5ecd061c004bda",
+ "duration_s": 234.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:217-233 `gaPointParamMul`/`gaPointsMulEquiv_gaPointParamMul`; Scheme.lean:333-336 `schemePointsMulEquiv` definition; Scheme.lean:396 `schemePointsMulEquiv_symm_apply ... := rfl`; grep for `gaSchemePointParamMul` shows no lemma relating it to `gaPointParamMul`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdditiveGroup/Scheme.lean",
+   "fix": "Define `gaSchemePointParamMul A p q := groupSchemePointMulEquiv A (gaPointParamMul ((groupSchemePointMulEquiv A).symm p) ((groupSchemePointMulEquiv A).symm q))` (definitionally the current body, so the call sites in SpecialLinear/ChevalleyRelations.lean are unaffected), and prove `schemePointsMulEquiv_gaSchemePointParamMul` from `schemePointsMulEquiv_groupSchemePointMulEquiv` (Scheme.lean:377) plus `gaPointsMulEquiv_gaPointParamMul` (Basic.lean:227) rather than from `apply_symm_apply`.",
+   "issue": "`gaSchemePointParamMul` re-derives the existing parameter-product operation instead of reusing it. `TauCeti.AdditiveGroup.gaPointParamMul` (Basic.lean:217) is the same `(equiv).symm (ofAdd (toAdd _ * toAdd _))` assembly, and since `schemePointsMulEquiv A = (groupSchemePointMulEquiv A).symm.trans gaPointsMulEquiv` (Scheme.lean:333) with `schemePointsMulEquiv_symm_apply` (line 396) proved by `rfl`, `gaSchemePointParamMul A p q` is definitionally `groupSchemePointMulEquiv A (gaPointParamMul ((groupSchemePointMulEquiv A).symm p) ((groupSchemePointMulEquiv A).symm q))`. No lemma links the two, so the algebra-point API (notably `mapValue_gaPointParamMul`, Basic.lean:245) does not carry over to the scheme-point operation.",
+   "line": 341
+  },
+  {
+   "evidence": "grep hits for `transvectionUnit_mul_transvectionUnit_eq_mul_mul`: only GeneralLinearGroup/Transvection.lean:175 (declaration). grep for `transvection_mul_transvection_eq_mul_mul`: SpecialLinearGroup/Transvection.lean:656 (declaration), :692 (used), GeneralLinearGroup/Transvection.lean:181 (used only by the dead lemma).",
+   "file": "TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Transvection.lean",
+   "fix": "Delete `transvectionUnit_mul_transvectionUnit_eq_mul_mul`; no in-repo call sites need updating.",
+   "issue": "`TauCeti.transvectionUnit_mul_transvectionUnit_eq_mul_mul` is now dead and redundant. Its only consumer was the old proof of `commutatorElement_transvectionUnit`, which this PR reroutes through `Matrix.SpecialLinearGroup.commutatorElement_transvection`; `grep -rn transvectionUnit_mul_transvectionUnit_eq_mul_mul code/` returns only its own declaration. The statement `x\u00b7y = y\u00b7x\u00b7z` is a two-line consequence of the retained `commutatorElement_transvectionUnit` (line 186) together with `commute_transvectionUnit` (line 169), and the matrix-level content is already `TauCeti.transvection_mul_transvection_eq_mul_mul` (SpecialLinearGroup/Transvection.lean:656), which keeps its consumer at line 692.",
+   "line": 175
+  }
+ ],
+ "head_sha": "24de10a58346282e628af4fe74b3be28342ea02b",
+ "merge_base_sha": "d765480c11b67ebf7e43b37c9d3f3805c6816bee",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3380,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5666e3d9ef13f5c8fbba40769bce0d136c130036669a20a2c7640accee74975d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260816T011102Z-3380-reuse-28bc63",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-16T01:11:02Z",
+ "submitted_by": "kim-em",
+ "summary": "The new SL\u2099 Chevalley relations are genuinely new (Mathlib has no transvection commutator relations; `Mathlib/LinearAlgebra/Matrix/Transvection.lean` only has `transvection_mul_transvection_same`), and routing `commutatorElement_transvectionUnit`/`commute_transvectionUnit` through the new `SpecialLinearGroup` lemmas is proper reuse. Two duplication defects remain: `gaSchemePointParamMul` re-derives the existing `gaPointParamMul` instead of transporting it, and `transvectionUnit_mul_transvectionUnit_eq_mul_mul` is left with no consumer and is a restatement of retained API. I withdraw the earlier reuse finding against `Matrix.SpecialLinearGroup.commute_transvection`/`commutatorElement_transvection` (contested in the reply quoting discussion_r3789666229): they are per-type restatements at `SL n A` with six in-repo call sites, which the rubric's per-type-restatement carve-out covers.",
+ "transcript_blob": "19e060d094cf466f3e9818b4720e88a77d53f91b532fae81ad098bf228666aaf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 76546,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 76546,
+  "cache_read_input_tokens": 873585,
+  "inference_geo": "not_available",
+  "input_tokens": 27,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 865,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 865,
+    "cache_read_input_tokens": 92180,
+    "input_tokens": 2,
+    "output_tokens": 1834,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18407,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

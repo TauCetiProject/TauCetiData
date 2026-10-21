@@ -1,0 +1,125 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 3.6168207500000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 500.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 71191,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 71191,
+    "cache_read_input_tokens": 1481011,
+    "inference_geo": "not_available",
+    "input_tokens": 47,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3099,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3099,
+      "cache_read_input_tokens": 84591,
+      "input_tokens": 2,
+      "output_tokens": 3433,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21043,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0272e150f3b09d4b53705124926dd1487155d8dc",
+ "cost_usd": 3.616821,
+ "dedupe_key": "TauCetiProject/TauCeti|3264|fbc2907f0b80a0696c68c8f76a29c4bc2d15f2a8|reuse|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "466e7415d7bc2482537602b6a4dbe591dc0892899d5758e4a0417c1a016113a6",
+ "diff_sha256": "466e7415d7bc2482537602b6a4dbe591dc0892899d5758e4a0417c1a016113a6",
+ "duration_s": 500.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Module/Submodule/LinearMap.lean:210 `def restrict (f : M \u2192\u209b\u2097[\u03c3\u2081\u2082] M\u2082) {p : Submodule R M} {q : Submodule R\u2082 M\u2082} (hf : \u2200 x \u2208 p, f x \u2208 q) : p \u2192\u209b\u2097[\u03c3\u2081\u2082] q`; :215-217 `coe_restrict_apply ... : \u2191(f.restrict hf x) = f x := rfl`; :244-248 `restrict_smul_one`. mathlib/Mathlib/Algebra/Module/Submodule/Lattice.lean:415 `AddSubgroup.toIntSubmodule`, :426-428 `coe_toIntSubmodule ... := rfl`. TauCeti/RingTheory/DividedPowers/Associative.lean:72 `dividedPower_zero (x : A) : dividedPower 0 x = 1`.",
+   "file": "TauCeti/RingTheory/Nilpotent/BaseChangeAction.lean",
+   "fix": "Define `integralDividedPower x M n hM := ((Associative.dividedPower n x).restrictScalars \u2124).restrict (p := M.toIntSubmodule) hM` (`\u21a5M.toIntSubmodule` is `\u21a5M` by `AddSubgroup.coe_toIntSubmodule`, which is `rfl`; add a type ascription if elaboration needs it). Then delete `integralDividedPower_apply` \u2014 `LinearMap.coe_restrict_apply` is already `@[simp]` \u2014 and prove `_zero` from `Associative.dividedPower_zero` and `LinearMap.restrict_smul_one` at `\u03bc = 1`. `integralDividedPower_mul` keeps its place (it transports `Associative.mul_dividedPower`).",
+   "issue": "`integralDividedPower` builds the restriction of an invariant map to a subgroup from raw `toFun`/`map_add'`/`map_smul'`; Mathlib's `LinearMap.restrict` does exactly this assembly. Consequently `integralDividedPower_apply` (line 81) is a verbatim restatement of `LinearMap.coe_restrict_apply`, and `integralDividedPower_zero` (line 88) re-proves what `Associative.dividedPower_zero` + `LinearMap.restrict_smul_one` give.",
+   "line": 68
+  },
+  {
+   "evidence": "Kostant/Exponential.lean:100-102 `exp_zsmul_smul_mem hnil (fun n w hw => by rw [\u2190 Associative.map_dividedPower \u03c1 n]; exact hM _ (dividedPower_mem_kostantForm e h i n) w hw) t hv` versus Kostant/BaseChangeAction.lean:60-61 `rw [\u2190 Associative.map_dividedPower \u03c1 n]; exact hM _ (dividedPower_mem_kostantForm e h i n) v hv`. Import list at Kostant/BaseChangeAction.lean:8-9 shows `Kostant.Form` only.",
+   "file": "TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/BaseChangeAction.lean",
+   "fix": "Move the lemma into `Kostant/Exponential.lean` (or `Kostant/Form.lean`) and rewrite `exp_zsmul_apply_mem_of_kostantForm_apply_mem` as `exp_zsmul_smul_mem hnil (fun n w hw => dividedPower_apply_mem_of_kostantForm_apply_mem e h \u03c1 hM i n hw) t hv`, importing it here. The new file currently imports `Kostant.Form`, not `Kostant.Exponential`, so switching the import creates no cycle.",
+   "issue": "`dividedPower_apply_mem_of_kostantForm_apply_mem` is a verbatim copy of the anonymous proof already inlined in `exp_zsmul_apply_mem_of_kostantForm_apply_mem`; after this PR the same fact is proved twice in the repo.",
+   "line": 54
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Module/Equiv/Basic.lean:483-488 `def ofLinearMap (h\u2081 : f.comp g = .id) (h\u2082 : g.comp f = .id) : M \u2243\u209b\u2097[\u03c3\u2081\u2082] M\u2082`; :516 `@[simp] theorem toLinearMap_ofLinearMap (h\u2081 h\u2082) : (ofLinearMap f g h\u2081 h\u2082 : M \u2243\u209b\u2097[\u03c3\u2081\u2082] M\u2082) = f := rfl`.",
+   "file": "TauCeti/RingTheory/Nilpotent/BaseChangeAction.lean",
+   "fix": "Use `LinearEquiv.ofLinearMap (baseChangeExp x M hM hx t) (baseChangeExp x M hM hx (-t)) h\u2081 h\u2082`, where each of `h\u2081`/`h\u2082` is `by rw [\u2190 baseChangeExp_add]; simp [baseChangeExp_zero]` (composition of endomorphisms is their product), and delete `baseChangeExpLinearEquiv_toLinearMap` in favour of `LinearEquiv.toLinearMap_ofLinearMap`.",
+   "issue": "`baseChangeExpLinearEquiv` hand-assembles a linear equivalence from `toLinearMap`/`invFun`/`left_inv`/`right_inv`, and `baseChangeExpLinearEquiv_toLinearMap` (line 282) then restates the resulting `rfl`; `LinearEquiv.ofLinearMap` is the combinator for this assembly and already carries that `@[simp]` lemma.",
+   "line": 268
+  }
+ ],
+ "head_sha": "fbc2907f0b80a0696c68c8f76a29c4bc2d15f2a8",
+ "merge_base_sha": "0272e150f3b09d4b53705124926dd1487155d8dc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3264,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "50c043595b1ebc07633da8242a2f2242850cba9a0eb12ecb97178b30281d3b63",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T112659Z-3264-reuse-44db53",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T11:26:59Z",
+ "submitted_by": "kim-em",
+ "summary": "Three assemblies re-derive existing combinators: `integralDividedPower` hand-builds `LinearMap.restrict`, `baseChangeExpLinearEquiv` hand-builds `LinearEquiv.ofLinearMap`, and the new Kostant membership lemma duplicates a proof already inlined in `Kostant/Exponential.lean`. The base-change exponential and its group law are genuinely new and reuse Mathlib correctly.",
+ "transcript_blob": "fafdbd9219faeb2021df201181a27b95d3381c2eaabb3165c8e9a1d79f37d957",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 71191,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 71191,
+  "cache_read_input_tokens": 1481011,
+  "inference_geo": "not_available",
+  "input_tokens": 47,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3099,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3099,
+    "cache_read_input_tokens": 84591,
+    "input_tokens": 2,
+    "output_tokens": 3433,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21043,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

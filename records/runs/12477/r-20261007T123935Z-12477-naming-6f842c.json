@@ -1,0 +1,275 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0471464999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 340.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 93281,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 93281,
+    "cache_read_input_tokens": 922393,
+    "fallback_credit": null,
+    "inference_geo": "not_available",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4488,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4488,
+      "cache_read_input_tokens": 91794,
+      "input_tokens": 2,
+      "output_tokens": 7012,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 26120,
+    "output_tokens_details": {
+     "thinking_tokens": 19514
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0f7ff7cba3bd42d2c6395ff1b7c3d66d4cc1861b",
+ "cli_dirty": false,
+ "cli_sha": "89433648ce9bb5709dc54c158f2a73b92aa770f1",
+ "cost_usd": 2.047146,
+ "dedupe_key": "TauCetiProject/TauCeti|12477|4c51434f999a19967d1bd0f5cf8456a1c397f9e4|naming|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "f96c18b805f2d5ac0edd2c65f79d5096f83b7b9a434f448ba6577ec6c83fb61a",
+ "diff_sha256": "f96c18b805f2d5ac0edd2c65f79d5096f83b7b9a434f448ba6577ec6c83fb61a",
+ "duration_s": 340.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 50 `namespace SubMulAction` / line 248 `end SubMulAction`; line 250 `namespace TauCeti` with `variable ... (S : SubMulAction ...) [Finite S]` at lines 256\u2013257 and `open _root_.SubMulAction` at line 252 to reach the first half.",
+   "file": "TauCeti/NumberTheory/NumberField/Units/SUnit/Valuation.lean",
+   "fix": "Put the whole sequence API in one namespace \u2014 `SubMulAction`, consistent with the dot-notation half already there (lines 50\u2013248) and with the in-repo precedent `SubMulAction.rootsOfUnityQuotientHomeomorph`.",
+   "issue": "The same API, all with `S : SubMulAction (L \u2243\u2090[K] L) (HeightOneSpectrum (\ud835\udcde L))` as first explicit argument, is split across two namespaces: `SubMulAction.{smul_mem_sUnits, sUnitAction, sUnitRep, sUnitValuation, sUnitInclusion, range_sUnitInclusion_eq_ker_sUnitValuation, finiteIndex_range_sUnitValuation}` but `TauCeti.{sUnitInclusion_comp_sUnitValuation, sUnitShortComplex, sUnitShortComplex_X\u2081/X\u2082/X\u2083/f/g, sUnitShortComplex_shortExact, finite_cokernel_sUnitValuation_image_\u03b9}`. So `S.sUnitValuation` elaborates while `S.sUnitShortComplex` does not, and `TauCeti.sUnitInclusion_comp_sUnitValuation` names two declarations that live elsewhere.",
+   "line": 250
+  },
+  {
+   "evidence": "Lines 273\u2013279 define the fields by structure literal; line 297 `HEq (sUnitShortComplex S).f (sUnitInclusion S) := (HEq.rfl)`; `TauCeti/CategoryTheory/Exact/Conflation.lean:226` shows the repo's `_heq`-suffixed spelling.",
+   "file": "TauCeti/NumberTheory/NumberField/Units/SUnit/Valuation.lean",
+   "fix": "State both as `Eq` (`(sUnitShortComplex S).f = sUnitInclusion S`, closed by `rfl`), or, if `Eq` is genuinely wanted off, rename to `sUnitShortComplex_f_heq`/`_g_heq` and drop `@[simp]`, as in `TauCeti.ConflationClass.opEquivalence_functor_map_hom_heq`.",
+   "issue": "`sUnitShortComplex_f` and `sUnitShortComplex_g` (line 301) are named in the style of structure-field equations (cf. the adjacent `sUnitShortComplex_X\u2081/X\u2082/X\u2083`, which are `Eq`), but are stated as `HEq`. `HEq` is strictly weaker here \u2014 it is not usable by `rw`, and the `@[simp]` attribute on both cannot fire \u2014 while the types are definitionally equal, since `(sUnitShortComplex S).X\u2081`/`.X\u2082` delta-reduce to `Rep.ofMulDistribMulAction (L \u2243\u2090[K] L) (\ud835\udcde L)\u02e3` and `sUnitRep S`.",
+   "line": 297
+  },
+  {
+   "evidence": "Lines 43\u201347 vs. `MonoidAlgebra.basis_repr` (line 66), `MonoidAlgebra.coeff_basis_toDualEquiv_symm_apply` (line 74), `MonoidAlgebra.sumCoords_basis_surjective` (line 89), all inside `namespace TauCeti` (line 40); docstring lines 28\u201335 list them as `TauCeti.MonoidAlgebra.*`.",
+   "file": "TauCeti/Algebra/MonoidAlgebra/Basis.lean",
+   "fix": "Rename so both sides appear (e.g. `monoidAlgebraEquivFunMultiplicative`, cf. `MonoidAlgebra.coeffLinearEquiv`, `Finsupp.linearEquivFunOnFinite`) and file it in the same namespace as the file's other declarations.",
+   "issue": "`TauCeti.funMultiplicativeIntLinearEquiv : Additive (X \u2192 Multiplicative \u2124) \u2243\u2097[\u2124] MonoidAlgebra \u2124 X` names only the source side (borrowed from `MulEquiv.funMultiplicative`) plus the scalar ring the type already fixes; nothing in the name says it lands in `MonoidAlgebra \u2124 X`. It is also the only declaration in this file outside the `TauCeti.MonoidAlgebra` namespace used by every neighbour and by the module docstring's `Main statements` list.",
+   "line": 43
+  },
+  {
+   "evidence": "Conclusion at line 59 is `g \u2022 u \u2208 (S : Set (HeightOneSpectrum (\ud835\udcde L))).unit L`; `Set.unit` is defined at `mathlib/Mathlib/RingTheory/DedekindDomain/SInteger.lean:108`. Naming conventions: \"the definition should have its namespace removed ... to ensure that `_`-separated strings in a lemma name correspond to a definition name or connective.\"",
+   "file": "TauCeti/NumberTheory/NumberField/Units/SUnit/Valuation.lean",
+   "fix": "Rename to `smul_mem_unit`, matching the declaration in the conclusion.",
+   "issue": "`smul_mem_sUnits` has a name segment `sUnits` that corresponds to no declaration \u2014 the conclusion is membership in `Set.unit`, Mathlib's S-unit subgroup \u2014 and the plural is inconsistent with every sibling name in the file (`sUnitRep`, `sUnitValuation`, `sUnitInclusion`).",
+   "line": 57
+  }
+ ],
+ "head_sha": "4c51434f999a19967d1bd0f5cf8456a1c397f9e4",
+ "merge_base_sha": "0f7ff7cba3bd42d2c6395ff1b7c3d66d4cc1861b",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 12477,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "62770097f5b2e43e19b05cdba9d9fd48309e9887d553ce7b4b06e442181c04b4",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "89433648ce9bb5709dc54c158f2a73b92aa770f1",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20261007T123935Z-12477-naming-6f842c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-07T12:39:35Z",
+ "submitted_by": "kim-em",
+ "summary": "One S-indexed API is split arbitrarily between the `SubMulAction` and `TauCeti` namespaces, two simp lemmas are named as field equations but stated as `HEq`, and the new monoid-algebra equivalence has a name that omits its target and a namespace inconsistent with its file.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/NumberField/Units/SUnit/Valuation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/DedekindDomain/Action.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/MonoidAlgebra/Basis.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/DedekindDomain/SInteger/Unit.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/RootsOfUnity/Quotient.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Algebra/ConstMulAction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/LocalField/UnitFiltration/ValuationSequence.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Exact/Stable/Triangulation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Exact/Conflation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/GroupTheory/GroupAction/SubMulAction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/GroupAction/TypeTags.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 25,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9048f3fb5cab32190d33b91d3b64ce751b3fc5b2376aa2f9438d70b48b88b6cc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 93281,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 93281,
+  "cache_read_input_tokens": 922393,
+  "fallback_credit": null,
+  "inference_geo": "not_available",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4488,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4488,
+    "cache_read_input_tokens": 91794,
+    "input_tokens": 2,
+    "output_tokens": 7012,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 26120,
+  "output_tokens_details": {
+   "thinking_tokens": 19514
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.206449,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 225.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 51555,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 51555,
+    "cache_read_input_tokens": 445400,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1860,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1860,
+      "cache_read_input_tokens": 66194,
+      "input_tokens": 2,
+      "output_tokens": 4886,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18364,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e28afb19d468aabb12e10f6bc1d226e6cb5e3f97",
+ "cost_usd": 1.206449,
+ "dedupe_key": "TauCetiProject/TauCeti|3349|d5809f630488bc4bc85a02f8b42e73305ced6d71|correctness|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "c62e837908ef249fb3eba60859e4f031b2c5bdfbdff7188294cbf1bb7b21034d",
+ "diff_sha256": "c62e837908ef249fb3eba60859e4f031b2c5bdfbdff7188294cbf1bb7b21034d",
+ "duration_s": 225.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib `EllipticDivisibilitySequence.lean`: `@[simp] lemma complEDS_zero : complEDS b c d k 0 = 0`. The residue-0/1 branches at `m = 0, 1` use indices `m \u00b1 1 \u2208 {-1, 1, 2}` and `normEDS b c d 0` never appears; the only zero factor is `complEDS b c d 6 0`.",
+   "file": "TauCeti/NumberTheory/EllipticDivisibilitySequence/ReducedInvariant.lean",
+   "fix": "Restate both docstrings: the branch carries the factor `complEDS b c d 6 0`, which is zero by `complEDS_zero`.",
+   "issue": "The docstrings of `reducedInvarDenom_zero` and `reducedInvarDenom_one` (lines 181 and 186) give a false reason for the vanishing: neither branch contains `normEDS b c d 0`. At `m = 0` the residue-0 branch is `r\u2086 * complEDS b c d 6 (0/6) * normEDS b c d 1 * normEDS b c d (-1)`; at `m = 1` the residue-1 branch is `r\u2086 * complEDS b c d 6 0 * normEDS b c d 2 * normEDS b c d 1`. Both vanish because `complEDS b c d 6 0 = 0` (`complEDS_zero`), not because of `normEDS b c d 0`.",
+   "line": "181"
+  },
+  {
+   "evidence": "`Complement.lean:87`: `theorem normEDS_mul_complEDS_of_mem_nonZeroDivisors {k : \u2124} (hk : normEDS b c d k \u2208 R\u2070) (n : \u2124) : normEDS b c d k * complEDS b c d k n = normEDS b c d (n * k)`. `Six.lean:47`: `theorem normEDS_six : normEDS b c d 6 = (normEDS b c d 5 - d ^ 2) * b * c`.",
+   "file": "TauCeti/NumberTheory/EllipticDivisibilitySequence/ReducedInvariant.lean",
+   "fix": "Restrict the absence claim to what is actually missing (`normEDS_mul_complEDS` unconditional and `normEDS_mul_complEDS_div`) and cite `Complement.lean:87` and `Six.lean:47` as available, consistently with lines 61-64.",
+   "issue": "The Provenance paragraph claims the chain `normEDS_mul_complEDS_of_mem, normEDS_mul_complEDS, normEDS_mul_complEDS_div, normEDS_six_eq_mul` is \"absent from both this repository and the pinned Mathlib\". Two of the four are present: `normEDS_mul_complEDS_of_mem` is `normEDS_mul_complEDS_of_mem_nonZeroDivisors` (`Complement.lean:87`) \u2014 which line 63 of this same docstring says has landed, so the file contradicts itself \u2014 and `normEDS_six_eq_mul` is `WeierstrassCurve.normEDS_six` (`Six.lean:47`), exactly `W 6 = (W 5 - d ^ 2) * b * c`, the identity that justifies the `r\u2086` factor in this very definition.",
+   "line": "82"
+  }
+ ],
+ "head_sha": "d5809f630488bc4bc85a02f8b42e73305ced6d71",
+ "merge_base_sha": "623079b59a7432cd6ea79d7f94aa4c414e7e4995",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3349,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "32942fcc7990db34849af4e84b8b68973cddf32c5e700bde3425b351cbce9ae1",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "correctness",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T191356Z-3349-correctness-1f0578",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T19:13:56Z",
+ "submitted_by": "kim-em",
+ "summary": "The six-way split is mathematically correct \u2014 I checked each residue against complEDS's witnessing identity and normEDS_six, including negative m \u2014 but two docstrings state falsehoods: the vanishing lemmas give the wrong reason for vanishing, and the module docstring declares prerequisites absent from this repository that in fact exist (one of which the same docstring elsewhere says has landed).",
+ "transcript_blob": "04fbf285161d98c2c12e641914460342b8b80bbaee0687b8549e687bfe04fd0a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 51555,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 51555,
+  "cache_read_input_tokens": 445400,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1860,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1860,
+    "cache_read_input_tokens": 66194,
+    "input_tokens": 2,
+    "output_tokens": 4886,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18364,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

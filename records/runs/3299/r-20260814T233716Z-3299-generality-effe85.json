@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.552003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 182.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 72902,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 72902,
+    "cache_read_input_tokens": 909436,
+    "inference_geo": "not_available",
+    "input_tokens": 27,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3611,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3611,
+      "cache_read_input_tokens": 85790,
+      "input_tokens": 2,
+      "output_tokens": 1442,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14255,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "940013dfe5bb3110d10a30397a19762b223ebe81",
+ "cost_usd": 1.552003,
+ "dedupe_key": "TauCetiProject/TauCeti|3299|35871361123851f161d760de74e40f0ba43f4195|generality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "a76554af7b4693ef65dc7388f80ffdbd4004343493536f16d7deb5fb6eac6b3f",
+ "diff_sha256": "a76554af7b4693ef65dc7388f80ffdbd4004343493536f16d7deb5fb6eac6b3f",
+ "duration_s": 182.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "L2/Pi.lean:359-376 defines `piHilbertBasis` and pins only `piHilbertBasis_apply`/`coeFn_piHilbertBasis`; grep for `piHilbertBasis` matches only 4 files, none with a `repr` lemma. `inner_L2piMul` (L2/Pi.lean:112) is already stated for arbitrary `F G : \u2200 i, Lp \ud835\udd5c 2 (\u03bc i)`, so nothing about the general form is harder.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Hermite/Function/Pi/Parseval.lean",
+   "fix": "Add to `TauCeti/Analysis/InnerProductSpace/L2/Pi.lean`, next to `piHilbertBasis_apply`: `piHilbertBasis_repr_apply (b) (f) (k) : (piHilbertBasis b).repr f k = inner \ud835\udd5c (L2piMul fun i => b i (k i)) f` (`simpa using (piHilbertBasis b).repr_apply_apply f k`) and `piHilbertBasis_repr_L2piMul (b) (F) (k) : (piHilbertBasis b).repr (L2piMul F) k = \u220f i, inner \ud835\udd5c (b i (k i)) (F i)` (`rw [piHilbertBasis_repr_apply, inner_L2piMul]`); then both files' versions become one-line instantiations.",
+   "issue": "`hermiteFunctionPiBasis_repr_L2piMul` is a statement about `piHilbertBasis` with no Hermite input \u2014 its proof is `rw [hermiteFunctionPiBasis_repr_apply, inner_L2piMul]`, and the identical result is proved again at Gaussian/Hermite/Pi/Parseval.lean:86. Same for `hermiteFunctionPiBasis_repr_apply` (line 56), whose `repr_apply_apply` step is redone at Gaussian/Hermite/Pi/Parseval.lean:76.",
+   "line": 90
+  },
+  {
+   "evidence": "Lines 92-94 vs Hermite Pi/Parseval.lean:94 \u2014 same two rewrites; the in-flight multi-index Chebyshev basis (TauCeti#2185, cited in the PR description) would make a third copy, as the 1-D pattern at Chebyshev/Parseval.lean:49 already shows.",
+   "file": "TauCeti/Probability/Distributions/Gaussian/Hermite/Pi/Parseval.lean",
+   "fix": "Prove the general `piHilbertBasis_repr_L2piMul` in `L2/Pi.lean` and reduce this to `rw [piHilbertBasis_repr_L2piMul]` followed by the `prod_congr` into `gaussianHermiteHilbertBasis_repr_apply`.",
+   "issue": "Second instance of the same duplication: `gaussianHermitePiBasis_repr_L2piMul` re-derives the coordinatewise factorization from `repr_apply_apply` + `gaussianHermitePiBasis_apply` + `inner_L2piMul` instead of instantiating a general `piHilbertBasis_repr_L2piMul`; only the final `Finset.prod_congr` step (rewriting each 1-D coordinate into its integral form) is Gaussian-specific.",
+   "line": 86
+  }
+ ],
+ "head_sha": "35871361123851f161d760de74e40f0ba43f4195",
+ "merge_base_sha": "940013dfe5bb3110d10a30397a19762b223ebe81",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3299,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "29a9e843dbb980383675414859885aedcef00f20feead816520d81ddb8923658",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260814T233716Z-3299-generality-effe85",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-14T23:37:16Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR's two genuinely structural lemmas \u2014 the `repr`-as-inner-product pin and the coordinate factorization on a tensor \u2014 contain no Hermite content at all: they hold for `piHilbertBasis b` with arbitrary coordinatewise bases, and are proved twice here at the special-case level. State them once in `L2/Pi.lean` and derive all instances.",
+ "transcript_blob": "be30ab76a42209859f7e2479b5738e11d50ba356f0380573cfd3bf93a1367742",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 72902,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 72902,
+  "cache_read_input_tokens": 909436,
+  "inference_geo": "not_available",
+  "input_tokens": 27,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3611,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3611,
+    "cache_read_input_tokens": 85790,
+    "input_tokens": 2,
+    "output_tokens": 1442,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14255,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

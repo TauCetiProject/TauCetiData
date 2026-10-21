@@ -1,0 +1,139 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.2076705000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 309.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 82758,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 82758,
+    "cache_read_input_tokens": 1513885,
+    "inference_geo": "not_available",
+    "input_tokens": 41,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1319,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1319,
+      "cache_read_input_tokens": 97938,
+      "input_tokens": 2,
+      "output_tokens": 3743,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24491,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "72289887081ad8abeda958b59d2e92fad32dc7da",
+ "cost_usd": 2.207671,
+ "dedupe_key": "TauCetiProject/TauCeti|3389|1f5dbd276af8e5684606f77d7e685b6fa89fdee8|proof-quality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "1d83abd2a6770b6e628ae6692e9e710f245ee98b051bf33ad218135db9297fe0",
+ "diff_sha256": "1d83abd2a6770b6e628ae6692e9e710f245ee98b051bf33ad218135db9297fe0",
+ "duration_s": 309.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Category/CommHopfAlgCat.lean:84 `@[simp] lemma hom_id : (\ud835\udfd9 A : A \u27f6 A).hom = AlgHom.id R A := rfl` and :89 `@[simp] lemma hom_comp (f : A \u27f6 B) (g : B \u27f6 C) : (f \u226b g).hom = g.hom.comp f.hom := rfl`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat/CharacterLattice/Functoriality.lean",
+   "fix": "Rewrite `h` with the existing `@[simp]` lemmas `CommHopfAlgCat.hom_id` / `CommHopfAlgCat.hom_comp` (`simp only [CommHopfAlgCat.hom_id] at h`) instead of `change`; if a `change` is still unavoidable, document why.",
+   "issue": "`change ... at h` retypes `(\ud835\udfd9 H).hom` as `BialgHom.id ...` with no comment (rubric requires one); same pattern at line 105 for `(f \u226b g).hom` vs `.comp`. Both are undocumented reliance on categorical-wrapper defeq.",
+   "line": 93
+  },
+  {
+   "evidence": "TauCeti/Algebra/Bialgebra/GroupLike/ScalarAut.lean:101 defines `instAdditiveDistribMulAction` with `smul \u03c3 x := Additive.ofMul (\u03c3 \u2022 x.toMul)`; mathlib/Mathlib/RepresentationTheory/Basic.lean:458 `@[simp] ofMulDistribMulAction_apply_apply ... = Additive.ofMul (g \u2022 a.toMul) := rfl` \u2014 the two agree only definitionally.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat/CharacterLattice/Functoriality.lean",
+   "fix": "State one public, documented lemma `geometricCharacterRepresentation_\u03c1_apply (H) (sigma) (x) : (geometricCharacterRepresentation H).\u03c1 sigma x = sigma \u2022 x` (provable from `Representation.ofMulDistribMulAction_apply_apply` and `CommHopfAlgCat.toMul_smul`) and rewrite with it at both sites instead of `change`.",
+   "issue": "`change additiveCharacterMap f (sigma \u2022 x) = sigma \u2022 additiveCharacterMap f x` silently identifies the representation action `Representation.ofMulDistribMulAction ... sigma` with the `\u2022` of a *different* instance (`TauCeti.ScalarAut.instAdditiveDistribMulAction`, via `instAdditiveCharacterGroupGaloisAction`). The same undocumented identification is replayed at TauCeti/Algebra/AlgebraicGroup/Torus/CharacterLattice/Functoriality.lean:120. Any change to either instance breaks both proofs, with no lemma recording the bridge.",
+   "line": 175
+  },
+  {
+   "evidence": "mathlib/Mathlib/RepresentationTheory/Rep/Basic.lean:179 `def _root_.Representation.equivOfIso (i : A \u2245 B) : A.\u03c1.Equiv B.\u03c1`; `hV1`/`hV2` are the instance fields of `Rep` (Rep/Basic.lean:34-35, 49).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Torus/CharacterLattice/Functoriality.lean",
+   "fix": "Use `Representation.equivOfIso e : X.\u03c1.Equiv Y.\u03c1` and take `(Representation.equivOfIso e).toLinearEquiv.symm.toAddEquiv` for `eAdd`, dropping both `let _ : Module \u2124 _` overrides; prove the set equality in one direction and get the other from `Equiv.injective`.",
+   "issue": "The `IsClosedUnderIsomorphisms` proof (lines 62\u201396) rebuilds by hand what Mathlib supplies: `eAdd` is assembled field-by-field from `e.inv.hom`, and `let _ : Module \u2124 X := X.hV2` reaches into `Rep`'s raw structure field to pick a side of the `Module \u2124` diamond. The `hset` proof then gives two symmetric 6-line calcs where the reverse direction follows from injectivity of the iso.",
+   "line": 62
+  },
+  {
+   "evidence": "mathlib/Mathlib/RepresentationTheory/Rep/Basic.lean:128 `@[simp] lemma hom_ofHom (f : \u03c1.IntertwiningMap \u03c3) : (ofHom f).hom = f := rfl`, :107 `hom_id`; mathlib/Mathlib/CategoryTheory/ObjectProperty/FullSubcategory.lean:167 `lemma \u03b9_obj_lift_obj (X : C) : P.\u03b9.obj ((P.lift F hF).obj X) = F.obj X := rfl`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat/CharacterLattice/Functoriality.lean",
+   "fix": "Rewrite with `Rep.hom_ofHom`, `Rep.hom_id` and `ObjectProperty.\u03b9_obj_lift_obj` (plus the already-proved `additiveCharacterIntertwiningMap_apply`) instead of `change`.",
+   "issue": "`change` used where a rewrite exists: line 198 unfolds `Rep.ofHom`, and lines 211/217 unfold `Rep.ofHom`, the intertwining-structure `__ :=` field and `(\ud835\udfd9 _).hom` in one step; Torus/CharacterLattice/Functoriality.lean:147 unfolds `ObjectProperty.lift`. Each is defeq across a categorical wrapper the library already exposes propositionally.",
+   "line": 198
+  },
+  {
+   "evidence": "TauCeti/.../CharacterLattice/Basic.lean:117-119 performs the same unfold but with an explanatory comment; Continuous.lean:88 uses the `show ... from \u03c3` form instead.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat/CharacterLattice/Functoriality.lean",
+   "fix": "Drop the `unfold` and pass the coercion explicitly: `exact baseChangeMap_smul f (show AlgebraicClosure k \u2243\u2090[k] AlgebraicClosure k from sigma) x.val`, matching the form `val_smul` is stated in; or state `baseChangeMap_smul` over `Field.absoluteGaloisGroup k` directly.",
+   "issue": "`unfold Field.absoluteGaloisGroup at sigma` retypes a local to make `exact` elaborate, with no comment \u2014 the same smell as `change`, and inconsistent with the sibling occurrences in this codebase, which document the opaque-def boundary.",
+   "line": 84
+  }
+ ],
+ "head_sha": "1f5dbd276af8e5684606f77d7e685b6fa89fdee8",
+ "merge_base_sha": "72289887081ad8abeda958b59d2e92fad32dc7da",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3389,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c942431ade4041930241a1197d0ff043694c149d3659f1c699a55b385dbdaf56",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T174912Z-3389-proof-quality-d3c024",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T17:49:12Z",
+ "submitted_by": "kim-em",
+ "summary": "The functor is assembled almost entirely by `change`/`unfold` steps that re-derive, by definitional equality, facts Mathlib already states as simp lemmas (`CommHopfAlgCat.hom_id`/`hom_comp`, `Rep.hom_ofHom`, `Rep.hom_id`, `Representation.ofMulDistribMulAction_apply_apply`, `ObjectProperty.\u03b9_obj_lift_obj`); two of these carry no comment at all. The `IsClosedUnderIsomorphisms` instance additionally hand-rolls `Representation.equivOfIso` and disambiguates a `Module \u2124` diamond by poking the raw `Rep` field `hV2`.",
+ "transcript_blob": "65b9ed48135a3d5cf826afcff8145382a1ff469075b6465ab1ef892e08a252b7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 82758,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 82758,
+  "cache_read_input_tokens": 1513885,
+  "inference_geo": "not_available",
+  "input_tokens": 41,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1319,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1319,
+    "cache_read_input_tokens": 97938,
+    "input_tokens": 2,
+    "output_tokens": 3743,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24491,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

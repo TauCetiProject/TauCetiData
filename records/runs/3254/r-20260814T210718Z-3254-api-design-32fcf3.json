@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7592634999999999,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 239.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 86244,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 86244,
+    "cache_read_input_tokens": 850943,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5669,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5669,
+      "cache_read_input_tokens": 97074,
+      "input_tokens": 2,
+      "output_tokens": 2514,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18244,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "23ba77d2947cc31e93067492684aa28d02a62192",
+ "cost_usd": 1.759263,
+ "dedupe_key": "TauCetiProject/TauCeti|3254|6f8375b675691dabe86d813a3bfdc756c306d512|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "58431b808fa52760a1a09e8828e296c709ea08d3ae3a5809c9f909c3fa03e49b",
+ "diff_sha256": "58431b808fa52760a1a09e8828e296c709ea08d3ae3a5809c9f909c3fa03e49b",
+ "duration_s": 239.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 267 proves `sInfCharacteristicWeight_conjugate` with `rw [sInfCharacteristicWeight, sInfCharacteristicWeight, hrange]` \u2014 an in-module unfold no consumer can perform; `grep -rn \"expose\" TauCeti/` shows bodies are hidden unless `@[expose]` is given (e.g. `TauCeti/Algebra/AlgebraicGroup/AdditiveFrobeniusKernel/Basic.lean:128`), and `Weight/Basic.lean:72-79,109-116` establishes the `_def_aux`/`_def` pattern for exactly this situation.",
+   "file": "TauCeti/LowDimTopology/Plumbing/Weight/Sublevel.lean",
+   "fix": "Add `sInfCharacteristicWeight_def : P.sInfCharacteristicWeight k = sInf (Set.range (P.characteristicWeight k))` following the file family's `private ..._def_aux`/public `..._def` idiom, plus `le_sInfCharacteristicWeight` (or package the pair as `isLeast_range_characteristicWeight : IsLeast (Set.range (P.characteristicWeight k)) (P.sInfCharacteristicWeight k)`).",
+   "issue": "`sInfCharacteristicWeight` is a non-`@[expose]`d def with no `_def` restatement; every lemma about it (`sInfCharacteristicWeight_le`, `exists_characteristicWeight_eq_sInfCharacteristicWeight`, `sInfCharacteristicWeight_add_two_mulVec`) carries `h : P.IsNegativeDefinite`, so outside that hypothesis the definition is unusable and the docstring's documented junk value (`Int.csInf_of_not_bddBelow`) is unreachable. The greatest-lower-bound direction `(\u2200 x, c \u2264 \u03c7_k x) \u2192 c \u2264 sInf` is also absent.",
+   "line": 208
+  },
+  {
+   "evidence": "`grep -rn \"intersectionForm_self_smul_add_adjugate_mulVec\" TauCeti/` gives only the declaration (line 109), the doc bullet (line 46), and one use at line 157 inside `finite_setOf_le_characteristicWeightNumerator`.",
+   "file": "TauCeti/LowDimTopology/Plumbing/Weight/Sublevel.lean",
+   "fix": "Mark it `private` and remove its Main-results bullet (line 46). `intersectionForm_adjugate_mulVec` is a genuinely reusable statement and should stay public.",
+   "issue": "`intersectionForm_self_smul_add_adjugate_mulVec` is an implementation helper exposed publicly and listed in Main results: its statement hardcodes the bespoke vector `(2 * det A) \u2022 x + adjugate A *\u1d65 k`, and it has exactly one use, inside this file.",
+   "line": 109
+  }
+ ],
+ "head_sha": "6f8375b675691dabe86d813a3bfdc756c306d512",
+ "merge_base_sha": "d8b35764ae3b7c4480effb2228bae026160a7e65",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3254,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "960a6bd63ba0e7165380622e579e7b99d13fec668e3b9bb6e54b6920e4d5f056",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260814T210718Z-3254-api-design-32fcf3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-14T21:07:18Z",
+ "submitted_by": "kim-em",
+ "summary": "The new `sInfCharacteristicWeight` definition is exposed with no `_def` restatement and no greatest-lower-bound rule, so downstream it is opaque outside the negative-definite hypothesis, and its own proof has to unfold it by name. One single-use completed-square helper is public where it should be private.",
+ "transcript_blob": "bfb91ff62d66c5f48f65cd6cea694f6ff96b88d6d59b575d511716a9b3a3fdc2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 86244,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 86244,
+  "cache_read_input_tokens": 850943,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5669,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5669,
+    "cache_read_input_tokens": 97074,
+    "input_tokens": 2,
+    "output_tokens": 2514,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18244,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

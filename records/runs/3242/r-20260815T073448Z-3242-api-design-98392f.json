@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.222337,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 209.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 53330,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 53330,
+    "cache_read_input_tokens": 544916,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6933,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6933,
+      "cache_read_input_tokens": 62896,
+      "input_tokens": 2,
+      "output_tokens": 5619,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16126,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2b4548966220cbaa4e868833682c1bdd07b3710c",
+ "cost_usd": 1.222337,
+ "dedupe_key": "TauCetiProject/TauCeti|3242|8b060c3d52a9f70344f08da53aada67103acf0a6|api-design|claude-opus-5|ce88b39773d791a9|production|2",
+ "diff_blob": "e0cb4132df295edd535fa60b5758ae766aa4d8ecbf546a4bf7b7062c34d7678c",
+ "diff_sha256": "e0cb4132df295edd535fa60b5758ae766aa4d8ecbf546a4bf7b7062c34d7678c",
+ "duration_s": 209.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Presentation.lean:368 `have : IsSemisimpleRing R := P.equiv.symm.isSemisimpleRing` is the only occurrence of `isSemisimpleRing` in the file; Mathlib's `RingEquiv.isSemisimpleRing` is at mathlib/Mathlib/RingTheory/SimpleModule/Basic.lean:79.",
+   "file": "TauCeti/RingTheory/Semisimple/Wedderburn/Presentation.lean",
+   "fix": "Add `theorem WedderburnPresentation.isSemisimpleRing (P : WedderburnPresentation R) : IsSemisimpleRing R := P.equiv.symm.isSemisimpleRing` and use it in `exists_simpleSubmodule`. The other four structures inherit it through the existing conversions (`toWedderburnPresentation`, `toWedderburnAlgebraPresentation`, and `extends` for the finite form), so one lemma suffices.",
+   "issue": "A `WedderburnPresentation R` witnesses `IsSemisimpleRing R`, but that elimination is derived inside the proof of `exists_simpleSubmodule` and discarded; nothing in the file exports it. Every Layer 1/1.5 consumer needs it: `blocks_equiv_simpleModules` (Blocks.lean:179), `exists_nonempty_linearEquiv_of_forall_submodule` (Blocks.lean:196) and `card_isotypicComponents_eq_of_ringEquiv_pi` (Blocks.lean:109) all sit under `variable {R : Type u} [Ring R] [IsSemisimpleRing R]` (Blocks.lean:95), so a user holding only `P` cannot invoke any of them.",
+   "line": 368
+  },
+  {
+   "evidence": "BlockCount.lean:94-101 `theorem card_blocks_eq {R} [Ring R] {m n : \u2115} {D : Fin m \u2192 Type*} {D' : Fin n \u2192 Type*} [\u2200 i, DivisionRing (D i)] ... [\u2200 i, NeZero (d i)] ... (f : R \u2243+* \u2200 i, Matrix (Fin (d i)) (Fin (d i)) (D i)) (g : ...) : m = n`; its hypotheses are exactly the instance fields at Presentation.lean:81-83.",
+   "file": "TauCeti/RingTheory/Semisimple/Wedderburn/Presentation.lean",
+   "fix": "Add `theorem WedderburnPresentation.blockCount_eq (P : WedderburnPresentation.{u, w} R) (Q : WedderburnPresentation.{u, w'} R) : P.blockCount = Q.blockCount := card_blocks_eq P.equiv Q.equiv`, and soften the module docstring accordingly (the count, unlike the order and the division-ring representatives, is not a choice artefact).",
+   "issue": "`blockCount` is the structure's primary exposed datum and has no lemma at all beyond the conversion projections, while the invariance theorem that gives it meaning already exists in this repo. `TauCeti.card_blocks_eq` takes exactly two equivalences of the presentation's shape, and with the instance fields now registered (line 87) `card_blocks_eq P.equiv Q.equiv` elaborates directly.",
+   "line": 75
+  }
+ ],
+ "head_sha": "8b060c3d52a9f70344f08da53aada67103acf0a6",
+ "merge_base_sha": "2b4548966220cbaa4e868833682c1bdd07b3710c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3242,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "4689ce86e9054adcf7d70cd15d6f81eabe1508bdf4673912e61cb69ec30de3db",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T073448Z-3242-api-design-98392f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T07:34:48Z",
+ "submitted_by": "kim-em",
+ "summary": "The five presentation structures, their instance registrations, and the choice functions are well-scoped, but the elimination side is missing: a presentation does not export the `IsSemisimpleRing` it manifestly witnesses, and the `blockCount` field carries no lemma despite the repo already proving its invariance.",
+ "transcript_blob": "112ee0e3ead9c19ddb93db35a8ea720ed6a647ef918011c6044e712f6b63beaf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 53330,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 53330,
+  "cache_read_input_tokens": 544916,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6933,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6933,
+    "cache_read_input_tokens": 62896,
+    "input_tokens": 2,
+    "output_tokens": 5619,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16126,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

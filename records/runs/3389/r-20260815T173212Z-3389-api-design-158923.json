@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.375725,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 209.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 67618,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 67618,
+    "cache_read_input_tokens": 525200,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 8260,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 8260,
+      "cache_read_input_tokens": 75857,
+      "input_tokens": 2,
+      "output_tokens": 5701,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17036,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "72289887081ad8abeda958b59d2e92fad32dc7da",
+ "cost_usd": 1.375725,
+ "dedupe_key": "TauCetiProject/TauCeti|3389|1f5dbd276af8e5684606f77d7e685b6fa89fdee8|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "1d83abd2a6770b6e628ae6692e9e710f245ee98b051bf33ad218135db9297fe0",
+ "diff_sha256": "1d83abd2a6770b6e628ae6692e9e710f245ee98b051bf33ad218135db9297fe0",
+ "duration_s": 209.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Direct precedent in the same repo: `TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat/BaseChange.lean:112` `baseChangeFunctor_obj` paired with `:118` `@[simp] lemma baseChangeFunctor_map ... := (rfl)`; also `DiagonalizableGroup/FiniteType.lean:238 coordinateRingFunctor_map`, `DiagonalizableGroup/Scheme/Basic.lean:261 schemeFunctor_map`, `SpecialLinear/Basic.lean:469 specialLinearFunctor_map`. Grep over the new file shows only `geometricCharacterFunctor_obj`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/CommHopfAlgCat/CharacterLattice/Functoriality.lean",
+   "fix": "Add `@[simp] theorem geometricCharacterFunctor_map {H K} (f : H \u27f6 K) : (geometricCharacterFunctor (k := k)).map f = geometricCharacterRepresentationMap f := (rfl)`.",
+   "issue": "`geometricCharacterFunctor` gets a `@[simp] geometricCharacterFunctor_obj` but no companion `_map` lemma, so `(geometricCharacterFunctor.map f)` can only be reduced by unfolding the anonymous-constructor definition at line 203. The repo's convention is to ship both.",
+   "line": 222
+  },
+  {
+   "evidence": "`mathlib/Mathlib/CategoryTheory/ObjectProperty/FullSubcategory.lean:159-171`: `lift` has `map f := homMk (F.map f)` and `\u03b9_obj_lift_map ... := rfl`; `:83 homMk` shows the `.hom` field. The new file defines `characterLatticeFunctor` at line 133 and only `characterLatticeFunctor_obj` at line 141.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Torus/CharacterLattice/Functoriality.lean",
+   "fix": "Add `@[simp] theorem characterLatticeFunctor_map {S T : TorusCommHopfAlgCat k} (f : S \u27f6 T) : ((characterLatticeFunctor (k := k)).map f).hom = CommHopfAlgCat.geometricCharacterRepresentationMap f.hom.hom := (rfl)` (mirroring `ObjectProperty.\u03b9_obj_lift_map`), so consumers reach `additiveCharacterMap` via the existing `geometricCharacterRepresentationMap_apply`.",
+   "issue": "Same gap for the headline declaration: `characterLatticeFunctor_obj` exists, but nothing describes `(characterLatticeFunctor.map f)`. The PR description names full faithfulness of this functor as the remaining milestone work, which is entirely a statement about the morphism part; without a `_map` lemma every such proof must unfold `ObjectProperty.lift` and `homMk`.",
+   "line": 141
+  },
+  {
+   "evidence": "`Torus/CharacterLattice/Basic.lean:58 characterLattice_module_free_of_torus` and `:65 characterLattice_module_finite_of_torus`, plus `Torus/Cocharacter.lean:64 cocharacterLattice_module_free` / `:74 cocharacterLattice_module_finite`, all speak in `Module.Free`/`Module.Finite`; grep finds no lemma relating `galoisLatticeProperty` to either class.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Torus/CharacterLattice/Functoriality.lean",
+   "fix": "Add the accessors and constructor next to the definition: `theorem galoisLatticeProperty.module_free`, `.module_finite` (from the existential, via `AddEquiv.toIntLinearEquiv` as in `Torus/CharacterLattice/Basic.lean:62,69`), and `theorem galoisLatticeProperty.mk_of_free_finite` in the reverse direction; or restate the first conjunct as `Module.Finite \u2124 M \u2227 Module.Free \u2124 M` and keep the existential as a derived lemma.",
+   "issue": "`galoisLatticeProperty` encodes finite freeness as `\u2203 n, Nonempty (M \u2243+ (Fin n \u2192\u2080 \u2124))` and offers only `galoisLatticeProperty_iff := Iff.rfl`. A consumer holding a `GaloisLatticeCat k` object cannot obtain `Module.Free \u2124 M` / `Module.Finite \u2124 M`, and cannot build an object from those instances, without re-deriving `Module.Free.of_equiv` / `Module.Finite.equiv` by hand \u2014 even though the repo's own torus results are already stated in the class form. The `\u2243+` (rather than `\u2243\u2097[\u2124]`) phrasing is what forces the `let _ : Module \u2124 X := X.hV2` instance juggling in the `IsClosedUnderIsomorphisms` proof at lines 66-67.",
+   "line": 45
+  },
+  {
+   "evidence": "Grep for `characterRepresentationFunctor` across `TauCeti/` returns hits only in this file (lines 109, 114, 115, 116, 135, 147, 148); the Main declarations block at lines 25-28 lists only `galoisLatticeProperty`, `GaloisLatticeCat`, and `characterLatticeFunctor`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Torus/CharacterLattice/Functoriality.lean",
+   "fix": "Mark it `private`, and phrase `characterLatticeFunctor_obj` / the new `characterLatticeFunctor_map` directly in terms of `geometricCharacterRepresentation` and `geometricCharacterRepresentationMap`.",
+   "issue": "`characterRepresentationFunctor` is public but is a staging artifact \u2014 its own docstring says it is the functor \"before recording finite freeness and open stabilizers in its codomain\". It is absent from the module's Main declarations, its membership proof at line 114 is `private`, and its only uses are lines 135 and 147 of this file. It duplicates `characterLatticeFunctor \u22d9 (galoisLatticeProperty k).\u03b9` as a second, weaker public name for the same functor.",
+   "line": 109
+  }
+ ],
+ "head_sha": "1f5dbd276af8e5684606f77d7e685b6fa89fdee8",
+ "merge_base_sha": "72289887081ad8abeda958b59d2e92fad32dc7da",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3389,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "316f5c74a7c9a46cacb7015a873c8b6187d44d2293e89642b73470788aa8a136",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T173212Z-3389-api-design-158923",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T17:32:12Z",
+ "submitted_by": "kim-em",
+ "summary": "Both new functors expose only an `_obj` lemma and no `_map` lemma, so the morphism part \u2014 precisely what the stated next step (full faithfulness of the descent functor) needs \u2014 is only reachable by unfolding. `galoisLatticeProperty` also ships no bridge to the `Module.Finite`/`Module.Free` form the repo's own torus lemmas produce.",
+ "transcript_blob": "22629304c8dba9e9cb7f9734b9c37d142b2ff6c9300954736c7dd23c43d5de48",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 67618,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 67618,
+  "cache_read_input_tokens": 525200,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 8260,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 8260,
+    "cache_read_input_tokens": 75857,
+    "input_tokens": 2,
+    "output_tokens": 5701,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17036,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

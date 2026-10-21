@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.568704,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 217.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 65605,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 65605,
+    "cache_read_input_tokens": 969324,
+    "inference_geo": "not_available",
+    "input_tokens": 27,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1164,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1164,
+      "cache_read_input_tokens": 80940,
+      "input_tokens": 2,
+      "output_tokens": 3108,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16480,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b750f6adeebb2046b06203d95aa6d333ee8c002d",
+ "cost_usd": 1.568704,
+ "dedupe_key": "TauCetiProject/TauCeti|3339|c759654a6b1d30e719e3db445036b0e1c05bb33f|documentation|claude-opus-5|ce88b39773d791a9|production|2",
+ "diff_blob": "511a1dc481aded2e1ef621f8a444cefa0ad2c0205df7af969030aa3af989e94b",
+ "diff_sha256": "511a1dc481aded2e1ef621f8a444cefa0ad2c0205df7af969030aa3af989e94b",
+ "duration_s": 217.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "FieldRange.lean:58-60 vs the term at FieldRange.lean:69-71 (`Module.Finite.of_equiv_equiv ... (RingEquiv.refl L)`); contrast `finrank_fieldRange`, whose transport comment sits inside the proof at lines 49-50.",
+   "file": "TauCeti/FieldTheory/IntermediateField/FieldRange.lean",
+   "fix": "Drop that paragraph and keep the second one, which states what the result gives a caller; if the argument route is worth recording, put it in a proof comment or an `## Implementation notes` entry, not in the docstring.",
+   "issue": "The docstring's first paragraph is a proof sketch (\"`f.fieldRange` is finite over `K`, and the tower `K \u2192 f.fieldRange \u2192 L` carries finiteness the rest of the way\"), and it is not the proof: lines 69-71 transport along `f.equivFieldRange.toRingEquiv.symm` with `Module.Finite.of_equiv_equiv`, with no tower and no intermediate finiteness step.",
+   "line": 58
+  },
+  {
+   "evidence": "Hom.lean:51-55; the file already has an `## Implementation notes` section at Hom.lean:27-39 for exactly this kind of note.",
+   "file": "TauCeti/Algebra/Algebra/Hom.lean",
+   "fix": "Move it into the file's existing `## Implementation notes` section or into a comment above the proof; leave the first two paragraphs as the docstring.",
+   "issue": "The third paragraph of the declaration docstring is entirely about the proof term (`rfl` vs `RingHom.algebraMap_toAlgebra` + `AlgHom.coe_toRingHom`, and what reduction is kept out of the term). Docstrings state the result, not how it was closed.",
+   "line": 51
+  },
+  {
+   "evidence": "`grep -rn \"algebraMap_toAlgebra\" TauCeti/ | grep -i congr` returns no hits; the removed hunk in `Degree.lean` (diff) shows `congrFun (AlgHom.coe_toRingHom \u03c6.fieldPullback) z`; `grep -c` gives 33 total `algebraMap_toAlgebra` uses, 6 of them the new `_apply`.",
+   "file": "TauCeti/Algebra/Algebra/Hom.lean",
+   "fix": "State the actual pre-PR shape (`rw [RingHom.algebraMap_toAlgebra]` followed by `congrFun (AlgHom.coe_toRingHom f) z`) and drop \"Every\" \u2014 6 of the 33 `algebraMap_toAlgebra` sites in the repo now use this lemma.",
+   "issue": "The module docstring's justification \u2014 \"Every consumer that has to feed a hypothesis of the form `\u2200 z, algebraMap A B z = f z` therefore applies it pointwise by hand, through `congrArg DFunLike.coe` and `congrFun`\" \u2014 describes an idiom no call site uses. The three witnesses this PR replaced in `Degree.lean` were `rw [RingHom.algebraMap_toAlgebra]; exact congrFun (AlgHom.coe_toRingHom \u2026) z`, and the repo's other `algebraMap_toAlgebra` consumers (e.g. `FieldRange.lean:80-81, 93-94`) use `rw` + `exact` with no `congrFun` at all.",
+   "line": 16
+  },
+  {
+   "evidence": "Diff adds `TauCeti/Algebra/Algebra/Hom.lean` (59 lines); `Degree.lean:186-191` and `Separability.lean:242-247, 267-272` all read `\u2026 .fieldPullback.algebraMap_toAlgebra_apply`, not `fun _ \u21a6 rfl`.",
+   "file": "",
+   "fix": "Add `TauCeti/Algebra/Algebra/Hom.lean` (new, +1 public theorem) to the Scope table and correct the `fun _ \u21a6 rfl` sentence to describe the lemma the witnesses now use.",
+   "issue": "The PR description is stale against its own diff: the Scope table says \"Three files\" and lists only `Separability.lean`, `Degree.lean`, `FieldRange.lean`, while the diff adds a fourth file `TauCeti/Algebra/Algebra/Hom.lean` with a new public theorem. The Round 3 note further claims \"all six call sites across the two files are `fun _ \u21a6 rfl`\", but the six sites go through `AlgHom.algebraMap_toAlgebra_apply` instead.",
+   "line": 0
+  }
+ ],
+ "head_sha": "c759654a6b1d30e719e3db445036b0e1c05bb33f",
+ "merge_base_sha": "b750f6adeebb2046b06203d95aa6d333ee8c002d",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3339,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "c514e35359e37415618a10f86c6ab74f4789c97a59d7d9300a1ac345b209f7f3",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "documentation",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260816T021003Z-3339-documentation-c6a1fc",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-16T02:10:03Z",
+ "submitted_by": "kim-em",
+ "summary": "Two docstrings narrate proofs rather than describing their results, and one of those narrations does not match the proof actually written; the new file's motivating claim about how consumers work today is not borne out by any call site, and the PR description omits the fourth file the diff adds.",
+ "transcript_blob": "10a25914c2b097e61d0e6bb80d6bc723583e0fdfba8617b7702a7502dd2fb479",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 65605,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 65605,
+  "cache_read_input_tokens": 969324,
+  "inference_geo": "not_available",
+  "input_tokens": 27,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1164,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1164,
+    "cache_read_input_tokens": 80940,
+    "input_tokens": 2,
+    "output_tokens": 3108,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16480,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

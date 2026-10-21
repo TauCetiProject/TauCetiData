@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.044639,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 188.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 46755,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 46755,
+    "cache_read_input_tokens": 440858,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1671,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1671,
+      "cache_read_input_tokens": 61583,
+      "input_tokens": 2,
+      "output_tokens": 3520,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 14042,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "61168058783fa30ec797dc55095a769164435481",
+ "cost_usd": 1.044639,
+ "dedupe_key": "TauCetiProject/TauCeti|3244|42bd015ea03671cbad59a1b0b54d31a35762979e|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "008b8547c91e3a542a046a3b0f2a6bd7b072e1e84f5d81f2b45985b6b900f6b4",
+ "diff_sha256": "008b8547c91e3a542a046a3b0f2a6bd7b072e1e84f5d81f2b45985b6b900f6b4",
+ "duration_s": 188.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Completion.lean:144 `toCompletionLoc \u2026 a = (algebraMap A S a : Completion S)`; mathlib/Mathlib/RingTheory/Localization/Away/Basic.lean:82 `lemma algebraMap_isUnit : IsUnit (algebraMap R S x)`; Basic.lean:575 `isPowerBounded_divBy`; Huber/Completion.lean:103 `coe_completionRingOfDefinition` (closure of the image of `D`); Huber/Basic.lean:277 `le_powerBoundedSubring`.",
+   "file": "TauCeti/RingTheory/Huber/LocalizationTopology/Restriction.lean",
+   "fix": "Drop `hs` and `hpow` from the statement and discharge them inside the proof (adding `isUnit_toCompletionLoc_self` / `isPowerBounded_toCompletionLoc_divBy` as named lemmas if the proof wants them); the exposed identity law should read `Continuous g \u2192 g.comp (toCompletionLoc \u2026) = toCompletionLoc \u2026 \u2192 g = RingHom.id _`.",
+   "issue": "`hs : IsUnit (toCompletionLoc \u2026 s)` and `hpow` are hypotheses of a statement where they always hold: `toCompletionLoc _ s = \u2191(algebraMap A S s)` is a unit by `IsLocalization.Away.algebraMap_isUnit`, and `toCompletionLoc t * \u2191hs.unit\u207b\u00b9` is the image of `divBy t s`, power-bounded by `isPowerBounded_divBy` plus membership in `completionRingOfDefinition` and `le_powerBoundedSubring`. The PR supplies neither lemma, so every consumer of the identity law must reprove both.",
+   "line": 62
+  },
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/Localization/Defs.lean:543 `theorem ringHom_ext {P} \u2983j k : S \u2192+* P\u2984 \u2026`; the module docstring (Restriction.lean:26) states the composition law follows \"the same way\", but the shipped `\u2203!`-based special case gives it nothing to build on.",
+   "file": "TauCeti/RingTheory/Huber/LocalizationTopology/Restriction.lean",
+   "fix": "State `eq_of_comp_toCompletionLoc : Continuous g\u2081 \u2192 Continuous g\u2082 \u2192 g\u2081.comp \u03b9 = g\u2082.comp \u03b9 \u2192 g\u2081 = g\u2082` for any `[UniformSpace B] [IsUniformAddGroup B] [T0Space B]`, and derive the identity law from it with `g\u2082 := RingHom.id _`. It needs no `hs`/`hpow` and no `CompleteSpace`: `IsLocalization.ringHom_ext` gives `g\u2081 \u2218 coeRingHom = g\u2082 \u2218 coeRingHom`, then `Continuous.ext_on` with `UniformSpace.Completion.denseRange_coe`.",
+   "issue": "Only the endomorphism special case is exposed. The characteristic lemma for `A\u27e8T/s\u27e9` is the extensionality form \u2014 two continuous ring homs out of `A\u27e8T/s\u27e9` agreeing after composition with `toCompletionLoc` are equal \u2014 which the composition law between two different presentations needs and which the identity law cannot supply (a composite `A\u27e8T/s\u27e9 \u2192 A\u27e8T'/s'\u27e9 \u2192 A\u27e8T''/s''\u27e9` is not an endomorphism).",
+   "line": 56
+  }
+ ],
+ "head_sha": "42bd015ea03671cbad59a1b0b54d31a35762979e",
+ "merge_base_sha": "61168058783fa30ec797dc55095a769164435481",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3244,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "421793e1f76e1eea3e503b6505dc87a1ab807704c22722a31634ff1878b18d5d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260814T153313Z-3244-api-design-7896fc",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-14T15:33:13Z",
+ "submitted_by": "kim-em",
+ "summary": "The exposed identity law carries two side conditions (`hs`, `hpow`) that are unconditionally true for the self-map, and the repo provides no lemma to discharge them, so no consumer can apply the law as stated. The characteristic lemma \u2014 a hypothesis-free `hom_ext` for `A\u27e8T/s\u27e9` \u2014 is missing, and it is what the announced composition law needs.",
+ "transcript_blob": "99e494afbb3f1aa0e77ba7a101e2d40e097cbdc015fc2be832750cc0ba10cce3",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 46755,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 46755,
+  "cache_read_input_tokens": 440858,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1671,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1671,
+    "cache_read_input_tokens": 61583,
+    "input_tokens": 2,
+    "output_tokens": 3520,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 14042,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

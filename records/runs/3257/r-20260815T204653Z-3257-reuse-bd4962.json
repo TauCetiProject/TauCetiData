@@ -1,0 +1,153 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4376225000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 219.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 66881,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 66881,
+    "cache_read_input_tokens": 585741,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1072,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1072,
+      "cache_read_input_tokens": 82308,
+      "input_tokens": 2,
+      "output_tokens": 3055,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18468,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e28afb19d468aabb12e10f6bc1d226e6cb5e3f97",
+ "cost_usd": 1.437623,
+ "dedupe_key": "TauCetiProject/TauCeti|3257|dd9edf49d0db0730605165c8557853cc8989b46e|reuse|claude-opus-5|ce88b39773d791a9|production|2",
+ "diff_blob": "fe89fbf3056dd7e3c78761dc08bc94ee27f7f14788f78a5abd14e3a0b54f252e",
+ "diff_sha256": "fe89fbf3056dd7e3c78761dc08bc94ee27f7f14788f78a5abd14e3a0b54f252e",
+ "duration_s": 219.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean:227 `theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm \u2194 B = B.flip`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Basic.lean",
+   "fix": "`theorem form_flip (L : IntegralLattice V) : L.form.flip = L.form := (LinearMap.isSymm_iff_eq_flip.mp L.isSymm).symm`.",
+   "issue": "`form_flip` proves `L.form.flip = L.form` by `LinearMap.ext ... L.isSymm.eq`, re-deriving Mathlib's symmetry/flip characterisation.",
+   "line": 90
+  },
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/BilinearMap.lean:204 `@[simp] theorem flip_flip (f : M \u2192\u209b\u2097[\u03c1\u2081\u2082] N \u2192\u209b\u2097[\u03c3\u2081\u2082] P) : f.flip.flip = f`; mathlib/Mathlib/LinearAlgebra/BilinearForm/Basic.lean:143 `abbrev flip (B : BilinForm R M)`.",
+   "file": "TauCeti/LinearAlgebra/BilinearForm/DualLattice.lean",
+   "fix": "Drop `hflip` and close with `rwa [LinearMap.flip_flip] at h`.",
+   "issue": "`have hflip : B.flip.flip = B := by ext; rfl` re-proves Mathlib's simp lemma `LinearMap.flip_flip` (BilinForm `flip` is an abbrev for `LinearMap.flip`).",
+   "line": 115
+  },
+  {
+   "evidence": "`grep -rn span_range_rationalBasis code/TauCeti/` returns only Dual.lean:87 (declaration); its body is `rw [h]; exact Basis.span_range_extendOfIsLattice ...` (Dual.lean:91-92).",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "Delete it; `dualCarrier_eq_span_dualBasis` and the rest already call `Basis.span_range_extendOfIsLattice` directly (Dual.lean:104).",
+   "issue": "`span_range_rationalBasis` is an unused specialization of this PR's own `Basis.span_range_extendOfIsLattice` at `L.rationalBasis`; it has no consumer and is not in the module-doc declaration list.",
+   "line": 87
+  },
+  {
+   "evidence": "Basic.lean:116 `congr_arg Cardinal.toNat (Submodule.IsLattice.rank' \u211a L.carrier)` vs Algebra/Module/Lattice.lean:55 `congr_arg Cardinal.toNat (Submodule.IsLattice.rank' K N)`; Dual.lean:119 already uses the factored lemma.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Basic.lean",
+   "fix": "Replace the body with `Submodule.IsLattice.finrank_eq_finrank L.carrier`.",
+   "issue": "The PR factors out `Submodule.IsLattice.finrank_eq_finrank` (Algebra/Module/Lattice.lean:52) and uses it for `finrank_dualCarrier`, but leaves `finrank_carrier` re-deriving the identical `congr_arg Cardinal.toNat (Submodule.IsLattice.rank' ...)` proof.",
+   "line": 114
+  },
+  {
+   "evidence": "Basic.lean:90 `form_flip : L.form.flip = L.form`; Dual.lean:225-226 already derives one from the other by a single `rw [\u2190 L.form_flip]`; grep shows no other use of `dualSubmodule_flip_dualCarrier`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "Delete `dualSubmodule_flip_dualCarrier` and prove `dualSubmodule_dualCarrier` inline: `have h := LinearMap.BilinForm.dualSubmodule_flip_dualSubmodule L.form L.form_nondegenerate L.carrier; rwa [L.form_flip] at h`.",
+   "issue": "`dualSubmodule_flip_dualCarrier` and `dualSubmodule_dualCarrier` (line 223) are the same statement for an integral lattice, since `L.form.flip = L.form` by `form_flip`; the flip variant is a parallel public copy with no consumer beyond line 226.",
+   "line": 217
+  },
+  {
+   "evidence": "DualLattice.lean:65-69 `hform (j) : B (bd j) ((b i : N) : V) = if i = j then 1 else 0 := ... B.apply_dualBasis_left hB b_ext j i` vs Dual.lean:192-193 `_ = if j = i then 1 else 0 := L.form.apply_dualBasis_left ...`.",
+   "file": "TauCeti/LinearAlgebra/BilinearForm/DualLattice.lean",
+   "fix": "State the image lemma once in the generic file \u2014 `B.dualSubmoduleToDual N \u27e8B.dualBasis hB b_ext i, _\u27e9 = b.dualBasis i` \u2014 then get surjectivity from `LinearMap.range_eq_top` + `b.dualBasis.span_eq`, and make `dualPairingEquiv_dualBasisElem` a direct corollary instead of a second Kronecker computation.",
+   "issue": "The dual-basis pairing value is computed twice: `hform` plus a `Finset.sum_eq_single` bash inside `dualSubmoduleToDual_surjective` (lines 65-77), and again in `dualPairingEquiv_dualBasisElem` (Dual.lean:188-196).",
+   "line": 65
+  },
+  {
+   "evidence": "Dual.lean:74 `abbrev dualCarrier ... := L.form.dualSubmodule L.carrier`; Dual.lean:79 proof is `rfl`; `grep -rn dualCarrier_def code/TauCeti/` returns only the declaration and the doc bullet.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Dual.lean",
+   "fix": "Delete `dualCarrier_def`; the abbrev already unfolds definitionally and `L.form.dualSubmodule L.carrier` is syntactically available.",
+   "issue": "`dualCarrier_def` is a `rfl` restatement of the reducible `abbrev dualCarrier` (line 74) with no consumer. (The `le_dualCarrier` half of the earlier finding is withdrawn: the api-design thread's requirement for a named inclusion theorem stands and it reuses `L.le_dual`.)",
+   "line": 78
+  }
+ ],
+ "head_sha": "dd9edf49d0db0730605165c8557853cc8989b46e",
+ "merge_base_sha": "e28afb19d468aabb12e10f6bc1d226e6cb5e3f97",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3257,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8746fb67c41665c7ce778592d1e3e0fef7b46d5a744ee7963be9b796796b4823",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T204653Z-3257-reuse-bd4962",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T20:46:53Z",
+ "submitted_by": "kim-em",
+ "summary": "The perfect-pairing construction is new (Mathlib still lists it as a TODO), but the PR hand-proves two located Mathlib lemmas, leaves a pre-existing proof unrouted through the general finrank lemma it just added, adds an unused span specialization, and states double duality twice for a symmetric form.",
+ "transcript_blob": "1eaf05bae4636f90e7d3511a2c8567f1db7b07b339eea1239b167a31fc85c96f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 66881,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 66881,
+  "cache_read_input_tokens": 585741,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1072,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1072,
+    "cache_read_input_tokens": 82308,
+    "input_tokens": 2,
+    "output_tokens": 3055,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18468,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

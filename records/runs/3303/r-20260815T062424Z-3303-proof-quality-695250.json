@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.3588565,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 234.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 101144,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 101144,
+    "cache_read_input_tokens": 1723249,
+    "inference_geo": "not_available",
+    "input_tokens": 37,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 258,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 258,
+      "cache_read_input_tokens": 117385,
+      "input_tokens": 2,
+      "output_tokens": 3773,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18820,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "5ee73b7e14bc99808d0a5d8e9c73b4d798feca82",
+ "cost_usd": 2.358856,
+ "dedupe_key": "TauCetiProject/TauCeti|3303|6fd1b8c35a48fb19fe9a725737cf2ca25e4d5aa2|proof-quality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "d6c9ab2bac7ba39132bf1cab75f2c3dbb62befb7a1562e5efcf0095fa3b55903",
+ "diff_sha256": "d6c9ab2bac7ba39132bf1cab75f2c3dbb62befb7a1562e5efcf0095fa3b55903",
+ "duration_s": 234.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`AlgHom.mapValue_apply` is `@[simp]` (FunctorOfPoints.lean:149-151) and `ofConv_toConv` exists; GeneralLinear/FunctorOfPoints.lean:246-253 proves `pointToGeneralLinear_mapValue` by `simp`, and Product.lean:211 uses `simp only [AlgHom.mapValue_apply, ofConv_toConv, AlgHom.comp_apply, ...]`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/UpperUnitriangular/Basic.lean",
+   "fix": "Replace the trailing `rfl` with `simp` (as in `GeneralLinear.pointToGeneralLinear_mapValue`) or the explicit repo idiom `simp only [AlgHom.mapValue_apply, WithConv.ofConv_toConv, AlgHom.comp_apply, AlgHom.toRingHom_eq_coe]`.",
+   "issue": "`pointToUpperUnitriangular_mapValue` closes with a bare, undocumented `rfl` that crosses `AlgHom.mapValue`, `toConv`/`ofConv`, `AlgHom.comp` and the `\u03c6.toRingHom` coercion at once. The merged analogue proves the identical statement without touching defeq.",
+   "line": 630
+  },
+  {
+   "evidence": "Lines 260-269, 295-298, 307-310. `UpperUnitriangularGroup.mem_iff` is `Iff.rfl` and `toGL_mem_upperUnitriangularGroup` is public (UpperUnitriangular.lean:82-106), so no `let g` detour is needed.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/UpperUnitriangular/Basic.lean",
+   "fix": "Drop the `let`s. For line 265: `have hinv : ((isUpperUnitriangular_genericMatrix R m).toGL\u207b\u00b9 : Matrix m m _).IsUpperUnitriangular := (upperUnitriangularGroup m _).inv_mem (UpperUnitriangularGroup.toGL_mem_upperUnitriangularGroup _)` then `rw [antipode]; exact map_aeval_genericMatrix R m _ hinv`. At 295-310 pass the named lemmas (`Matrix.IsUpperUnitriangular.coe_toGL`) instead of the `let` binder.",
+   "issue": "`map_antipode_genericMatrix` introduces `let g := \u27e8h.toGL\u207b\u00b9, _\u27e9` and then discharges the goal with `simpa only [g]`, i.e. by zeta-unfolding a local `let` and letting `exact` cross the `Subgroup`\u2192`GL`\u2192`Matrix` coercion chain by defeq, with no comment. Same opaque `let`-as-simp-lemma pattern at lines 295-298 and 307-310 (`simpa [..., h, ...]` where `h : (genericMatrix R m).IsUpperUnitriangular` is a `let`-bound conjunction \u2014 and where `genericMatrix_apply_diag`/`genericMatrix_apply_eq_zero_of_gt` are already `@[simp]`).",
+   "line": 265
+  },
+  {
+   "evidence": "`genericMatrix_apply_of_lt` (line 77), `matrixOfPoint_apply` (line 513) and `coe_pointToUpperUnitriangular` (line 527) are all declared `@[simp]` in this file and state exactly the facts these calls obtain by unfolding.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/UpperUnitriangular/Basic.lean",
+   "fix": "Rewrite through the declared lemmas, e.g. line 579: `rw [upperUnitriangularToPoint_apply, coe_pointToUpperUnitriangular, matrixOfPoint_apply, genericMatrix_apply_of_lt R m ij.2]`; line 542: `simp [coe_pointToUpperUnitriangular, matrixOfPoint_apply, genericMatrix_apply_of_lt]`; line 117: `simp [Matrix.map_apply, genericMatrix_apply_of_lt R m hij]`.",
+   "issue": "Unfolding-heavy `simp` calls that bypass the file's own simp lemmas and depend on the `dite` shape of `genericMatrix`: line 579-580 `simp [upperUnitriangularToPoint, pointToUpperUnitriangular, matrixOfPoint, genericMatrix, ij.2]`; line 542 `simp [pointToUpperUnitriangular, matrixOfPoint, ...]`; line 117 `simp [Matrix.map_apply, genericMatrix, hij]`. Any change to `genericMatrix`'s definition or to these defs breaks proofs that the stated API lemmas already cover.",
+   "line": 579
+  },
+  {
+   "evidence": "`grep IsUpperUnitriangular TauCeti` matches only Triangular.lean, GeneralLinearGroup/UpperUnitriangular.lean and this file; neither upstream file has an extensionality lemma, and Triangular.lean:48-95 already hosts the public `IsUpperUnitriangular` API (`isUpperTriangular`, `apply_diag`, `mul`, `inv`, `map`).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/UpperUnitriangular/Basic.lean",
+   "fix": "Make both public and state them with the rest of the `IsUpperUnitriangular` API \u2014 the matrix one in `TauCeti/LinearAlgebra/Matrix/Triangular.lean` as `Matrix.IsUpperUnitriangular.ext_of_lt`, the group one in `TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/UpperUnitriangular.lean` as `UpperUnitriangularGroup.ext_of_lt`.",
+   "issue": "`matrix_eq_of_isUpperUnitriangular_of_apply_of_lt` (two upper-unitriangular matrices agreeing strictly above the diagonal are equal) and its subgroup counterpart `upperUnitriangularGroup_ext_of_lt` (line 488) are the general extensionality principles for `Matrix.IsUpperUnitriangular` / `upperUnitriangularGroup`, but are `private` to this construction file. The promised follow-up closed-immersion module cannot reuse them.",
+   "line": 98
+  }
+ ],
+ "head_sha": "6fd1b8c35a48fb19fe9a725737cf2ca25e4d5aa2",
+ "merge_base_sha": "6186c37c5fc627297dc164b43fe44e2c9068a4ba",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3303,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4aefb0be07dd636dbf21b795478578960c405e9f7e3fca05792c3ca3afad5723",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T062424Z-3303-proof-quality-695250",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T06:24:24Z",
+ "submitted_by": "kim-em",
+ "summary": "The Hopf-structure transport bridges correctly follow the merged GeneralLinear precedent, but the points section closes a naturality goal with a bare undocumented `rfl` where the merged analogue uses `simp`, several proofs unfold `genericMatrix`/`matrixOfPoint`/`pointToUpperUnitriangular` inside `simp` instead of using the file's own simp lemmas, `let`-bound terms are passed to `simp`, and two genuinely reusable extensionality facts are hidden as `private`.",
+ "transcript_blob": "8db496f2240dd16b28d90afc2f142360830e5e7e64f3e04a5aed8dc5dc3f9d54",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 101144,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 101144,
+  "cache_read_input_tokens": 1723249,
+  "inference_geo": "not_available",
+  "input_tokens": 37,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 258,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 258,
+    "cache_read_input_tokens": 117385,
+    "input_tokens": 2,
+    "output_tokens": 3773,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18820,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

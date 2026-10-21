@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.322548,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 159.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 64741,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 64741,
+    "cache_read_input_tokens": 706334,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1580,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1580,
+      "cache_read_input_tokens": 79660,
+      "input_tokens": 2,
+      "output_tokens": 2263,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12098,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "efb56122393cac7935ff146ebe628d54c3b18b7c",
+ "cost_usd": 1.322548,
+ "dedupe_key": "TauCetiProject/TauCeti|3259|4744dcad551b073b9c035f222c09d5dc4aa7f9b3|proof-quality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "820df5d85f9ed6cf72ed055e9b26d5ce4f54218cd7b0863069aa481f27879d66",
+ "diff_sha256": "820df5d85f9ed6cf72ed055e9b26d5ce4f54218cd7b0863069aa481f27879d66",
+ "duration_s": 159.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep -rn WeakDerivStep code` returns hits for `WeakDerivStepJetLp` only in W2p.lean:64 and W3p.lean:64; no file outside GraphStep.lean mentions `WeakDerivStep.prev`, `.deriv`, `.mk`, or `norm_prev_le`. Compare GraphStep.lean:236-239 with W3p.lean:131-134, and GraphStep.lean:280-284 with W3p.lean:214-217 / W2p.lean:196-199.",
+   "file": "TauCeti/Analysis/Sobolev/GraphStep.lean",
+   "fix": "Make the order-specific spaces reducibly the generic one (`abbrev W3p ... := WeakDerivStep mu Omega p W2p.hessianL`, likewise `W2p` over `W1p.gradientL`) and define each order-specific name as a direct instantiation \u2014 e.g. `def W3p.thirdDerivativeL := WeakDerivStep.derivL _`, `theorem W3p.norm_thirdDerivative_le u := WeakDerivStep.norm_deriv_le _ u`, `theorem W3p.norm_sq_... := WeakDerivStep.norm_sq_eq_norm_prev_sq_add_norm_deriv_sq _ u`, and drop the duplicate `CompleteSpace` instances. If that is not wanted, delete the unused `WeakDerivStep` namespace instead of shipping a dead parallel API.",
+   "issue": "The whole `WeakDerivStep` lemma layer (`prevL`/`prev`/`prev_coe`, `derivL`/`deriv`/`deriv_coe`, `mk`, `prev_mk`, `deriv_mk`, `hasWeakFDerivOn_prev`, `norm_prev_le`, `norm_deriv_le`, `norm_sq_eq_norm_prev_sq_add_norm_deriv_sq`, the `CompleteSpace` instance, GraphStep.lean:194-288) has no user: grepping `WeakDerivStep` shows only `WeakDerivStepJetLp` and the two `mem_...` lemmas are consumed. `W3p` instead re-proves each of them with the identical script \u2014 W3p.lean:96-127 (`secondOrderL`/`secondOrder_coe`, `thirdDerivativeL`/`thirdDerivative_coe` vs `prevL`/`prev_coe`, `derivL`/`deriv_coe`), 131-150 (`W3p.mk`, `secondOrder_mk`, `thirdDerivative_mk` vs `mk`, `prev_mk`, `deriv_mk`, same `\u27e8WithLp.toLp 2 (u, T), (mem_..._iff_hasWeakFDerivOn _).mpr (by simpa)\u27e9` and `rw [..._coe]; simp [mk]`), 166-169 (vs `hasWeakFDerivOn_prev`), 187-217 (vs `norm_prev_le`/`norm_deriv_le`/`norm_sq_eq_...`), 234 (vs the `CompleteSpace` instance). `W2p.lean:98-199, 211` are the same duplicates, and W2p.lean:196-199 was rewritten in this PR into a byte-for-byte copy of GraphStep.lean:282-284. The claimed factoring therefore adds a second copy of the API rather than removing one.",
+   "line": 192
+  },
+  {
+   "evidence": "GraphStep.lean:109-117 (`by rfl` plus `rw [..., weakDerivStepSmulPairing, ...]`) and 155-158; the removed comments are visible in the diff hunk deleting W2p.lean's `weakHessianTestFunctional_apply` and `mem_w2pSubmodule_iff`.",
+   "file": "TauCeti/Analysis/Sobolev/GraphStep.lean",
+   "fix": "Define `weakDerivStepSmulPairing` and `weakDerivStepTestFunctional` in term mode with the `Fact`/`HolderConjugate` instances supplied by `haveI`/instance arguments, and add a private `@[simp] theorem weakDerivStepTestFunctional_eq` stating the sum-of-pairings expansion; then replace the `rw [show ... by rfl]` with `simp only [weakDerivStepTestFunctional_eq, ContinuousLinearMap.add_apply, ContinuousLinearMap.comp_apply]`. At minimum restore both dropped comments explaining why the `show` is needed.",
+   "issue": "`rw [show weakDerivStepTestFunctional base phi v J = ... by rfl, weakDerivStepSmulPairing, ...]` bridges the goal to the two-`lpPairing` form purely by definitional unfolding of a tactic-mode `def` (`weakDerivStepTestFunctional`, line 82-93, whose body is elaborated under a locally introduced `Fact (1 <= conjExponent p)` instance), and then delta-unfolds a second tactic-mode `def` via `rw [weakDerivStepSmulPairing]`. The `rfl` holds only if the instances elaborated in the `def` and in the proof are definitionally identical \u2014 exactly the accidental-defeq reliance the rubric targets \u2014 and the comment the pre-PR W2p proof carried at this step (`-- Expose the private functional as the two lpPairings whose integral theorem applies.`) was dropped during the move. The same happens at line 155-158, where the `rw [show J \u2208 ... \u2194 ... ]` lost `-- Pass through the private kernel presentation once, keeping it out of the public statement.`",
+   "line": 109
+  }
+ ],
+ "head_sha": "4744dcad551b073b9c035f222c09d5dc4aa7f9b3",
+ "merge_base_sha": "d7301fadd73683fda84317d74e76e0617281f2f2",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3259,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c77b19c0d5baa7bbd58668f20ec503ceda3863c1c51136c63e2c24a8472a2215",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260814T195628Z-3259-proof-quality-3666d5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-14T19:56:28Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR extracts a generic `WeakDerivStep` API but never uses its lemma layer: `W2p` and the new `W3p` re-prove every projection, constructor, norm bound and completeness proof verbatim, so the factored lemmas are dead and the duplicated scripts remain. The moved `weakDerivStepTestFunctional_apply` also keeps a `rw [show ... by rfl]` defeq bridge whose explanatory comment was dropped in the move.",
+ "transcript_blob": "ae9c9da16356c48a88ed287d43d2ab76e1d931dd33b8ffb532c09d28a4c0e75a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 64741,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 64741,
+  "cache_read_input_tokens": 706334,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1580,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1580,
+    "cache_read_input_tokens": 79660,
+    "input_tokens": 2,
+    "output_tokens": 2263,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12098,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

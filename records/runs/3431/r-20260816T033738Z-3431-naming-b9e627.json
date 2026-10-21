@@ -1,0 +1,125 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4224149999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 175.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 71916,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 71916,
+    "cache_read_input_tokens": 704298,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2105,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2105,
+      "cache_read_input_tokens": 86310,
+      "input_tokens": 2,
+      "output_tokens": 2911,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13291,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "be3a629483324599008c76d589a3ef87aed3a07b",
+ "cost_usd": 1.422415,
+ "dedupe_key": "TauCetiProject/TauCeti|3431|3f296914c7fe312256403d123344a93b727e1a5b|naming|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "49590a98106835ef6eed37e02d8193224e2dfbb4e448aa1eee10268db20a6b02",
+ "diff_sha256": "49590a98106835ef6eed37e02d8193224e2dfbb4e448aa1eee10268db20a6b02",
+ "duration_s": 175.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `TauCeti/RepresentationTheory/Compact/Character/Basic.lean:182: theorem character_orthonormal_self ... \u27eacharacterLp \u03c0 h\u03c0, characterLp \u03c0 h\u03c0\u27eb_\ud835\udd5c = 1`; new statement at line 133 is `(1/(2\u03c0)) * \u222b \u03b8 in 0..\u03c0, ... = if m = n then 1 else 0`.",
+   "file": "TauCeti/RepresentationTheory/SU2/Weyl/Orthogonality.lean",
+   "fix": "Qualify the name with the measure it is orthonormal against, e.g. `character_symPower_orthonormal_torusExp` or `character_symPower_orthonormal_weylChamber`, reserving the bare `_orthonormal` name for the Haar statement once `weyl_integration_formula` lands.",
+   "issue": "`character_symPower_orthonormal` names an interval integral over `[0, \u03c0]` against `4 sin\u00b2\u03b8`, but the repo already uses exactly this name shape for genuine L\u00b2(G) orthonormality: `TauCeti.RepresentationTheory.Compact.character_orthonormal_self` / `character_orthonormal_distinct` (`TauCeti/RepresentationTheory/Compact/Character/Basic.lean:182,210`) state `\u27eacharacterLp \u03c0, characterLp \u03c1\u27eb = \u03b4`. Unqualified, `SU2.character_symPower_orthonormal` reads as the SU(2) instance of those \u2014 i.e. the roadmap's `su2Character_orthonormal`, which the docstring says is *not* proved here.",
+   "line": 133
+  },
+  {
+   "evidence": "`grep -rn \"weyl_\" TauCeti` \u2192 only `TauCeti/RepresentationTheory/SU2/Weyl/Orthogonality.lean`; roadmap `TauCetiRoadmap/RepresentationTheory/CompactGroups/Suggested.lean:475,483` shows the pinned name paired with the formula it tests.",
+   "file": "TauCeti/RepresentationTheory/SU2/Weyl/Orthogonality.lean",
+   "fix": "Rename to describe the conclusion, e.g. `inv_two_pi_mul_integral_weylFactor_eq_one` or `weylDensity_mass_eq_one`, and adopt the pinned `weyl_integration_formula_normalized` when `weyl_integration_formula` itself is proved.",
+   "issue": "`weyl_integration_formula_normalized` names a theorem `weyl_integration_formula` that does not exist anywhere in TauCeti (grep for `weyl_` in `TauCeti/` returns only this file), so the name reads as \"the Weyl integration formula, in normalized form\" rather than \"the density has total mass 1\", which is all it proves. The roadmap pin is meaningful only because `Suggested.lean:483` sits directly under `weyl_integration_formula` (`Suggested.lean:475`); that anchor is absent here.",
+   "line": 110
+  },
+  {
+   "evidence": "`grep -rn \"weylFactor\" TauCeti` matches only this lemma name, its `simp only` use at line 141, and the docstring at line 43 \u2014 no `def weylFactor`.",
+   "file": "TauCeti/RepresentationTheory/SU2/Weyl/Orthogonality.lean",
+   "fix": "Either spell the factor out (`..._mul_four_mul_sin_sq`) or introduce the `weylFactor` definition the name advertises and state the lemma in terms of it.",
+   "issue": "`character_symPower_mul_conj_mul_weylFactor` uses the lowerCamelCase token `weylFactor` for the literal `4 * Real.sin \u03b8 ^ 2`; no such definition exists in the repo, so the `_`-separated component does not correspond to any declaration a reader can grep for (naming conventions: \"`_`-separated strings in a lemma name correspond to a definition name or connective\").",
+   "line": 90
+  }
+ ],
+ "head_sha": "3f296914c7fe312256403d123344a93b727e1a5b",
+ "merge_base_sha": "e40699ea99d09659fd9558027943ad723416977b",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3431,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3dfb2412aa930aeae86f9de1fd50a6feb9d3c2bb5738c7fb523dd0dd3a153011",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260816T033738Z-3431-naming-b9e627",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-16T03:37:38Z",
+ "submitted_by": "kim-em",
+ "summary": "The trigonometric lemma names are fine and match repo precedent, but the two SU(2) headline names claim more than they prove: `character_symPower_orthonormal` reuses the shape of the repo's existing Haar-inner-product `character_orthonormal_*` API for a mere Weyl-chamber interval integral, and `weyl_integration_formula_normalized` prefixes a theorem name that does not exist in this repo.",
+ "transcript_blob": "4067a0c288ad742fc35baf132f1531a2995b9ab7bb4315715c55ae69b253b284",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 71916,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 71916,
+  "cache_read_input_tokens": 704298,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2105,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2105,
+    "cache_read_input_tokens": 86310,
+    "input_tokens": 2,
+    "output_tokens": 2911,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13291,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

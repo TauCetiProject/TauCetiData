@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.6338500000000007,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 355.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 99613,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 99613,
+    "cache_read_input_tokens": 1810968,
+    "inference_geo": "not_available",
+    "input_tokens": 48,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 17841,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 17841,
+      "cache_read_input_tokens": 98271,
+      "input_tokens": 2,
+      "output_tokens": 3720,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 28866,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d07f2034e3bff0a6f946d1c590e46e2eca105df9",
+ "cost_usd": 2.63385,
+ "dedupe_key": "TauCetiProject/TauCeti|3379|892f9698be77323fc75f95f44dde5f456623118f|reuse|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "2bda3a875976e43abe98eeedd094bc50ad8221c738df45c3f6eb9115aa10bd03",
+ "diff_sha256": "2bda3a875976e43abe98eeedd094bc50ad8221c738df45c3f6eb9115aa10bd03",
+ "duration_s": 355.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Scaling.lean:74-76 `have hmem := Submodule.smul_mem (1 : Submodule \u2124 \u211a) n (L.form_mem_one ...)` / `simpa only [LinearMap.smul_apply, Int.cast_smul_eq_zsmul] using hmem`, repeated at 262-263 and 289-290; `form_mem_one` is TauCeti/LinearAlgebra/IntegralLattice/Basic.lean:89, `le_dual` is the structure field at Basic.lean:69.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Scaling.lean",
+   "fix": "In `smul_ofSubmodule` replace the inline `by`-block with `(n \u2022 ofSubmodule S B hB hle).le_dual` (that term's carrier is `S` and form is `(n : \u211a) \u2022 B` by `rfl`, so the type matches exactly). In `smul_ofBasis` use `fun i j \u21a6 (n \u2022 ofBasis b B hB hint).form_mem_one \u27e8b i, Submodule.subset_span \u27e8i, rfl\u27e9\u27e9 \u27e8b j, Submodule.subset_span \u27e8j, rfl\u27e9\u27e9`. For the two `neg_*` obligations factor the single step out once, e.g. `theorem intCast_mul_mem_one (n : \u2124) {q : \u211a} (hq : q \u2208 (1 : Submodule \u2124 \u211a)) : (n : \u211a) * q \u2208 (1 : Submodule \u2124 \u211a)`, and call it at all five sites.",
+   "issue": "The integrality-preservation argument (`Submodule.smul_mem (1 : Submodule \u2124 \u211a) n ... ; simpa only [LinearMap.smul_apply, Int.cast_smul_eq_zsmul]`) is written out five times: `scale`'s `le_dual` field (lines 70-76), `smul_ofSubmodule` (258-263), `smul_ofBasis` (288-290), and the `Submodule.neg_mem` variants in `neg_ofSubmodule` (270-275) and `neg_ofBasis` (298-300). The `smul_ofSubmodule` hypothesis is literally the `le_dual` field of the term already built by `scale`.",
+   "line": 258
+  },
+  {
+   "evidence": "`protected theorem map_smul\u209b\u2097 [SMul R \u03b1] [SMul S \u03b2] (f : \u03b1 \u2192 \u03b2) (\u03c3 : R \u2192 S) (r : R) (hf : \u2200 a, f (r \u2022 a) = \u03c3 r \u2022 f a) (M : Matrix m n \u03b1) : (r \u2022 M).map f = \u03c3 r \u2022 M.map f` \u2014 mathlib/Mathlib/LinearAlgebra/Matrix/Defs.lean:369.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Scaling.lean",
+   "fix": "Replace with the library lemma: `have hmap := Matrix.map_smul\u209b\u2097 (algebraMap \u2124 \u211a) (Int.cast) n (fun a \u21a6 by push_cast [smul_eq_mul]; ring) G`, whose conclusion is exactly `(n \u2022 G).map (algebraMap \u2124 \u211a) = (n : \u211a) \u2022 G.map (algebraMap \u2124 \u211a)`.",
+   "issue": "The `hmap` step in `smul_ofGramMatrix` re-derives `Matrix.map_smul\u209b\u2097` by hand (`ext i j; simp only [Matrix.map_apply, Matrix.smul_apply, smul_eq_mul, map_mul]; rfl`).",
+   "line": 315
+  },
+  {
+   "evidence": "Scaling.lean:239-240 docstring: \"simplification already derives it from `neg_form` and the corresponding bilinear-form result\"; `grep -rn \"nondegenerate_neg_iff\" TauCeti/` returns only the two definitions and the module-docstring lines, no use sites.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Scaling.lean",
+   "fix": "Delete `IntegralLattice.nondegenerate_neg_iff`; callers get the statement from `simp` via `neg_form` and `TauCeti.BilinForm.nondegenerate_neg_iff`. (`nondegenerate_smul_iff` at line 162 earns its place: its `IsRegular ((n : \u211a))` side condition is not simp-dischargeable from `n \u2260 0`.)",
+   "issue": "`IntegralLattice.nondegenerate_neg_iff` duplicates the composition of two `@[simp]` lemmas added in this same PR: `neg_form` (Scaling.lean:192) rewrites `(-L).form` to `-L.form`, and `TauCeti.BilinForm.nondegenerate_neg_iff` (BilinearForm/Basic.lean:73) closes the result. Its own docstring states this, and grep shows no consumer anywhere in the repo.",
+   "line": 241
+  },
+  {
+   "evidence": "Scaling.lean:194-195, 280-281, 305-306 are character-for-character the same two tactic lines modulo the form variable (`L.form` vs `B`).",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Scaling.lean",
+   "fix": "State it once, e.g. `theorem intCast_neg_one_smul (B : LinearMap.BilinForm \u211a V) : ((-1 : \u2124) : \u211a) \u2022 B = -B`, and `rw` it in all three proofs (or, in the two constructor lemmas, `rw [\u2190 neg_form]` after `smul_ofSubmodule`/`smul_ofBasis` to reuse `neg_form` directly).",
+   "issue": "The cast computation `((-1 : \u2124) : \u211a) \u2022 B = -B` is proved three times by the identical two-line block `norm_num only [Int.cast_neg, Int.cast_one]; exact neg_one_smul \u211a B`: in `neg_form` (194-195), `neg_ofSubmodule` (280-281), and `neg_ofBasis` (305-306).",
+   "line": 280
+  }
+ ],
+ "head_sha": "892f9698be77323fc75f95f44dde5f456623118f",
+ "merge_base_sha": "d07f2034e3bff0a6f946d1c590e46e2eca105df9",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3379,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1ee6545ba7365e2ffe4b77520e99495092e84775e07619f9c893370d863744c0",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T230122Z-3379-reuse-038b7c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T23:01:22Z",
+ "submitted_by": "kim-em",
+ "summary": "The lattice-level material is new (no `IntegralLattice` in Mathlib) and reuses `Matrix.det_smul`, `Submodule.smul_mem` and `IsSymm.smul`/`.neg` correctly, but the integrality argument is copied verbatim across five declarations, one Gram-matrix step re-derives `Matrix.map_smul\u209b\u2097`, and `nondegenerate_neg_iff` restates what its component simp lemmas already prove.",
+ "transcript_blob": "ef0f87a1865ff373661e9f9bb1530b07e08110ba1f264137ae92223dc1fb867a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 99613,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 99613,
+  "cache_read_input_tokens": 1810968,
+  "inference_geo": "not_available",
+  "input_tokens": 48,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 17841,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 17841,
+    "cache_read_input_tokens": 98271,
+    "input_tokens": 2,
+    "output_tokens": 3720,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 28866,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,190 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.82912,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 137.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 42818,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 42818,
+    "cache_read_input_tokens": 215774,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7506,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7506,
+      "cache_read_input_tokens": 38205,
+      "input_tokens": 2,
+      "output_tokens": 2042,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 11316,
+    "output_tokens_details": {
+     "thinking_tokens": 7845
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "77140d1fa19c0e8b74a4b681f590f69691a30e3d",
+ "cost_usd": 0.82912,
+ "dedupe_key": "TauCetiProject/TauCeti|5843|40f168b1a90a590ae00d6778749f0d7d89dc28cb|proof-quality|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "0f78a0412d230347d881de90cb60b6d9c6c661f8c0360f562315e528b99d40ba",
+ "diff_sha256": "0f78a0412d230347d881de90cb60b6d9c6c661f8c0360f562315e528b99d40ba",
+ "duration_s": 137.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/MeasureTheory/MeasurableSpace/Defs.lean:61 `instance [h : MeasurableSpace \u03b1] : MeasurableSpace \u03b1\u1d52\u1d48 := h`; mathlib/Mathlib/Data/Finset/Lattice/Fold.lean:708-710 `toDual_sup' ... := rfl`; mathlib/Mathlib/MeasureTheory/Order/Lattice.lean:79-83 supply `OrderDual.instMeasurableSup\u2082`, so the suggested dual lemmas typecheck. No comment appears at any of the three call sites.",
+   "file": "TauCeti/Probability/Distributions/Relations.lean",
+   "fix": "Add the dual pair to TauCeti/MeasureTheory/Order/Lattice.lean \u2014 `Finset.aemeasurable_inf'` and `Finset.aemeasurable_inf'_apply` for `[SemilatticeInf \u03b1] [MeasurableInf\u2082 \u03b1]`, each proved as `aemeasurable_sup' (\u03b1 := \u03b1\u1d52\u1d48) hs hf` with a one-line comment recording that `Finset.toDual_sup'` is `rfl` \u2014 and call those at the three sites. This also makes the `@[fun_prop]` tags usable on `inf'` goals, which they currently are not, since `fun_prop` will not instantiate `\u03b1 := \u211d\u1d52\u1d48` on its own.",
+   "issue": "`Finset.aemeasurable_sup'_apply (\u03b1 := OrderDual \u211d)` produces a term of type `AEMeasurable (fun \u03c9 => Finset.univ.sup' _ fun i => X i \u03c9 : \u03a9 \u2192 \u211d\u1d52\u1d48) P` and is used where `AEMeasurable (fun \u03c9 => Finset.univ.inf' _ fun i => X i \u03c9 : \u03a9 \u2192 \u211d) P` is required. This is undocumented reliance on defeq across the `OrderDual` type synonym (`\u211d\u1d52\u1d48 \u2261 \u211d`, `MeasurableSpace \u211d\u1d52\u1d48 := h`, `sup'` at `\u211d\u1d52\u1d48` \u2261 `inf'` at `\u211d`). Same at Relations.lean:161 and TauCeti/Probability/Distributions/Exponential.lean:399. The deleted `measurable_min`/`aemeasurable_min` stated the `inf'` form directly, so the PR replaces an explicit statement with an implicit conversion.",
+   "line": 133
+  },
+  {
+   "evidence": "`grep -rn \"measurable_sup'\" mathlib/` yields only Mathlib/MeasureTheory/Order/Lattice.lean:200 (declaration) and :207 (use, for `sup'` not `inf'`), plus scripts/nolints_prime_decls.txt:1404.",
+   "file": "TauCeti/MeasureTheory/Order/Lattice.lean",
+   "fix": "Drop the sentence (or restate it as the actual justification, `Finset.toDual_sup' = rfl`) and ship the `inf'` lemmas from the previous finding so the doc describes what the file provides.",
+   "issue": "The module doc justifies the dual-instantiation idiom with \"exactly as `Finset.measurable_sup'` is used for `Finset.inf'`\". Mathlib has no such use: the only consumer of `Finset.measurable_sup'` is `Finset.measurable_range_sup'` in the same file, and there is no `inf'` measurability lemma at all. The claimed precedent is what stands in for a comment at the use sites.",
+   "line": 21
+  }
+ ],
+ "head_sha": "40f168b1a90a590ae00d6778749f0d7d89dc28cb",
+ "merge_base_sha": "77140d1fa19c0e8b74a4b681f590f69691a30e3d",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5843,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d20104f109a084dcbe7cfd523e7679306bdd9e7da7dd0af1e5dad99c38652c28",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260909T173855Z-5843-proof-quality-7e61ae",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-09T17:38:55Z",
+ "submitted_by": "kim-em",
+ "summary": "The minimum cases are discharged by instantiating a `sup'` lemma at `OrderDual \u211d` and letting an unstated definitional equality convert `\u211d\u1d52\u1d48`/`sup'` into `\u211d`/`inf'`, at three sites with no comment; the new file provides no `inf'` companion, and its docstring justifies the trick with a Mathlib precedent that does not exist.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Order/Lattice.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Relations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Exponential.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Order/Lattice.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Finset/Lattice/Fold.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Finset/Lattice/Fold.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Order/Lattice.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0aa691e8ed222c5f5228162b249aa4fc7b11d22f00773d90ad787127d120ec8e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 42818,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 42818,
+  "cache_read_input_tokens": 215774,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7506,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7506,
+    "cache_read_input_tokens": 38205,
+    "input_tokens": 2,
+    "output_tokens": 2042,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 11316,
+  "output_tokens_details": {
+   "thinking_tokens": 7845
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

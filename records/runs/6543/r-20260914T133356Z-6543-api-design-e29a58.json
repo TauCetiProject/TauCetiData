@@ -1,0 +1,215 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7100300000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 310.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 77875,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 77875,
+    "cache_read_input_tokens": 636072,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2527,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2527,
+      "cache_read_input_tokens": 78241,
+      "input_tokens": 2,
+      "output_tokens": 7524,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24008,
+    "output_tokens_details": {
+     "thinking_tokens": 19596
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "451bde2f45a863070b888ea37e3361a4fd2d6cdc",
+ "cost_usd": 1.71003,
+ "dedupe_key": "TauCetiProject/TauCeti|6543|776dd4af9fdcc198431e48dde7bf10efe2a64e72|api-design|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "d2d9e656844bcebdf739dfdf62eedc91f34064c5a555da0af785d766977e5e4d",
+ "diff_sha256": "d2d9e656844bcebdf739dfdf62eedc91f34064c5a555da0af785d766977e5e4d",
+ "duration_s": 310.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/Matrix/PosDef.lean:520-522 `@[simp] theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} : M\u207b\u00b9.PosDef \u2194 M.PosDef`; PosDef.lean:68-74 proves the one-way form by `rw [coe_symmetricInv]; exact hA.inv`.",
+   "file": "TauCeti/MeasureTheory/Measure/SymmetricMatrix/PosDef.lean",
+   "fix": "State it as an iff, `(symmetricInv A : Matrix (Fin p) (Fin p) \u211d).PosDef \u2194 (A : Matrix (Fin p) (Fin p) \u211d).PosDef`, proved by `rw [coe_symmetricInv]; exact Matrix.posDef_inv_iff`, or drop the wrapper entirely since simp proves both directions.",
+   "issue": "`posDef_coe_symmetricInv` states only `A.PosDef \u2192 (symmetricInv A).PosDef` and carries no annotation, while the fact it wraps, `Matrix.posDef_inv_iff`, is an unconditional `@[simp]` iff; consumers needing the converse (e.g. `symmetricInv \u207b\u00b9' cone = cone`) get nothing, and the forward form is already closed by `simp [coe_symmetricInv]`.",
+   "line": 69
+  },
+  {
+   "evidence": "Inv.lean:188-194 derives both facts locally inside `map_inv_symmetricLebesgue`; roadmap README.md:829-831 requires the inverse-Wishart support/nullity statements built from exactly this bijection.",
+   "file": "TauCeti/MeasureTheory/Measure/SymmetricMatrix/Inv.lean",
+   "fix": "Export `Set.BijOn symmetricInv {A | (A : Matrix (Fin p) (Fin p) \u211d).PosDef} {A | ...}` (or the image/preimage pair) next to `posDef_coe_symmetricInv` and use it in the main proof; with the iff form of the previous finding the preimage statement is a one-liner.",
+   "issue": "`himg : symmetricInv '' s = s` and `hinj : Set.InjOn symmetricInv s` are computed inline and thrown away. They are the reusable facts that item 6 needs to show `(nonsingularWishartMeasure n S\u207b\u00b9).map symmetricInv` is supported on the cone; nothing in the post-PR API records that inversion is a bijection of the cone.",
+   "line": 188
+  }
+ ],
+ "head_sha": "776dd4af9fdcc198431e48dde7bf10efe2a64e72",
+ "merge_base_sha": "6660c16a29f69a54c1745602722a3bbbd7e2080b",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 6543,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "cd5759cba4973939384f7b76cb2f68469707e1f7fdfeb3ede89ef99dc9e9d156",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260914T133356Z-6543-api-design-e29a58",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-14T13:33:56Z",
+ "submitted_by": "kim-em",
+ "summary": "Surface is minimal and bodies stay unexposed, but the cone-preservation lemma is exposed in a strictly weaker one-way form than the Mathlib simp iff it wraps, and the cone bijection the main proof computes is discarded instead of exported for the inverse-Wishart support argument that item 6 needs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Measure/SymmetricMatrix/Inv.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Measure/SymmetricMatrix/PosDef.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Measure/SymmetricMatrix/Congruence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Measure/SymmetricMatrix/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Star/SelfAdjoint.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Star/SelfAdjoint.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Measure/SymmetricMatrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Measure/WithDensity.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Wishart.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 17,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a705672d5260b5d7624d3a7387c8fd6f2f1fd828337f84a1ad6ac7d171b00195",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 77875,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 77875,
+  "cache_read_input_tokens": 636072,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2527,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2527,
+    "cache_read_input_tokens": 78241,
+    "input_tokens": 2,
+    "output_tokens": 7524,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24008,
+  "output_tokens_details": {
+   "thinking_tokens": 19596
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

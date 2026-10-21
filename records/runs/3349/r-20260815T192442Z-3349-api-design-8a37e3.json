@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.950228,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 165.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 44824,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 44824,
+    "cache_read_input_tokens": 350104,
+    "inference_geo": "not_available",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1430,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1430,
+      "cache_read_input_tokens": 59893,
+      "input_tokens": 2,
+      "output_tokens": 2699,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12711,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e28afb19d468aabb12e10f6bc1d226e6cb5e3f97",
+ "cost_usd": 0.950228,
+ "dedupe_key": "TauCetiProject/TauCeti|3349|d5809f630488bc4bc85a02f8b42e73305ced6d71|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "c62e837908ef249fb3eba60859e4f031b2c5bdfbdff7188294cbf1bb7b21034d",
+ "diff_sha256": "c62e837908ef249fb3eba60859e4f031b2c5bdfbdff7188294cbf1bb7b21034d",
+ "duration_s": 165.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Complement.lean:87 `theorem normEDS_mul_complEDS_of_mem_nonZeroDivisors {k : \u2124} (hk : normEDS b c d k \u2208 R\u2070) (n : \u2124) : normEDS b c d k * complEDS b c d k n = normEDS b c d (n * k)`; Six.lean:47 `theorem normEDS_six : normEDS b c d 6 = (normEDS b c d 5 - d ^ 2) * b * c`. Residue 0 reduces to `W 6 * complEDS b c d 6 (m / 6) = W m`, which is the first at `k = 6` with `Int.ediv_mul_cancel`.",
+   "file": "TauCeti/NumberTheory/EllipticDivisibilitySequence/ReducedInvariant.lean",
+   "fix": "Prove `invarDenom_normEDS_one_eq_reducedInvarDenom_mul : invarDenom (normEDS b c d) 1 m = reducedInvarDenom b c d m * (b * c)` under hypotheses `normEDS b c d 2 \u2208 R\u2070`, `normEDS b c d 3 \u2208 R\u2070`, `normEDS b c d 6 \u2208 R\u2070`, importing `Complement.lean` and `Six.lean` (neither is imported anywhere yet, and neither creates a cycle). Failing that, hold the definition back rather than exporting a name whose meaning is unproven.",
+   "issue": "`reducedInvarDenom` is public with no lemma characterising it: `_def` restates the body, and the three evaluations plus naturality say nothing about what it denotes. Nothing connects it to `invarDenom (normEDS b c d) 1 m`, so a consumer cannot use the name for its stated meaning. The stated blocker is wrong: `normEDS_mul_complEDS_of_mem_nonZeroDivisors` (`Complement.lean:87`) is exactly `W k * complEDS b c d k n = W (n * k)` under `normEDS b c d k \u2208 R\u2070`, and `WeierstrassCurve.normEDS_six` (`Six.lean:47`) is `normEDS b c d 6 = (normEDS b c d 5 - d ^ 2) * b * c`, i.e. the `r\u2086 * b * c` the residue-0/1/5 branches need.",
+   "line": "149"
+  },
+  {
+   "evidence": "`Int.emod_nonneg` and `Int.emod_lt_of_pos` (Mathlib/Data/Int/Interval.lean:151 uses both as `\u27e8emod_nonneg i ha.ne', emod_lt_of_pos i ha\u27e9`) bound `m % 6` in `[0, 6)`; the six listed residues exhaust that range.",
+   "file": "TauCeti/NumberTheory/EllipticDivisibilitySequence/ReducedInvariant.lean",
+   "fix": "Drop the last `if` guard: make the residue-3 case the final `else`, giving a six-branch body and a six-branch `_def`.",
+   "issue": "The trailing `else 0` is unreachable \u2014 `0 \u2264 m % 6 < 6` for `m : \u2124`, and residues 0,1,5,2,4,3 are all covered \u2014 but it is public through `reducedInvarDenom_def:179`, so every consumer doing case analysis on the formula must dispose of a seventh impossible branch.",
+   "line": "159"
+  },
+  {
+   "evidence": "Lines 163\u2013179: reaching the `m % 6 = 3` branch requires negating the `0`, `1`, `5`, `2` and `4` tests in that order.",
+   "file": "TauCeti/NumberTheory/EllipticDivisibilitySequence/ReducedInvariant.lean",
+   "fix": "Add the six branch lemmas, e.g. `reducedInvarDenom_of_emod_eq_zero (h : m % 6 = 0) : reducedInvarDenom b c d m = (normEDS b c d 5 - d ^ 2) * complEDS b c d 6 (m / 6) * normEDS b c d (m + 1) * normEDS b c d (m - 1)`, and one per remaining residue.",
+   "issue": "`reducedInvarDenom_def` is the only elimination offered, and it is an if-chain tested out of residue order (0,1,5,2,4,3). A consumer holding `m % 6 = 3` must rewrite by `_def` and then discharge five `if_neg` side conditions before reaching its branch; the split is the whole content of the definition, so per-residue lemmas are the characteristic API here.",
+   "line": "163"
+  },
+  {
+   "evidence": "Line 133 `that is\\n`invarDenom_eq_reducedInvarDenom_mul`` vs line 50 `counterpart `invarDenom_normEDS_one_eq_reducedInvarDenom_mul``; `grep -n \"invarDenom_.*reducedInvarDenom_mul\"` finds only these two docstring occurrences.",
+   "file": "TauCeti/NumberTheory/EllipticDivisibilitySequence/ReducedInvariant.lean",
+   "fix": "Use one name in both places \u2014 `invarDenom_normEDS_one_eq_reducedInvarDenom_mul`, matching the existing `invarNum_normEDS_one_eq_reducedInvarNum_mul` at line 218.",
+   "issue": "The public docstring names the missing identification `invarDenom_eq_reducedInvarDenom_mul`, while the module docstring at line 50 names it `invarDenom_normEDS_one_eq_reducedInvarDenom_mul`. Neither exists, and the two names disagree, so the doc points a reader at a declaration under a name that will not match whatever eventually lands.",
+   "line": "133"
+  }
+ ],
+ "head_sha": "d5809f630488bc4bc85a02f8b42e73305ced6d71",
+ "merge_base_sha": "623079b59a7432cd6ea79d7f94aa4c414e7e4995",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3349,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2cf0e43bf8ab5dc0bbe0d479b4cd181eaa535a7fcf1f262f9909139b46e86e59",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T192442Z-3349-api-design-8a37e3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T19:24:42Z",
+ "submitted_by": "kim-em",
+ "summary": "reducedInvarDenom is exported as an admitted \"candidate formula\" with no lemma relating it to invarDenom, so its only characterisation is a restatement of its own body \u2014 and the blocker cited is not real, since Complement.lean:87 and Six.lean:47 already supply what the identification needs. The elimination surface is also defective: a dead seventh branch and no per-residue lemmas.",
+ "transcript_blob": "6b6b8abc7695ca8e1a52a01f6685de735077d6071a110688cec971b50653f00e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 44824,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 44824,
+  "cache_read_input_tokens": 350104,
+  "inference_geo": "not_available",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1430,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1430,
+    "cache_read_input_tokens": 59893,
+    "input_tokens": 2,
+    "output_tokens": 2699,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12711,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

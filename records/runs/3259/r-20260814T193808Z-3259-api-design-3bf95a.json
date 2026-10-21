@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.1613695000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 127.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 71592,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 71592,
+    "cache_read_input_tokens": 270883,
+    "inference_geo": "not_available",
+    "input_tokens": 6564,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7249,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7249,
+      "cache_read_input_tokens": 80842,
+      "input_tokens": 2,
+      "output_tokens": 4780,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 10300,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "efb56122393cac7935ff146ebe628d54c3b18b7c",
+ "cost_usd": 1.16137,
+ "dedupe_key": "TauCetiProject/TauCeti|3259|4744dcad551b073b9c035f222c09d5dc4aa7f9b3|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "820df5d85f9ed6cf72ed055e9b26d5ce4f54218cd7b0863069aa481f27879d66",
+ "diff_sha256": "820df5d85f9ed6cf72ed055e9b26d5ce4f54218cd7b0863069aa481f27879d66",
+ "duration_s": 127.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "GraphStep.lean:195-288 vs W2p.lean:98-212 and W3p.lean:96-235; grep for `WeakDerivStep` outside GraphStep.lean matches only lines 64 of W2p.lean and W3p.lean.",
+   "file": "TauCeti/Analysis/Sobolev/GraphStep.lean",
+   "fix": "Make the order-specific names specialize the step: `def W2p.hessianL := WeakDerivStep.derivL W1p.gradientL`, `W3p.thirdDerivativeL := WeakDerivStep.derivL W2p.hessianL`, likewise for `firstOrderL`/`secondOrderL`, `mk`, `hasWeakFDerivOn_*`, and the `norm_*`/`norm_sq_*` lemmas, deleting the duplicated proofs and the redundant `CompleteSpace` instances in W2p.lean:211 and W3p.lean:234. If the generic surface is not meant to be used yet, delete the `WeakDerivStep` namespace instead and keep only `weakDerivStepSubmodule` plus the two `mem_*` lemmas that W2p/W3p actually consume.",
+   "issue": "The whole `WeakDerivStep` namespace is a duplicate of the W2p/W3p surfaces and has no consumer: `grep -rn WeakDerivStep TauCeti/` outside GraphStep.lean matches only `W2p.lean:64` and `W3p.lean:64`, both for `WeakDerivStepJetLp`. Since `w2pSubmodule := weakDerivStepSubmodule mu Omega p W1p.gradientL` (W2p.lean:70) and `W2p`/`WeakDerivStep` are both `abbrev`s for `(\u00b7).toSubmodule`, the pairs `prevL`/`W2p.firstOrderL` (identical bodies), `derivL`/`W2p.hessianL`, `prev`/`W2p.firstOrder`, `deriv`/`W2p.hessian`, `mk`/`W2p.mk`, `prev_mk`/`W2p.firstOrder_mk`, `deriv_mk`/`W2p.hessian_mk`, `hasWeakFDerivOn_prev`/`W2p.hasWeakFDerivOn_gradient`, `norm_prev_le`/`W2p.norm_firstOrder_le`, `norm_deriv_le`/`W2p.norm_hessian_le`, `norm_sq_eq_norm_prev_sq_add_norm_deriv_sq`/`W2p.norm_sq_eq_norm_firstOrder_sq_add_norm_hessian_sq`, and the `CompleteSpace` instances are two names for the same function/theorem \u2014 and the same duplication repeats verbatim against `W3p.secondOrder*`/`W3p.thirdDerivative*`/`W3p.mk`/`W3p.hasWeakFDerivOn_hessian`/`W3p.norm_*` in W3p.lean:96-217. A user holding `WeakDerivStep.deriv W1p.gradientL u` has no lemma relating it to `W2p.hessian u`.",
+   "line": 192
+  },
+  {
+   "evidence": "GraphStep.lean:192-290 contains no `ext` declaration; W3p.lean:157 `refine Subtype.ext ((WithLp.prodContinuousLinearEquiv 2 \u211d _ _).injective ?_)` duplicates W2p.lean:154.",
+   "file": "TauCeti/Analysis/Sobolev/GraphStep.lean",
+   "fix": "Add `@[ext] theorem WeakDerivStep.ext (base) {u v} (hprev : prev base u = prev base v) (hderiv : deriv base u = deriv base v) : u = v` in GraphStep.lean and derive `W2p.ext_firstOrder` / `W3p.ext_secondOrder` from it instead of re-doing the `Subtype.ext`/`prodContinuousLinearEquiv` unfolding.",
+   "issue": "The shared step's characteristic API is incomplete: it has `mk`, `prev_mk`, `deriv_mk` but no extensionality lemma from agreement of `prev` and `deriv`, which is exactly the lemma both specializations need and therefore hand-roll by unfolding the representation through `WithLp.prodContinuousLinearEquiv.injective` (W2p.lean:151-155, W3p.lean:154-162).",
+   "line": 290
+  }
+ ],
+ "head_sha": "4744dcad551b073b9c035f222c09d5dc4aa7f9b3",
+ "merge_base_sha": "d7301fadd73683fda84317d74e76e0617281f2f2",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3259,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e32c6ac1755974633315b2ac7d7d24ec933afc93808bc654fdd49ba00b56969b",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260814T193808Z-3259-api-design-3bf95a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-14T19:38:08Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR ships a general public `WeakDerivStep` projection/constructor/norm API and then, in the same PR, re-implements a defeq copy of it twice (W2p, W3p), so every step lemma exists under two unrelated names with no bridge. The shared step also lacks the extensionality lemma both specializations hand-roll.",
+ "transcript_blob": "ff5b9be010246bb4257f1d70f52b46d4538373f460142c4ce7534cd772f8603d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 71592,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 71592,
+  "cache_read_input_tokens": 270883,
+  "inference_geo": "not_available",
+  "input_tokens": 6564,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7249,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7249,
+    "cache_read_input_tokens": 80842,
+    "input_tokens": 2,
+    "output_tokens": 4780,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 10300,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

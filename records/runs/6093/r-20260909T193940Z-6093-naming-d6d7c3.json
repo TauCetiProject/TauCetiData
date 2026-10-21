@@ -1,0 +1,230 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.72722,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 359.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 122189,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 122189,
+    "cache_read_input_tokens": 1416964,
+    "inference_geo": "not_available",
+    "input_tokens": 30,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1429,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1429,
+      "cache_read_input_tokens": 123653,
+      "input_tokens": 2,
+      "output_tokens": 9268,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 29782,
+    "output_tokens_details": {
+     "thinking_tokens": 24557
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9063fc14b05659cabaa3d778b256d3b63ad07b97",
+ "cost_usd": 2.72722,
+ "dedupe_key": "TauCetiProject/TauCeti|6093|eb38d5ab696cbedd305263e2487b895d19be2d12|naming|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "4177067a313e322902c23f7bcc955429a829803f1039158186e3f388144f0315",
+ "diff_sha256": "4177067a313e322902c23f7bcc955429a829803f1039158186e3f388144f0315",
+ "duration_s": 359.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `code/TauCeti/Topology/Covering/Quotient.lean:60:namespace TauCeti`, `:73:namespace IsQuotientCoveringMap`, `:181:theorem isCoveringMap_of_comp (hq : IsQuotientCoveringMap q G)`; `code/TauCeti/AlgebraicTopology/EilenbergMacLane/Covering.lean:139:namespace IsQuotientCoveringMap` with only `open TauCeti` at line 77.",
+   "file": "TauCeti/Topology/Covering/Quotient.lean",
+   "fix": "Declare it as `theorem _root_.IsQuotientCoveringMap.isCoveringMap_of_comp`, matching the sibling root declaration `IsQuotientCoveringMap.isEilenbergMacLaneSpaceOne`, and update the module docstring's `Main results` entry.",
+   "issue": "File opens `namespace TauCeti` (line 60) then `namespace IsQuotientCoveringMap` (line 73) for Mathlib's `IsQuotientCoveringMap`, and its public main result `isCoveringMap_of_comp` (line 181) takes `hq : IsQuotientCoveringMap q G` as first explicit argument. The PR description justifies leaving it by \"two of them are `private`\" \u2014 that does not cover this third, public, documented declaration. The result is a split surface: this repo already declares `IsQuotientCoveringMap.isEilenbergMacLaneSpaceOne` in the root namespace (TauCeti/AlgebraicTopology/EilenbergMacLane/Covering.lean:139-149, a file with `open TauCeti` and no enclosing `namespace TauCeti`), so the same Mathlib type now carries TauCeti API under two different namespaces, and this file itself mixes rooted `_root_.IsCoveringMap.isOpenQuotientMap` (line 69) with `TauCeti.IsQuotientCoveringMap`.",
+   "line": 73
+  },
+  {
+   "evidence": "code/TauCeti/AlgebraicTopology/UniversalCover/Deck/Quotient/Covering.lean:46 `namespace TauCeti`, :50 `namespace Deck`, :62 `theorem IsQuotientCoveringMap.isRegular {G : Type*} ... (h : IsQuotientCoveringMap p G) : IsRegular p`; grep over `./mathlib/Mathlib/Topology/Covering` for `IsRegular`/`Deck` returns no matches, so no Mathlib declaration is being shadowed.",
+   "file": "TauCeti/AlgebraicTopology/UniversalCover/Deck/Quotient/Covering.lean",
+   "fix": "Declare it as `theorem _root_.IsQuotientCoveringMap.isRegular`; its converse `Deck.IsRegular.isQuotientCoveringMap` (line 54) correctly stays in `TauCeti.Deck.IsRegular` because its receiver is TauCeti's own `IsRegular`.",
+   "issue": "`TauCeti.Deck.IsQuotientCoveringMap.isRegular` takes `h : IsQuotientCoveringMap p G` (Mathlib's type) as its first explicit argument, so `h.isRegular` does not elaborate without `open TauCeti.Deck`. The PR description's reason \u2014 \"Mathlib declares nothing in `Deck.IsQuotientCoveringMap`, so rooting it would invent a namespace\" \u2014 misidentifies the target: dot notation resolves against the receiver type's name `IsQuotientCoveringMap`, which Mathlib does own; `Deck` is only the enclosing organisational namespace, not part of the receiver.",
+   "line": 62
+  }
+ ],
+ "head_sha": "eb38d5ab696cbedd305263e2487b895d19be2d12",
+ "merge_base_sha": "c8637b9ae6972b828da9165401b4953695168cd6",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 6093,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a3f66a19efdd6d6d6807818a373c0c0d819e670404132427c02df1bdccfaf80c",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260909T193940Z-6093-naming-d6d7c3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-09T19:39:40Z",
+ "submitted_by": "kim-em",
+ "summary": "The rooted IsCoveringMap names, the new ContinuousMap.fiberMap and Homeomorph.compFiberEquiv names, and the argument reorders are all correct and standard. Two declarations on Mathlib's IsQuotientCoveringMap remain in TauCeti-prefixed namespaces, and the PR description's reasons for leaving them are factually wrong.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Homotopy/Monodromy/Functoriality.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Homotopy/Lifting.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/ContinuousMap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Homeomorph/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/UniversalCover/Classification/Pointed.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/UniversalCover/Classification/Pointed.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Homotopy/Monodromy/Full.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/EilenbergMacLane/Covering.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/EilenbergMacLane/Covering.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Covering/Quotient.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Covering/Quotient.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/UniversalCover/Deck/Quotient/Covering.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Covering",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Covering/Quotient.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 20,
+  "trace_truncated": false
+ },
+ "transcript_blob": "effd3158d53e6bc7800965d4c3dcb8075d1af2c0c368a1c29c1ebb55770bd5f1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 122189,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 122189,
+  "cache_read_input_tokens": 1416964,
+  "inference_geo": "not_available",
+  "input_tokens": 30,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1429,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1429,
+    "cache_read_input_tokens": 123653,
+    "input_tokens": 2,
+    "output_tokens": 9268,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 29782,
+  "output_tokens_details": {
+   "thinking_tokens": 24557
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,139 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.9392880000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 301.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 70324,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 70324,
+    "cache_read_input_tokens": 1272406,
+    "inference_geo": "not_available",
+    "input_tokens": 40,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1783,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1783,
+      "cache_read_input_tokens": 85040,
+      "input_tokens": 1,
+      "output_tokens": 2538,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 23708,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ba33e87cc4c6dcbc349fe1b353048ff85c63ce2a",
+ "cost_usd": 1.939288,
+ "dedupe_key": "TauCetiProject/TauCeti|3363|bbd0857fd1896d1174a813ff75a81b656f416e1c|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "e9ef7471cbf083620764e8cf497f51e0be07027195df4f1d6f3d9116657412ae",
+ "diff_sha256": "e9ef7471cbf083620764e8cf497f51e0be07027195df4f1d6f3d9116657412ae",
+ "duration_s": 301.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/Ideal/Maps.lean:36-43 \u2014 `variable {F : Type*} [Semiring R] [Semiring S] [FunLike F R S] (f : F) \u2026 def map (I : Ideal R) : Ideal S`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Connected/IdentityComponent.lean",
+   "fix": "Drop `.toRingHom` from the statement (state it for the `AlgHom` directly) and add `@[simp]`.",
+   "issue": "`map_connectedComponentIdeal_antipodeAlgHom` is stated as `Ideal.map (HopfAlgebra.antipodeAlgHom k H).toRingHom \u2026`. `Ideal.map` is generalized over `[FunLike F R S]`, so the natural downstream spelling is `Ideal.map (HopfAlgebra.antipodeAlgHom k H) \u2026`; that term has a different `F` argument and FunLike instance, so `rw`/`simp` with this lemma fails against it. The lemma also carries no `@[simp]` despite being a normal-form equation `Ideal.map S I = I`.",
+   "line": 175
+  },
+  {
+   "evidence": "`grep -rn IsNoetherianRing code/TauCeti` yields only this `local instance` and the in-proof `let _` at FiniteType/ConnectedComponents.lean:47; `Algebra.FiniteType.isNoetherianRing` is a theorem, not an instance, in Mathlib (used via `have` at mathlib/Mathlib/RingTheory/Jacobson/Artinian.lean:51). `connectedComponentIdempotent`/`connectedComponentIdeal` sit under `variable [LocallyConnectedSpace (PrimeSpectrum R)]` (RingTheory/Idempotents/Connected/Component.lean:75).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Connected/IdentityComponent.lean",
+   "fix": "Declare a genuine `instance isNoetherianRing (H : FiniteTypeCommHopfAlgCat R) [IsNoetherianRing R] : IsNoetherianRing H := Algebra.FiniteType.isNoetherianRing R H` in `TauCeti/Algebra/AlgebraicGroup/FiniteType/CommHopfAlgCat.lean`, delete the `local instance` here, and drop the `let _` at `FiniteType/ConnectedComponents.lean:47`.",
+   "issue": "`local instance : IsNoetherianRing H` supplies the `LocallyConnectedSpace (PrimeSpectrum H)` instance that `PrimeSpectrum.connectedComponentIdeal` requires, but no global `IsNoetherianRing \u21a5H` instance exists for `FiniteTypeCommHopfAlgCat`. Every consumer of the three exported theorems must re-introduce `Algebra.FiniteType.isNoetherianRing k H` by hand before it can even state `connectedComponentIdeal (augmentationPoint k H)`.",
+   "line": 58
+  },
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/HopfAlgebra/Convolution.lean:145-146 `instance convGroup : Group (WithConv <| A \u2192\u2090[R] C)` under `[CommSemiring A] [CommSemiring C] [Bialgebra R C] [HopfAlgebra R A]`; grep for `antipode R (antipode R a)` in mathlib hits only `IsGroupLikeElem.antipode_antipode` (HopfAlgebra/GroupLike.lean:55), and grep for `antipode` in code/TauCeti finds no involutivity lemma outside this file.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Connected/IdentityComponent.lean",
+   "fix": "State them publicly and in full generality (`{R A} [CommSemiring R] [CommRing A] [HopfAlgebra R A]`) in a general Hopf-algebra file such as `TauCeti/Algebra/HopfAlgebra/Antipode.lean` \u2014 `@[simp] antipode_antipode` plus the `AlgEquiv` \u2014 and use the general versions here.",
+   "issue": "`antipode_involutive` and `antipodeAlgEquiv` are general results \u2014 Mathlib's `AlgHom.convGroup` holds for any `[CommSemiring A] [HopfAlgebra R A]` \u2014 but they are `private` and needlessly narrowed to a finite-type bundled Hopf algebra over a field. Neither Mathlib nor Tau Ceti has them, so the next Layer 3 PR must re-derive them.",
+   "line": 64
+  },
+  {
+   "evidence": "Lines 152-156 and 174-185 derive both exports from it; roadmap TauCetiRoadmap/ReductiveGroups/README.md:160-162 states the target as geometric connectedness via idempotents of `A \u2297 k\u0304`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Connected/IdentityComponent.lean",
+   "fix": "Make it public and list it under `## Main declarations`.",
+   "issue": "`antipode_connectedComponentIdempotent` \u2014 the antipode fixes the component idempotent \u2014 is the actual mathematical content of the file (all three exports are one-line consequences) yet is `private`. The roadmap target it advances is phrased in terms of idempotents, and the component-group step needs the antipode's action on component idempotents.",
+   "line": 110
+  },
+  {
+   "evidence": "Line 170: `\u00b7 exact antipode_mem_connectedComponentIdeal H` \u2014 the mpr direction of the iff is literally the earlier theorem.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Connected/IdentityComponent.lean",
+   "fix": "Mark `antipode_mem_connectedComponentIdeal` `private` and keep the `@[simp]` iff as the public form; adjust the module docstring's main-declarations list accordingly.",
+   "issue": "`antipode_mem_connectedComponentIdeal` is exactly `antipode_mem_connectedComponentIdeal_iff.mpr` (line 170 proves the iff's mpr by `exact` on it), so the public surface carries the same fact twice.",
+   "line": 146
+  }
+ ],
+ "head_sha": "bbd0857fd1896d1174a813ff75a81b656f416e1c",
+ "merge_base_sha": "ba33e87cc4c6dcbc349fe1b353048ff85c63ce2a",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3363,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "69eb59f350da710606db022708c357986a22b8e5cf1b015e129d7fba72b2d4f9",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T134545Z-3363-api-design-c41586",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T13:45:45Z",
+ "submitted_by": "kim-em",
+ "summary": "The three exported theorems are hard to use downstream: one is stated through an `AlgHom.toRingHom` coercion so it will not rewrite against the natural `Ideal.map (antipodeAlgHom \u2026)` spelling, and all of them depend on a `local instance` that no consumer can reconstruct by typeclass search. The file also hides a general, reusable antipode-involutivity/equivalence pair and its own strongest lemma while exporting a redundant one-directional corollary.",
+ "transcript_blob": "0f6d9423b8cbc80bad4e75ac036d1ecac7d7b8e289cd170ab6fa3ac22b0aa810",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 70324,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 70324,
+  "cache_read_input_tokens": 1272406,
+  "inference_geo": "not_available",
+  "input_tokens": 40,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1783,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1783,
+    "cache_read_input_tokens": 85040,
+    "input_tokens": 1,
+    "output_tokens": 2538,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 23708,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

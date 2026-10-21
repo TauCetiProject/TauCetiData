@@ -1,0 +1,125 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.749765,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 233.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 76285,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 76285,
+    "cache_read_input_tokens": 1148858,
+    "inference_geo": "not_available",
+    "input_tokens": 33,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1469,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1469,
+      "cache_read_input_tokens": 91315,
+      "input_tokens": 2,
+      "output_tokens": 2010,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 16257,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "102fe25d5281ab7423d1933074839b2c04d127e6",
+ "cost_usd": 1.749765,
+ "dedupe_key": "TauCetiProject/TauCeti|3384|78fa4feb34edbf19b445ff67e965e7abd9e6476b|proof-quality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "01cbcdb53fcfd2e0d37be801415ede9398bc25cd2a2aedd65d9bde1a39f4d862",
+ "diff_sha256": "01cbcdb53fcfd2e0d37be801415ede9398bc25cd2a2aedd65d9bde1a39f4d862",
+ "duration_s": 233.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PointSeparation.lean:85 `eq_of_endOfPoint_eq_of_matrixCoefficientSubalgebra_eq_top` is the exact analogue for the coefficient-generating case; Faithful.lean:250 supplies the `sup`-with-antipode criterion. Neither `PerfectField` nor `IsUnipotentPoint` occurs in lines 103-134.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Representation/UnipotentPoint/Faithful.lean",
+   "fix": "Extract `Comodule.eq_of_pointsAction_eq_of_isFaithful (M) (hM : IsFaithful \u2026) (g h) (h : pointsAction M g = pointsAction M h) : g = h` as the faithful sibling of `Comodule.eq_of_endOfPoint_eq_of_matrixCoefficientSubalgebra_eq_top`, then apply it to `s` and `1`; this theorem shrinks to a handful of lines.",
+   "issue": "Lines 89-134 prove a general fact that mentions neither unipotence nor `PerfectField`: two points with equal action on a faithful finite-dimensional comodule are equal (via matrix coefficients, their antipode images, and `AlgHom.eqOn_sup`). It is hidden inside this theorem; grep shows `Comodule.IsFaithful` has no separation lemma anywhere (only Faithful.lean:208 defines it, no other user).",
+   "line": 89
+  },
+  {
+   "evidence": "JordanDecomposition/Basic.lean:160-168 `ofLinearEquiv_pointsAction_semisimplePart`; UnipotentPoint/Basic.lean:131 (`rw [map_one]`) and :141 (`rw [map_inv, ofLinearEquiv_inv]`) are the repo idiom for exactly these steps.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Representation/UnipotentPoint/Faithful.lean",
+   "fix": "Get `LinearMap.GeneralLinearGroup.ofLinearEquiv (pointsAction M s) = 1` by `rw [Point.ofLinearEquiv_pointsAction_semisimplePart]` plus `hg`, conclude `pointsAction M s = pointsAction M 1` from injectivity of `generalLinearEquiv`, and obtain the inverse case with `map_inv` as in UnipotentPoint/Basic.lean:141. Name `Module.End.one_eq_id` (Mathlib/Algebra/Module/LinearMap/End.lean:51) and `Units.val_one` instead of relying on defeq.",
+   "issue": "Lines 77-102 (calc + `congrArg Units.val` + `LinearEquiv.toLinearMap_injective` + two `simpa only`) re-derive at the `endOfPoint` level what `Point.ofLinearEquiv_pointsAction_semisimplePart` (a `@[simp]` lemma) states directly at the group level, then convert back and forth to reach the inverse. The calc also leans on undocumented defeq twice: `congrArg Units.val hsemisimpleAction` yields `\u2191(1 : Units \u2026)` where the step claims `(1 : Module.End K _)` (line 86), and `endOfPoint_convOne` yields `LinearMap.id`, not `1` (line 88).",
+   "line": 77
+  },
+  {
+   "evidence": "Mathlib/RingTheory/HopfAlgebra/Convolution.lean:79-80 (`@[simps!] def antipodeAlgHom`); Representation/Faithful.lean:106 and :128 use `HopfAlgebra.antipodeAlgHom_apply` for precisely this coercion. JordanDecomposition/Basic.lean:360 shows the goal after line 71 is literally `semisimplePart k H K g = 1`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Representation/UnipotentPoint/Faithful.lean",
+   "fix": "Line 118: drop the `change` and use `simpa only [HopfAlgebra.antipodeAlgHom_apply, \u2190 AlgHom.convInv_apply] using hsInvCoefficients hx`. Line 130: replace `let s := \u2026` with `set s := Point.semisimplePart k H K g with hs` (or inline it) so the fold is by rewriting rather than by `change`.",
+   "issue": "The `change` at 118 is justified by a comment claiming the subalgebra map \"leaves the algebra-hom coercion opaque to rewriting\"; that is false \u2014 `HopfAlgebra.antipodeAlgHom` is `@[simps!]`, so `antipodeAlgHom_apply` is a simp lemma the repo already uses to strip this coercion. Same pattern at line 130: `change s = 1` merely folds the `let s :=` alias, and the comment states what it does, not why the goal is unreachable otherwise.",
+   "line": 118
+  }
+ ],
+ "head_sha": "78fa4feb34edbf19b445ff67e965e7abd9e6476b",
+ "merge_base_sha": "72289887081ad8abeda958b59d2e92fad32dc7da",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3384,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3ae75684779007750170192af5e48a6553d1f25ad81db52e8ea2626c0431fd27",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T185407Z-3384-proof-quality-9b0f5a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T18:54:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The 68-line proof buries a general, reusable point-separation fact (a faithful comodule separates points) inside a unipotence statement, and re-derives group-level facts by hand at the `endOfPoint` level instead of using the existing `@[simp]` lemmas and the repo's established `map_one`/`map_inv` idiom. Two `change` steps are avoidable, one with an inaccurate justifying comment.",
+ "transcript_blob": "addff8ab2a998b1e756f05821fdc37a4368f581c67515371bfb2538d61e05477",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 76285,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 76285,
+  "cache_read_input_tokens": 1148858,
+  "inference_geo": "not_available",
+  "input_tokens": 33,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1469,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1469,
+    "cache_read_input_tokens": 91315,
+    "input_tokens": 2,
+    "output_tokens": 2010,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 16257,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

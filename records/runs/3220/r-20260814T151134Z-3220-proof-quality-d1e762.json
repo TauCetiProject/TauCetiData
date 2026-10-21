@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4383380000000003,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 263.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 65032,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 65032,
+    "cache_read_input_tokens": 484442,
+    "inference_geo": "not_available",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6391,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6391,
+      "cache_read_input_tokens": 75140,
+      "input_tokens": 2,
+      "output_tokens": 6569,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 21299,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "704e06cd01f4c01a04a5027f87b2d867dbd27cc4",
+ "cost_usd": 1.438338,
+ "dedupe_key": "TauCetiProject/TauCeti|3220|7a159d9eb400ee658ec18b60320c8a502d828dc6|proof-quality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "96c577c02b64cceb1595659cf9d264e6609bb484e3d9e0f71f37ca715d302d1f",
+ "diff_sha256": "96c577c02b64cceb1595659cf9d264e6609bb484e3d9e0f71f37ca715d302d1f",
+ "duration_s": 263.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Data/Nat/Cast/Commute.lean:44 `Nat.cast_commute (n : \u2115) (x : \u03b1) : Commute (\u2191n) x`; :49 `Commute.ofNat_left (n : \u2115) [n.AtLeastTwo] (x : \u03b1) : Commute (OfNat.ofNat n) x`. KostantSpan.lean:150,162 state the hypotheses with `(-2 : A)` / `(2 : A)`.",
+   "file": "TauCeti/Algebra/Lie/Sl2/KostantSpan.lean",
+   "fix": "Use the explicit Mathlib lemma: `(Commute.ofNat_left 2 F).neg_left` and `Commute.ofNat_left 2 E`.",
+   "issue": "`ringChoose_mul_dividedPower b hhf' ((Nat.cast_commute 2 F).neg_left)` and, at line 235, `dividedPower_mul_ringChoose e hhe' (Nat.cast_commute 2 E)` supply `Commute ((2 : \u2115) : A) _` where `cartan_mul_f`/`cartan_mul_e` fix `c := (-2 : A)` / `(2 : A)` as `OfNat` literals. These typecheck only through unfolding the `instOfNat` instance \u2014 undocumented defeq across a numeral wrapper.",
+   "line": 233
+  },
+  {
+   "evidence": "Straightening.lean:413-419 and KostantSpan.lean:432-436 are character-identical apart from indentation.",
+   "file": "TauCeti/Algebra/Lie/Sl2/KostantSpan.lean",
+   "fix": "Extract it once in `Straightening.lean` (e.g. a lemma `\u03b9_commutator_eq : \u2045x, y\u2046 = z \u2192 \u03b9 \u211a x * \u03b9 \u211a y - \u03b9 \u211a y * \u03b9 \u211a x = \u03b9 \u211a z`, or a bundled `sl2` triple version) and call it from both `dividedPower_\u03b9_e_mul_dividedPower_\u03b9_f` and `toAddSubgroup_kostantForm`.",
+   "issue": "The three-bullet block transporting the sl\u2082 bracket relations through `\u03b9 \u211a` (lines 432\u2013436) is a verbatim copy of Straightening.lean:413\u2013419; the reusable fact (bracket relation \u21d2 associative commutator relation for `\u03b9 \u211a`) is hidden inside two proofs.",
+   "line": 432
+  },
+  {
+   "evidence": "Uses: line 182 (`add_nsmul_intCast_eq`), 198, 214; lines 239, 242, 244 are the only call sites of the three membership helpers. TauCeti/RingTheory/Binomial.lean:233,242 already provide the `@[simp]` add/sub integer-translation lemmas.",
+   "file": "TauCeti/Algebra/Lie/Sl2/KostantSpan.lean",
+   "fix": "Replace all six with one helper, e.g. `private theorem ringChoose_mem_ringChooseSpan_of_eq_add_intCast (r s : A) (z : \u2124) (h : s = r + (z : A)) (n : \u2115) : Ring.choose s n \u2208 ringChooseSpan r`, and discharge each of the three shapes inline with `push_cast; abel` (or `simpa using ringChoose_sub_intCast_mem_ringChooseSpan \u2026`, which is already `@[simp]`).",
+   "issue": "Six private lemmas (lines 171\u2013215: `add_nsmul_intCast_eq`, `sub_nsmul_natCast_eq`, `sub_natCast_add_natCast_eq` and their three `*_mem_ringChooseSpan` companions) are each used exactly once and repeat one three-line pattern `have h := ringChoose_add_intCast_mem_ringChooseSpan \u2026; rw [cast lemma] at h; exact h`.",
+   "line": 171
+  },
+  {
+   "evidence": "KostantSpan.lean:323-325 defines the set as `range \u222a range \u222a range`; :328-333 supplies `mem_kostantGenerators_iff`; :343 and :361-363 bypass it, while :414-416 use the analogous iff for the enveloping-algebra generators.",
+   "file": "TauCeti/Algebra/Lie/Sl2/KostantSpan.lean",
+   "fix": "Go through the characterization lemma consistently: `mem_kostantGenerators_iff.2 (Or.inl \u27e8a, rfl\u27e9)` etc., and `rw [mem_kostantGenerators_iff] at hx` before `rcases`.",
+   "issue": "`subringClosure_kostantGenerators_eq_subringClosure_orderedKostantMonomials` proves membership in `kostantGenerators` with raw nested terms `Or.inl (Or.inl \u27e8a, rfl\u27e9)` (and destructures with `rintro x (hx | hx)` at line 343), depending on the definitional shape and parenthesisation of the union in the `def` rather than the `@[simp] mem_kostantGenerators_iff` lemma stated 30 lines above \u2014 which the enveloping-algebra proofs at lines 414\u2013416 do use.",
+   "line": 360
+  }
+ ],
+ "head_sha": "7a159d9eb400ee658ec18b60320c8a502d828dc6",
+ "merge_base_sha": "704e06cd01f4c01a04a5027f87b2d867dbd27cc4",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3220,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "60a48bb1bb0e34c960667a5a9734596a259d99712b679023bd4ffeb2fdea88d6",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260814T151134Z-3220-proof-quality-d1e762",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-14T15:11:34Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are mostly readable and use robust automation, but two places rely on unstated `OfNat`/`Nat.cast` definitional equality and on the raw shape of a `Set` union instead of the characterization lemmas provided in the same file; the \u03b9-bracket transport block is duplicated verbatim from Straightening.lean, and six single-use private cast helpers restate one pattern three times.",
+ "transcript_blob": "bca317515534cd90430170db6ff2f719fa110fa5d875b1ccdc637278a4576540",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 65032,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 65032,
+  "cache_read_input_tokens": 484442,
+  "inference_geo": "not_available",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6391,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6391,
+    "cache_read_input_tokens": 75140,
+    "input_tokens": 2,
+    "output_tokens": 6569,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 21299,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

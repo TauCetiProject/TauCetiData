@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.1030604999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 301.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 93121,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 93121,
+    "cache_read_input_tokens": 1106795,
+    "inference_geo": "not_available",
+    "input_tokens": 29,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4948,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4948,
+      "cache_read_input_tokens": 104672,
+      "input_tokens": 2,
+      "output_tokens": 3778,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24253,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0272e150f3b09d4b53705124926dd1487155d8dc",
+ "cost_usd": 2.10306,
+ "dedupe_key": "TauCetiProject/TauCeti|3264|8cb22109f756115b7c9f6de3c5bdb238ab686df2|reuse|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "d6f8c2376a321c9972673304cfb50792ac9bdd662b349e9e15be039afb438568",
+ "diff_sha256": "d6f8c2376a321c9972673304cfb50792ac9bdd662b349e9e15be039afb438568",
+ "duration_s": 301.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Module/Submodule/LinearMap.lean:210 `def restrict (f : M \u2192\u209b\u2097[\u03c3\u2081\u2082] M\u2082) {p : Submodule R M} {q : Submodule R\u2082 M\u2082} (hf : \u2200 x \u2208 p, f x \u2208 q) : p \u2192\u209b\u2097[\u03c3\u2081\u2082] q`; :216 `coe_restrict_apply ... : \u2191(f.restrict hf x) = f x := rfl`; :240 `restrict_comp`; :247 `restrict_smul_one`. mathlib/Mathlib/Algebra/Module/Submodule/Lattice.lean:415 `AddSubgroup.toIntSubmodule`, :426 `coe_toIntSubmodule ... := rfl`.",
+   "file": "TauCeti/RingTheory/Nilpotent/BaseChangeAction.lean",
+   "fix": "Define `integralDividedPower x M n hM := ((Associative.dividedPower n x).restrictScalars \u2124).restrict (p := M.toIntSubmodule) (q := M.toIntSubmodule) hM` (`AddSubgroup.toIntSubmodule`, Mathlib/Algebra/Module/Submodule/Lattice.lean:415, has the same carrier \u2014 `coe_toIntSubmodule` is `rfl` \u2014 so the result has type `Module.End \u2124 M`). Then delete `integralDividedPower_apply` in favour of the `@[simp]` `LinearMap.coe_restrict_apply`, and prove the `zero`/`mul` helpers from `restrict_smul_one` / `restrict_comp` plus `Associative.mul_dividedPower`.",
+   "issue": "`integralDividedPower` builds the restriction of an invariant linear map to a subgroup from raw `toFun`/`map_add'`/`map_smul'` pieces; Mathlib's `LinearMap.restrict` (Mathlib/Algebra/Module/Submodule/LinearMap.lean:210) does exactly this assembly. Consequently `integralDividedPower_apply` (line 78) restates `LinearMap.coe_restrict_apply` (:216), `integralDividedPower_zero` (line 83) restates `LinearMap.restrict_smul_one` (:247) at `\u03bc = 1`, and `integralDividedPower_mul` (line 91) re-derives what `LinearMap.restrict_comp` (:240) supplies on the operator side.",
+   "line": 67
+  },
+  {
+   "evidence": "Kostant/Exponential.lean:100-102: `exp_zsmul_smul_mem hnil (fun n w hw => by rw [\u2190 Associative.map_dividedPower \u03c1 n]; exact hM _ (dividedPower_mem_kostantForm e h i n) w hw) t hv` versus BaseChangeAction.lean:60-61: `rw [\u2190 Associative.map_dividedPower \u03c1 n]; exact hM _ (dividedPower_mem_kostantForm e h i n) v hv`.",
+   "file": "TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/BaseChangeAction.lean",
+   "fix": "Move `dividedPower_apply_mem_of_kostantForm_apply_mem` into `Kostant/Exponential.lean` (it needs only `Form.lean` + `Associative.lean`, both already imported there), and rewrite `exp_zsmul_apply_mem_of_kostantForm_apply_mem` as `exp_zsmul_smul_mem hnil (fun n w hw => dividedPower_apply_mem_of_kostantForm_apply_mem e h \u03c1 hM i n hw) t hv`.",
+   "issue": "`dividedPower_apply_mem_of_kostantForm_apply_mem` is a verbatim copy of the anonymous proof already inlined in `exp_zsmul_apply_mem_of_kostantForm_apply_mem` (Kostant/Exponential.lean:100-102): both are `rw [\u2190 Associative.map_dividedPower \u03c1 n]; exact hM _ (dividedPower_mem_kostantForm e h i n) _ _`. After this PR the same fact is proved twice in the repository, and the older copy cannot use the new lemma because the new file imports Exponential.lean.",
+   "line": 54
+  }
+ ],
+ "head_sha": "8cb22109f756115b7c9f6de3c5bdb238ab686df2",
+ "merge_base_sha": "0272e150f3b09d4b53705124926dd1487155d8dc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3264,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "aaa72885553b01e5b11c378d0c7332129478266e93fdbb8f42ba9a561cd98062",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T002850Z-3264-reuse-050915",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T00:28:50Z",
+ "submitted_by": "kim-em",
+ "summary": "Two duplications: `integralDividedPower` hand-builds a linear map that `LinearMap.restrict` (plus `restrictScalars`/`toIntSubmodule`) already assembles, and `dividedPower_apply_mem_of_kostantForm_apply_mem` re-proves inline reasoning already present in `Kostant/Exponential.lean`. The core base-change exponential and its group law are genuinely new.",
+ "transcript_blob": "45a746d920251132e222db65be2d52bf9c7ec9ca0b8e895b2430969fdf1404ba",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 93121,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 93121,
+  "cache_read_input_tokens": 1106795,
+  "inference_geo": "not_available",
+  "input_tokens": 29,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4948,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4948,
+    "cache_read_input_tokens": 104672,
+    "input_tokens": 2,
+    "output_tokens": 3778,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24253,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

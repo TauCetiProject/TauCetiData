@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.0541564999999995,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 320.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 75257,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 75257,
+    "cache_read_input_tokens": 1297465,
+    "inference_geo": "not_available",
+    "input_tokens": 37,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2560,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2560,
+      "cache_read_input_tokens": 89196,
+      "input_tokens": 1,
+      "output_tokens": 6447,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 25338,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "efb56122393cac7935ff146ebe628d54c3b18b7c",
+ "cost_usd": 2.054156,
+ "dedupe_key": "TauCetiProject/TauCeti|3259|4744dcad551b073b9c035f222c09d5dc4aa7f9b3|generality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "820df5d85f9ed6cf72ed055e9b26d5ce4f54218cd7b0863069aa481f27879d66",
+ "diff_sha256": "820df5d85f9ed6cf72ed055e9b26d5ce4f54218cd7b0863069aa481f27879d66",
+ "duration_s": 320.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`w3pSubmodule := weakDerivStepSubmodule \u2026 W2p.hessianL` (W3p.lean:70) is a `def`, so `W3p mu Omega p` delta-unfolds to `WeakDerivStep mu Omega p W2p.hessianL` and `W3p.secondOrderL` (l.93) is syntactically `prevL`'s body (GraphStep.lean:197). `grep -rn \"WeakDerivStep\" TauCeti --include=\"*.lean\"` outside GraphStep.lean returns only `WeakDerivStepJetLp` at W2p.lean:64 and W3p.lean:64: the whole `WeakDerivStep` namespace (GraphStep.lean:192-290) is currently dead API.",
+   "file": "TauCeti/Analysis/Sobolev/W3p.lean",
+   "fix": "Keep the order-specific names but define them as the specializations: `def W3p.secondOrderL := WeakDerivStep.prevL W2p.hessianL`, `def W3p.thirdDerivativeL := WeakDerivStep.derivL W2p.hessianL`, `W3p.mk := WeakDerivStep.mk _`, and prove each lemma by `exact WeakDerivStep.norm_prev_le _ u` etc.; add a general `WeakDerivStep.ext_prev_deriv` and derive both `ext_` lemmas from it.",
+   "issue": "Every declaration from `W3p.secondOrderL` (l.92) through the `CompleteSpace` instance (l.234) re-proves, for the special case `base = W2p.hessianL`, a statement this PR proves generally in `WeakDerivStep`: secondOrderL/secondOrder/_apply/_coe \u2190 prevL/prev/prevL_apply/prev_coe; thirdDerivativeL/thirdDerivative/_apply/_coe \u2190 derivL/deriv/derivL_apply/deriv_coe; W3p.mk, secondOrder_mk, thirdDerivative_mk \u2190 mk, prev_mk, deriv_mk; hasWeakFDerivOn_hessian \u2190 hasWeakFDerivOn_prev; norm_secondOrder_le, norm_thirdDerivative_le \u2190 norm_prev_le, norm_deriv_le; norm_sq_eq_norm_secondOrder_sq_add_norm_thirdDerivative_sq \u2190 norm_sq_eq_norm_prev_sq_add_norm_deriv_sq; the CompleteSpace instance \u2190 the general instance. `W3p.ext_secondOrder` (l.140) is a second copy of `W2p.ext_firstOrder` with no general counterpart at all.",
+   "line": 92
+  },
+  {
+   "evidence": "`W2p.norm_sq_eq_norm_firstOrder_sq_add_norm_hessian_sq` (W2p.lean:196-199) and `WeakDerivStep.norm_sq_eq_norm_prev_sq_add_norm_deriv_sq` (GraphStep.lean:280-284) have identical proofs `rw [Submodule.coe_norm, \u2026_coe, \u2026_coe]; exact WithLp.prod_norm_sq_eq_of_L2 u.1`; likewise `norm_firstOrder_le` (l.177) vs `norm_prev_le` (l.266).",
+   "file": "TauCeti/Analysis/Sobolev/W2p.lean",
+   "fix": "Route them through `WeakDerivStep.prev`/`deriv`/`mk`/`norm_prev_le`/`norm_deriv_le`/`norm_sq_eq_norm_prev_sq_add_norm_deriv_sq` and drop the duplicate `CompleteSpace` instance, exactly as for `W3p`. If instead you prefer to keep the per-order proofs, delete the unused `WeakDerivStep` namespace (GraphStep.lean:192-290) rather than shipping two copies of each fact.",
+   "issue": "Same duplication in the file the PR is refactoring: the submodule and the two `mem_*` lemmas were converted to the shared step, but `firstOrderL/firstOrder/_apply/_coe` (l.98-110), `hessianL/hessian/_apply/_coe` (l.113-125), `W2p.mk`/`firstOrder_mk`/`hessian_mk` (l.129-147), `ext_firstOrder` (l.151), `hasWeakFDerivOn_gradient` (l.159), `norm_firstOrder_le` (l.177), `norm_hessian_le` (l.190), `norm_sq_eq_norm_firstOrder_sq_add_norm_hessian_sq` (l.196) and the `CompleteSpace` instance (l.211) all re-prove the `WeakDerivStep` results at `base = W1p.gradientL`.",
+   "line": 98
+  },
+  {
+   "evidence": "GraphStep.lean contains no `inner`/`\u27ea \u27eb`; its dependencies `setIntegral_smul_eq_integral_smul` and `setIntegral_lineDeriv_smul_eq_integral_lineDeriv_smul` are already stated over a plain normed `E` (WeakDeriv.lean:346, 355), and `locallyIntegrableOn_of_locallyIntegrable_restrict` needs only `[OpensMeasurableSpace X]` (mathlib/Mathlib/MeasureTheory/Function/LocallyIntegrable.lean:285). The helper proofs are `Continuous.memLp_of_hasCompactSupport`, `MemLp.toLp`, `MemLp.coeFn_toLp` (W1p.lean:202-217).",
+   "file": "TauCeti/Analysis/Sobolev/GraphStep.lean",
+   "fix": "State GraphStep over `[NormedAddCommGroup E] [NormedSpace \u211d E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional \u211d E]`, relocating the three test-function helpers to a `[NormedSpace \u211d E]` context (e.g. into `WeakDeriv.lean`).",
+   "issue": "The order-independent step assumes `[InnerProductSpace \u211d E]` on the domain, but nothing in the file uses inner-product structure; only `W1p`'s Riesz gradient needs it. The assumption is inherited solely because `memLp_testFunction`/`testFunctionLp`/`testFunctionLp_apply_ae` sit inside `W1p.lean`'s inner-product `variable` block, and those three do not use it either.",
+   "line": 38
+  },
+  {
+   "evidence": "The author already omits `[CompleteSpace X]` on all ten neighbouring theorems (GraphStep.lean:53, 66, 95, 146, 161, 203, 209, 224, 230, 241, 249, 257, 264, 271, 278), showing it is unused there; the definitions carry it purely by Lean's automatic instance inclusion.",
+   "file": "TauCeti/Analysis/Sobolev/GraphStep.lean",
+   "fix": "Add `omit [CompleteSpace X] in` (and `omit [CompleteSpace F] [FiniteDimensional \u211d E] in` for `weakDerivStepSubmodule`, which uses neither) before those definitions, keeping the hypothesis only on the completeness instance.",
+   "issue": "`[CompleteSpace X]` is auto-included in every definition (`weakDerivStepSubmodule` l.140, `WeakDerivStep` l.188, `prevL` l.195, `prev` l.200, `derivL` l.215, `deriv` l.220, `mk` l.236) although it is used only by the `CompleteSpace` instance at l.286; the graph submodule and its membership characterization hold for any normed `X`.",
+   "line": 140
+  }
+ ],
+ "head_sha": "4744dcad551b073b9c035f222c09d5dc4aa7f9b3",
+ "merge_base_sha": "d7301fadd73683fda84317d74e76e0617281f2f2",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3259,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4388c1bf159e08b4104e21497821dae112f420b4a8a8909fb941707646a105ec",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260814T194016Z-3259-generality-696060",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-14T19:40:16Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR proves a full general step API in `WeakDerivStep` but derives nothing from it: only `weakDerivStepSubmodule` and the two `mem_*` lemmas are consumed, while `W2p` and `W3p` each re-prove the projections, constructor, norm bounds, graph-norm identity and completeness for their own order. The generic file also over-assumes `InnerProductSpace \u211d E` and carries `[CompleteSpace X]` on definitions that never use it.",
+ "transcript_blob": "2c3bb3bf1a411ca1d44aa4b4b4d52aca33b636f36c6c380c0caaeb436ae28f8f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 75257,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 75257,
+  "cache_read_input_tokens": 1297465,
+  "inference_geo": "not_available",
+  "input_tokens": 37,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2560,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2560,
+    "cache_read_input_tokens": 89196,
+    "input_tokens": 1,
+    "output_tokens": 6447,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 25338,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

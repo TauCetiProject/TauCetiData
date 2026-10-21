@@ -1,0 +1,224 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.9535515000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 219.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 43255,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 43255,
+    "cache_read_input_tokens": 149835,
+    "inference_geo": "not_available",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5493,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5493,
+      "cache_read_input_tokens": 40562,
+      "input_tokens": 2,
+      "output_tokens": 5791,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17545,
+    "output_tokens_details": {
+     "thinking_tokens": 12767
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0857cbca8b6a91dd22680eba45ecc284c14d8325",
+ "cost_usd": 0.953552,
+ "dedupe_key": "TauCetiProject/TauCeti|5849|c976bb23acc4450d9270da5fba82ef63b5ef717b|api-design|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "f9cfca51edbb024981e546e46a8e158f1428dea231e1b0e52c7e592293b58b36",
+ "diff_sha256": "f9cfca51edbb024981e546e46a8e158f1428dea231e1b0e52c7e592293b58b36",
+ "duration_s": 219.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 33 is `public section` (no `@[expose]`, unlike e.g. TauCeti/KnotTheory/Grid/Diagram/Basic.lean); lines 142-143 define `writhe` and no `writhe_def`/`writhe_eq_sum` appears in the file.",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "Add `theorem writhe_def (D : OrientedGaussCode n) : D.writhe = \u2211 c, CrossingSign.toInt (D.sign c) := (rfl)`.",
+   "issue": "`writhe` is defined in a `public section` without `@[expose]`, and there is no `writhe_def`. Downstream the writhe is a black box: only `writhe_mirror`, `writhe_empty`, `oneCrossingPositive_writhe` are usable, and no new code's writhe can be computed.",
+   "line": 142
+  },
+  {
+   "evidence": "Lines 157-164 and 189-194: only three of four, resp. two of four, fields are characterised; `ext` at 105-107 requires `hvisit hover hsign hpartner`.",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "Add `@[simp] mirror_partner : D.mirror.partner = D.partner`, `@[simp] relabel_over : (D.relabel e).over = D.over`, `@[simp] relabel_partner : (D.relabel e).partner = D.partner`.",
+   "issue": "Projection lemmas are missing for the constructions: `mirror_partner` (lines 157-164 give visit/over/sign only) and `relabel_over`, `relabel_partner` (lines 189-194 give visit/sign only). Since `ext` (line 105) needs all four projections and the bodies are opaque, no downstream identity involving `mirror` or `relabel` can be proved.",
+   "line": 146
+  },
+  {
+   "evidence": "Lines 212-236: the only declaration mentioning `oneCrossingPositive` after its definition is `oneCrossingPositive_writhe`.",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "Add `@[simp]` lemmas `oneCrossingPositive_visit i = 0`, `oneCrossingPositive_over i = decide (i = 0)`, `oneCrossingPositive_sign c = .positive`, `oneCrossingPositive_partner = Equiv.swap 0 1`. For `empty`, add the uniqueness lemma `theorem eq_empty (D : OrientedGaussCode 0) : D = empty` (all fields are maps out of `Fin 0` and `Perm (Fin 0)` is a subsingleton).",
+   "issue": "`oneCrossingPositive` exports no field lemmas at all \u2014 `visit`, `over`, `sign`, `partner` are unreachable downstream (body opaque), so only `oneCrossingPositive_writhe` is usable of the file's one nontrivial example.",
+   "line": 212
+  },
+  {
+   "evidence": "Lines 94 (`same_iff`), 92 (`partner_ne`), 105-115 (`ext`), 117-120 (docstring vs. disjunction statement).",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "Drop `hpartner` from `ext` and prove partner equality inside it; add the uniqueness lemma `theorem eq_partner_of_visit_eq {i j} (h : D.visit i = D.visit j) (hne : j \u2260 i) : j = D.partner i`.",
+   "issue": "`ext` demands `hpartner`, but `partner` is determined by `visit`: from `E.visit (E.partner i) = E.visit i` and `hvisit`, `D.same_iff` gives `E.partner i = i \u2228 E.partner i = D.partner i`, and `E.partner_ne` kills the first. The extra hypothesis makes every downstream equality proof carry an obligation that is never independent. Relatedly, `partner_eq_of_visit_eq` (line 118) is documented as \"the unique distinct visit\" but only delivers the disjunction.",
+   "line": 104
+  },
+  {
+   "evidence": "Lines 88-94; `partner_partner` at 122-124 currently just restates the field.",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "Remove the `partner_involutive` field and keep `partner_partner` as a proved lemma; add `@[simp] theorem partner_symm (D) : D.partner.symm = D.partner`.",
+   "issue": "`partner_involutive` is derivable from `partner_ne` + `same_iff`: `same_iff i (partner i)` gives `visit (partner i) = visit i`, then `same_iff (partner i) i` gives `i = partner i \u2228 i = partner (partner i)`, and `partner_ne` excludes the first. Every consumer constructing a code must discharge a redundant obligation. There is also no `partner_symm`, so `D.partner.symm` (produced by any `Equiv` rewrite) is unreachable.",
+   "line": 90
+  },
+  {
+   "evidence": "Lines 97-98 (field, unannotated) vs. lines 122-129 (both simp).",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "`attribute [simp] OrientedGaussCode.over_partner` (and `@[grind]` alongside `visit_partner` if `grind` is meant to reason about codes).",
+   "issue": "`over_partner` carries no `@[simp]` while the parallel facts `partner_partner` (122) and `visit_partner` (126) do, so `simp` normalises `visit (partner i)` and `partner (partner i)` but leaves `over (partner i)` alone.",
+   "line": 98
+  },
+  {
+   "evidence": "Lines 131-133: statement `\u2203 i, D.visit i = c`, proof `D.visit_surjective c`; field at line 96.",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "Delete it; consumers write `D.visit_surjective c`.",
+   "issue": "`exists_visit_of_crossing` is a verbatim restatement of the `visit_surjective` field (`Function.Surjective` is reducible; the proof is `D.visit_surjective c`) and carries no attribute, so it is duplicate public surface.",
+   "line": 131
+  },
+  {
+   "evidence": "Lines 172-197: the only relabel lemmas are `relabel_visit`, `relabel_sign`, `relabel_id`; `writhe` (142) and `mirror` (146) have no relabel interaction.",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "Add `@[simp] writhe_relabel : (D.relabel e).writhe = D.writhe` (via `Equiv.sum_comp`), `relabel_relabel : (D.relabel e).relabel f = D.relabel (e.trans f)`, and `mirror_relabel : (D.relabel e).mirror = D.mirror.relabel e`.",
+   "issue": "The two operations in scope have almost no interaction API: no `writhe_relabel` (relabelling preserves the writhe \u2014 the roadmap product of this file), no `relabel_relabel`/`relabel_trans` composition law, and no `mirror_relabel` commutation. `relabel_id` alone leaves the action laws half-stated.",
+   "line": 173
+  },
+  {
+   "evidence": "Lines 39-69; `grep '^inductive SignType' mathlib` \u2192 mathlib/Mathlib/Basic/Sign/Defs.lean:29.",
+   "file": "TauCeti/KnotTheory/GaussCode.lean",
+   "fix": "Either define the type as \u00b1 in terms of `\u2124\u02e3`/`SignType` (Mathlib/Basic/Sign/Defs.lean:29), or add `instance : Neg CrossingSign` with `neg` as its `Neg.neg`, plus `@[simp] toInt_inj : toInt s = toInt t \u2194 s = t`.",
+   "issue": "`CrossingSign` re-implements a two-element sign type with an ad-hoc `neg`, no `Neg` instance (so `-s` and all Mathlib sign automation are unavailable, and `CrossingSign.neg_neg` shadows `_root_.neg_neg`) and no bridge to `\u2124\u02e3`/`SignType`; `toInt` has no injectivity lemma, so any sign equality must be proved by constructor case-split.",
+   "line": 40
+  }
+ ],
+ "head_sha": "c976bb23acc4450d9270da5fba82ef63b5ef717b",
+ "merge_base_sha": "0857cbca8b6a91dd22680eba45ecc284c14d8325",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5849,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9a6c9fb59c7e663d4b42276895cbcd93ba77addf972e46bb4c26be98aa57f595",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260907T034628Z-5849-api-design-fef282",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-07T03:46:28Z",
+ "submitted_by": "kim-em",
+ "summary": "Bodies are correctly unexposed, but the characteristic lemma set is incomplete: writhe has no `_def`, `mirror`/`relabel`/`oneCrossingPositive` lack projection lemmas so `ext` cannot be applied to them downstream, and the operations have no interaction lemmas. The `ext` lemma is also over-strong and one declaration is a verbatim duplicate of a field.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/KnotTheory/GaussCode.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/KnotTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/KnotTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/GeometricTopology/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4760deb76b10cac615fab31d1f6a79425fd788e6e847453154d6bf389007f4a9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 43255,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 43255,
+  "cache_read_input_tokens": 149835,
+  "inference_geo": "not_available",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5493,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5493,
+    "cache_read_input_tokens": 40562,
+    "input_tokens": 2,
+    "output_tokens": 5791,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17545,
+  "output_tokens_details": {
+   "thinking_tokens": 12767
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

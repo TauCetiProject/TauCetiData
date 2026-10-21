@@ -1,0 +1,125 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.5665790000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 195.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 77901,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 77901,
+    "cache_read_input_tokens": 788120,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 691,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 691,
+      "cache_read_input_tokens": 93709,
+      "input_tokens": 2,
+      "output_tokens": 5444,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 15282,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1fa3ce0a46dabfea27bcf90dc8812e37bc09a74c",
+ "cost_usd": 1.566579,
+ "dedupe_key": "TauCetiProject/TauCeti|3419|589871a173b9bc8a0cdb7ffc533478fc9e216ee2|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "0d48b3487134d896893e383d2758c5c99b82a5c643bde6cd38a0c9cf81ca20e8",
+ "diff_sha256": "0d48b3487134d896893e383d2758c5c99b82a5c643bde6cd38a0c9cf81ca20e8",
+ "duration_s": 195.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Isometry.lean:358` gives `transportIsometry_apply` and `Isometry.lean:299` gives `ofCarrierEquiv_apply` for exactly this reason; no analogous lemma exists here (no `affineAOneRadicalQuotientIsometry` occurrence outside line 422).",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Examples.lean",
+   "fix": "Add `@[simp] theorem affineAOneRadicalQuotientIsometry_apply (x : Fin 2 \u2192 \u211a) : affineAOneRadicalQuotientIsometry (Submodule.Quotient.mk x) = x 0 - x 1`, provable in-file from `affineAOneQuotientEquiv_mk`.",
+   "issue": "`affineAOneRadicalQuotientIsometry` has no characteristic apply lemma, and its body is not exposed (no `@[expose]` anywhere in `TauCeti/LinearAlgebra/IntegralLattice/`), so no consumer can prove `affineAOneRadicalQuotientIsometry (Submodule.Quotient.mk x) = x 0 - x 1`. Its type does not pin it down either (the negation is another isometry `affineAOne.radicalQuotient \u2243 aOne`), so the stated acceptance identification is unusable outside this file.",
+   "line": 422
+  },
+  {
+   "evidence": "`Gram.lean:212` `determinant_ofGramMatrix`, `Gram.lean:244` `discriminant_ofGramMatrix`, `Signature.lean:110` `isPosDef_iff`, `Signature.lean:160` `isPosDef_iff_sigNull_eq_zero_and_sigNeg_eq_zero`; grep shows `aOne.determinant`/`aOne.signature` appear nowhere.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Examples.lean",
+   "fix": "Add `aOne_determinant`, `aOne_discriminant`, `isPosDef_aOne`, `aOne_signature`, and `negativeAOne_determinant`/`negativeAOne_discriminant`, by the same `determinant_ofGramMatrix`/`isPosDef_iff`/`isPosDef_iff_sigNull_eq_zero_and_sigNeg_eq_zero` route already used at lines 248\u2013262 and 297\u2013311.",
+   "issue": "`aOne` is a public headline definition and the target of the radical-quotient identification, but carries no invariant API: no `determinant` (= 2), `discriminant` (= 2), `IsPosDef`, or `signature` (= (1,0,0)), while the file proves these for the other three lattices. Same omission for `negativeAOne`, which has `isNegDef`/`signature` but no `determinant` (= -2) or `discriminant` (= 2). None of it is recoverable downstream: the bodies are hidden and `Isometry.lean` proves no isometry-invariance of `determinant` or `signature` (only `finrank_carrier_eq`, line 268).",
+   "line": 65
+  },
+  {
+   "evidence": "Lines 393\u2013419 make the symmetric helpers `private`; lines 348\u2013391 leave the difference/quotient chain public, and lines 27\u201337 list neither in `Main definitions`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Examples.lean",
+   "fix": "Mark `affineAOneDifference`, `affineAOneDifference_apply`, `affineAOneDifference_surjective`, `affineAOneQuotientEquiv`, and `affineAOneQuotientEquiv_mk` `private`, and replace `affineAOne_radical_eq_ker` with the intrinsic public statement `mem_affineAOne_radical_iff (x : Fin 2 \u2192 \u211a) : x \u2208 affineAOne.radical \u2194 x 0 = x 1`, keeping the isometry (plus its new apply lemma) as the public product.",
+   "issue": "Quotient plumbing is over-exposed: `affineAOneQuotientEquiv`, `affineAOneQuotientEquiv_mk` (line 389), `affineAOneDifference_surjective` (line 375), and `affineAOneDifference` (line 348) exist only to build the isometry, yet the parallel helpers `affineAOneSection`, `affineAOneSection_mem_carrier`, `affineAOneDifference_mem_carrier` are `private`. `affineAOneQuotientEquiv` also duplicates the isometry's underlying linear equivalence as a second public surface, and neither it nor `affineAOneDifference` appears in the module docstring's `Main definitions`.",
+   "line": 381
+  }
+ ],
+ "head_sha": "589871a173b9bc8a0cdb7ffc533478fc9e216ee2",
+ "merge_base_sha": "1fa3ce0a46dabfea27bcf90dc8812e37bc09a74c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3419,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a12875e9e797cb800e1281a5faa31bb5307cf0c5d8b2aed58085c97cc8d3bf68",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260816T040343Z-3419-api-design-140b4d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-16T04:03:43Z",
+ "submitted_by": "kim-em",
+ "summary": "The file's headline product, `affineAOneRadicalQuotientIsometry`, has no apply lemma and an unexposed body, so downstream it is an opaque term whose action cannot be computed; `aOne` is exported with none of the invariant API the file supplies for its three siblings; and the quotient plumbing is publicly exposed while parallel helpers are private.",
+ "transcript_blob": "139b6fa80e6609bc58e74c7d44df06bc739484d5f4ae9d22c6313887644a5e19",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 77901,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 77901,
+  "cache_read_input_tokens": 788120,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 691,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 691,
+    "cache_read_input_tokens": 93709,
+    "input_tokens": 2,
+    "output_tokens": 5444,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 15282,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

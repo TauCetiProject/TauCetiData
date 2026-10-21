@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.198293,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 176.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 56561,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 56561,
+    "cache_read_input_tokens": 574000,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2203,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2203,
+      "cache_read_input_tokens": 70857,
+      "input_tokens": 2,
+      "output_tokens": 1643,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 13500,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "624e1f99bf41b5ffc9b1f51ec45842a28f9ad4da",
+ "cost_usd": 1.198293,
+ "dedupe_key": "TauCetiProject/TauCeti|3347|f2ad6706c50c127043501c9e0ebebbcd834cfe98|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "379a1cd8beef8aa799c4772b4bb2da4693ce14f87f270543e4cc36ac9a8281c9",
+ "diff_sha256": "379a1cd8beef8aa799c4772b4bb2da4693ce14f87f270543e4cc36ac9a8281c9",
+ "duration_s": 176.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Finite.lean:70-83 vs `theorem degree_eq_finrank (\u03c6) [Algebra W\u2082.FunctionField W\u2081.FunctionField] (h : \u2200 z, algebraMap W\u2082.FunctionField W\u2081.FunctionField z = \u03c6.fieldPullback z)` at Degree.lean:129-132; the whole coordinate-ring apparatus is used only inside `hfield` (Finite.lean:76-82).",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/Isogeny/IntermediateRing/Finite.lean",
+   "fix": "State it with the field-level hypothesis alone \u2014 `[Algebra W\u2082.FunctionField W\u2081.FunctionField] (h : \u2200 z, algebraMap W\u2082.FunctionField W\u2081.FunctionField z = \u03c6.fieldPullback z)`, proof `FiniteDimensional.of_finrank_pos (\u03c6.degree_eq_finrank h \u25b8 \u03c6.degree_pos)` \u2014 matching `degree_eq_finrank` exactly, and have `moduleFinite_intermediateRing` compose it with the bridge lemma below. Being purely about degrees, it then belongs next to `degree_eq_finrank` rather than behind an import of the intermediate-ring file.",
+   "issue": "`finiteDimensional_functionField` concludes `FiniteDimensional W\u2082.FunctionField W\u2081.FunctionField` but demands `[Algebra W\u2082.CoordinateRing W\u2081.FunctionField]`, `[IsScalarTower W\u2082.CoordinateRing W\u2082.FunctionField W\u2081.FunctionField]` and a coordinate-level `h` \u2014 none of which appear in the conclusion. A consumer who obtains the structure the canonical way (`letI := \u03c6.fieldPullback.toRingHom.toAlgebra`, as `Degree.lean:163-165` does) holds only the field-level agreement and cannot use this lemma; the docstring's claim that it is stated in \"the form consumers state things in\" and the Design section's claim to match `degree_eq_finrank` are both false of the signature.",
+   "line": 70
+  },
+  {
+   "evidence": "Finite.lean:76-82 duplicates the `IsFractionRing.ringHom_ext (A := W\u2082.CoordinateRing)` argument of `fieldPullback_unique` (FunctionField.lean:191-198), which is `AlgHom`-only.",
+   "file": "TauCeti/AlgebraicGeometry/EllipticCurve/Isogeny/IntermediateRing/Finite.lean",
+   "fix": "Expose it as a lemma next to `fieldPullback_unique` in `Isogeny/FunctionField.lean`, e.g. `algebraMap_functionField_eq_fieldPullback (\u03c6) [Algebra W\u2082.CoordinateRing W\u2081.FunctionField] [Algebra W\u2082.FunctionField W\u2081.FunctionField] [IsScalarTower \u2026] (h : \u2200 x, algebraMap W\u2082.CoordinateRing W\u2081.FunctionField x = \u03c6.pullback x) : \u2200 z, algebraMap W\u2082.FunctionField W\u2081.FunctionField z = \u03c6.fieldPullback z`, and use it in both theorems here.",
+   "issue": "The `hfield` step \u2014 coordinate-level agreement forces field-level agreement, via `IsFractionRing.ringHom_ext` \u2014 is a general uniqueness fact about `fieldPullback`, reusable by every later consumer that must transport a `W\u2082.FunctionField`-level property (separability, `IsFractionRing`, Dedekindness) off a coordinate-level witness. It is hidden inside a proof, so no consumer gets it. The existing public `fieldPullback_unique` does not cover it: it requires an `F`-`AlgHom`, whereas a caller's `algebraMap W\u2082.FunctionField W\u2081.FunctionField` is only a ring hom.",
+   "line": 76
+  }
+ ],
+ "head_sha": "f2ad6706c50c127043501c9e0ebebbcd834cfe98",
+ "merge_base_sha": "e37fbb33a7f539a8b843b908f8be4f0d086227df",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3347,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5b5e83a1f01d5a08739581b2bac191602a017f217e2ce5c5379f5c4a444dc574",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T103333Z-3347-api-design-33cfa7",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T10:33:33Z",
+ "submitted_by": "kim-em",
+ "summary": "The new `finiteDimensional_functionField` is stated with a coordinate-ring hypothesis plus two instance arguments that its conclusion never mentions, so a consumer holding the field-level structure (the form `degree_eq_finrank` and `degree_comp` use) cannot apply it; the reusable coordinate\u2192field uniqueness step is buried in its proof rather than exposed alongside the existing `fieldPullback_unique`.",
+ "transcript_blob": "a6ea581ea38db94ca5fc009285a51e487bfe1371442c7f248251c848bee0102f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 56561,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 56561,
+  "cache_read_input_tokens": 574000,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2203,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2203,
+    "cache_read_input_tokens": 70857,
+    "input_tokens": 2,
+    "output_tokens": 1643,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 13500,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

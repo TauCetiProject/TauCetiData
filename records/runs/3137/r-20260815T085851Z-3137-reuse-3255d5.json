@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.8908925,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 123.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 39131,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 39131,
+    "cache_read_input_tokens": 494977,
+    "inference_geo": "not_available",
+    "input_tokens": 23,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1382,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1382,
+      "cache_read_input_tokens": 54248,
+      "input_tokens": 2,
+      "output_tokens": 2356,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9615,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "4b83379e1816c8955941ccab5b7e5490471e9b4c",
+ "cost_usd": 0.890892,
+ "dedupe_key": "TauCetiProject/TauCeti|3137|48268a7e0516d07d9021d6804559460e4455b256|reuse|claude-opus-5|ce88b39773d791a9|production|2",
+ "diff_blob": "6b3104ac8b9c593431729b29da2ff9f36ac1077158372b110cf7ba55ba96dc83",
+ "diff_sha256": "6b3104ac8b9c593431729b29da2ff9f36ac1077158372b110cf7ba55ba96dc83",
+ "duration_s": 123.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "OpenIdeal.lean:95-99 `theorem IsTateRing.eq_top_of_isOpen [IsTateRing A] {J : Ideal A} (hJ : IsOpen (J : Set A)) : J = \u22a4 := by obtain \u27e8\u03d6, h\u03d6\u27e9 := IsTateRing.exists_isPseudoUniformizer (A := A); obtain \u27e8n, hn\u27e9 := h\u03d6.isTopologicallyNilpotent.exists_pow_mem_of_mem_nhds (hJ.mem_nhds J.zero_mem); exact Ideal.eq_top_of_isUnit_mem J hn (h\u03d6.isUnit.pow n)` \u2014 same three steps as Huber/Basic.lean:141-145.",
+   "file": "TauCeti/RingTheory/Huber/Basic.lean",
+   "fix": "Delete it. If the Semiring generality is actually wanted, restate `IsTateRing.eq_top_of_isOpen` in OpenIdeal.lean as a consequence of a single general lemma instead of keeping two copies of the same proof.",
+   "issue": "`IsPseudoUniformizer.not_isOpen_of_ne_top` is the contrapositive of the existing `TauCeti.Huber.IsTateRing.eq_top_of_isOpen` (OpenIdeal.lean:95), reproved with a character-for-character identical body. The extra generality (Semiring, explicit `\u03d6`) has no consumer: its only use is `not_isOpen_of_isPrime` over a Tate `CommRing`.",
+   "line": "138"
+  },
+  {
+   "evidence": "OpenIdeal.lean:101-105 `@[simp] theorem IsTateRing.isOpen_iff_eq_top [IsTateRing A] (J : Ideal A) : IsOpen (J : Set A) \u2194 J = \u22a4`; OpenIdeal.lean:7 `public import TauCeti.RingTheory.Huber.Basic` confirms the direction of the import edge. `v.supp.IsPrime` is available as `instIsPrimeSupp` (ValuationSpectrum.lean:265).",
+   "file": "TauCeti/RingTheory/Huber/Basic.lean",
+   "fix": "Move it to OpenIdeal.lean (after `isOpen_iff_eq_top`) and prove `fun h \u21a6 hI.ne_top (IsTateRing.eq_top_of_isOpen h)`; change Analytic.lean's import from `TauCeti.RingTheory.Huber.Basic` to `TauCeti.RingTheory.Huber.OpenIdeal`.",
+   "issue": "`not_isOpen_of_isPrime` is a one-step consequence of the existing `IsTateRing.isOpen_iff_eq_top` (OpenIdeal.lean:103), but is placed upstream in Huber/Basic.lean so it cannot use it, creating a parallel `\u00acIsOpen` / `= \u22a4` API for open ideals of a Tate ring.",
+   "line": "149"
+  },
+  {
+   "evidence": "Spa/Comap.lean:201-207 contains the same `hlocus`/`zeroLocus`/`preimage` steps; `grep -rn isClosed_setOfPred_forall_vle_zero` returns only the declaration (line 439) and its module-docstring entry (line 33).",
+   "file": "TauCeti/AlgebraicGeometry/AdicSpace/ValuationSpectrum.lean",
+   "fix": "Keep the general lemma but rewrite `isClosed_support_locus` to consume it: `(isClosed_setOfPred_forall_vle_zero (J : Set A)).preimage continuous_subtype_val` after transporting `J \u2264 v.supp` through `mem_supp_iff`, deleting the duplicated `hlocus` block.",
+   "issue": "`isClosed_setOfPred_forall_vle_zero` re-derives the `{v | S \u2286 supp v} = suppFun \u207b\u00b9' PrimeSpectrum.zeroLocus S` + `(PrimeSpectrum.isClosed_zeroLocus _).preimage continuous_suppFun` argument already written out in `isClosed_support_locus` (Spa/Comap.lean:199-207), and nothing in the repo uses the new lemma \u2014 the repo now carries two copies of the same proof.",
+   "line": "439"
+  },
+  {
+   "evidence": "Continuous/Basic.lean:161-167 `private theorem IsContinuous.sub_lt_mem_nhds [SeparatelyContinuousAdd A] {v : Valuation A \u0393\u2080} (hv : v.IsContinuous) (a : A) {b : A} (hb : v b \u2260 0) : {y : A | v (y - a) < v b} \u2208 \ud835\udcdd a`, proved by the same `(hv b).preimage (translation)` + `.mem_nhds` steps spelled out in Cont/Basic.lean:139-146.",
+   "file": "TauCeti/AlgebraicGeometry/AdicSpace/Cont/Basic.lean",
+   "fix": "Drop `private` from `IsContinuous.sub_lt_mem_nhds` and use `hcont.sub_lt_mem_nhds 1 (by simp)` with `mem_closure_iff_nhds`; this also weakens the hypothesis to `[SeparatelyContinuousAdd A]` and removes the new import.",
+   "issue": "The `h_open` / `h_sub_open` / `h1_mem` block re-derives `TauCeti.Valuation.IsContinuous.sub_lt_mem_nhds` (Continuous/Basic.lean:161) at `a = b = 1`, and the newly added `Mathlib.Topology.Algebra.Group.Basic` import plus the `[IsTopologicalAddGroup A]` section exist only to support that re-derivation.",
+   "line": "142"
+  }
+ ],
+ "head_sha": "48268a7e0516d07d9021d6804559460e4455b256",
+ "merge_base_sha": "4b83379e1816c8955941ccab5b7e5490471e9b4c",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3137,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "523df25d4d7958b0c0137ed7ba09990592f9234e42d1f16cd9f4823878872135",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T085851Z-3137-reuse-3255d5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T08:58:51Z",
+ "submitted_by": "kim-em",
+ "summary": "Both new Huber lemmas re-derive `TauCeti.Huber.IsTateRing.eq_top_of_isOpen` / `isOpen_iff_eq_top` (OpenIdeal.lean), one with a verbatim copy of the existing proof body. `isClosed_setOfPred_forall_vle_zero` duplicates the argument already inlined in `isClosed_support_locus` and is used nowhere, and the neighbourhood block in `cont_eq_empty_of_one_mem_closure_zero` re-derives `IsContinuous.sub_lt_mem_nhds`.",
+ "transcript_blob": "62f2b401748affe641b569d28573a514b5f394b16ba96d4e656663989be667c2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 39131,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 39131,
+  "cache_read_input_tokens": 494977,
+  "inference_geo": "not_available",
+  "input_tokens": 23,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1382,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1382,
+    "cache_read_input_tokens": 54248,
+    "input_tokens": 2,
+    "output_tokens": 2356,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9615,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "block"
+}

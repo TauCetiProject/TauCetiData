@@ -1,0 +1,139 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3798989999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 241.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 59905,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 59905,
+    "cache_read_input_tokens": 597010,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1131,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1131,
+      "cache_read_input_tokens": 75273,
+      "input_tokens": 2,
+      "output_tokens": 3050,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 18813,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0272e150f3b09d4b53705124926dd1487155d8dc",
+ "cost_usd": 1.379899,
+ "dedupe_key": "TauCetiProject/TauCeti|3264|8cb22109f756115b7c9f6de3c5bdb238ab686df2|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "d6f8c2376a321c9972673304cfb50792ac9bdd662b349e9e15be039afb438568",
+ "diff_sha256": "d6f8c2376a321c9972673304cfb50792ac9bdd662b349e9e15be039afb438568",
+ "duration_s": 241.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "File has only `baseChangeExpLinearEquiv_toLinearMap` (:280), `baseChangeExpHom_toLinearMap` (:302), `baseChangeKostantExpHom_toLinearMap` (Kostant file :80). Repo precedent: `TauCeti/Algebra/Lie/InnerAutomorphism.lean:87 expAd_apply`; `TauCeti/Algebra/AlgebraicGroup/AdditiveGroup/Basic.lean:90`.",
+   "file": "TauCeti/RingTheory/Nilpotent/BaseChangeAction.lean",
+   "fix": "Add `@[simp] baseChangeExpLinearEquiv_apply`, `baseChangeExpHom_apply`, and `baseChangeKostantExpHom_apply` (equiv applied to a vector = `baseChangeExp ... t v`), plus an `_apply_tmul` form; keep the `_toLinearMap` lemmas.",
+   "issue": "No applied-form lemma for `baseChangeExpLinearEquiv` / `baseChangeExpHom` (nor for `baseChangeKostantExpHom`, Kostant/BaseChangeAction.lean:69). The exported `@[simp] _toLinearMap` lemmas are unreachable by `simp` in applied position: Mathlib's `LinearEquiv.coe_coe` (mathlib/Mathlib/Algebra/Module/Equiv/Defs.lean:202) normalizes `\u21d1e.toLinearMap` to `\u21d1e`, so the `@[simp] baseChangeExp_tmul` lemma never fires on the objects the PR actually exports, and the bodies are sealed (no `@[expose]`), so a consumer cannot `rfl` past it.",
+   "line": 266
+  },
+  {
+   "evidence": "`invFun := baseChangeExp x M hM hx (-t)` at :270 with no `symm` lemma anywhere in the file; repo convention `TauCeti/Algebra/AlgebraicGroup/AdditiveGroup/Basic.lean:90 pointsMulEquiv_symm_apply`.",
+   "file": "TauCeti/RingTheory/Nilpotent/BaseChangeAction.lean",
+   "fix": "Add `@[simp] baseChangeExpLinearEquiv_symm : (baseChangeExpLinearEquiv x M hM hx t).symm = baseChangeExpLinearEquiv x M hM hx (-t)` and the corresponding `_symm_apply`.",
+   "issue": "The docstring advertises \"inverse given by the negative parameter\", but no lemma states it and `invFun` is sealed. A consumer of a root subgroup element cannot name its inverse without re-deriving it from `baseChangeExp_add` + `baseChangeExp_zero`.",
+   "line": 264
+  },
+  {
+   "evidence": "`TauCeti/Algebra/Lie/InnerAutomorphism.lean:91 expAd_apply_eq_sum {k : \u2115} (hy : ((ad K L x) ^ k) y = 0)`; Mathlib has no `nilpotencyClass \u2264 k` lemma from `x ^ k = 0` (grep of Nilpotent/Defs.lean).",
+   "file": "TauCeti/RingTheory/Nilpotent/BaseChangeAction.lean",
+   "fix": "Export `baseChangeExp_eq_sum_range` (resp. `_tmul` form) stating the sum over `range k` for any `k` with `x ^ k = 0`, mirroring `expAd_apply_eq_sum`.",
+   "issue": "`baseChangeExp` is truncated at `nilpotencyClass x` (a `sInf`, Mathlib Nilpotent/Defs.lean:78) and the only expansion lemma (`baseChangeExp_tmul`) inherits that bound. Consumers hold a concrete `k` with `x ^ k = 0`, not the exact class, and the lemma that kills the extra terms (`integralDividedPower_eq_zero_of_le`, :101) is `private`, so the expansion cannot be re-truncated downstream.",
+   "line": 118
+  },
+  {
+   "evidence": "Lines 83, 91, 101 are `private theorem`; the public statement at :127-:132 mentions `integralDividedPower x M n (hM n) v`.",
+   "file": "TauCeti/RingTheory/Nilpotent/BaseChangeAction.lean",
+   "fix": "Drop `private` from `integralDividedPower_zero`, `integralDividedPower_mul` and `integralDividedPower_eq_zero_of_le`, and mark `integralDividedPower_zero` `@[simp]`.",
+   "issue": "`integralDividedPower` is public (advertised in Main definitions, and it occurs in the public statement of `baseChangeExp_tmul`), but its characteristic laws `integralDividedPower_zero` (:83), `integralDividedPower_mul` (:91) and `integralDividedPower_eq_zero_of_le` (:101) are `private`. The only public fact is the coercion lemma, so no consumer can use the divided-power structure on `M` \u2014 exactly what the announced next step (Chevalley commutator relations) needs.",
+   "line": 67
+  },
+  {
+   "evidence": "Doc claim at :29-:32; grep for `IsNilpotent.exp`/`expZSMulHom` in the new files returns no occurrence outside the docstring.",
+   "file": "TauCeti/RingTheory/Nilpotent/BaseChangeAction.lean",
+   "fix": "State the specialization, e.g. `baseChangeExp (R := \u2124) x M hM hx t (r \u2297\u209c v) = r \u2297\u209c \u27e8IsNilpotent.exp (t \u2022 x) v, _\u27e9`, and the matching `baseChangeKostantExpHom` vs `expZSMulHom` lemma.",
+   "issue": "The module doc claims \"The integer specialization is the nilpotent exponential from TauCeti/RingTheory/Nilpotent/Exp.lean\", but no lemma relates `baseChangeExp (R := \u2124)` to `IsNilpotent.exp (t \u2022 x)` / `expZSMulHom`. The PR therefore leaves two disconnected root-subgroup surfaces (Kostant/Exponential.lean's `exp_zsmul_apply_mem_of_kostantForm_apply_mem` and the new `baseChangeKostantExpHom`) with no bridge, so results proved for the \u2124 family cannot be transported.",
+   "line": 29
+  }
+ ],
+ "head_sha": "8cb22109f756115b7c9f6de3c5bdb238ab686df2",
+ "merge_base_sha": "0272e150f3b09d4b53705124926dd1487155d8dc",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3264,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7c6282b432bde3ac9604ca76c434ee3b547f4a4ebf7e18bc76c20cf55de5504e",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T004100Z-3264-api-design-f52b7e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T00:41:00Z",
+ "submitted_by": "kim-em",
+ "summary": "The three bundled maps this PR exports (`baseChangeExpLinearEquiv`, `baseChangeExpHom`, `baseChangeKostantExpHom`) have sealed bodies and only `_toLinearMap` lemmas, so nothing characterizes them in applied form, nothing states their inverse, and nothing expands them at a usable nilpotency bound. The public `integralDividedPower` also ships with its divided-power laws private, and the promised \u2124-specialization to the existing `IsNilpotent.exp` API is never stated.",
+ "transcript_blob": "5783e192fcdd5bd15cd781148924b55c38989e48f32d900747c6dc58aaa96061",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 59905,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 59905,
+  "cache_read_input_tokens": 597010,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1131,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1131,
+    "cache_read_input_tokens": 75273,
+    "input_tokens": 2,
+    "output_tokens": 3050,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 18813,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

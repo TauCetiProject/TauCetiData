@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.6327990000000001,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 212.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 81811,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 81811,
+    "cache_read_input_tokens": 742108,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1340,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1340,
+      "cache_read_input_tokens": 96970,
+      "input_tokens": 2,
+      "output_tokens": 2897,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17011,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e28afb19d468aabb12e10f6bc1d226e6cb5e3f97",
+ "cost_usd": 1.632799,
+ "dedupe_key": "TauCetiProject/TauCeti|3402|47886d51a83a26f76faf283792afd544c6960446|documentation|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "add7e7117e86476d289a5bbd52ebfec0d9ce445a85b43c7fa9ae614700c871e2",
+ "diff_sha256": "add7e7117e86476d289a5bbd52ebfec0d9ce445a85b43c7fa9ae614700c871e2",
+ "duration_s": 212.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Def at lines 456-459 wraps `ENNReal.ofReal`; `TauCeti/Geometry/Symplectic/JHolomorphic/Energy/Integral.lean:80-84` documents exactly this (\"for a general pair the density can be negative, and `ENNReal.ofReal` truncates it\") and its own def docstring says \"the positive part of half the pointwise \u2026 density\".",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Say \"lower Lebesgue integral of the positive part of half the pointwise energy density\", and add the caveat the linear file carries: for a non-taming pair the density can be negative and `ENNReal.ofReal` truncates it; the area density `\u03c9(du \u2202s, du \u2202t)` can be negative even for a compatible pair. Reword line 505-506 as \"the positive part of the symplectic area density\".",
+   "issue": "The `stdComplexLineEnergy` docstring says \"the lower Lebesgue integral of half the pointwise energy density\", but the definition integrates `ENNReal.ofReal (\u2026 / 2)`, i.e. the positive part. Same omission in the module docstring, which prints $E(u)=\\int^\\ast \\tfrac12 e(du_z)d\\mu$ (line 43) and $E(u)=\\int^\\ast\\omega(du\\partial_s,du\\partial_t)d\\mu$ (line 44-45) with no truncation, and at line 505-506 where \"the integral of the positive symplectic area density\" reads as a claim that the density is positive rather than that its positive part is integrated.",
+   "line": 453
+  },
+  {
+   "evidence": "`mathlib/Mathlib/Geometry/Manifold/MFDeriv/Defs.lean:333-336`: `if MDifferentiableAt I I' f x then \u2026 else 0`. The linear file documents the analogous point deliberately: \"This avoids assigning a misleading energy to a nondifferentiable map, since Mathlib defines `fderiv` to be zero where differentiability fails\" (`JHolomorphic/Energy/Integral.lean`, module docstring).",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Add a sentence to the module docstring and to `stdComplexLineEnergy` noting that `mfderiv` is zero where mdifferentiability fails, so the energy of a curve that is not mdifferentiable a.e. is not meaningful, and that `stdComplexLineEnergy_eq_zero_iff` detects `mfderiv = 0` a.e., not genuine constancy.",
+   "issue": "The energy is defined through `mfderiv u z`, which Mathlib sets to `0` wherever `u` is not `MDifferentiableAt`; nothing in the module docstring or in the `stdComplexLineEnergy` docstring says so. Consequently a nowhere-mdifferentiable curve gets zero energy, and the right-hand side of `Tames.stdComplexLineEnergy_eq_zero_iff` (line 577-578) is satisfied by such curves \u2014 documented only as \"the manifold derivative vanishes almost everywhere\".",
+   "line": 16
+  },
+  {
+   "evidence": "Lemma signature lines 573-578 takes `hmeas : AEMeasurable \u2026`; the lemma's own docstring (line 571-572) states it, the module docstring does not.",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Add \"(assuming the energy integrand is a.e. measurable)\", as `JHolomorphic/Energy/Integral.lean` does for its linear analogue.",
+   "issue": "Module docstring: \"Under tameness, zero energy detects curves whose manifold derivative vanishes almost everywhere\" (line 46) and the Main-declarations bullet at line 80-81 both omit the `AEMeasurable` hypothesis that `Tames.stdComplexLineEnergy_eq_zero_iff` actually requires (line 575-576).",
+   "line": 46
+  },
+  {
+   "evidence": "Line 48; `roadmap/TauCetiRoadmap/HeegaardFloer/README.md:188-190` lists F2.1 as \"almost complex structures, tame/compatible J, symplectic manifolds, J-holomorphic maps, energy\", and `STATUS.md:17` tracks lane status separately from module docstrings.",
+   "file": "TauCeti/Geometry/Symplectic/Manifold/Energy.lean",
+   "fix": "Drop the sentence or replace it with a non-status pointer, e.g. \"These are the first manifold-level energy statements needed before the local theory of J-holomorphic curves\", matching the phrasing in the linear file.",
+   "issue": "\"This completes the energy package of Lane F2.1 of the analytic Heegaard Floer roadmap.\" is a completion claim the file cannot support and that goes stale: energy here exists only for maps out of `\u211d \u00d7 \u211d` against an abstract measure, and the PR itself says further F2.1 work follows.",
+   "line": 48
+  }
+ ],
+ "head_sha": "47886d51a83a26f76faf283792afd544c6960446",
+ "merge_base_sha": "e28afb19d468aabb12e10f6bc1d226e6cb5e3f97",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3402,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "dcb4a9eff3933d9a83111b68495d837f3247de1bd8938b319d0e99d036476855",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T200627Z-3402-documentation-80da72",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T20:06:27Z",
+ "submitted_by": "kim-em",
+ "summary": "Documentation is present on every public declaration, but the integrated-energy documentation drops three honesty caveats that the linear counterpart in JHolomorphic/Energy/Integral.lean states explicitly: the ENNReal.ofReal positive-part truncation, the a.e.-measurability hypothesis, and the fact that mfderiv is zero where the curve is not mdifferentiable. It also asserts an unverifiable roadmap-completion status.",
+ "transcript_blob": "475360c10f0689994dc0439d2f05a289697536fc04b0ae431dce1cff36cff4ad",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 81811,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 81811,
+  "cache_read_input_tokens": 742108,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1340,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1340,
+    "cache_read_input_tokens": 96970,
+    "input_tokens": 2,
+    "output_tokens": 2897,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17011,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

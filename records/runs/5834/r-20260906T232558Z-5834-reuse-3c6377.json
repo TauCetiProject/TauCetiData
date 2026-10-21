@@ -1,0 +1,349 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 2.9559120000000005,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 348.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 128086,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 128086,
+    "cache_read_input_tokens": 1973830,
+    "inference_geo": "not_available",
+    "input_tokens": 50,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3662,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3662,
+      "cache_read_input_tokens": 127224,
+      "input_tokens": 2,
+      "output_tokens": 4170,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 27135,
+    "output_tokens_details": {
+     "thinking_tokens": 18048
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0fbc8b26586a0e1f7dd98f012874605f44ebf3cd",
+ "cost_usd": 2.955912,
+ "dedupe_key": "TauCetiProject/TauCeti|5834|2c5d6e4667489fee78f20168d5fdca9061a14300|reuse|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "04fff22fe8535837042b80626651644dca0d2ff80bd88d39cae74363bba842bc",
+ "diff_sha256": "04fff22fe8535837042b80626651644dca0d2ff80bd88d39cae74363bba842bc",
+ "duration_s": 348.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "code/TauCeti/LinearAlgebra/Basis/DiagonalTorus/Basic.lean:150 `theorem torusCharacter_sub (s) (\u03bc \u03bd) : torusCharacter s (\u03bc - \u03bd) = torusCharacter s \u03bc / torusCharacter s \u03bd`; :282 `theorem weightChar_single [DecidableEq \u03ba] (c) (s) : weightChar R (Pi.single c 1) s = s c`; :120 `torusCharacter_zero`.",
+   "file": "TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/MaximalTorus.lean",
+   "fix": "Delete `prod_zpow_ite_eq`. Add next to `weight_def` a lemma writing `weight r k` as `(if k < r then Pi.single \u27e8k,_\u27e9 1 else 0) - (if 0 < k then Pi.single \u27e8k-1,_\u27e9 1 else 0)` (each `if` branch is a `funext` over `Pi.single_apply` plus `Fin.ext_iff`), then prove `torusCharacter_weight` by `torusCharacter_sub`, `weightChar_single`, `torusCharacter_zero`, `div_eq_mul_inv`.",
+   "issue": "`prod_zpow_ite_eq` (lines 39-47) and the product-splitting in `torusCharacter_weight` (lines 57-58, `zpow_sub`/`Finset.prod_mul_distrib`) re-derive character plumbing that already exists: `TauCeti.torusCharacter_sub` splits a difference of weights, and `TauCeti.weightChar_single` computes `torusCharacter s (Pi.single c 1) = s c`.",
+   "line": 39
+  },
+  {
+   "evidence": "MaximalTorus.lean:180-183 and MaximalTorus.lean:205-208 are identical modulo `mem_diagonalPoints_iff`, which is itself `rfl` over `mem_diagonalTorus_iff` (line 140-141).",
+   "file": "TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/MaximalTorus.lean",
+   "fix": "State it once, e.g. `coe_weightTorusPoints_mem_diagonalTorus` (or `range_weightTorusPoints_le_diagonalPoints`) before `centralizer_range_weightTorusPoints_of_weightChar_injective`, and use it in both places; the `\u2265` half of the centralizer theorem then reads `Subgroup.le_centralizer (diagonalTorus K (r+1))` applied to that lemma.",
+   "issue": "The computation that a weight-torus point is diagonal appears twice verbatim: `hdDiag` at lines 177-183 and the forward inclusion of `range_weightTorusPoints_eq_diagonalPoints` at lines 204-208 are the same `simp only [coe_weightTorusPoints, kostantTorusMatrix_apply, diagGL_coe]; exact Matrix.isDiag_diagonal _`.",
+   "line": 177
+  },
+  {
+   "evidence": "mathlib/Mathlib/Data/FunLike/Basic.lean:203 `theorem ne_iff {f g : F} : f \u2260 g \u2194 \u2203 a, f a \u2260 g a`.",
+   "file": "TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/MaximalTorus.lean",
+   "fix": "Replace the four lines with `obtain \u27e8s, hs\u27e9 := DFunLike.ne_iff.mp hchar_ne`.",
+   "issue": "`hexists` (lines 156-159) re-derives, by `by_contra`/`push Not`/`MonoidHom.ext`, the standard fact that unequal bundled homs differ at a point.",
+   "line": 156
+  },
+  {
+   "evidence": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Diagonal/Basic.lean:351-359 (`le_antisymm (by rw [\u2190 centralizer_diagonalTorus]; exact (Subgroup.le_centralizer (H := H)).trans (Subgroup.centralizer_le (SetLike.coe_subset_coe.mpr hle))) hle`); code/TauCeti/RepresentationTheory/SU2/Basic.lean:351.",
+   "file": "TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/MaximalTorus.lean",
+   "fix": "Add one group-level lemma (e.g. in `TauCeti/Algebra/Group/Subgroup/Centralizer.lean`): `{T H : Subgroup G} (hT : Subgroup.centralizer (T : Set G) = T) [IsMulCommutative H] (hle : T \u2264 H) : H = T`, and derive this theorem plus the two existing copies from it.",
+   "issue": "The maximality proof (lines 236-242) is a verbatim copy, with the torus renamed, of `TauCeti.eq_diagonalTorus_of_le_of_isMulCommutative`; the same argument also occurs a third time in SU2. Nothing in it is specific to the type-A carrier.",
+   "line": 236
+  },
+  {
+   "evidence": "Only hit for `weightTorusPoints_injective` in code/TauCeti is its own declaration at Basic.lean:624; generic forms already exist at code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Torus/Basic.lean:350 (`kostantTorusPoints_injective`), code/TauCeti/LinearAlgebra/Basis/DiagonalTorus/Basic.lean:360 (`torusCharacterHom_injective`) and :548 (`basisWeightTorus_injective`).",
+   "file": "TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/Basic.lean",
+   "fix": "Delete it, or \u2014 if a consumer is intended \u2014 state it once generically as `kostantTorusMatrix_injective` beside `kostantTorusMatrix_apply` (`diagGL_injective.comp (torusCharacterHom_injective hwt)`, given `kostantTorusMatrix_apply : kostantTorusMatrix M b wt s = diagGL fun i => torusCharacter s (wt i)`) so the Geck/E6/E7/spin carriers reuse it rather than each cloning this proof.",
+   "issue": "`weightTorusPoints_injective` is a per-carrier restatement of existing injectivity API with no consumer: grep finds no use anywhere (including this PR's MaximalTorus.lean).",
+   "line": 623
+  }
+ ],
+ "head_sha": "2c5d6e4667489fee78f20168d5fdca9061a14300",
+ "merge_base_sha": "cee0949f1c6d3919bad9ac22517e348ce3360e6d",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5834,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ff5a16ebe36eec20d53a3ab27eb5d660c2897f0c70508439ef4db540aa398ef6",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260906T232558Z-5834-reuse-3c6377",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-06T23:25:58Z",
+ "submitted_by": "kim-em",
+ "summary": "The centralizer computation and the partial-product parametrization are new, but several proof blocks re-derive located API: the private product helper replays `weightChar_single`/`torusCharacter_sub`, the \"weight-torus point is diagonal\" computation appears twice in the same file, `DFunLike.ne_iff` is hand-rolled, and the maximality proof is a verbatim copy of `eq_diagonalTorus_of_le_of_isMulCommutative`. `weightTorusPoints_injective` is an unused parallel restatement of existing injectivity API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/MaximalTorus.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/DeterminantOne.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Diagonal/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Centralizer.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/Diagonal/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Torus/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/UniversalEnveloping/Kostant/RootSubgroup/Torus/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Basis/DiagonalTorus/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix/SpecialLinearGroup/Diagonal.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/UpperTriangular.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/FieldPoints.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/Generation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/Weight/Torus.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/DiagonalTorus/Maximal.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Basis/DiagonalTorus/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Group/Subgroup/Centralizer.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RepresentationTheory/SU2/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/GroupTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear/StandardCarrier/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/GeneralLinear/UpperTriangular/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/SpecialLinear",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/FunLike/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/RootSystem/SimplyConnectedRootDatum",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 40,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3bc6bafe854a9febdc0e2225e216d2e72a9f5dc6a550ff2726a9f26b6519beec",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 128086,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 128086,
+  "cache_read_input_tokens": 1973830,
+  "inference_geo": "not_available",
+  "input_tokens": 50,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3662,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3662,
+    "cache_read_input_tokens": 127224,
+    "input_tokens": 2,
+    "output_tokens": 4170,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 27135,
+  "output_tokens_details": {
+   "thinking_tokens": 18048
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

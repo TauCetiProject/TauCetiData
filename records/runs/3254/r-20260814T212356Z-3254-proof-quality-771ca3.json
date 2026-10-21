@@ -1,0 +1,118 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.953805,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 302.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 91524,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 91524,
+    "cache_read_input_tokens": 823510,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4019,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4019,
+      "cache_read_input_tokens": 104004,
+      "input_tokens": 2,
+      "output_tokens": 5853,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24472,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "23ba77d2947cc31e93067492684aa28d02a62192",
+ "cost_usd": 1.953805,
+ "dedupe_key": "TauCetiProject/TauCeti|3254|6f8375b675691dabe86d813a3bfdc756c306d512|proof-quality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "58431b808fa52760a1a09e8828e296c709ea08d3ae3a5809c9f909c3fa03e49b",
+ "diff_sha256": "58431b808fa52760a1a09e8828e296c709ea08d3ae3a5809c9f909c3fa03e49b",
+ "duration_s": 302.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`Mathlib/Algebra/Order/Group/Unbundled/Int.lean:54` `lemma natAbs_le_self_sq (a : \u2124) : (Int.natAbs a : \u2124) \u2264 a ^ 2`; `Mathlib/Data/Int/\u2026/Int.lean:44` `@[norm_cast] lemma natCast_natAbs (n : \u2124) : (n.natAbs : \u2124) = |n|`.",
+   "file": "TauCeti/LowDimTopology/Plumbing/NegativeDefinite.lean",
+   "fix": "Replace lines 212-217 with the Mathlib fact: `have : |(P.intersectionMatrix *\u1d65 x) v| \u2264 (P.intersectionMatrix *\u1d65 x) v ^ 2 := by rw [\u2190 Int.natCast_natAbs]; exact Int.natAbs_le_self_sq _` then `exact this.trans hbound`. The zero case and the `nlinarith` both disappear.",
+   "issue": "Deriving `|A x v| \u2264 N` from `(A x v)^2 \u2264 N` is done by a case split on the coordinate being zero plus `nlinarith [sq_abs \u2026]` with an `Int.one_le_abs` hint (lines 212-217). This is a nonlinear-arithmetic call hiding the standard fact `|a| \u2264 a ^ 2` over \u2124, and nlinarith with hand-picked hints is exactly the brittle-but-short style the rubric warns about.",
+   "line": 212
+  },
+  {
+   "evidence": "Sublevel.lean:148-159: goal after `refine (Set.Finite.preimage hinj.injOn hfin).subset fun x hx => ?_` is `x \u2208 (fun x => (2 * det) \u2022 x + adjugate A *\u1d65 k) \u207b\u00b9' {x | c' \u2264 P.intersectionForm x x}`, closed by `exact hgoal` where `hgoal` is the raw inequality. No `Set.mem_setOf_eq`/`Set.mem_preimage` appears anywhere in `TauCeti/LowDimTopology/Plumbing` (grep).",
+   "file": "TauCeti/LowDimTopology/Plumbing/Weight/Sublevel.lean",
+   "fix": "Open the membership explicitly at each site \u2014 `simp only [Set.mem_preimage, Set.mem_setOf_eq] at hx \u22a2` after the `refine \u2026 .subset fun x hx => ?_` \u2014 and then finish with the `rw`/`linarith` directly, dropping the `have hgoal \u2026 exact hgoal` indirection.",
+   "issue": "Membership goals produced by `Set.Finite.subset`/`Set.Finite.preimage` are never stated; they are closed by proving a bare inequality and `exact`ing it, relying on undocumented `Set.preimage`/`Set.mem_setOf_eq` beta-defeq. Same sites: Sublevel.lean:149 (`have hxc \u2026 := hx`), 151-159 (`have hgoal \u2026 exact hgoal`), 170-173 (same pattern), 184-186 (`hmem \u2026 := le_refl _`); NegativeDefinite.lean:198 (`have hxx \u2026 := hx`) and 218 (`exact fun v => Set.mem_Icc.mpr \u2026` against a preimage goal). `have hgoal : X := by \u2026; exact hgoal` is a `show X` in disguise, so a reader cannot tell what the goal actually is.",
+   "line": 151
+  }
+ ],
+ "head_sha": "6f8375b675691dabe86d813a3bfdc756c306d512",
+ "merge_base_sha": "d8b35764ae3b7c4480effb2228bae026160a7e65",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3254,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ffdf56c1abdc34752704595c24f01a63f229ca1977bfe6636a2624978f064c9f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260814T212356Z-3254-proof-quality-771ca3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-14T21:23:56Z",
+ "submitted_by": "kim-em",
+ "summary": "Two proof-hygiene issues: an ad-hoc case split plus nlinarith reimplements the standard integer fact |a| \u2264 a\u00b2, and several set-membership goals are discharged through undocumented `Set.preimage`/`Set.mem_setOf` defeq via a `have hgoal \u2026 exact hgoal` idiom that never states the goal.",
+ "transcript_blob": "2650c8ca1571064d32fffdf69b577c72a295275be1dae07b002e65e1e3c2b353",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 91524,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 91524,
+  "cache_read_input_tokens": 823510,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4019,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4019,
+    "cache_read_input_tokens": 104004,
+    "input_tokens": 2,
+    "output_tokens": 5853,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24472,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,132 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4205235,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 206.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 65399,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 65399,
+    "cache_read_input_tokens": 656819,
+    "inference_geo": "not_available",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3156,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3156,
+      "cache_read_input_tokens": 78742,
+      "input_tokens": 2,
+      "output_tokens": 2923,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17239,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bcd304c949a2d75f8c9483bc04d0f6d60729ec53",
+ "cost_usd": 1.420524,
+ "dedupe_key": "TauCetiProject/TauCeti|3328|cfc473b2fce8582e37dccfc37807e70973d29e9c|proof-quality|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "eae1da6d0d059cf92dd5f88b41845868acda09c092e5d555cc01b0d15025546b",
+ "diff_sha256": "eae1da6d0d059cf92dd5f88b41845868acda09c092e5d555cc01b0d15025546b",
+ "duration_s": 206.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 96-103 are byte-identical modulo `i`/`j`; `rationalizationEquiv_symm_coe` at line 77 shows the `1 \u2297\u209c` direction is already considered API-worthy.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Rationalization.lean",
+   "fix": "Add `@[simp] theorem rationalizationEquiv_one_tmul (L : IntegralLattice V) (x : L) : L.rationalizationEquiv (1 \u2297\u209c[\u2124] x) = (x : V) := by simpa using L.rationalizationEquiv_tmul 1 x`, and use it in place of both `hi` and `hj`.",
+   "issue": "`hi` (96-99) and `hj` (100-103) are the same fact at two indices: `L.rationalizationEquiv (1 \u2297\u209c x) = (x : V)`. This is a reusable public fact \u2014 the forward counterpart of `rationalizationEquiv_symm_coe` (line 77), which the file does expose \u2014 buried twice inside a proof.",
+   "line": 96
+  },
+  {
+   "evidence": "Lines 107-110: `congrArg (fun z : V \u21a6 L.form z (...)) hi` and `congrArg (L.form (...)) hj`. `LinearMap.BilinForm.congr_fun` is confirmed at Mathlib/LinearAlgebra/BilinearForm/Basic.lean:102, and `integralForm_cast` at TauCeti/LinearAlgebra/IntegralLattice/Basic.lean:125 is `@[simp]`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Rationalization.lean",
+   "fix": "Replace lines 104-114 with `rw [hi, hj, \u2190 L.integralForm_cast]` followed by `simp` (or `simp only [LinearMap.BilinForm.baseChange_tmul, mul_one, zsmul_eq_mul]`); `hi`/`hj` LHSs occur literally in the goal after line 95's `rw`.",
+   "issue": "The `calc` at 104-114 rewrites with two explicit `congrArg` terms carrying hand-written motives over the coerced bilinear-form application (`fun z : V \u21a6 L.form z (...)`). That is a manual reimplementation of `rw [hi, hj]`, and the spelled-out motive breaks if the `BilinForm` coercion shape changes.",
+   "line": 104
+  },
+  {
+   "evidence": "`LinearMap.restrictScalars_apply` Mathlib/Algebra/Module/LinearMap/Defs.lean:440; `TensorProduct.mk_apply` Mathlib/LinearAlgebra/TensorProduct/Defs.lean:381; `Submodule.subtype_apply` (simp) Mathlib/Algebra/Module/Submodule/LinearMap.lean:89.",
+   "file": "TauCeti/LinearAlgebra/Submodule/IsLattice.lean",
+   "fix": "Replace the `change` with `simp only [LinearMap.comp_apply, LinearMap.restrictScalars_apply, TensorProduct.mk_apply, LinearEquiv.coe_coe, Submodule.subtype_apply]`.",
+   "issue": "`change e (1 \u2297\u209c[R] b i) = (b i : V)` punches through `LinearMap.comp`, `restrictScalars`, `TensorProduct.mk` and `Submodule.subtype` by definitional unfolding. The comment names what blocks `simp` but not that no rewrite exists \u2014 explicit unfolding lemmas for all four wrappers do exist.",
+   "line": 59
+  },
+  {
+   "evidence": "Mathlib/LinearAlgebra/BilinearForm/IsometryEquiv.lean:85-89 defines `symm` as a structure literal over `(f : M\u2081 \u2243\u2097[R] M\u2082).symm`; the only simp lemmas in that namespace are `coe_toLinearEquiv` (line 71) and `map_app` (line 75) \u2014 no lemma relates `\u21d1f.symm` to `\u21d1f.toLinearEquiv.symm`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Rationalization.lean",
+   "fix": "Add a one-line comment at both sites stating that `BilinForm.IsometryEquiv` has no `symm_toLinearEquiv` lemma so the wrapper defeq is the only route, and drop the redundant `by exact`/`by` in favour of term-mode `rfl` / `L.rationalizationEquiv_symm_coe x`.",
+   "issue": "`rationalizationIsometry_symm_coe` is closed by `exact L.rationalizationEquiv_symm_coe x`, which typechecks only by unfolding `LinearMap.BilinForm.IsometryEquiv.symm` and its `EquivLike` coe down to `LinearEquiv.symm`. Mathlib exposes no `symm`/`toLinearEquiv` rewrite for this structure, so the defeq is load-bearing and undocumented. Same class of issue at line 128 (`rationalizationIsometry_apply := by rfl`).",
+   "line": 133
+  }
+ ],
+ "head_sha": "cfc473b2fce8582e37dccfc37807e70973d29e9c",
+ "merge_base_sha": "bcd304c949a2d75f8c9483bc04d0f6d60729ec53",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3328,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e6744489cd345f1645395384736539f99dbabddf41296f06fbf80adbec59e3e6",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T190825Z-3328-proof-quality-73b23a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T19:08:25Z",
+ "submitted_by": "kim-em",
+ "summary": "The `form_rationalizationEquiv` proof duplicates a reusable fact twice inline and then replays it through an 11-line hand-written `congrArg` calc where `rw` suffices; two other sites close goals by undocumented defeq across wrappers.",
+ "transcript_blob": "7be1ed66128e3b8901ba0d13e2b399e5826c355ad0d7d69ca74c4fc951852e70",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 65399,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 65399,
+  "cache_read_input_tokens": 656819,
+  "inference_geo": "not_available",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3156,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3156,
+    "cache_read_input_tokens": 78742,
+    "input_tokens": 2,
+    "output_tokens": 2923,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17239,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,221 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.3808684999999998,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 212.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 69960,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 69960,
+    "cache_read_input_tokens": 470093,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 885,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 885,
+      "cache_read_input_tokens": 71875,
+      "input_tokens": 2,
+      "output_tokens": 2601,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 17140,
+    "output_tokens_details": {
+     "thinking_tokens": 13030
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "09f7e87b1c4e23f91699918a74d12c91d55f7e36",
+ "cost_usd": 1.380868,
+ "dedupe_key": "TauCetiProject/TauCeti|5626|5f68da5d4162bcb75820fca1828dd0b137ac2439|naming|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "aec0563ebe95b4604ec10573b871d7dfdaba63af7c8c13081b992f6e1dec4186",
+ "diff_sha256": "aec0563ebe95b4604ec10573b871d7dfdaba63af7c8c13081b992f6e1dec4186",
+ "duration_s": 212.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib uses `_of_isBaseChange` for this hypothesis: `mathlib/Mathlib/RingTheory/Flat/Basic.lean:628 theorem IsSMulRegular.of_flat_of_isBaseChange {f : M \u2192\u2097[R] N} (hf : IsBaseChange S f)`; also `Mathlib/RingTheory/Regular/Flat.lean:34,86`.",
+   "file": "TauCeti/LinearAlgebra/Dimension/BaseChange.lean",
+   "fix": "Rename to `span_range_eq_top_of_isBaseChange` and update the use at `TauCeti/Algebra/Module/Lattice.lean:443`.",
+   "issue": "`span_range_eq_top_of_baseChange` names its `IsBaseChange` hypothesis `baseChange`, breaking the convention of the two adjacent declarations in the same file (`finite_of_isBaseChange` line 42, `finrank_of_isBaseChange` line 79) and of Mathlib; `baseChange` is the name of the map constructor `LinearMap.baseChange`, not of the predicate.",
+   "line": 46
+  },
+  {
+   "evidence": "Conclusion at line 98: `g.comp hf.equiv.toLinearMap = hf'.equiv.toLinearMap.comp (u.baseChange S)`; hypotheses `hf hf' : IsBaseChange S _`. Same Mathlib evidence as above.",
+   "file": "TauCeti/LinearAlgebra/Dimension/BaseChange.lean",
+   "fix": "Rename to `comp_equiv_eq_equiv_comp_baseChange_of_isBaseChange`; update the use at `TauCeti/Algebra/Module/Lattice.lean:497`.",
+   "issue": "`comp_equiv_eq_equiv_comp_baseChange_of_baseChange` has the same problem, and worse: within one name `baseChange` denotes `LinearMap.baseChange` (the conclusion's `u.baseChange S`) and then the `IsBaseChange` hypotheses.",
+   "line": 93
+  },
+  {
+   "evidence": "The repo's existing lattice structure names such fields after the predicate: `code/TauCeti/LinearAlgebra/IntegralLattice/Basic.lean:67 isLattice : carrier.IsLattice \u211a` and `:69 isSymm : form.IsSymm`.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "Rename the field to `isBaseChange` and update its uses (lines 379, 386, 395, 403, 431, 443, 449, 497).",
+   "issue": "Structure field `baseChange : IsBaseChange \u211d i.toIntLinearMap` is a proof of an `Is\u2026` predicate but is named after the map operation; `h.baseChange` reads as the base-changed map (cf. `f.toIntLinearMap.baseChange \u211d` at line 496 in this same PR).",
+   "line": 373
+  },
+  {
+   "evidence": "Line 454-456: `private theorem isDiscrete_range_of_instances [Module.Finite \u2124 N] (i : N \u2192+ V\u2080) (h : IsIntegralLattice i) : IsDiscrete (Set.range i)`; the only difference from `IsIntegralLattice.isDiscrete_range` (line 464) is the explicit `Module.Finite` instance.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "Name it after the actual added hypothesis or as an auxiliary, e.g. `IsIntegralLattice.isDiscrete_range_of_finite` (the extra assumption is `[Module.Finite \u2124 N]`), and put it in the `IsIntegralLattice` namespace like the theorem it serves.",
+   "issue": "`isDiscrete_range_of_instances` names the proof's instance plumbing rather than a hypothesis or the conclusion; the `_of_` suffix should describe a hypothesis of the statement.",
+   "line": 454
+  },
+  {
+   "evidence": "`code/TauCeti/LinearAlgebra/IntegralLattice/Basic.lean:57,61` \"An integral symmetric lattice in a rational vector space\" / `structure IntegralLattice`; `mathlib/Mathlib/LinearAlgebra/RootSystem/OfBilinear.lean:16` uses \"integral lattice\" for the bilinear-form notion; roadmap prescription at `roadmap/TauCetiRoadmap/AnalyticToricGeometry/Suggested.lean:36`.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "The AnalyticToricGeometry roadmap prescribes the spelling `IsIntegralLattice`, so keep it if preferred, but state the disambiguation in the structure docstring (\"unrelated to `TauCeti.IntegralLattice`, which carries a bilinear form\"); otherwise `IsFullLattice`/`IsLatticeMap` is the accurate name.",
+   "issue": "`IsIntegralLattice` clashes with the repo's established meaning of \"integral lattice\": `TauCeti.IntegralLattice` is a \u2124-lattice together with an integer-valued symmetric rational bilinear form (~30 files under `TauCeti/LinearAlgebra/IntegralLattice/`), whereas this predicate involves no form at all \u2014 its content is fullness of a \u2124-lattice map. Mathlib uses the term the same way as the existing structure.",
+   "line": 370
+  }
+ ],
+ "head_sha": "5f68da5d4162bcb75820fca1828dd0b137ac2439",
+ "merge_base_sha": "ad39075656c1ff7f45dc7d078a8e7346f3bf053a",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5626,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c25430fc67239f4e9611f6e3fa59b029548255db77a6cfbc7d2dc40c0fb51aa3",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260906T230053Z-5626-naming-a21ed2",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-06T23:00:53Z",
+ "submitted_by": "kim-em",
+ "summary": "Two new base-change lemmas use `_of_baseChange` where the file's own neighbours and Mathlib use `_of_isBaseChange`, the new structure's `IsBaseChange` witness is named `baseChange` (the repo names such fields `isLattice`/`isSymm`), and a helper is named after its instance plumbing. The name `IsIntegralLattice` also collides with the repo's existing bilinear-form `TauCeti.IntegralLattice` and should at least be disambiguated in its docstring.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Lattice.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Module/Lattice.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/AnalyticToricGeometry/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/AnalyticToricGeometry/Suggested.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Dimension/BaseChange.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ab358f9ff05372b95d409de41c255f0b532ba079e2086099ac3ea3cc5ccce7ee",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 69960,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 69960,
+  "cache_read_input_tokens": 470093,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 885,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 885,
+    "cache_read_input_tokens": 71875,
+    "input_tokens": 2,
+    "output_tokens": 2601,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 17140,
+  "output_tokens_details": {
+   "thinking_tokens": 13030
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

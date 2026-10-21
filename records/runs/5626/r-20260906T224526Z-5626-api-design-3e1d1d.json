@@ -1,0 +1,246 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.878684,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 356.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 84579,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 84579,
+    "cache_read_input_tokens": 670590,
+    "inference_geo": "not_available",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1767,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1767,
+      "cache_read_input_tokens": 85612,
+      "input_tokens": 2,
+      "output_tokens": 5714,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 27489,
+    "output_tokens_details": {
+     "thinking_tokens": 22091
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "09f7e87b1c4e23f91699918a74d12c91d55f7e36",
+ "cost_usd": 1.878684,
+ "dedupe_key": "TauCetiProject/TauCeti|5626|5f68da5d4162bcb75820fca1828dd0b137ac2439|api-design|claude-opus-5|d0700ff994e59c9f|production|1",
+ "diff_blob": "aec0563ebe95b4604ec10573b871d7dfdaba63af7c8c13081b992f6e1dec4186",
+ "diff_sha256": "aec0563ebe95b4604ec10573b871d7dfdaba63af7c8c13081b992f6e1dec4186",
+ "duration_s": 356.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lattice.lean:357 `end TauCeti`, :363 `namespace AddMonoidHom`, :370 `structure IsIntegralLattice`; IntegralLattice/Basic.lean:61 `structure IntegralLattice`; scripts/lean_source.py:708 skips declarations whose first namespace component is not `TauCeti`, so the root placement also escapes the repo's dot-notation lint.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "Move the section inside `namespace TauCeti` (`TauCeti.AddMonoidHom.\u2026`) and pick a name that does not read as the predicate of the existing `IntegralLattice` (e.g. `IsFullLatticeMap`).",
+   "issue": "The whole new API is declared after `end TauCeti` (line 357) in Mathlib's root `AddMonoidHom` namespace, so the public surface is `AddMonoidHom.IsIntegralLattice.*`. Every other declaration this repo adds to a Mathlib namespace lives under `TauCeti.` (e.g. `TauCeti.AlgHom.mapValue`, `TauCeti.Derivation.*` in scripts/lint-dot-notation-baseline.txt); only genuinely Mathlib-general lemmas go to `_root_` (line 96). Additionally `IsIntegralLattice` reads as the predicate form of the unrelated `TauCeti.IntegralLattice` (LinearAlgebra/IntegralLattice/Basic.lean:61, a form-integral lattice in a rational space).",
+   "line": 363
+  },
+  {
+   "evidence": "Lattice.lean:347\u2013355; the same `universe u' v'` and `variable {N \u2026}` appear again at :349/:351 and :359/:361.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "Delete lines 347\u2013355 entirely; `NormedSpace.toModule` already supplies `Module \u211d V\u2080`, and the duplicated universe/variable declarations are dead.",
+   "issue": "Lines 347\u2013355 add a `private noncomputable instance moduleOfNormedSpace : Module \u211d E := NormedSpace.toModule`, duplicating Mathlib's `NormedSpace.toModule`, plus an `attribute [local instance 1001]` priority override and `universe`/`variable` lines that are immediately re-declared at 359\u2013361. Being the most recently declared instance of equal priority, `TauCeti.moduleOfNormedSpace` is what `Module \u211d V\u2080` resolves to in the statements of `isDiscrete_range`, `discreteTopology_range` and `isZLattice_range` (via `IsIntegralLattice i`), i.e. a private, non-exported constant inside public statements; at best it is a redundant second path to `Module \u211d`.",
+   "line": 347
+  },
+  {
+   "evidence": "Lattice.lean:383, 390, 400, 407, 415, 441, 446, 464, 470, 478; use site at :485 `h.span_range_eq_top i`.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "Make `i` implicit (`{i : N \u2192+ V}`) in all of these so `h.injective`, `h.span_range_eq_top`, `h.realBasis` work.",
+   "issue": "Every lemma takes `(i : N \u2192+ V)` explicitly before `(h : IsIntegralLattice i)`, although `i` is determined by `h`'s type. Dot notation therefore requires re-supplying it \u2014 the file itself writes `h.span_range_eq_top i` (line 485). This affects `finiteDimensional`, `injective`, `realBasis`, `realBasis_apply`, `range_eq_span_realBasis`, `span_range_eq_top`, `finrank_eq_finrank`, `isDiscrete_range`, `discreteTopology_range`, `isZLattice_range`.",
+   "line": 383
+  },
+  {
+   "evidence": "Lattice.lean:380, 396\u2013397, 412, 430\u2013432, 474, 484 all re-derive `equiv (1 \u2297\u209c n) = i n` by hand; :495\u2013496 exposes `h.baseChange.equiv.toLinearMap` in the public naturality statement.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "Add `IsIntegralLattice.equiv : \u211d \u2297[\u2124] N \u2243\u2097[\u211d] V := h.baseChange.equiv` with `@[simp] equiv_tmul : h.equiv (r \u2297\u209c n) = r \u2022 i n` and `@[simp] equiv_symm_apply : h.equiv.symm (i n) = 1 \u2297\u209c n`, state `comp_equiv_eq_equiv_comp_baseChange` through it, and add its pointwise form.",
+   "issue": "The characterizing datum \u2014 the equivalence `\u211d \u2297[\u2124] N \u2243\u2097[\u211d] V` with `e (1 \u2297\u209c n) = i n` \u2014 is never exposed. Consumers must reach through `h.baseChange.equiv` and then rewrite `IsBaseChange.equiv_tmul` together with `AddMonoidHom.coe_toIntLinearMap`; the file performs exactly this unfolding six times, and the naturality theorem is stated in terms of the raw projection `h.baseChange.equiv.toLinearMap` with no applied form.",
+   "line": 370
+  },
+  {
+   "evidence": "Lattice.lean:415\u2013437 (`hrange'` at :424, downgraded at :437); :473\u2013475 converts back.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "Export the submodule equality as the main lemma and derive the `Set`-level form from it if still needed.",
+   "issue": "`range_eq_span_realBasis` is stated as an equality of `Set V`, but its proof establishes the stronger submodule equality `hrange' : LinearMap.range i.toIntLinearMap = Submodule.span \u2124 (Set.range (realBasis i h))` (line 424) and then discards it. Consumers needing the submodule form (`ZSpan`, `IsZLattice`) must re-derive it, as `discreteTopology_range` already does with a `simpa` round-trip.",
+   "line": 415
+  },
+  {
+   "evidence": "Lattice.lean:371\u2013373 fields; :401 and :408 `@Module.Free.ChooseBasisIndex \u2124 N _ _ _ h.free` in public types; :454\u2013467 `private theorem isDiscrete_range_of_instances` applied as `@isDiscrete_range_of_instances N _ V\u2080 _ _ h.finite i h`.",
+   "file": "TauCeti/Algebra/Module/Lattice.lean",
+   "fix": "Take `[Module.Free \u2124 N] [Module.Finite \u2124 N]` as instance arguments of `IsIntegralLattice` (the idiom already used for the same lattice pattern in TauCeti/Geometry/Hodge/PeriodDomain.lean:71 and Structure.lean:75), leaving `baseChange` as the content.",
+   "issue": "`Module.Free \u2124 N` and `Module.Finite \u2124 N` are stored as structure fields rather than instance hypotheses, so instance search never sees them and the public types must name the proof: `realBasis`/`realBasis_apply` have index type `@Module.Free.ChooseBasisIndex \u2124 N _ _ _ h.free`, and a private helper theorem exists solely to inject `h.finite`. Every Layer 0 consumer of this predicate inherits that plumbing.",
+   "line": 370
+  }
+ ],
+ "head_sha": "5f68da5d4162bcb75820fca1828dd0b137ac2439",
+ "merge_base_sha": "ad39075656c1ff7f45dc7d078a8e7346f3bf053a",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 5626,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fae8ab772ed57a982e29847639f862f3aa6ddd7b6114680b34b276c5929dc45f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "afb424eda89e8ac96d9eb69f6a88972055a4cd1b",
+ "rubrics_version": "d0700ff994e59c9f",
+ "run_id": "r-20260906T224526Z-5626-api-design-3e1d1d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-06T22:45:26Z",
+ "submitted_by": "kim-em",
+ "summary": "The new integral-lattice API is declared in the root `AddMonoidHom` namespace (colliding conceptually with the repo's existing `TauCeti.IntegralLattice`), ships a private duplicate `Module \u211d` instance, passes `i` explicitly everywhere so dot notation never works, exposes no accessor for the defining scalar-extension equivalence, and weakens its own range lemma to a `Set` equality.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Module/Lattice.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Dimension/BaseChange.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/AnalyticToricGeometry/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lint-dot-notation-baseline.txt",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/IsTensorProduct.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/IntegralLattice/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lint-dot-notation.py",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/scripts/lean_source.py",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/IntegralLattice/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/LinearMap/Defs.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 18,
+  "trace_truncated": false
+ },
+ "transcript_blob": "719f2abec1b6a9464c42ba3689832014f1e3de940a5ca7d64e3540a340bb3da4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 84579,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 84579,
+  "cache_read_input_tokens": 670590,
+  "inference_geo": "not_available",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1767,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1767,
+    "cache_read_input_tokens": 85612,
+    "input_tokens": 2,
+    "output_tokens": 5714,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 27489,
+  "output_tokens_details": {
+   "thinking_tokens": 22091
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

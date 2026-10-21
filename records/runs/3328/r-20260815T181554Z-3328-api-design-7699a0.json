@@ -1,0 +1,125 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.4370525,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 301.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 56208,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 56208,
+    "cache_read_input_tokens": 517833,
+    "inference_geo": "not_available",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1826,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1826,
+      "cache_read_input_tokens": 70881,
+      "input_tokens": 2,
+      "output_tokens": 10010,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 24346,
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "bcd304c949a2d75f8c9483bc04d0f6d60729ec53",
+ "cost_usd": 1.437053,
+ "dedupe_key": "TauCetiProject/TauCeti|3328|cfc473b2fce8582e37dccfc37807e70973d29e9c|api-design|claude-opus-5|ce88b39773d791a9|production|1",
+ "diff_blob": "eae1da6d0d059cf92dd5f88b41845868acda09c092e5d555cc01b0d15025546b",
+ "diff_sha256": "eae1da6d0d059cf92dd5f88b41845868acda09c092e5d555cc01b0d15025546b",
+ "duration_s": 301.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/BilinearForm/Basic.lean:67 `theorem smul_left (a : R) (x y : M) : B (a \u2022 x) y = a * B x y`, :71 `smul_right`; TauCeti/LinearAlgebra/IntegralLattice/Basic.lean:124-126 `@[simp] theorem integralForm_cast : (L.integralForm x y : \u211a) = L.form x y`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Rationalization.lean",
+   "fix": "Delete it (`rw [LinearMap.BilinForm.smul_left, LinearMap.BilinForm.smul_right, \u2190 integralForm_cast]; ring` gets it in one line), or keep it only with a corrected docstring, a proof from bilinearity, and an RHS in simp-normal form.",
+   "issue": "`form_smul_coe` carries no rationalization content: it is `LinearMap.BilinForm.smul_left`/`smul_right` plus `integralForm_cast`, yet its docstring (and the PR description) present it as the scalar-extension formula, and it is proved by a detour through `rationalizationEquiv`/`baseChange`. Its RHS `q * r * \u2191(L.integralForm x y)` is also not simp-normal, since `integralForm_cast` is `@[simp]` in the direction `\u2191(L.integralForm x y) = L.form \u2191x \u2191y`.",
+   "line": 139
+  },
+  {
+   "evidence": "Lines 126-128 give the general forward reduction; lines 133-135 give only `L.rationalizationIsometry.symm \u2191x = 1 \u2297\u209c x`, identical in statement to lines 77-79. Mathlib's `IsometryEquiv.symm` (mathlib/Mathlib/LinearAlgebra/BilinearForm/IsometryEquiv.lean:83) is built from `toLinearEquiv.symm`, so the general lemma holds by `rfl`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Rationalization.lean",
+   "fix": "Replace `rationalizationIsometry_symm_coe` by the general `@[simp] theorem rationalizationIsometry_symm_apply (y : V) : L.rationalizationIsometry.symm y = L.rationalizationEquiv.symm y := by rfl`; the coe case then follows from `rationalizationEquiv_symm_coe` by `simp`.",
+   "issue": "Asymmetric isometry API: the forward direction reduces the isometry to the equivalence (`rationalizationIsometry_apply`), but the symm direction has no such reduction and instead restates `rationalizationEquiv_symm_coe` verbatim, so every future equiv-level symm lemma must be duplicated at the isometry level.",
+   "line": 133
+  },
+  {
+   "evidence": "Lines 28-35 list only `isBaseChange_subtype`, `rationalizationEquiv`, `rationalizationIsometry`, `rationalizationIsometry_apply`; the main theorem is at line 84.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Rationalization.lean",
+   "fix": "List `form_rationalizationEquiv` (and `form_smul_coe`, if kept) in `## Main results` and drop the trivial evaluation lemma from that list.",
+   "issue": "The module doc's `## Main results` omits `form_rationalizationEquiv`, the file's headline theorem and the actual roadmap deliverable, as well as `form_smul_coe`, while listing the `rfl` lemma `rationalizationIsometry_apply`.",
+   "line": 26
+  }
+ ],
+ "head_sha": "cfc473b2fce8582e37dccfc37807e70973d29e9c",
+ "merge_base_sha": "bcd304c949a2d75f8c9483bc04d0f6d60729ec53",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 3328,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f0b8f074d67eeb10f97e3f8c346b23acdbf15b8a4ea9fa4a35572681a8414c7f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2c299e1d1950d731786005ef33209486b2fa7f9d",
+ "rubrics_version": "ce88b39773d791a9",
+ "run_id": "r-20260815T181554Z-3328-api-design-7699a0",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-08-15T18:15:54Z",
+ "submitted_by": "kim-em",
+ "summary": "The equivalence/isometry surface is minimal and correctly characterized, but `form_smul_coe` is a restatement of plain \u211a-bilinearity with a non-simp-normal RHS and a misleading docstring, and the isometry's symm-side API duplicates the equiv lemma instead of reducing to it.",
+ "transcript_blob": "19ebecc9dfc712c275e761d52f03cf52c79af4fa587ba56ba881a988863f06ba",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 56208,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 56208,
+  "cache_read_input_tokens": 517833,
+  "inference_geo": "not_available",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1826,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1826,
+    "cache_read_input_tokens": 70881,
+    "input_tokens": 2,
+    "output_tokens": 10010,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 24346,
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,263 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.7044880000000002,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 263.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 77521,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 77521,
+    "cache_read_input_tokens": 812336,
+    "inference_geo": "not_available",
+    "input_tokens": 34,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3864,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3864,
+      "cache_read_input_tokens": 76550,
+      "input_tokens": 2,
+      "output_tokens": 3238,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 20615,
+    "output_tokens_details": {
+     "thinking_tokens": 14009
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ac224d95c4df64a633e459ff5c04955207cb56fe",
+ "cost_usd": 1.704488,
+ "dedupe_key": "TauCetiProject/TauCeti|7192|25ee857173776b8f36fc16de825e07715002a14e|proof-quality|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "1dfdd48c258a66794ecf2558de09d038b7532fba7ed7379bd387ef6f66b300bf",
+ "diff_sha256": "1dfdd48c258a66794ecf2558de09d038b7532fba7ed7379bd387ef6f66b300bf",
+ "duration_s": 263.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Proof body spans lines 51-115; the sibling special case already exists at `TauCeti/LinearAlgebra/QuadraticForm/Hyperbolic.lean:158` (`equivalent_weightedSumSquares_self_neg_hyperbolicPlane`), proved by the same `equivalent_binary_*` route.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Quaternary/TernarySubspace.lean",
+   "fix": "Extract it as a public lemma in `Hyperbolic.lean` next to `equivalent_weightedSumSquares_self_neg_hyperbolicPlane` (e.g. `equivalent_hyperbolicPlane_of_discr_eq_neg_one (w : Fin 2 \u2192 K\u02e3) (h : squareClass (w 0 * w 1) = squareClass (-1)) : (presentedForm \u27e82, w\u27e9).Equivalent (hyperbolicPlane K)`) and call it here; that also brings the proof under the 50-line guideline.",
+   "issue": "Lines 88-115 of the 65-line proof of `equivalent_hyperbolicPlane_prod_self` (51-115, no structuring comments) prove a standalone reusable fact: a regular binary form `\u27e8w 0, w 1\u27e9` whose discriminant class is `squareClass (-1)` is isometric to `hyperbolicPlane K`. It is hidden inside an unrelated quaternary theorem.",
+   "line": "88"
+  },
+  {
+   "evidence": "`instance : Module (ZMod 2) (SquareClassGroup K)` at `TauCeti/FieldTheory/SquareClassGroup/Basic.lean:49`; `ZModModule.add_self` and `ZModModule.neg_eq_self` at `mathlib/Mathlib/Data/ZMod/Basic.lean:1254,1257`.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Quaternary/TernarySubspace.lean",
+   "fix": "Delete `hsquare` and the `calc`; use `ZModModule.add_self`/`ZModModule.neg_eq_self`, e.g. `simpa [ZModModule.add_self] using congrArg (squareClass (-1 : K\u02e3) + \u00b7) hd`.",
+   "issue": "Lines 74-87 derive `d = squareClass (-1)` from `squareClass (-1) + d = 0` by an inline `hsquare` plus an eight-step `calc` of `zero_add`/`add_assoc`/`add_zero`/`congrArg`. `SquareClassGroup K` is a `ZMod 2`-module, so this is one automated step.",
+   "line": "74"
+  },
+  {
+   "evidence": "Lines 88-93 vs 98-104 are identical modulo the weight vector; `presentedForm_eq_weightedSumSquares_coe` is at `TauCeti/LinearAlgebra/QuadraticForm/RegularFormClass/Basic.lean:111`.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Quaternary/TernarySubspace.lean",
+   "fix": "Add a single lemma next to `presentedForm_eq_weightedSumSquares_coe` (RegularFormClass/Basic.lean:111), e.g. `presentedForm_two (w : Fin 2 \u2192 K\u02e3) : presentedForm \u27e82, w\u27e9 = weightedSumSquares K ![(w 0 : K), (w 1 : K)]`, and apply it for both `w` and `![1, -1]`.",
+   "issue": "`hshape` (88-93) and `htargetShape` (98-104) are the same four-line proof (`rw [presentedForm_eq_weightedSumSquares_coe]; congr 1; funext i; fin_cases i <;> rfl`) instantiated twice \u2014 repeated reasoning that belongs in one lemma.",
+   "line": "88"
+  },
+  {
+   "evidence": "`restrict` is `@[simps]` with `restrict_apply` at `mathlib/Mathlib/LinearAlgebra/QuadraticForm/Basic.lean:253`; `Submodule.coe_eq_zero` at `mathlib/Mathlib/Algebra/Module/Submodule/Defs.lean:267`; `QuadraticMap.IsRepresentedBy.not_anisotropic` at `TauCeti/LinearAlgebra/QuadraticForm/Representation.lean:97`, and grep shows no `IsRepresentedBy`/`restrict` lemma exists yet.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Quaternary/TernarySubspace.lean",
+   "fix": "Use the named lemmas (`QuadraticMap.restrict_apply`, `Submodule.coe_eq_zero`) instead of defeq. Better: add `(Q.restrict U).IsRepresentedBy Q` (via `U.subtype`, injective) to `Representation.lean` and get the whole forward direction as `(isRepresentedBy_restrict Q U).not_anisotropic`, removing lines 187-192 and the coercion juggling at 170-175.",
+   "issue": "Undocumented reliance on definitional equality across wrappers: line 174 closes `(x : V) = ((0 : \u21a5(U \u2293 P)) : V)` with a term of type `(x : V) = ((0 : \u21a5U) : V)`; line 175 feeds `Q \u2191y = 0` to a goal `(Q.restrict U) _ = 0`; line 189 reuses `hxQ : (Q.restrict U) x = 0` as `Q \u2191x = 0`; line 192 `Subtype.ext hzero` again matches two different submodule zeros.",
+   "line": "173"
+  }
+ ],
+ "head_sha": "25ee857173776b8f36fc16de825e07715002a14e",
+ "merge_base_sha": "ac224d95c4df64a633e459ff5c04955207cb56fe",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 7192,
+ "prices_sha": "387b989081a1",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3f94bf2366054a87441d1506c96eea30112bd2fa5b1e76b853d6a33bdde2d044",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "9e06df966f1e3d476f8b8035518d386ecd1fad0f",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260918T104032Z-7192-proof-quality-939773",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-18T10:40:32Z",
+ "submitted_by": "kim-em",
+ "summary": "The first theorem is a 65-line proof that buries a reusable lemma (regular binary form of discriminant class -1 is hyperbolic) and a hand-rolled 14-line group-arithmetic calc that automation closes in one line; the second theorem closes several goals by unfolding `restrict`/submodule-zero coercions definitionally. Factor the reusable steps out and replace the defeq steps with named lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/Quaternary/TernarySubspace.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/RegularFormClass/Discriminant.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/SquareClassGroup/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/RegularFormClass/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/SquareClassGroup",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/SquareClassGroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/FieldTheory/SquareClassGroup/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/Hyperbolic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/Binary.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/Representation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/Representation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/QuadraticForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/ZMod/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Submodule",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 24,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4e15707d82e0a2f50def449c4f42c461e3a1fe2a9b5a4bd13d2e4321e3e308f9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 77521,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 77521,
+  "cache_read_input_tokens": 812336,
+  "inference_geo": "not_available",
+  "input_tokens": 34,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3864,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3864,
+    "cache_read_input_tokens": 76550,
+    "input_tokens": 2,
+    "output_tokens": 3238,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 20615,
+  "output_tokens_details": {
+   "thinking_tokens": 14009
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,197 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.96701,
+   "model": "claude-opus-5",
+   "returncode": 0,
+   "secs": 147.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 50431,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 50431,
+    "cache_read_input_tokens": 323020,
+    "inference_geo": "not_available",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5289,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5289,
+      "cache_read_input_tokens": 48143,
+      "input_tokens": 2,
+      "output_tokens": 2177,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 12044,
+    "output_tokens_details": {
+     "thinking_tokens": 8417
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b1fb81d15027d1ac6185912ea9f93c9efd4ddfbd",
+ "cost_usd": 0.96701,
+ "dedupe_key": "TauCetiProject/TauCeti|9626|1056a83b656a3cfbb2d49e6011da11292067af4e|naming|claude-opus-5|7b72cafe03b2af65|production|1",
+ "diff_blob": "16ed7659f3d2cecb9d6e1702877359dc3d150d2898308bf17a4baf1bde3685bf",
+ "diff_sha256": "16ed7659f3d2cecb9d6e1702877359dc3d150d2898308bf17a4baf1bde3685bf",
+ "duration_s": 147.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 30-33 and 39 (`def sturmVariation (p q : K[X]) (x : K)`). In-repo precedent: `TauCeti/Algebra/Polynomial/Eval/Sign.lean:19` uses root `namespace Polynomial` for `sign_eval_map (p : R[X])`; `TauCeti/Algebra/Polynomial/Sturm/GCD.lean:23-25` uses `namespace TauCeti` + `open Polynomial` for lemmas whose first explicit arg is a hypothesis. Grep for `namespace TauCeti` followed by `namespace Polynomial` matches only this file.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Variation.lean",
+   "fix": "Drop `namespace TauCeti`/`end TauCeti` and use root `namespace Polynomial`, remove `open _root_.Polynomial`, and delete the `open TauCeti` sentence from the module docstring (lines 24-25).",
+   "issue": "`namespace TauCeti` + nested `namespace Polynomial` for the Mathlib type `Polynomial`: every declaration's first explicit argument is `p : K[X]`, so this material belongs in the root `Polynomial` namespace. Symptoms: `open _root_.Polynomial` on line 33 and the docstring on line 25 telling consumers to `open TauCeti` to get `p.sturmVariation`.",
+   "line": "31"
+  },
+  {
+   "evidence": "`mathlib/Mathlib/Data/List/SignVariations.lean:47: def signVariations (l : List \u03b1) : \u2115`; grep for `signVariation\\b` in Mathlib returns no singular declaration. `mathlib/Mathlib/Algebra/Polynomial/Sturm/Sequence.lean:19` also writes \"numbers of sign variations\".",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Variation.lean",
+   "fix": "Rename the definition to `sturmVariations` and update every lemma prefix (`sturmVariations_def`, `sturmVariations_zero_left`, \u2026) accordingly.",
+   "issue": "`sturmVariation` is singular, but it is a count of sign variations wrapping `List.signVariations`, which Mathlib names in the plural throughout; no singular `signVariation` exists in Mathlib. Consumers will guess the plural.",
+   "line": "39"
+  },
+  {
+   "evidence": "Lines 67-69 state an equality; the sibling recurrences at lines 77 and 90 are named `sturmVariation_eq_add_of_eval_ne_zero` and `sturmVariation_eq_add_one_of_eval_ne_zero_of_eval_eq_zero`. Naming conventions: \"the name of theorem simply describes the conclusion\"; `=` is named `eq`.",
+   "file": "TauCeti/Algebra/Polynomial/Sturm/Variation.lean",
+   "fix": "Rename to `sturmVariation_eq_of_eval_eq_zero` (plus the plural fix above).",
+   "issue": "`sturmVariation_of_eval_eq_zero` does not describe its conclusion, which is the equality `sturmVariation p q x = sturmVariation q (-p % q) x`; the `_eq_` is missing, inconsistently with the neighbouring step lemmas.",
+   "line": "67"
+  }
+ ],
+ "head_sha": "1056a83b656a3cfbb2d49e6011da11292067af4e",
+ "merge_base_sha": "decbbae48149972679931828baf223259a86f284",
+ "mode": "commit",
+ "model": "claude-opus-5",
+ "pr": 9626,
+ "prices_sha": "72e6ffe100a8",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "67e251df83533f543e2419f079c243d79b2b709cc5788aad46421e95dd457257",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "dcc918abe55f0300e74aabda317d0cc00ecaca10",
+ "rubrics_version": "7b72cafe03b2af65",
+ "run_id": "r-20260930T151604Z-9626-naming-150109",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-09-30T15:16:04Z",
+ "submitted_by": "kim-em",
+ "summary": "The file nests `namespace Polynomial` inside `namespace TauCeti` although every declaration takes a Mathlib `K[X]` first, so dot notation needs `open TauCeti` and upstreaming needs a rename. The definition is also singular where the Mathlib count it wraps is plural, and one lemma name omits its equality conclusion.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/Variation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Polynomial/Sturm/Sequence.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/List/SignVariations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Sturm/GCD.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Eval/Sign.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Polynomial/Eval/Sign.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9e60c2f53210660cbecf18cb4eec2a7aafa89495507a5a5429c788b2dc564d7e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 50431,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 50431,
+  "cache_read_input_tokens": 323020,
+  "inference_geo": "not_available",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5289,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5289,
+    "cache_read_input_tokens": 48143,
+    "input_tokens": 2,
+    "output_tokens": 2177,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 12044,
+  "output_tokens_details": {
+   "thinking_tokens": 8417
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
