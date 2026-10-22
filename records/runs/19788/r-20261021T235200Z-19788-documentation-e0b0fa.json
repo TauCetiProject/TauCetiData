@@ -1,0 +1,163 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.29338319999999996,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 57.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 27687,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 27687,
+    "cache_read_input_tokens": 66976,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4730,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4730,
+      "cache_read_input_tokens": 26180,
+      "input_tokens": 2,
+      "output_tokens": 1734,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2923,
+    "output_tokens_details": {
+     "thinking_tokens": 1033
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "683ccff5d5a3e81a8491074ae1aa30279aaf554c",
+ "cli_dirty": false,
+ "cli_sha": "b4f2de3d1532f1d3f1758bab114583683f680c31",
+ "cost_usd": 0.293383,
+ "dedupe_key": "TauCetiProject/TauCeti|19788|3932e884bf820208b7fb2e90052dbafa650e3da3|documentation|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "b4a417d2b791ec56e839c8a6670ef33810441ad6998a34aa74363138997563ca",
+ "diff_sha256": "b4a417d2b791ec56e839c8a6670ef33810441ad6998a34aa74363138997563ca",
+ "duration_s": 57.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 172-201 run the PY_SHARED block before quota_available/direct discovery and print 'Shared capacity unavailable; using bounded direct discovery.' on failure; the header (lines 1-40) never mentions the state service.",
+   "file": ".github/workflows/pick-runner.yml",
+   "fix": "Add a header paragraph on the shared snapshot: where it comes from, the validity checks, that it uses the same HOSTED_RUNNER_BUDGET and skips the API-reserve check, and that a missing token or invalid snapshot falls back to direct counting. Rewrite line 33 to fit.",
+   "issue": "Header still says 'There is no API for the plan's current usage, so this counts it' and line 33 says 'Any failure ... answers Namespace'. The step now first reads the state service's runner-capacity snapshot, accepts it only if complete, from the right organisation, observed within 60s and not past retry_at, and on any snapshot failure falls back to direct discovery, not Namespace.",
+   "line": 20
+  },
+  {
+   "evidence": "Line 73: `runs-on: ubuntu-latest` unconditionally (it was previously a Namespace priority runner for fleet-staging); lines 22 and 39 are unchanged.",
+   "file": ".github/workflows/pick-runner.yml",
+   "fix": "Say that both selectors take a counted GitHub slot and can wait for one under GitHub saturation. Change 'The ordinary-build picker itself needs a GitHub slot' (line 39) and 'The picker for ordinary builds occupies one counted slot' (line 22) to cover the staging selector too.",
+   "issue": "The new text says Namespace saturation 'cannot delay selection of an idle fleet runner' but leaves out the trade-off: the staging selector now needs a GitHub-hosted slot and waits when all 20 are taken. Lines 22 and 39-40 still say only the 'ordinary-build picker' occupies or needs a GitHub slot, which is now wrong.",
+   "line": 7
+  },
+  {
+   "evidence": "Line 54: `TAUCETI_GITHUB_STATE_TOKEN: { required: false }` with no comment; it is used only at line 132 and gated at line 174.",
+   "file": ".github/workflows/pick-runner.yml",
+   "fix": "Add a one-line comment, e.g. 'Optional bearer token for the github-state runner-capacity snapshot; without it the picker counts jobs directly.'",
+   "issue": "The new optional secret TAUCETI_GITHUB_STATE_TOKEN is declared with no comment, while the neighbouring optional secret FLEET_READ_TOKEN has an explanatory comment. A reader can't tell what it authorises or what happens when it is absent.",
+   "line": 54
+  }
+ ],
+ "head_sha": "3932e884bf820208b7fb2e90052dbafa650e3da3",
+ "merge_base_sha": "683ccff5d5a3e81a8491074ae1aa30279aaf554c",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 19788,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b9ed012a6886d5f3cc39ecdd4ed65c1220810c47f33e0c5ad42a035763edfdeb",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "fc9a57c67bf375ff349abc15c91f7fdb3ad2d486",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261021T235200Z-19788-documentation-e0b0fa",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-21T23:52:00Z",
+ "submitted_by": "kim-em",
+ "summary": "The pick-runner.yml header comments were not updated for the new shared-capacity path or for the staging selector now running on GitHub, so they misdescribe what the workflow does and overclaim that staging selection can't be delayed. The new optional secret has no comment.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pick-runner.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pr-build.yml",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/.github/workflows/pick-runner.yml",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c788fc9ed323baf2aaeb3ce6a249043d51222d38d14ae0c8eca298d865893eaf",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 27687,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 27687,
+  "cache_read_input_tokens": 66976,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4730,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4730,
+    "cache_read_input_tokens": 26180,
+    "input_tokens": 2,
+    "output_tokens": 1734,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2923,
+  "output_tokens_details": {
+   "thinking_tokens": 1033
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
