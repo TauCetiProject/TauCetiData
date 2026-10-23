@@ -1,0 +1,148 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.20656639999999998,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 31.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 17488,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 17488,
+    "cache_read_input_tokens": 19232,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4702,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4702,
+      "cache_read_input_tokens": 16009,
+      "input_tokens": 2,
+      "output_tokens": 2059,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3140,
+    "output_tokens_details": {
+     "thinking_tokens": 1321
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "c3c30d6f0e8a805ae72d66f6f7bba9816a00574d",
+ "cli_dirty": false,
+ "cli_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "cost_usd": 0.206566,
+ "dedupe_key": "TauCetiProject/TauCeti|20368|86e40185de3213a102c89bdc01ccb8a1a5363084|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "bfe84321783c0784deb89d82f3ad26bc0f33ccb65bf302bdc902a0a100c9bfe7",
+ "diff_sha256": "bfe84321783c0784deb89d82f3ad26bc0f33ccb65bf302bdc902a0a100c9bfe7",
+ "duration_s": 31.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Both `cons` cases share `by_cases hfe : f = e; subst hfe; obtain rfl | rfl := hf.left_eq_or_eq h` and `IsLink.reachable (e := f) (by simpa [deleteEdges_isLink] using \u27e8hf, hfe\u27e9)`.",
+   "file": "TauCeti/Combinatorics/Graph/Connectivity/Bridge.lean",
+   "fix": "Prove one lemma by induction, e.g. `G.Reachable u v \u2192 del.Reachable u v \u2228 del.Reachable u x \u2228 del.Reachable u y`. Derive both results from it: the first with `v := x`, the second by weakening via `mono deleteEdges_le` and `h.reachable`.",
+   "issue": "`IsLink.reachable_iff_reachable_deleteEdges_or` (forward direction) and `IsLink.reachable_deleteEdges_or_reachable` (line ~149) repeat the same walk induction (case split `f = e`, `hf.left_eq_or_eq h`, extend by a non-`e` edge).",
+   "line": 123
+  },
+  {
+   "evidence": "Identical `have hzw : G.Reachable z w := by simpa using (map_toSimpleGraphHomOfLE_connectedComponentMk_eq_iff hle).mp (hCD.trans (SimpleGraph.ConnectedComponent.map_mk _ _))` blocks in both theorems.",
+   "file": "TauCeti/Combinatorics/Graph/Connectivity/Bridge.lean",
+   "fix": "Add Component.lean lemmas `(mk z).map \u03c6 = (mk w).map \u03c6 \u2194 G.Reachable z w` and `(mk \u27e8z, _\u27e9).map \u03c6 = mk z`. Use them in both proofs.",
+   "issue": "The injectivity and surjectivity arguments for `ConnectedComponent.map (toSimpleGraphHomOfLE hle)` are repeated in `componentCount_deleteEdges_of_not_isBridge` and in `h\u03c8` of `IsBridge.componentCount_deleteEdges`. The same pattern of `ConnectedComponent.ind` twice, then `(map_toSimpleGraphHomOfLE_connectedComponentMk_eq_iff hle).mp (hCD.trans (map_mk _ _))`, then `simpa` appears in both.",
+   "line": 190
+  },
+  {
+   "evidence": "grep `connectedComponentMk.*\u2194` in Component.lean only hits lines 277 and 474, neither of which is this statement.",
+   "file": "TauCeti/Combinatorics/Graph/Connectivity/Bridge.lean",
+   "fix": "Add a public `@[simp]` lemma in Component.lean, `G.toSimpleGraph.connectedComponentMk z = G.toSimpleGraph.connectedComponentMk w \u2194 G.Reachable z w`, and use it in all three places.",
+   "issue": "The rewrite `SimpleGraph.ConnectedComponent.eq` then `toSimpleGraph_reachable_iff` is repeated three times: inline in `componentCount_deleteEdges_of_not_isBridge`, as the local `hmk`, and in `map_toSimpleGraphHomOfLE_connectedComponentMk_eq_iff`. A grep of Component.lean found no existing iff lemma for it.",
+   "line": 213
+  }
+ ],
+ "head_sha": "86e40185de3213a102c89bdc01ccb8a1a5363084",
+ "merge_base_sha": "a6c9cf06cf6fc358b3528529246b69d043182d4e",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 20368,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "704a3ce73369904fb0d62b53777bec34e9cc205a81ca14c8051120f2ca7b3d93",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261023T154917Z-20368-proof-quality-ceb6f6",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-23T15:49:17Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are robust and free of undocumented defeq, but the same walk induction and the same component-map injectivity/surjectivity reasoning are each written out twice instead of being factored into reusable lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/Graph/Connectivity/Component.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "14d8405086163a32cbb02957cc4eb22c2fd0df820167b1fa5176e8fb4eb4dbc8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 17488,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 17488,
+  "cache_read_input_tokens": 19232,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4702,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4702,
+    "cache_read_input_tokens": 16009,
+    "input_tokens": 2,
+    "output_tokens": 2059,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3140,
+  "output_tokens_details": {
+   "thinking_tokens": 1321
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
