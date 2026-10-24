@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.39049259999999997,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 53.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 33492,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 33492,
+    "cache_read_input_tokens": 109683,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4622,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4622,
+      "cache_read_input_tokens": 32093,
+      "input_tokens": 2,
+      "output_tokens": 2587,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5029,
+    "output_tokens_details": {
+     "thinking_tokens": 2283
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "4fdaa79110c23d1418f87f2b4236a93074040a84",
+ "cli_dirty": false,
+ "cli_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "cost_usd": 0.390493,
+ "dedupe_key": "TauCetiProject/TauCeti|20605|6f998f4def90efacaf331ab5fdca1dcb2fef789c|api-design|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "a9038c31eae72cd4a865ac8a689b579ccfba589488b9fc9dc9e6c25b0d518f74",
+ "diff_sha256": "a9038c31eae72cd4a865ac8a689b579ccfba589488b9fc9dc9e6c25b0d518f74",
+ "duration_s": 53.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`simp [orientedInvertibleFractionalIdeal, idealSignFactor, ha]` (line 68); `simp [idealSignFactor, not_lt_of_ge ha.le]` (line 78).",
+   "file": "TauCeti/NumberTheory/BinaryQuadraticForm/Ideal/NarrowClass.lean",
+   "fix": "Add `@[simp] idealSignFactor_of_pos (ha : 0 < f.a) : f.idealSignFactor D = 1` and `coe_idealSignFactor_of_not_pos (ha : \u00ac 0 < f.a) : (f.idealSignFactor D : _) = omega`, and rewrite the two oriented-ideal lemmas with them.",
+   "issue": "`idealSignFactor` has no lemmas giving its value. Its only lemma is `norm_idealSignFactor`, so `orientedInvertibleFractionalIdeal_of_a_pos` and `coe_orientedInvertibleFractionalIdeal_of_a_neg` both use `simp [idealSignFactor, ...]`, and downstream code with the unexposed body cannot compute the factor.",
+   "line": 40
+  },
+  {
+   "evidence": "Both of those proofs use `simp only [orientedIdealChangeFactor, ...]`.",
+   "file": "TauCeti/NumberTheory/BinaryQuadraticForm/Ideal/NarrowClass.lean",
+   "fix": "Add `coe_orientedIdealChangeFactor` stating that the coercion equals `(\u03b3 \u2022 f).idealSignFactor D * f.idealChangeFactor D \u03b3 * (f.idealSignFactor D)\u207b\u00b9`, and use it in `norm_orientedIdealChangeFactor_pos` and `orientedInvertibleFractionalIdeal_smul`.",
+   "issue": "`orientedIdealChangeFactor` has no lemma stating its value. Consumers only get norm positivity and must unfold it to relate it to `idealChangeFactor`.",
+   "line": 82
+  },
+  {
+   "evidence": "The only discriminant-12 step in its proof is `rw [..., norm_discrimTwelve_order_unit, one_mul]`; `Orders/Quadratic/NarrowPic.lean` has only `mem_narrowPrincipal_iff_exists_norm_pos`, `mk_eq_mk_iff_exists_norm_pos` and `mkPrincipal_eq_one_of_norm_pos`.",
+   "file": "TauCeti/NumberTheory/BinaryQuadraticForm/Ideal/DiscriminantTwelve.lean",
+   "fix": "Move it to `Orders/Quadratic/NarrowPic.lean` as a public lemma: for any order `O` in which every unit has positive norm, `Algebra.norm \u211a x < 0 \u2192 NarrowPic.mkPrincipal O x \u2260 1`. Apply it here with `norm_discrimTwelve_order_unit`.",
+   "issue": "The private `mkPrincipal_discrimTwelve_ne_one_of_norm_neg` is general narrow-Picard infrastructure. Its proof uses only `NarrowPic.mkPrincipal_eq_one_iff`, positivity of norms of totally positive elements, and the fact that every unit has norm 1. It is a partial converse to the public `NarrowPic.mkPrincipal_eq_one_of_norm_pos`, which `Orders/Quadratic/NarrowPic.lean` already provides.",
+   "line": 124
+  },
+  {
+   "evidence": "The `Units.mk0 omega` proof uses only `congrArg QuadraticAlgebra.im`. `Change.lean:43 def idealChangeFactor (f : BinaryQuadraticForm \u2124) (D : \u2124)` has no `Fact`.",
+   "file": "TauCeti/NumberTheory/BinaryQuadraticForm/Ideal/NarrowClass.lean",
+   "fix": "Drop the `Fact` from the section variable and add it explicitly only to the declarations that need it (`orientedInvertibleFractionalIdeal` onward), or use `omit [Fact (\u00ac IsSquare D)] in` for these two.",
+   "issue": "The section `variable ... [Fact (\u00ac IsSquare D)]` is automatically included in `idealSignFactor` and `norm_idealSignFactor`. Neither uses it (`omega \u2260 0` holds for every `D`), so the interface demands an unneeded hypothesis, unlike the upstream `idealChangeFactor`, which takes no `Fact`.",
+   "line": 36
+  }
+ ],
+ "head_sha": "6f998f4def90efacaf331ab5fdca1dcb2fef789c",
+ "merge_base_sha": "4fdaa79110c23d1418f87f2b4236a93074040a84",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 20605,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a882ef977add2dc1072265518a7b3ab556c3515e18f451f3dacbdad0aad77631",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261024T042912Z-20605-api-design-566100",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T04:29:12Z",
+ "submitted_by": "kim-em",
+ "summary": "The orientation API has no lemmas giving the values of its sign and change factors, so even this PR's own proofs unfold the definitions. A general narrow-class non-triviality criterion is hidden as a private lemma specialised to discriminant 12, and `idealSignFactor` requires a nonsquare hypothesis it never uses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/BinaryQuadraticForm/Ideal/Change.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/NumberField/Global/Orders/Quadratic/NarrowPic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/NumberField/Global/Orders/Quadratic/NarrowPic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/BinaryQuadraticForm/Ideal",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7f7de2c6e10fd41b42e460ae8eea4eaf49aba627a67f3b74b86a2722cb21d270",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 33492,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 33492,
+  "cache_read_input_tokens": 109683,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4622,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4622,
+    "cache_read_input_tokens": 32093,
+    "input_tokens": 2,
+    "output_tokens": 2587,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5029,
+  "output_tokens_details": {
+   "thinking_tokens": 2283
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
