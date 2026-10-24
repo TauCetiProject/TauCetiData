@@ -1,0 +1,146 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.28715,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 34.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 27945,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 27945,
+    "cache_read_input_tokens": 26570,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 7821,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 7821,
+      "cache_read_input_tokens": 23347,
+      "input_tokens": 2,
+      "output_tokens": 1586,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2913,
+    "output_tokens_details": {
+     "thinking_tokens": 1532
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "da4d8dc48847cea93910477b85cf0cd427f169b3",
+ "cli_dirty": false,
+ "cli_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "cost_usd": 0.28715,
+ "dedupe_key": "TauCetiProject/TauCeti|20900|faf6757418bda36cfa59563c9dcef6d594bd3cd2|api-design|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "53329136af3658ef3635c2dce7479b753e6b0efa9b49df95a0060796ddd2da2c",
+ "diff_sha256": "53329136af3658ef3635c2dce7479b753e6b0efa9b49df95a0060796ddd2da2c",
+ "duration_s": 34.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 124: `private theorem reflection_map_eq (\u03b9 : \u2102 \u2192\u2097\u1d62[\u211d] E) {e : E \u2243\u2097\u1d62[\u211d] E} (he : \u2200 w, e (\u03b9 w) = \u03b9 w) ...`. Its proof is only `Submodule.reflection_apply_of_map_eq` plus `Submodule.map_orthogonal_equiv`, both reflection or orthogonality API.",
+   "file": "TauCeti/KnotTheory/ConnectedSum.lean",
+   "fix": "In `Reflection.lean`, state it publicly for any submodule: if `\u2200 v \u2208 K, e v = v`, then `K\u15ee.reflection (e x) = e (K\u15ee.reflection x)`, and the same for `K.reflection`. Use it here instead of the private copy.",
+   "issue": "`private theorem reflection_map_eq` is general infrastructure. Its statement uses only Mathlib types: an isometry fixing `range \u03b9` pointwise commutes with the reflection in `(range \u03b9)\u15ee`. Nothing about knots is involved, and it is the natural consumer-facing form of the new `Submodule.reflection_apply_of_map_eq`.",
+   "line": 124
+  },
+  {
+   "evidence": "Line 118: `\u27ea(LinearMap.range \u03b9.toLinearMap)\u15ee.reflection x, \u03b9 Complex.I\u27eb = -\u27eax, \u03b9 Complex.I\u27eb`. The proof uses only `reflection_apply_self`, `inner_neg_right` and `LinearIsometryEquiv.inner_map_map`, none of which is about knots.",
+   "file": "TauCeti/KnotTheory/ConnectedSum.lean",
+   "fix": "Add a public `Submodule.inner_reflection_orthogonal_of_mem` (or a similarly named lemma) to `Reflection.lean` for `v \u2208 K`, and derive both uses from it. Alternatively, inline `Submodule.reflection_mem_subspace_orthogonal_precomplement_eq_neg` directly.",
+   "issue": "`private theorem inner_reflection_I` is the special case `v = \u03b9 I` of a general fact: `\u27eaK\u15ee.reflection x, v\u27eb = -\u27eax, v\u27eb` for `v \u2208 K`. The same applies to `private theorem reflection_apply_self` at line 112. Both are general reflection facts specialized to `\u03b9` and kept private.",
+   "line": 118
+  }
+ ],
+ "head_sha": "faf6757418bda36cfa59563c9dcef6d594bd3cd2",
+ "merge_base_sha": "da4d8dc48847cea93910477b85cf0cd427f169b3",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 20900,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9322199aecd3f3043eb1a73b857b289bb6761fedd6674140b3a44619f2f45e63",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261024T221938Z-20900-api-design-64f028",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T22:19:38Z",
+ "submitted_by": "kim-em",
+ "summary": "The connected-sum surface is adequate: the two-halves apply lemmas, the sign lemma and the unit and mirror lemmas are there, and the `@[simp]` tags are reasonable. However, three general reflection facts are hidden as `private` in `ConnectedSum.lean`. They should move, generalized and public, to `TauCeti/Analysis/InnerProductSpace/Reflection.lean`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/KnotTheory",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8fb97febce9533adf630c6de69c7f9cd7acc98f0bbcf47fe1007a78344124db6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 27945,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 27945,
+  "cache_read_input_tokens": 26570,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 7821,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 7821,
+    "cache_read_input_tokens": 23347,
+    "input_tokens": 2,
+    "output_tokens": 1586,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2913,
+  "output_tokens_details": {
+   "thinking_tokens": 1532
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
