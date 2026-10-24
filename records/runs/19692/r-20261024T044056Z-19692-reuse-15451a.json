@@ -1,0 +1,183 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3975288,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 50.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 34857,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 34857,
+    "cache_read_input_tokens": 127124,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5644,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5644,
+      "cache_read_input_tokens": 32436,
+      "input_tokens": 2,
+      "output_tokens": 2791,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4660,
+    "output_tokens_details": {
+     "thinking_tokens": 1891
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "409c53d6f24edc7116c7a3f22ddabf94e4c50edd",
+ "cli_dirty": false,
+ "cli_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "cost_usd": 0.397529,
+ "dedupe_key": "TauCetiProject/TauCeti|19692|6fe26f0a05eb8007dbd0a920520044e2efc060b0|reuse|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "381ac1dfae3810aa36e1d753b13ccb9c8af60c56653be23d77e732223d6cdafd",
+ "diff_sha256": "381ac1dfae3810aa36e1d753b13ccb9c8af60c56653be23d77e732223d6cdafd",
+ "duration_s": 50.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Primitive.lean:198-200 `theorem not_isPrimitive_zpow ... := fun h => h.ne_zpow (y := x) hn rfl`; Primitive.lean:182-186 ne_zpow.",
+   "file": "TauCeti/GroupTheory/FreeGroup/Primitive.lean",
+   "fix": "Keep `not_isPrimitive_zpow`, proved directly via `Group.natAbs_eq_one_of_not_isProperPower_zpow` and `Int.isUnit_iff_natAbs_eq`, and delete `IsPrimitive.ne_zpow`. Callers can write `fun h => not_isPrimitive_zpow y hn (h \u25b8 hx)`.",
+   "issue": "`IsPrimitive.ne_zpow` (hx : IsPrimitive x) : x \u2260 y ^ n is the same result as `not_isPrimitive_zpow` (line 198) in a different form: each follows from the other in one line (`fun h => h.ne_zpow hn rfl`, or conversely `fun h => not_isPrimitive_zpow y hn (h \u25b8 hx)`). This leaves two public APIs for one fact.",
+   "line": 182
+  },
+  {
+   "evidence": "Primitive.lean:203-204 `theorem not_isPrimitive_pow ... := fun h => h.ne_pow (y := x) hn rfl`; ne_pow at 189-196 uses `Nat.isUnit_iff.mp (Int.ofNat_isUnit.mp hu)`.",
+   "file": "TauCeti/GroupTheory/FreeGroup/Primitive.lean",
+   "fix": "Delete `IsPrimitive.ne_pow` and prove `not_isPrimitive_pow x hn` as `by simpa only [zpow_natCast] using not_isPrimitive_zpow x (n := n) (by simpa [Int.ofNat_isUnit, Nat.isUnit_iff] using hn)`.",
+   "issue": "`IsPrimitive.ne_pow` has the same problem with `not_isPrimitive_pow` (line 203): each is a one-line restatement of the other. `ne_pow` also re-checks by hand that `IsUnit (n : \u2124)` forces `n = 1` instead of reducing to the integer lemma.",
+   "line": 189
+  },
+  {
+   "evidence": "A grep for `isPrimitive_of_mul_of` across code/TauCeti finds only its definition at Primitive.lean:137.",
+   "file": "TauCeti/GroupTheory/FreeGroup/Primitive.lean",
+   "fix": "Delete `isPrimitive_of_mul_of`. Callers can use `by simpa using isPrimitive_of_mul_zpow a b hab 1`.",
+   "issue": "`isPrimitive_of_mul_of` is now just the `n = 1` case of the new `isPrimitive_of_mul_zpow`, proved as `simpa only [zpow_one] using isPrimitive_of_mul_zpow a b hab 1`, and nothing in the repo uses it. The PR deleted the basis-level `isPrimitive_mul` for the same reason.",
+   "line": 137
+  }
+ ],
+ "head_sha": "6fe26f0a05eb8007dbd0a920520044e2efc060b0",
+ "merge_base_sha": "cef82462ec884a0179a56faa59e30d6a1d265cc0",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 19692,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "72a650aab06ac3eaa5a4ec399a7c87da2a4b1ef3f73a45c4c0aa65b88a85f555",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261024T044056Z-19692-reuse-15451a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T04:40:56Z",
+ "submitted_by": "kim-em",
+ "summary": "The integer Nielsen generalization and automorphism characterization reuse Mathlib's FreeGroup.lift, Equiv.ofFreeGroupEquiv and FreeGroupBasis.ofRepr/reindex and duplicate nothing found in Mathlib or TauCeti. The new power-obstruction API comes in two interchangeable copies, and the n = 1 special case isPrimitive_of_mul_of is kept even though nothing uses it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/FreeGroup/ProperPower.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/FreeGroup/Primitive.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "65f40202340d5d65e98eec055ecd83b5ea82b5bbd971d0f61f36bc2d1a03fd6b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 34857,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 34857,
+  "cache_read_input_tokens": 127124,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5644,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5644,
+    "cache_read_input_tokens": 32436,
+    "input_tokens": 2,
+    "output_tokens": 2791,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4660,
+  "output_tokens_details": {
+   "thinking_tokens": 1891
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
