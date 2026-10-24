@@ -1,0 +1,148 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1882366,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 31.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 15357,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 15357,
+    "cache_read_input_tokens": 17223,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4580,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4580,
+      "cache_read_input_tokens": 14000,
+      "input_tokens": 2,
+      "output_tokens": 2177,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3096,
+    "output_tokens_details": {
+     "thinking_tokens": 1047
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3220cd0aaecc7fa1c62358701fbf4768d924de8c",
+ "cli_dirty": false,
+ "cli_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "cost_usd": 0.188237,
+ "dedupe_key": "TauCetiProject/TauCeti|20850|9759dcedeeb5b720a433267a8109ee37a3e97fc2|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "261033baced42d0aefd3d9f63e22a60080aa1ef0c931d8ad737c8625d1c00568",
+ "diff_sha256": "261033baced42d0aefd3d9f63e22a60080aa1ef0c931d8ad737c8625d1c00568",
+ "duration_s": 31.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The goal after `simp only [invTerm, Term.realize_functions_apply\u2081]` is `funMap inv ![t.realize v] = (t.realize v)\u207b\u00b9`, closed by `rfl` (line 97). The only Mathlib helpers are `coe_con` (LanguageMap.lean:491) and `funMap_eq_coe_constants` (Basic.lean:232); neither covers these PR-defined instances.",
+   "file": "TauCeti/ModelTheory/Group/Basic.lean",
+   "fix": "Add `@[simp]` lemmas `funMap_one`, `funMap_inv`, `funMap_mul` for `instStructure`, plus a `coeffStructure` lemma `funMap (Sum.inr a) x = c a` (or `(L.con a : G) = c a` under `coeffStructure`). Close these proofs with `simp [invTerm, ...]` instead of `rfl`.",
+   "issue": "`realize_inv`, `realize_mul` (line 101) and `realize_coeff` (line 110) each end `simp only [...]` with a bare `rfl`, which only works because `instStructure`'s `match` or `coeffStructure`'s `infer_instance` sum structure unfolds. This is undocumented.",
+   "line": 96
+  },
+  {
+   "evidence": "`coeffStructure` is built by `letI ... constantsOn.structure c; infer_instance` (lines 68-71). The `inl`/`inr` branches close goals stated in terms of `funMap` by plain monoid-hom lemmas.",
+   "file": "TauCeti/ModelTheory/Group/Basic.lean",
+   "fix": "Rewrite with the `funMap` simp lemmas from the previous finding (e.g. `simp [coeffStructure_funMap_inl, map_mul]` / `simpa using hc f`), or add a comment explaining the defeq.",
+   "issue": "In `homomorphism`, `exact \u03c6.map_one`, `\u03c6.map_inv (x 0)`, `\u03c6.map_mul (x 0) (x 1)` and `exact hc f` (line 138) only type-check because `coeffStructure`'s `funMap` on `Sum.inl`/`Sum.inr` reduces definitionally to the group operations and to `cG f`. This is undocumented.",
+   "line": 134
+  },
+  {
+   "evidence": "Lines 222-258: three near-identical `have h := (realize_forallVariables (M := M) _).mp \u2026 ; simpa [...] using h` blocks, each followed by `change`.",
+   "file": "TauCeti/ModelTheory/Group/Basic.lean",
+   "fix": "Factor out lemmas such as `funMap_mul_assoc_of_models`, `funMap_one_mul_of_models` and `funMap_inv_mul_of_models` for `[M \u22a8 theory]`, proved once each. Then `groupOfModel` becomes `Group.ofLeftAxioms` applied to them.",
+   "issue": "`groupOfModel` repeats the same unfold-heavy pattern in three branches: specialise `realize_forallVariables` with `![\u2026]`, then `simpa [assocSentence/identitySentence/inverseSentence, mulTerm, oneTerm, funMap_eq_coe_constants] using h`. This hides reusable facts (the model laws written in `funMap` form) and is brittle against changes to `Matrix.vecCons` or `Term.realize` simp normal forms.",
+   "line": 222
+  }
+ ],
+ "head_sha": "9759dcedeeb5b720a433267a8109ee37a3e97fc2",
+ "merge_base_sha": "210fe81e0053cf41b886a86cf9fa4da0f226723a",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 20850,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ecc72c66959b756463db29e9ec3fd290a132a7451f66bf1cc6a0e1863447ab28",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261024T204154Z-20850-proof-quality-4d8ee9",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-24T20:41:54Z",
+ "submitted_by": "kim-em",
+ "summary": "Several proofs depend on undocumented definitional unfolding of `instStructure`/`coeffStructure` (bare `rfl` and `exact` steps), and `groupOfModel` repeats unfold-heavy `simpa` steps three times instead of factoring them into reusable lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/ModelTheory",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "455dee7f38c758e5d17d8518108a470115dc85948384ccce6af49ae1044e2241",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 15357,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 15357,
+  "cache_read_input_tokens": 17223,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4580,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4580,
+    "cache_read_input_tokens": 14000,
+    "input_tokens": 2,
+    "output_tokens": 2177,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3096,
+  "output_tokens_details": {
+   "thinking_tokens": 1047
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
