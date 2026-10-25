@@ -1,0 +1,167 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.5294094,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 47.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 50145,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 50145,
+    "cache_read_input_tokens": 198847,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 220,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 220,
+      "cache_read_input_tokens": 53148,
+      "input_tokens": 2,
+      "output_tokens": 2447,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4422,
+    "output_tokens_details": {
+     "thinking_tokens": 1831
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "474e3f824df69e9f668f086721514ab23131e29a",
+ "cli_dirty": false,
+ "cli_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "cost_usd": 0.529409,
+ "dedupe_key": "TauCetiProject/TauCeti|21116|282f084f5c02716895f0c3d3bc1e21bf21c5b4b6|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "68182977b2b5e1fe62649a8f93a9a759959c53d5a11463b0c0473b2cb5ca3630",
+ "diff_sha256": "68182977b2b5e1fe62649a8f93a9a759959c53d5a11463b0c0473b2cb5ca3630",
+ "duration_s": 47.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The generic lemmas take `i : Fin t.rank` (`SimplyConnectedRootDatum/Assembly.lean:267`, `:467`; `KostantForm.lean:203`, `:211`). The matching E6 generated files contain no `erw` (grep `erw` in `E6/Minuscule/Generated` finds nothing).",
+   "file": "TauCeti/Algebra/Lie/E7/Minuscule/Generated/Coroot.lean",
+   "fix": "Add E\u2087 lemmas indexed by `Fin 7` once, next to the existing E\u2087 root-datum file: `coroot_simpleIndex`, `coroot'_simpleIndex_apply`, `rootGeneratorWeight_inl/inr_eq_root_simpleIndex` and `rootGeneratorWeight_inl/inr`. E6 already does this in `E6/Minuscule/RootDatum.lean:87`. Then replace every `erw` above with `rw`/`simp`.",
+   "issue": "Six proofs in Coroot.lean and RootWeight.lean need `erw` only because `E7.rank` unfolds to 7. Affected: `generatedTangentMatrixLieHom_corootDifferential` and `generatedCartanVector_eq_corootDifferential` (`erw [coroot'_simpleIndex_apply ..]`, no comment), `generatedCorootCocharacter_eq_namedCoroot` (`erw [.., coroot_simpleIndex]` plus a `change`), and in RootWeight.lean `rootMatrix_apply_eq_zero_of_weight_sub_ne`, `generatedRootVector_mem_adjointWeightSpace` and `weightCharacter_rootGeneratorWeight_mem_nontrivialAdjointWeights`.",
+   "line": 0
+  },
+  {
+   "evidence": "Lines: `erw [E7.rootGeneratorWeight_inl_eq_root_simpleIndex]`, `erw [E7.rootGeneratorWeight_inr_eq_neg_root_simpleIndex, neg_ne_zero]`, `erw [Derivation.mem_nontrivialAdjointWeights]`, `erw [hbot, Submodule.mem_bot, LinearEquiv.map_eq_zero_iff] at hz`. The definition at `Tangent/RootSpace.lean:249` is `Iff.rfl`.",
+   "file": "TauCeti/Algebra/Lie/E7/Minuscule/Generated/RootWeight.lean",
+   "fix": "Use the E\u2087 lemmas from the previous finding. Rewrite with `Derivation.mem_nontrivialAdjointWeights` using `rw`, or apply it via `.2`. Derive `hz = 0` with `rw`/`simpa` after stating the weight index at `Fin 7`. If an `erw` must stay, add a comment explaining why.",
+   "issue": "`weightCharacter_rootGeneratorWeight_mem_nontrivialAdjointWeights` has four `erw` steps with no comment. One rewrites with `Derivation.mem_nontrivialAdjointWeights`, which is `Iff.rfl`; another is `erw [hbot, Submodule.mem_bot, ..]`. Nothing says which defeq each step depends on.",
+   "line": 0
+  },
+  {
+   "evidence": "Both proofs end in the identical rewrite chain `generatedCartanVector_eq_corootDifferential, generatedCorootCocharacter, derivationCompLieHom_apply` after `SplitTorus.derivationCompLieHom_tangentBasis` / `SplitTorus.range_derivationCompLieHom`.",
+   "file": "TauCeti/Algebra/Lie/E7/Minuscule/Generated/Coroot.lean",
+   "fix": "Factor out a lemma `derivationCompLieHom_generatedWeightTorusCoordinateMap_tangentBasis : derivationCompLieHom \u03c0 (SplitTorus.tangentBasis i) = generatedCartanVector R i`, then use it in both proofs (for `heq`, via `funext`, and for the span, via `Set.range_comp`).",
+   "issue": "The same per-index computation appears twice: once in `range_derivationCompLieHom_generatedWeightTorusCoordinateMap_eq_span` (funext + `rw [generatedCartanVector_eq_corootDifferential, generatedCorootCocharacter, derivationCompLieHom_apply]`) and again in the `heq` step of `linearIndependent_generatedCartanVector`. It identifies the torus image of the coordinate cocharacter differential with `generatedCartanVector`.",
+   "line": 0
+  }
+ ],
+ "head_sha": "282f084f5c02716895f0c3d3bc1e21bf21c5b4b6",
+ "merge_base_sha": "474e3f824df69e9f668f086721514ab23131e29a",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 21116,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "11547b037cea3ea3d9320e5a6ca257c0cd845a11c0871b55cdb6641d8f496b83",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261025T092233Z-21116-proof-quality-f59949",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-25T09:22:33Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs in Coroot.lean and RootWeight.lean repeatedly use `erw` to get the generic `Fin t.rank` root-datum lemmas to apply at `Fin 7`, and several of these uses have no comment. The fix is one set of E\u2087-specialised lemmas; the coordinate-cocharacter-to-Cartan-vector computation is also written out twice.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/E6/Minuscule/Generated",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/E7/Minuscule/RootDatum.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie/E7/Minuscule/RootDatum.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7dd3e336243b79a40eb5f12d90a6d065d38da9d68140a3788aaebcb3cb6ee676",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 50145,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 50145,
+  "cache_read_input_tokens": 198847,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 220,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 220,
+    "cache_read_input_tokens": 53148,
+    "input_tokens": 2,
+    "output_tokens": 2447,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4422,
+  "output_tokens_details": {
+   "thinking_tokens": 1831
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
