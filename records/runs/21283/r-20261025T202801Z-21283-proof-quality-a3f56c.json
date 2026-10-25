@@ -1,0 +1,167 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.29306719999999997,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 28.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 28140,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 28140,
+    "cache_read_input_tokens": 27756,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6830,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6830,
+      "cache_read_input_tokens": 24533,
+      "input_tokens": 2,
+      "output_tokens": 2203,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3119,
+    "output_tokens_details": {
+     "thinking_tokens": 691
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "112ff70e2da34cd98ab909bff9e192837fe93096",
+ "cli_dirty": false,
+ "cli_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "cost_usd": 0.293067,
+ "dedupe_key": "TauCetiProject/TauCeti|21283|d514ce47b584c12ad5e05959b05d27122425722a|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "09b751b6af9d12c23f2c1c851a69915508631d2342b1e079701e8387fbf103ae",
+ "diff_sha256": "09b751b6af9d12c23f2c1c851a69915508631d2342b1e079701e8387fbf103ae",
+ "duration_s": 28.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `apply Prod.ext` returns these 9 sites; each is followed by `change` or by a `simpa only [toCoverAut_apply]`/`[projection_apply]` round-trip.",
+   "file": "TauCeti/GroupTheory/GroupExtension/CompatibleLifts/Character.lean",
+   "fix": "Add an `@[ext]` lemma `CompatibleLifts.ext (h\u2081 : toCoverAut S \u03c1 x = toCoverAut S \u03c1 y) (h\u2082 : projection S \u03c1 x = projection S \u03c1 y) : x = y` in Basic.lean and use it at every site. This also removes the `change x.val.1 \u2026`/`change x.val.2 \u2026` goals.",
+   "issue": "Equality of compatible lifts is proved by hand as `apply Subtype.ext; apply Prod.ext` plus `change`/`simpa [toCoverAut_apply]`/`simpa [projection_apply]` in 9 places: Character.lean:65,71,184,266,310 and Equiv.lean:40,46,82,145. The general fact behind them (two lifts are equal when both their automorphisms and their acting elements are equal) is never stated.",
+   "line": 65
+  },
+  {
+   "evidence": "Basic.lean:42 `change x.1 (y.1 (S.inl n)) = S.inl n`; :45-47 `change S.rightHom (x.1 (y.1 e)) = \u2026; rw [hxg, hyg, map_mul]; rfl`; :52, :56.",
+   "file": "TauCeti/GroupTheory/GroupExtension/CompatibleLifts/Basic.lean",
+   "fix": "Rewrite with `Prod.fst_mul`, `Prod.snd_mul`, `Prod.fst_inv`, `MulAut.mul_apply`, `MulAut.inv_apply` instead (or use `simp only` with these). Remove the trailing `rfl`.",
+   "issue": "In `mul_mem'`/`inv_mem'`, four `change` steps (lines 42, 45, 52, 56) unfold `(x*y).1`, `MulAut` multiplication and `x\u207b\u00b9.1` with no comment. Line 47 then closes the goal with a bare `rfl` after `rw`, which relies on `MulAut` multiplication being function composition.",
+   "line": 42
+  },
+  {
+   "evidence": "Equiv.lean:78 `change F.toMulEquiv.symm (F.toMulEquiv (\u2026 (F.toMulEquiv.symm (F.toMulEquiv e)))) = _`; :93 `change mapEquiv \u03c1 F.symm.symm \u2026`; :134 `change S'.inl \u2026 * F.toMulEquiv (F.toMulEquiv.symm e) = _`.",
+   "file": "TauCeti/GroupTheory/GroupExtension/CompatibleLifts/Equiv.lean",
+   "fix": "Add (or use existing) `Equiv` coercion lemmas: `F.symm_apply_apply`, `F.apply_symm_apply`, `F.symm_symm`, `coe_toMulEquiv`, and `MulAut.congr_apply` in `rw`. In `central_of_equiv`, use `Commute.map` with an explicit `F.map_inl` rewrite rather than `change \u2026 at h`.",
+   "issue": "Equiv.lean contains 9 undocumented `change` steps that move between `F`, `F.symm`, `F.toMulEquiv`, `F.symm.symm` and the `MulAut.congr` coercion (lines 32, 35, 41, 47, 78, 93, 114, 132, 134). The proofs rely on these wrappers happening to agree definitionally.",
+   "line": 78
+  },
+  {
+   "evidence": "Character.lean:257 `change toCoverAut S \u03c1 x (twist S hcentral \u03c7 ((toCoverAut S \u03c1 x).symm e)) = _`; :137 `change kernelDeviation S \u03c1 x (S.inl n) = 1`.",
+   "file": "TauCeti/GroupTheory/GroupExtension/CompatibleLifts/Character.lean",
+   "fix": "Use `MulAut.mul_apply`/`MulAut.inv_apply` at line 257, `kernelDeviationHom_apply` at line 137, and the ext lemma above for lines 187-189, 267-270 and 281. Prove `toCoverAut_character`/`projection_character` directly by `rfl`, or with a documented reason.",
+   "issue": "Character.lean contains further undocumented `change` steps at lines 137, 187, 189, 257, 267, 270 and 281. Line 257 unfolds `MulAut` multiplication and inversion, and line 137 unfolds `kernelDeviationHom`. `toCoverAut_character`/`projection_character` (lines 80, 86) and `extension_inl`/`extensionOfSurjective_inl` (lines 226, 243) close with a bare `rfl` after `rw`.",
+   "line": 257
+  },
+  {
+   "evidence": "Section.lean:30 `change S.rightHom (toCoverAut S \u03c1 x.val e) = S.rightHom e`.",
+   "file": "TauCeti/GroupTheory/GroupExtension/CompatibleLifts/Section.lean",
+   "fix": "Use `simp only [MonoidHom.comp_apply, MulEquiv.coe_toMonoidHom]` before `rw [rightHom_toCoverAut, \u2026]`.",
+   "issue": "The `change` at line 30 unfolds `MulEquiv.toMonoidHom` composition with no comment.",
+   "line": 30
+  }
+ ],
+ "head_sha": "d514ce47b584c12ad5e05959b05d27122425722a",
+ "merge_base_sha": "112ff70e2da34cd98ab909bff9e192837fe93096",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 21283,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "83e77160ef9df5eadd9cfd755be13f155854df41f23cdf3a011e844a2e74b250",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3999677031829254b4cbb27e9156c33672c61d0d",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261025T202801Z-21283-proof-quality-a3f56c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-25T20:28:01Z",
+ "submitted_by": "kim-em",
+ "summary": "Across the four CompatibleLifts files, 26 `change` steps have no comment and rely on how subtypes, products and equivalence coercions happen to unfold. The same two-part equality proof is repeated in 9 places instead of being stated once as an extensionality lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/GroupExtension/CompatibleLifts",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/GroupExtension",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d0058788eabfd618c70ec5b19c516cf1d6ba8305f52fb1b1af708005cef1e419",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 28140,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 28140,
+  "cache_read_input_tokens": 27756,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6830,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6830,
+    "cache_read_input_tokens": 24533,
+    "input_tokens": 2,
+    "output_tokens": 2203,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3119,
+  "output_tokens_details": {
+   "thinking_tokens": 691
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
