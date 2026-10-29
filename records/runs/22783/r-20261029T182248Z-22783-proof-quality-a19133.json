@@ -1,0 +1,176 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.36711060000000006,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 49.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 30297,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 30297,
+    "cache_read_input_tokens": 115173,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 3290,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 3290,
+      "cache_read_input_tokens": 30230,
+      "input_tokens": 2,
+      "output_tokens": 3092,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5083,
+    "output_tokens_details": {
+     "thinking_tokens": 1824
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6e6bce4db33c43a840d4bc0369d275ff3bbbf670",
+ "cli_dirty": false,
+ "cli_sha": "98063f7fbc2d97108cf2b4ad349557ed9714f03e",
+ "cost_usd": 0.367111,
+ "dedupe_key": "TauCetiProject/TauCeti|22783|9d0ff7431abd6d256502271fd835b292490aad1b|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "dcde7d45523ea04ac32640390b2b27f7a0181c812f8e5b5e62d18c4c165afa9a",
+ "diff_sha256": "dcde7d45523ea04ac32640390b2b27f7a0181c812f8e5b5e62d18c4c165afa9a",
+ "duration_s": 49.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/RootSystem/Defs.lean:261 `lemma reflection_same (x : M) : P.reflection i (P.reflection i x) = x`",
+   "file": "TauCeti/LinearAlgebra/RootSystem/Weyl/Affine.lean",
+   "fix": "Delete `hinv` and pass `RootPairing.reflection_same` to the `simp only` call.",
+   "issue": "Local `hinv` re-proves `P.reflection j (P.reflection j y) = y` in four lines using `symm` and the `reflection_inv` definitional equality.",
+   "line": 200
+  },
+  {
+   "evidence": "Defs.lean:266 `reflection_inv : (P.reflection i)\u207b\u00b9 = P.reflection i := rfl`; Algebra/Module/Equiv/Basic.lean:92 `@[simp] lemma coe_inv (f : M \u2243\u2097[R] M) : \u21d1f\u207b\u00b9 = \u21d1f.symm := rfl`",
+   "file": "TauCeti/LinearAlgebra/RootSystem/Weyl/Affine.lean",
+   "fix": "Use `P.reflection_same` directly for the `symm` component, or rewrite with `LinearEquiv.coe_inv`.",
+   "issue": "`hsymm : (P.reflection i).symm = P.reflection i := P.reflection_inv i` only typechecks by unfolding inverse to `symm`, which is not commented; Mathlib's `reflection_inv` is stated for `\u207b\u00b9`.",
+   "line": 243
+  },
+  {
+   "evidence": "PR's AffineEquiv.lean `theorem _root_.AffineEquiv.linear_inv ... := rfl`; mathlib Algebra/Module/Equiv/Basic.lean:92 `coe_inv`",
+   "file": "TauCeti/LinearAlgebra/RootSystem/Weyl/Affine.lean",
+   "fix": "Rewrite with `AffineEquiv.linear_inv`, `LinearEquiv.coe_inv` and `LinearEquiv.mul_apply`, then drop the `show`s and the inaccurate comments.",
+   "issue": "In `affineWeylCandidate.inv_mem'`, `hlin` stands in for `(f\u207b\u00b9).linear` and `f.linear.symm` by definitional unfolding, and the comment says Mathlib names neither identification. That is wrong: this PR adds `AffineEquiv.linear_inv`, and Mathlib has `LinearEquiv.coe_inv`. The `rootSpanStabilizer` comment (line 224) makes the same inaccurate claim to justify its `show`s.",
+   "line": 357
+  },
+  {
+   "evidence": "Every lemma in both chains is already a `@[simp]` lemma or a direct unfolding.",
+   "file": "TauCeti/LinearAlgebra/AffineSpace/AffineEquiv.lean",
+   "fix": "Use `ext x; simp [AffineEquiv.apply_eq_linear_add f x, add_comm]`, and for `affineReflection_apply` use `simp [affineReflection, RootPairing.reflection_apply]` followed by `module`.",
+   "issue": "`eq_constVAdd_mul_linear` is a 7-lemma `rw` chain (`coe_mul, comp_apply, constVAdd_apply, coe_toAffineEquiv, vadd_eq_add, apply_eq_linear_add, add_comm`) that will break on renames. `affineReflection_apply` (Weyl/Affine.lean:129) is a 6-lemma chain of the same kind.",
+   "line": 121
+  }
+ ],
+ "head_sha": "9d0ff7431abd6d256502271fd835b292490aad1b",
+ "merge_base_sha": "c2ff0693cf399626a66a47f72c62bb37c2b2ff57",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 22783,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "211528c6dac2e285432991d4359beda4c3ce2e87997a6e3dc3b90454157f3c3b",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "ddacd69dfd9940baf178c426dafe0bcd9ff7bdde",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261029T182248Z-22783-proof-quality-a19133",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-29T18:22:48Z",
+ "submitted_by": "kim-em",
+ "summary": "One local lemma re-proves Mathlib's `RootPairing.reflection_same`, and several proofs depend on the inverse-equals-`symm` definitional equality without comment or with comments wrongly saying no lemma exists, although `LinearEquiv.coe_inv` and the PR's own `AffineEquiv.linear_inv` cover it. Two proofs are long named-lemma `rw` chains that should use `simp`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/RootSystem",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Module/Equiv/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/RootSystem/IsValuedIn.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "727892c1c8263ecece4972f037764867d51ea1c331fb825cae39276ff9e94474",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 30297,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 30297,
+  "cache_read_input_tokens": 115173,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 3290,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 3290,
+    "cache_read_input_tokens": 30230,
+    "input_tokens": 2,
+    "output_tokens": 3092,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5083,
+  "output_tokens_details": {
+   "thinking_tokens": 1824
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
