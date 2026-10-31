@@ -1,0 +1,154 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.337376,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 32.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 33261,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 33261,
+    "cache_read_input_tokens": 29260,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 10447,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 10447,
+      "cache_read_input_tokens": 26037,
+      "input_tokens": 2,
+      "output_tokens": 2427,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3271,
+    "output_tokens_details": {
+     "thinking_tokens": 1028
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "df319cee080d8cab30699ff8ab3ed8d9347768aa",
+ "cli_dirty": false,
+ "cli_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "cost_usd": 0.337376,
+ "dedupe_key": "TauCetiProject/TauCeti|23186|0f4f8fb57d0cb04061e1b849538a57e853d5390b|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "c02a8333739bb6a6c38febd22ffb38fd5c314b4bcc678d422653fc5aa79378b3",
+ "diff_sha256": "c02a8333739bb6a6c38febd22ffb38fd5c314b4bcc678d422653fc5aa79378b3",
+ "duration_s": 32.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `Ring.inverse_mul_cancel|Ring.mul_inverse_cancel` hits Operator/Basic.lean:97,105 and FiniteSection/Stability.lean:127,172 with the same three-step rw.",
+   "file": "TauCeti/Analysis/Normed/Operator/Basic.lean",
+   "fix": "Add `ContinuousLinearMap.ringInverse_apply_apply (hA : IsUnit A) x : Ring.inverse A (A x) = x` and `apply_ringInverse_apply` to Operator/Basic.lean and use them at all four sites.",
+   "issue": "The rewrite chain `rw [\u2190 mul_apply_eq_comp, Ring.inverse_mul_cancel/mul_inverse_cancel _ hu, one_apply_eq_self]` (turning `A\u207b\u00b9 (A x)` into `x`, or `A (A\u207b\u00b9 y)` into `y`) is repeated at Basic.lean:97, Basic.lean:105, Stability.lean:127 and Stability.lean:172 (and already at RangeProjection.lean:166). It is a brittle named-lemma chain duplicated across files.",
+   "line": 97
+  },
+  {
+   "evidence": "The three `hinj` blocks in the diff are identical except for the bound hypothesis.",
+   "file": "TauCeti/Analysis/InnerProductSpace/Adjoint.lean",
+   "fix": "Factor out one lemma, e.g. `ContinuousLinearMap.injective_of_forall_norm_le (h : \u2200 x, \u2016x\u2016 \u2264 M * \u2016f x\u2016) : Function.Injective f`, in Operator/Basic.lean and reuse it at all three sites.",
+   "issue": "The proof that a lower bound `\u2016x\u2016 \u2264 M\u2016f x\u2016` gives injectivity (`refine (injective_iff_map_eq_zero _).mpr fun x hx \u21a6 norm_le_zero_iff.mp ?_; simpa [hx] using \u2026`) is repeated verbatim at Adjoint.lean:72-74, Stability.lean:100-102 and Normed/Operator/StableSequence.lean:62-64.",
+   "line": 72
+  },
+  {
+   "evidence": "`e := LinearEquiv.ofBijective (A n : E n \u2192\u2097[\ud835\udd5c] E n) _`; the `show` restates `e (e.symm y) = y` as `A n (e.symm y) = y` purely by unfolding.",
+   "file": "TauCeti/Analysis/Normed/Operator/StableSequence.lean",
+   "fix": "Rewrite `e (e.symm y)` with the `ofBijective` application lemma instead of using `show`, or add a comment documenting the intended defeq.",
+   "issue": "`show A n (e.symm y) = y from e.apply_symm_apply y` relies, without any comment, on `e` (built with `LinearEquiv.ofBijective`) unfolding definitionally to `A n` when applied.",
+   "line": 71
+  }
+ ],
+ "head_sha": "0f4f8fb57d0cb04061e1b849538a57e853d5390b",
+ "merge_base_sha": "166050596efa62b62ff9eaefb6ac25831ab96b87",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 23186,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "71e1d47594655662a4ed4309c314d5b1be28a65f0b3daa172773e2666484c18b",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261031T050924Z-23186-proof-quality-c4ba9f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T05:09:24Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are short and robust, but the same inverse-cancellation rewrite chain and the same lower-bound-implies-injectivity argument are each repeated across files instead of being factored into reusable lemmas, and one step relies on an undocumented `show` defeq.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "92e31ddcb7c7077903b8d9b7948fa91648fbe283cdef6c552fc3a4338f8531df",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 33261,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 33261,
+  "cache_read_input_tokens": 29260,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 10447,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 10447,
+    "cache_read_input_tokens": 26037,
+    "input_tokens": 2,
+    "output_tokens": 2427,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3271,
+  "output_tokens_details": {
+   "thinking_tokens": 1028
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
