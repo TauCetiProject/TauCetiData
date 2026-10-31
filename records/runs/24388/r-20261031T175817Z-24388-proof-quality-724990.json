@@ -1,0 +1,154 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.24362060000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 24.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 23816,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 23816,
+    "cache_read_input_tokens": 23283,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6979,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6979,
+      "cache_read_input_tokens": 20060,
+      "input_tokens": 2,
+      "output_tokens": 1661,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2421,
+    "output_tokens_details": {
+     "thinking_tokens": 759
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e7210c88f4640e076ffb9a75c99f8dcf64383103",
+ "cli_dirty": false,
+ "cli_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "cost_usd": 0.243621,
+ "dedupe_key": "TauCetiProject/TauCeti|24388|738328f94d93747cea9e91126d4986501a1c1f44|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "77197be7a0069b8dbf2c4fb660ac3cf2c1571302d399432181154926e6eac8b0",
+ "diff_sha256": "77197be7a0069b8dbf2c4fb660ac3cf2c1571302d399432181154926e6eac8b0",
+ "duration_s": 24.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`map_gradedCohomologyClass` (ChangeOfGroup.lean:200) takes `hF`, `hFd` and `h\u03b9` as separate hypotheses, and the PR discharges `hFd` and `h\u03b9` with roughly 30 inline lines.",
+   "file": "TauCeti/RepresentationTheory/Homological/ContCohomology/Evens/Norm/IndexOne.lean",
+   "fix": "Extract private lemmas, e.g. `indexOneProj_comp_differential : (resFunctor _).map d \u226b indexOneProj hU = indexOneProj hU \u226b d'` and `indexOneProj_\u03b9_apply`. The main theorem then just applies `map_gradedCohomologyClass` with them.",
+   "issue": "The main proof (lines 194\u2013257, over 50 lines) proves two side conditions of `map_gradedCohomologyClass` inline: `hFd` (`indexOneProj` commutes with the differentials, lines 223\u2013233) and `h\u03b9` (it lies over `smoothTensorInducedTrivialF2Iso`, lines 236\u2013257). These are standalone facts about `indexOneProj`, like `subsingletonEquiv_\u03c1`, which is already factored out.",
+   "line": 194
+  },
+  {
+   "evidence": "Grep finds `symm_apply_apply x).symm.trans` at IndexOne.lean:128 and :242.",
+   "file": "TauCeti/RepresentationTheory/Homological/ContCohomology/Evens/Norm/IndexOne.lean",
+   "fix": "Add one lemma (e.g. `TauCeti.PiTensorProduct.exists_eq_tprod_of_subsingleton` in SlotSum.lean next to the other `subsingletonEquiv` lemmas) and use it in both places.",
+   "issue": "The step `obtain \u27e8y, rfl\u27e9 : \u2203 y, x = tprod \u2124 fun _ \u21a6 y := \u27e8_, (subsingletonEquiv _).symm_apply_apply x).symm.trans (subsingletonEquiv_symm_apply' _ _)\u27e9` is repeated verbatim at lines 128 and 242.",
+   "line": 242
+  },
+  {
+   "evidence": "Lines 236\u2013240: `(indexOneProj_apply hU _).trans ((congrArg _ (\u2026differential_apply \u2026)).trans ((subsingletonEquiv_slotSum \u2026).trans (\u2026).symm))`. Lines 245\u2013256 are a similar nested `.trans`/`congrArg` chain.",
+   "file": "TauCeti/RepresentationTheory/Homological/ContCohomology/Evens/Norm/IndexOne.lean",
+   "fix": "After factoring into lemmas, close these with `rw`/`simp only [indexOneProj_apply, smoothTensorInducedGradedResolutionContraction_\u03b9_apply, PiTensorProduct.map_tprod, PiTensorProduct.subsingletonEquiv_apply_tprod, \u2026]` instead of hand-built `.trans` terms.",
+   "issue": "Lines 236\u2013240 and 245\u2013256 are long term-mode chains (`.trans`, `congrArg`) of 4 to 6 named lemmas. They break on any rename or argument change and do not show why the goal holds.",
+   "line": 245
+  }
+ ],
+ "head_sha": "738328f94d93747cea9e91126d4986501a1c1f44",
+ "merge_base_sha": "1d66631e4bc60eacc343cffc03fc2059f7de1bbd",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 24388,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1b3a9318b09a47404748315089ca7528991a2e0bd012b61ad5346c3630a01bab",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261031T175817Z-24388-proof-quality-724990",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T17:58:17Z",
+ "submitted_by": "kim-em",
+ "summary": "`trivialF2ResMap_evensNorm_of_index_eq_one` is about 63 lines and proves two reusable facts about `indexOneProj` inline, using brittle `.trans` chains of named lemmas. The step that writes an element as a pure tensor is duplicated.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/RepresentationTheory/Homological/ContCohomology/Evens/Norm/IndexOne.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4a3157dcce8ffdb31e52b94728a2357ee30d2ca857814a41c3ddd9a124dde55c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 23816,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 23816,
+  "cache_read_input_tokens": 23283,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6979,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6979,
+    "cache_read_input_tokens": 20060,
+    "input_tokens": 2,
+    "output_tokens": 1661,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2421,
+  "output_tokens_details": {
+   "thinking_tokens": 759
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
