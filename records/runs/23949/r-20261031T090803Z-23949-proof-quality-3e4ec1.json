@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.36431739999999996,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 34.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 34685,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 34685,
+    "cache_read_input_tokens": 72367,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 576,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 576,
+      "cache_read_input_tokens": 37332,
+      "input_tokens": 2,
+      "output_tokens": 1792,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3617,
+    "output_tokens_details": {
+     "thinking_tokens": 1753
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d7dad3786f4cb95dbc0b2f5a2e47a989c1ebadad",
+ "cli_dirty": false,
+ "cli_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "cost_usd": 0.364317,
+ "dedupe_key": "TauCetiProject/TauCeti|23949|bb92afe410e41aae4707de3601780ad9767de0a3|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "a2f09b78c22cf9947cc932fca47cef708dcd20c337ea9d66f1ca3ce682ea5001",
+ "diff_sha256": "a2f09b78c22cf9947cc932fca47cef708dcd20c337ea9d66f1ca3ce682ea5001",
+ "duration_s": 34.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "line 512 `have hcp : collarParam S x = (z, t)` inside `glueFun_of_eq`; line 681 `have hcp : collarParam S x = (z, 1 - c + c * s)` with the identical proof `rw [collarParam, hx]; exact Prod.ext (Function.leftInverse_invFun K\u2081.isEmbedding.injective z) rfl`.",
+   "file": "TauCeti/KnotTheory/Cobordism.lean",
+   "fix": "Add one private lemma, e.g. `glueFun_mem_range_of_pos : 0 < s \u2192 ((C (z,s)).1, 1 - c + c * (C (z,s)).2) \u2208 range (glueFun C S hc)`, proved with `glueFun_of_eq`. Use it in both places and drop the copied `hcp`.",
+   "issue": "`exists_pos_range_inter_le_snd` of `transConcordanceOfWidth` rebuilds `hcp : collarParam S x = (z, 1 - c + c * s)` and rewrites with `rescale_apply` by hand, which repeats the proof of `glueFun_of_eq` (line 512). The reverse direction of `exists_range_toFun_transConcordance` repeats the same steps again (`hS` at `(K\u2081 z, 1 - c + c*s)`, `ht` by `field_simp; ring`, then `glueFun_of_eq`).",
+   "line": 681
+  },
+  {
+   "evidence": "lines 453 and 472 contain the identical term `eventuallyEq_of_mem ((isOpen_lt continuous_const (continuous_snd.comp h\u03a6.continuous)).mem_nhds hx) fun y hy \u21a6 \u2026 fst_mem_range_of_le hS (le_of_lt hy)`.",
+   "file": "TauCeti/KnotTheory/Cobordism.lean",
+   "fix": "Factor out a private lemma `eventuallyEq_prodMap_collarParam : Prod.map K\u2081 id \u2218 collarParam S =\u1da0[\ud835\udcdd x] S.toFun`, using `hS` and `hx`. Derive the `fst` version in `contMDiffAt_collarParam` from it, and reuse an `isOpen` lemma for the slab.",
+   "issue": "The fact that `{y | 1 - 2*c < (S.toFun y).2}` is an open neighbourhood of `x` (`isOpen_lt continuous_const (continuous_snd.comp h\u03a6.continuous)).mem_nhds hx`) is rebuilt in `contMDiffAt_collarParam` (453), `injective_mfderiv_collarParam` (472) and `isImmersionAt_glueFun` (`hU`). The first two then derive the same pointwise identity from `fst_mem_range_of_le`.",
+   "line": 453
+  }
+ ],
+ "head_sha": "bb92afe410e41aae4707de3601780ad9767de0a3",
+ "merge_base_sha": "d7dad3786f4cb95dbc0b2f5a2e47a989c1ebadad",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 23949,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a7623aef8be8bbdb38c3352250ae2ed18f89014c18da4b9a1eb616c3d76f645c",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261031T090803Z-23949-proof-quality-3e4ec1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T09:08:03Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs are robust, but the same reasoning is written out several times instead of being factored into lemmas: the collar-point computation is redone even though `glueFun_of_eq` already covers it, and the collar-neighbourhood argument is copied three times.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/KnotTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/KnotTheory/Cobordism.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dfc8f1c6f4ea0f2ddc95e3d1da373334ed119bab46341588be1624a73eaebc93",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 34685,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 34685,
+  "cache_read_input_tokens": 72367,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 576,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 576,
+    "cache_read_input_tokens": 37332,
+    "input_tokens": 2,
+    "output_tokens": 1792,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3617,
+  "output_tokens_details": {
+   "thinking_tokens": 1753
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
