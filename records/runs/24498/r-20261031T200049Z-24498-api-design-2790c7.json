@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2617402,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 39.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 20714,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 20714,
+    "cache_read_input_tokens": 21161,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5999,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5999,
+      "cache_read_input_tokens": 17938,
+      "input_tokens": 2,
+      "output_tokens": 2907,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4589,
+    "output_tokens_details": {
+     "thinking_tokens": 1377
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "93af5b549b7d9ed44291d6ceb093a8013dda00f8",
+ "cli_dirty": false,
+ "cli_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "cost_usd": 0.26174,
+ "dedupe_key": "TauCetiProject/TauCeti|24498|44ed05aa0c5e3a707cc701e94029a556d0a0791b|api-design|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "fe586d52cb67f86d2226ea23dee0aa56f82e08a508109344f74d1045f37d0f50",
+ "diff_sha256": "fe586d52cb67f86d2226ea23dee0aa56f82e08a508109344f74d1045f37d0f50",
+ "duration_s": 39.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`@[expose, simps obj] def fiberFunctor`; `fiberFunctor_map_apply ... := (rfl)` is proved inside the defining module.",
+   "file": "TauCeti/Topology/VectorBundle/FiniteRank.lean",
+   "fix": "Remove `@[expose]` from `fiberFunctor`.",
+   "issue": "`fiberFunctor` is `@[expose]` although `simps obj` plus the `(rfl)` lemma `fiberFunctor_map_apply` already characterize it; no consumer needs to unfold it.",
+   "line": 102
+  },
+  {
+   "evidence": "Only `rank_trivial` is provided after `def trivial`.",
+   "file": "TauCeti/Topology/VectorBundle/FiniteRank.lean",
+   "fix": "Drop `@[expose]` and add `@[simp]` `(rfl)` lemmas for `(trivial \ud835\udd5c B n).core.baseSet x = Set.univ` and `(trivial \ud835\udd5c B n).core.coordChange i j x = ContinuousLinearMap.id \ud835\udd5c _`.",
+   "issue": "`trivial` is `@[expose]` but its only API is `rank_trivial`. Nothing states its core (base sets `univ`, transitions `id`), so consumers must unfold.",
+   "line": 130
+  },
+  {
+   "evidence": "Only `rank_ofBundle` is provided; the module docstring names `pointIndexedCoreHomeomorph` as the comparison.",
+   "file": "TauCeti/Topology/VectorBundle/FiniteRank.lean",
+   "fix": "Drop `@[expose]` and add `@[simp] theorem core_ofBundle : (ofBundle \ud835\udd5c n E).core = pointIndexedCore \ud835\udd5c (Fin n \u2192 \ud835\udd5c) E := (rfl)`.",
+   "issue": "`ofBundle` is `@[expose]` but has no `core` lemma, so connecting it to `pointIndexedCoreHomeomorph` (cited in the module doc) requires unfolding.",
+   "line": 170
+  },
+  {
+   "evidence": "Diff adds `operator_zero/add/neg` and `fiberMap_zero/add/neg` only; FiniteRank.lean restates only `fiberMap_add`/`fiberMap_neg`.",
+   "file": "TauCeti/Topology/VectorBundle/Descent.lean",
+   "fix": "Add `@[simp] operator_sub` and `@[simp] fiberMap_sub` (by `(rfl)`) in `CoordinateHom`, and `fiberMap_sub` in `FiniteRankBundleCore` alongside its `fiberMap_add`/`fiberMap_neg`.",
+   "issue": "The group structure comes from `Equiv.addCommGroup` with a transported `sub`, but there is no `operator_sub` or `fiberMap_sub`. `(a - b).fiberMap x`, and the categorical `f - g` in FiniteRank.lean, do not simplify.",
+   "line": 320
+  },
+  {
+   "evidence": "`hg` and `g` are local `have`/`let` inside the proof; no `fiberMap_inv` declaration exists in the file.",
+   "file": "TauCeti/Topology/VectorBundle/FiniteRank.lean",
+   "fix": "Add `@[simp] theorem fiberMap_inv [CompleteSpace \ud835\udd5c] (f : A \u27f6 D) [IsIso f] (x : B) : (inv f).fiberMap x = (f.fiberMap x).inverse`, from `IsIso.inv_eq_of_hom_inv_id` and the `hg` computation.",
+   "issue": "`isIso_iff_bijective` builds the inverse as `ofContinuous (fun x \u21a6 (f.fiberMap x).inverse)`, but no exported lemma computes `(inv f).fiberMap x`. Consumers of the isomorphism criterion cannot evaluate the inverse.",
+   "line": 196
+  },
+  {
+   "evidence": "`homGroup A D := inferInstanceAs (AddCommGroup (CoordinateHom A.core D.core))`; the restated lemmas are `fiberMap_add` and `fiberMap_neg` only.",
+   "file": "TauCeti/Topology/VectorBundle/FiniteRank.lean",
+   "fix": "Add `@[simp] theorem fiberMap_zero (x : B) : (0 : A \u27f6 D).fiberMap x = 0`, or drop the add/neg restatements so the zero, add and neg cases are treated the same way.",
+   "issue": "Category-level `fiberMap_add` and `fiberMap_neg` are restated for `A \u27f6 D`, but `fiberMap_zero` is not. The `CoordinateHom` version only fires on the preadditive `(0 : A \u27f6 D)` if `inferInstanceAs` unfolds at instance transparency, which is undocumented.",
+   "line": 92
+  }
+ ],
+ "head_sha": "44ed05aa0c5e3a707cc701e94029a556d0a0791b",
+ "merge_base_sha": "07d5b4209eb2d3b5876812cf3b52042a9d29a235",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 24498,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6f8efb3e1af909e42b003e4d504bb6bb47dcc807cfed2c6472156059efc7999a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261031T200049Z-24498-api-design-2790c7",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-10-31T20:00:49Z",
+ "submitted_by": "kim-em",
+ "summary": "The category, preadditive structure and isomorphism criterion have mostly adequate API, but three definitions expose their bodies where characterizing lemmas are missing. Subtraction, inverse fibre-map and category-level zero lemmas are also missing or uneven.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/VectorBundle/Descent.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "8efa3125e5328093a50c58aa084686f668660004618591bb7d2a6595441868f8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 20714,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 20714,
+  "cache_read_input_tokens": 21161,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5999,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5999,
+    "cache_read_input_tokens": 17938,
+    "input_tokens": 2,
+    "output_tokens": 2907,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4589,
+  "output_tokens_details": {
+   "thinking_tokens": 1377
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
