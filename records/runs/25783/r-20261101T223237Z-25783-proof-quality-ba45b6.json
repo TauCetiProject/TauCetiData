@@ -1,0 +1,178 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.276517,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 22540,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 22540,
+    "cache_read_input_tokens": 67725,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 386,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 386,
+      "cache_read_input_tokens": 25377,
+      "input_tokens": 2,
+      "output_tokens": 2561,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4131,
+    "output_tokens_details": {
+     "thinking_tokens": 918
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "73d090e21cdab7e01125bfed114dc42337910eb9",
+ "cli_dirty": false,
+ "cli_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "cost_usd": 0.276517,
+ "dedupe_key": "TauCetiProject/TauCeti|25783|d44ab009f481648c80046a7d5dc4bec91f80f2f9|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "58cde1e56a71eaf59f3ffaff6380adacaa04a366fc565afd7e574ba47c8dc9bb",
+ "diff_sha256": "58cde1e56a71eaf59f3ffaff6380adacaa04a366fc565afd7e574ba47c8dc9bb",
+ "duration_s": 36.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `indResHomEquiv` in TauCeti: only uses and `simp [indResAdjunction, indResHomEquiv]` unfoldings (FiniteIndex.lean:73,136; Shapiro.lean:91); no apply lemma exists.",
+   "file": "TauCeti/RepresentationTheory/Induction/Mackey/IdentityComponent.lean",
+   "fix": "Add `Rep.indResHomEquiv_hom_apply` (value on `IndV.mk _ _ 1 a`) and an `indCoindIso` `.hom.hom` evaluation lemma, then rewrite with them instead of using `change`.",
+   "issue": "`indHomMackeyLinearEquiv_indMap_apply` uses three large `change` blocks to unfold `indResHomEquiv`, `Rep.ofHom` and the intertwining-map coercion of `indCoindIso` by definition; this is brittle.",
+   "line": 101
+  },
+  {
+   "evidence": "TauCeti/CategoryTheory/Linear/FullyFaithful.lean:37 has only `Functor.homLinearEquiv_apply`; there is no lemma for the inverse.",
+   "file": "TauCeti/RepresentationTheory/Induction/Mackey/IdentityComponent.lean",
+   "fix": "Add a lemma that `F.map ((F.homLinearEquiv R X Y).symm g) = g` (or that the inverse equals `F.preimage g`) next to `Functor.homLinearEquiv_apply`, and derive the apply lemma from it directly.",
+   "issue": "`mackeyHomSelfLinearEquiv_apply` applies `apply_symm_apply` to rebuild the inverse of the full-functor equivalence, then uses `change \u2026 at h'` to undo the carrier wrappers.",
+   "line": 73
+  },
+  {
+   "evidence": "grep `forget\u2082HomLinearEquiv_(symm_)?apply` in TauCeti: no hits.",
+   "file": "TauCeti/RepresentationTheory/Induction/Mackey/IdentityComponent.lean",
+   "fix": "Add `FDRep.forget\u2082HomLinearEquiv_apply` and `_symm_apply` lemmas and replace the `erw` and the `change` with `rw`/`simp`.",
+   "issue": "The `erw [LinearEquiv.trans_apply, \u2026, symm_apply_apply]` in `indHomMackeyIdentityComponent_forget` and the `change` at line 243 (inverse equivalence to `(forget\u2082 \u2026).map`) depend on two category instances unfolding to the same thing.",
+   "line": 233
+  },
+  {
+   "evidence": "Lines 49-52: `change B.\u03c1 \u27e8s, hs\u27e9 \u2218\u2097 B.\u03c1 (mackeyToH s H H y) = \u2026` followed by a second `change` to `*`.",
+   "file": "TauCeti/RepresentationTheory/Induction/Mackey/IdentityComponent.lean",
+   "fix": "Rewrite with a `Rep.res` \u03c1-apply simp lemma (add one if missing) instead of the double `change`.",
+   "issue": "`mackeySelfTwistIso` uses two consecutive `change` steps to restate the goal through `Rep.res` as composition of `B.\u03c1` values, relying on unfolding the restriction by definition.",
+   "line": 49
+  },
+  {
+   "evidence": "grep `out_mem|mk_one.*out` in TauCeti/GroupTheory/DoubleCoset: no matches.",
+   "file": "TauCeti/RepresentationTheory/Induction/Mackey/IdentityComponent.lean",
+   "fix": "Factor it into one lemma, e.g. `DoubleCoset.out_mk_one_mem : (DoubleCoset.mk H H 1).out \u2208 H`, in GroupTheory/DoubleCoset.",
+   "issue": "The membership proof `(doubleCosetMk_eq_mk_one_iff_mem H _).mp (DoubleCoset.out_eq' (DoubleCoset.mk H H 1))` is written out four times (lines 149, 162, 204, 217).",
+   "line": 149
+  }
+ ],
+ "head_sha": "d44ab009f481648c80046a7d5dc4bec91f80f2f9",
+ "merge_base_sha": "4bbe41db2963ca633a330c44d6cb1b229d033e13",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 25783,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8919677a71fbf6999bbe8ac08ef1aded7487ca97eb11a060ae750aa47acdf2a9",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261101T223237Z-25783-proof-quality-ba45b6",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T22:32:37Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs build, but several rely on `change`/`erw` to unfold adjunction, restriction and forgetful-equivalence wrappers by definition, where explicit evaluation lemmas are missing. A membership proof is also written out four times.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/DoubleCoset",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b58d9ce9f136eb9b2f74ccab5dca6469ce5ad87e9885ad0a756a262c5d9309da",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 22540,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 22540,
+  "cache_read_input_tokens": 67725,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 386,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 386,
+    "cache_read_input_tokens": 25377,
+    "input_tokens": 2,
+    "output_tokens": 2561,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4131,
+  "output_tokens_details": {
+   "thinking_tokens": 918
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
