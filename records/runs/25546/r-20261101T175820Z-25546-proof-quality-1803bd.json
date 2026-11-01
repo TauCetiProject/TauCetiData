@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3392656,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 45.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 27788,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 27788,
+    "cache_read_input_tokens": 58188,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 484,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 484,
+      "cache_read_input_tokens": 30527,
+      "input_tokens": 2,
+      "output_tokens": 3620,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5265,
+    "output_tokens_details": {
+     "thinking_tokens": 2114
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "e75db4e9c981d87039c14fd62a6bb6f9254bd3da",
+ "cli_dirty": false,
+ "cli_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "cost_usd": 0.339266,
+ "dedupe_key": "TauCetiProject/TauCeti|25546|abfc22a18192092ad8d8db3ab350eda57b029b3d|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "ea09091e0671c7abce1ebbca097682ee82fc5b6ba1b9114fbaf54020736b3ef5",
+ "diff_sha256": "ea09091e0671c7abce1ebbca097682ee82fc5b6ba1b9114fbaf54020736b3ef5",
+ "duration_s": 45.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Data/Finsupp/Weight.lean:82-83 defines `weight w := (Finsupp.linearCombination R w).toAddMonoidHom`; there is no lemma relating `weight` to `linearCombination`, so these steps close only by unfolding.",
+   "file": "TauCeti/RingTheory/MvPolynomial/SAGBI/Criterion.lean",
+   "fix": "Either state the hypotheses and conclusions with `Finsupp.weight a`, matching `IsWeightedHomogeneous`/`weightedHomogeneousComponent`, or add an explicit `Finsupp.weight a w = Finsupp.linearCombination \u2115 a w` lemma and rewrite with it instead of relying on `rfl`/unification.",
+   "issue": "Undocumented defeq `Finsupp.weight a w \u2261 Finsupp.linearCombination \u2115 a w`. In `weightedHomogeneousComponent_monomial_sub_monomial_sub`: `isWeightedHomogeneous_monomial _ _ _ rfl`, `huv.symm`, and `absurd (congrArg m.toSyn hwd) (hQ w hw).ne`. In `exists_mem_span_support_lt`: `isWeightedHomogeneous_monomial a w _ rfl`, `(huv j).symm` in `h\u03b2`, and `weightedHomogeneousComponent_ne _ (Ne.symm hwd)` in `hcomp`. In `exists_mem_span_degree_aeval_eq` `hP'`: the case split is on `Finsupp.weight (m.degree \u2218 c) w = d` but `hwd (m.toSyn.injective h)` supplies an equation about `A w`.",
+   "line": 0
+  },
+  {
+   "evidence": "`rw [weightedHomogeneousComponent_apply, map_sum, ...]; refine Finset.sum_congr rfl ...` with the goal filtered by `Finsupp.linearCombination \u2115 a u = d`.",
+   "file": "TauCeti/RingTheory/MvPolynomial/ToricIdeal/Basic.lean",
+   "fix": "State the right-hand side with `Finsupp.weight a u = d`, or rewrite through an explicit weight/linearCombination lemma.",
+   "issue": "`Finset.sum_congr rfl` equates the filter `weight a u = d` from `weightedHomogeneousComponent_apply` with the stated filter `linearCombination \u2115 a u = d` by definitional unfolding only.",
+   "line": 117
+  },
+  {
+   "evidence": "`hJ := ... Submodule.span_induction ... rw [map_sub, hQ, sub_self]` versus `(Ideal.span_le.2 ...) ... rw [SetLike.mem_coe, RingHom.mem_ker, map_sub, hQ, sub_self]`.",
+   "file": "TauCeti/RingTheory/MvPolynomial/SAGBI/Criterion.lean",
+   "fix": "Factor out one lemma, e.g. `span_sub_le_ker_aeval : Ideal.span (range F) \u2264 RingHom.ker (aeval c)` proved via `Ideal.span_le`, and use it in both places.",
+   "issue": "`hJ` in `exists_mem_span_degree_aeval_eq` re-proves by a manual `Submodule.span_induction` the inclusion span(\u03b2 j - Q j) \u2264 ker (aeval c); `ker_aeval_eq_span_sub` then proves the same inclusion again via `Ideal.span_le`.",
+   "line": 0
+  },
+  {
+   "evidence": "The `rcases Finset.mem_union.1 (support_add hw)` / `coeff_weightedHomogeneousComponent` / `by_cases hwd` block does not depend on `c`, `Q` or `J`.",
+   "file": "TauCeti/RingTheory/MvPolynomial/SAGBI/Criterion.lean",
+   "fix": "Extract it as a lemma about `weightedHomogeneousComponent` and the support bound, and call it from the descent step.",
+   "issue": "The `hP'` block of `exists_mem_span_degree_aeval_eq` proves a general fact inline: if every exponent of `P` has `A`-degree \u227c d, then every exponent of `P - weightedHomogeneousComponent a d P` has `A`-degree \u227a d. Keeping it inline also pushes the proof past 50 lines.",
+   "line": 0
+  }
+ ],
+ "head_sha": "abfc22a18192092ad8d8db3ab350eda57b029b3d",
+ "merge_base_sha": "67e852853c5192ec69775bb7ef417fc199e4190e",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 25546,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f8852213449a6990748dbb91b0ce3e946df9880b5df67057f9d561855b64f264",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261101T175820Z-25546-proof-quality-1803bd",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T17:58:20Z",
+ "submitted_by": "kim-em",
+ "summary": "Statements use `Finsupp.linearCombination \u2115 a` while the Mathlib weighted-homogeneous API uses `Finsupp.weight a`, and the proofs move between the two only by undocumented definitional unfolding. A span-to-kernel fact is also proved twice, and a reusable support bound is buried inline.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/MvPolynomial/WeightedHomogeneous.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Finsupp/Weight.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "610b0338399a5e1bad4ef143b501ad3c777a8ac5d2f6bdea049f32ca64fd8c72",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 27788,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 27788,
+  "cache_read_input_tokens": 58188,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 484,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 484,
+    "cache_read_input_tokens": 30527,
+    "input_tokens": 2,
+    "output_tokens": 3620,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5265,
+  "output_tokens_details": {
+   "thinking_tokens": 2114
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
