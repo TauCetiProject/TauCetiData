@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.38355600000000006,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 49.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 32652,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 32652,
+    "cache_read_input_tokens": 149860,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 681,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 681,
+      "cache_read_input_tokens": 35194,
+      "input_tokens": 2,
+      "output_tokens": 1967,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4616,
+    "output_tokens_details": {
+     "thinking_tokens": 1936
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "9d5b7fb4bf33ec36d206ce38bae24220d2723c84",
+ "cli_dirty": false,
+ "cli_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "cost_usd": 0.383556,
+ "dedupe_key": "TauCetiProject/TauCeti|25279|2b2c03027c0c707f0c4dbe8889109c34deb1436a|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "22ddf55275095065807b5954ef4c5a300ee2b72859bdfeb953485e496a4ed0db",
+ "diff_sha256": "22ddf55275095065807b5954ef4c5a300ee2b72859bdfeb953485e496a4ed0db",
+ "duration_s": 49.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 248 and 268 both run `simp [bilinFormAt_apply, SmoothBundleForm.eval\u2082_apply, mextDeriv\u2097_apply]`. Grep finds the same chain at Flat.lean:130,142 and Reeb.lean:88,102,110,166,172,186, and no existing bridge lemma.",
+   "file": "TauCeti/Geometry/Contact/Hamiltonian.lean",
+   "fix": "Add one lemma, e.g. `mextDeriv_apply_eq_bilinFormAt` in Contact/Basic.lean or next to `bilinFormAt_apply`, and use it in both places.",
+   "issue": "The local `hB` that turns `mextDeriv \u03b1.1 x ![u, u']` into `(mextDeriv\u2097 I 1 \u03b1).bilinFormAt x u u'` is proved twice (lines 247-248 and 266-268) with the same `simp` chain. Contact/Flat.lean and Contact/Reeb.lean repeat that chain too.",
+   "line": 247
+  },
+  {
+   "evidence": "Grep: Hamiltonian.lean:327,364,389,395,401 all end in `funext i; fin_cases i; rfl`. Mathlib has `vec_single_eq_const` (Data/Fin/VecNotation.lean:262) and `cons_val_fin_one` (VecNotation.lean:285).",
+   "file": "TauCeti/Geometry/Contact/Hamiltonian.lean",
+   "fix": "Add a private lemma `(fun i \u21a6 ![Y] i y) = ![Y y]` (and one for `v = ![v 0]`), or derive both from `Matrix.vec_single_eq_const` / `Matrix.cons_val_fin_one`, and rewrite with it instead of `convert`.",
+   "issue": "Converting one-entry tuples with `funext i; fin_cases i; rfl` happens five times: `v = ![v 0]` at lines 327 and 364, and `(![Y] \u00b7 y) = ![Y y]` at lines 389, 395 and 401 (three times in one proof). Each conversion is a `convert ... using 2` followed by a defeq `rfl`.",
+   "line": 389
+  },
+  {
+   "evidence": "Lines 309-311. The same unfolding recurs in Flat.lean:112-113 and Smooth.lean:728, and grep finds no named lemma for it.",
+   "file": "TauCeti/Geometry/Contact/Hamiltonian.lean",
+   "fix": "State a lemma that a section of `Trivial M \u211d` is `C^n` iff the underlying function is, and apply it here.",
+   "issue": "`rw [contMDiffAt_section] at h; simpa [Trivial.eq_trivialization M \u211d] using h` gets from a section of `Trivial M \u211d` to smoothness of the scalar function by unfolding the trivialization. That depends on Mathlib's internal trivialization structure.",
+   "line": 311
+  }
+ ],
+ "head_sha": "2b2c03027c0c707f0c4dbe8889109c34deb1436a",
+ "merge_base_sha": "ee66d011edd85ee23736c78399ce5616b722c71e",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 25279,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bc719a508241e3c64f11f23c0692f4042a76cbba6dffff74fc8721e3c73de91e",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261101T054741Z-25279-proof-quality-695d78",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-01T05:47:41Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs are short and readable, but two pieces of reasoning are copied inline several times instead of being factored into lemmas, and one regularity step goes through an unfolding-heavy `simpa` on the trivial bundle.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Contact",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 7,
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "70fcc88da8cbc11c429f1599d79d1b56622e4f27123e4e512c01536bc2acc16a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 32652,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 32652,
+  "cache_read_input_tokens": 149860,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 681,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 681,
+    "cache_read_input_tokens": 35194,
+    "input_tokens": 2,
+    "output_tokens": 1967,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4616,
+  "output_tokens_details": {
+   "thinking_tokens": 1936
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
