@@ -1,0 +1,140 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2836564,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 31.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 26163,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 26163,
+    "cache_read_input_tokens": 55442,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 544,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 544,
+      "cache_read_input_tokens": 28842,
+      "input_tokens": 2,
+      "output_tokens": 1702,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3162,
+    "output_tokens_details": {
+     "thinking_tokens": 2097
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b17eef7edffd8c22147536d9e6cee0273e8437c2",
+ "cli_dirty": false,
+ "cli_sha": "8d13f383f08db6e506c6cb434a7ce641f940c336",
+ "cost_usd": 0.283656,
+ "dedupe_key": "TauCetiProject/TauCetiWorker|459|601fe0f08199acac2aeefd808c1b7cc23ef12c78|correctness|claude-opus-5-5|78fad9c56c378616|production|2",
+ "diff_blob": "7b6f56ffa9cf697b1ecd2a5f53f47f30a118cfdc2fd21ebb3090052c33a91108",
+ "diff_sha256": "7b6f56ffa9cf697b1ecd2a5f53f47f30a118cfdc2fd21ebb3090052c33a91108",
+ "duration_s": 31.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 81 sets `exclude_pull_requests: \"true\"` and `per_page: \"1\"`. Lines 94-104 then raise on `event` not in the allowed set or on a foreign `head_repository.id`. The REST docs define exclude_pull_requests as 'If true pull requests are omitted from the response (empty array)', meaning the `pull_requests` field, not the runs. The test at tests/workflow_backstop.py:193 only asserts that the parameter is passed.",
+   "file": "tauceti_worker/workflow_backstop.py",
+   "fix": "Query each allowed event separately with the API `event=` parameter (schedule, workflow_dispatch, push, repository_dispatch), or page past rows that are not maintenance runs, and take the latest qualifying run. Rename/rewrite `test_api_filters_out_pr_runs_before_selecting_the_latest_maintenance_run` and fix the PR description so they no longer claim the parameter excludes PR runs.",
+   "issue": "GitHub's `exclude_pull_requests` parameter only empties each run's `pull_requests` array. It does not drop runs triggered by `pull_request` or `pull_request_target`. With `per_page=1`, a newer PR run on a same-named fork branch (a fork's `main` is common) fills the only slot and triggers the event/head_repository `ObservationError`. That workflow then gets `deferred` on every tick while the run stays newest, which defeats the backstop during the outage it is meant to cover. The same applies to the active-status probes on line 179.",
+   "line": 81
+  }
+ ],
+ "head_sha": "601fe0f08199acac2aeefd808c1b7cc23ef12c78",
+ "merge_base_sha": "b17eef7edffd8c22147536d9e6cee0273e8437c2",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 459,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "d67365bc98efaf93baad94451606e95fbfa5e70d476c1a2c5d634c9c7978bebf",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCetiWorker",
+ "round": 2,
+ "rubric": "correctness",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "eea7f120cfa58db2ad374cbb77f51f6006eaf70b",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261102T212533Z-459-correctness-64a6a1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-02T21:25:33Z",
+ "submitted_by": "kim-em",
+ "summary": "The repo-ID and event checks fix the earlier fork-branch issue, but `exclude_pull_requests=true` does not filter out PR-triggered runs, so the stated 'excluding PR runs' behaviour is not implemented. A newer PR-triggered run on a branch with the default branch's name becomes the only row on the `per_page=1` page and defers that workflow on every tick until a newer maintenance run appears.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/tauceti_worker/verification.py",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "86738c782bde7192fca00e544c848c47a40510628082d87aae9b78a7758820eb",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 26163,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 26163,
+  "cache_read_input_tokens": 55442,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 544,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 544,
+    "cache_read_input_tokens": 28842,
+    "input_tokens": 2,
+    "output_tokens": 1702,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3162,
+  "output_tokens_details": {
+   "thinking_tokens": 2097
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
