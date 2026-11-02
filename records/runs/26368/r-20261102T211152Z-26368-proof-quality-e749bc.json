@@ -1,0 +1,142 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1520566,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 27.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 11418,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 11418,
+    "cache_read_input_tokens": 3223,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 11418,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 11418,
+      "cache_read_input_tokens": 3223,
+      "input_tokens": 2,
+      "output_tokens": 3003,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3003,
+    "output_tokens_details": {
+     "thinking_tokens": 1879
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ef0429e736c0097394695fa74430574a63b5bcb3",
+ "cli_dirty": false,
+ "cli_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "cost_usd": 0.152057,
+ "dedupe_key": "TauCetiProject/TauCeti|26368|fdf707925786b92ec81d6357b2bdf246b05c997a|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "4142fd618c2cb7a9618924ce94abf4f7b97ed455f8396fd0e92e3aa4a79d406a",
+ "diff_sha256": "4142fd618c2cb7a9618924ce94abf4f7b97ed455f8396fd0e92e3aa4a79d406a",
+ "duration_s": 27.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 57\u201359 build `S` from `\u03c6.range.toSubring`; lines 69\u201370 are `have hx : x \u2208 S := htop \u25b8 Algebra.mem_top` then `exact hx` against the `Function.Surjective` goal.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Adjoin/BaseChange.lean",
+   "fix": "Make the step explicit: rewrite with `AlgHom.mem_range`, or give `S` as `\u03c6.range.restrictScalars`-style data with a membership lemma. Alternatively prove `\u03c6.range = \u22a4` and use `AlgHom.range_eq_top`. At minimum, add a comment explaining why the defeq holds.",
+   "issue": "`exact hx` closes `\u2203 a, \u03c6 a = x` with `hx : x \u2208 S`. This only works because membership in the hand-built `Subalgebra` `S := { \u03c6.range.toSubring with \u2026 }` unfolds definitionally to range membership. The step is undocumented and depends on how the structure is built.",
+   "line": 70
+  },
+  {
+   "evidence": "The identical lift expression appears at BaseChange.lean:50\u201351, BaseChange.lean:53\u201355 and Kummer.lean:85\u201387.",
+   "file": "TauCeti/FieldTheory/IntermediateField/Adjoin/BaseChange.lean",
+   "fix": "Define the multiplication map once as a named `AlgHom` (e.g. `adjoinBaseChangeTensorLift`), state surjectivity about it, and reuse it in both the proof and `IsUnramifiedWRT.adjoin_root`.",
+   "issue": "The term `Algebra.TensorProduct.lift (Algebra.ofId K\u27ee\u03b1\u27ef L\u27ee\u03b1\u27ef) (IsScalarTower.toAlgHom K L L\u27ee\u03b1\u27ef) (fun _ _ \u21a6 Commute.all _ _)` appears three times: in the statement (lines 50\u201351), as `let \u03c6` in the proof (53\u201355), and again in Kummer.lean:85\u201387. Each copy is a separate place that breaks if Mathlib changes this API.",
+   "line": 50
+  },
+  {
+   "evidence": "The body is literally `inferInstance`, so the instance is already in scope wherever it is needed.",
+   "file": "TauCeti/RingTheory/DiscreteValuationRing/BaseChange/Kummer.lean",
+   "fix": "Delete the line. If it is needed for performance or to pin a particular instance path, add a comment saying why.",
+   "issue": "`have : IsScalarTower K K\u27ee\u03b1\u27ef L\u27ee\u03b1\u27ef := inferInstance` restates an instance that typeclass search already finds. It adds noise without changing what the proof can use.",
+   "line": 75
+  }
+ ],
+ "head_sha": "fdf707925786b92ec81d6357b2bdf246b05c997a",
+ "merge_base_sha": "1bf9d63472811e1dfe2ebf0c2f3bb5bc411bd6d5",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 26368,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d3edd78e17a8efa9eca98a94901d6e0c8f556315e8b8054f6c22b2b77aea2402",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "d53dd7094406321189ade58c20e6c3b12a179e9c",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261102T211152Z-26368-proof-quality-e749bc",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-02T21:11:52Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are short and use automation well, but `surjective_adjoinBaseChange_tensorProduct` closes its goal through an undocumented definitional unfolding of a hand-built subalgebra's membership. The tensor-product lift term is also restated three times instead of being named once.",
+ "tool_trace_meta": {
+  "successful_calls": 0,
+  "total_calls": 0,
+  "trace_truncated": false
+ },
+ "transcript_blob": "15ed16f130a536e67b5a6e9cb880277b60169cbcd874e271113d8f6248929f96",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 11418,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 11418,
+  "cache_read_input_tokens": 3223,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 2,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 11418,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 11418,
+    "cache_read_input_tokens": 3223,
+    "input_tokens": 2,
+    "output_tokens": 3003,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3003,
+  "output_tokens_details": {
+   "thinking_tokens": 1879
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
