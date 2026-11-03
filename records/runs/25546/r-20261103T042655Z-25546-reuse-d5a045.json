@@ -1,0 +1,195 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.4694134,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 42.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 42548,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 42548,
+    "cache_read_input_tokens": 146607,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 744,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 744,
+      "cache_read_input_tokens": 45027,
+      "input_tokens": 2,
+      "output_tokens": 2859,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4983,
+    "output_tokens_details": {
+     "thinking_tokens": 1201
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ae0f1478ec41d1d29726becd703866079bfbc408",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.469413,
+ "dedupe_key": "TauCetiProject/TauCeti|25546|5b09de670118babed8b20a332526a683b86f7706|reuse|claude-opus-5-5|78fad9c56c378616|production|2",
+ "diff_blob": "f7d65c458e73ecae68b934865540dddfd8b9c708d1c1a2d37aa4559346ec5874",
+ "diff_sha256": "f7d65c458e73ecae68b934865540dddfd8b9c708d1c1a2d37aa4559346ec5874",
+ "duration_s": 42.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Criterion.lean:136-161 (`Finsupp.mem_ideal_span_range_iff_exists_finsupp`, `h j := weightedHomogeneousComponent ...`, `\u2211 j \u2208 g.support, h j * Q j`, `support_mul`, `add_lt_add`) has the same shape as Presentation.lean:120-160.",
+   "file": "TauCeti/RingTheory/MvPolynomial/SAGBI/Presentation.lean",
+   "fix": "Keep one copy: derive `exists_aeval_eq_of_mem_toricIdeal` from `exists_mem_span_support_lt` (take `p' := p - G`; `aeval c G = 0` by `span_sub_le_ker_aeval`) and delete Criterion's hand-written proof, or the reverse.",
+   "issue": "`exists_mem_span_support_lt` re-proves the step inside `MonomialOrder.exists_aeval_eq_of_mem_toricIdeal` (Criterion.lean:110-161): split `g` into weight components, replace each binomial by `Q j`, bound the support. The two proofs are near-clones.",
+   "line": 105
+  },
+  {
+   "evidence": "TauCeti/RingTheory/MvPolynomial/WeightedHomogeneous.lean:306 `theorem IsWeightedHomogeneous.weightedHomogeneousComponent_mul_right`; it is already used this way at Criterion.lean:145.",
+   "file": "TauCeti/RingTheory/MvPolynomial/SAGBI/Presentation.lean",
+   "fix": "Use `rw [(isWeightedHomogeneous_monomial_sub_monomial (huv j)).weightedHomogeneousComponent_mul_right]` and define `h j := if A (u j) \u2264 d then weightedHomogeneousComponent a (d - A (u j)) (g j) else 0`, as Criterion.lean:139-146 does.",
+   "issue": "`hcomp` hand-proves the weight-`d` component of `g j * \u03b2 j` by expanding `g j` into monomials. That is what the existing `IsWeightedHomogeneous.weightedHomogeneousComponent_mul_right` already gives.",
+   "line": 124
+  },
+  {
+   "evidence": "Criterion.lean:91-97 proves the same `aeval (single \u00b7) (weightedHomogeneousComponent ...) = single \u03b4 (\u2211 ...)` calculation.",
+   "file": "TauCeti/RingTheory/MvPolynomial/ToricIdeal/Basic.lean",
+   "fix": "Either have Presentation call `weightedHomogeneousComponent_mem_toricIdeal hc hP (by rwa [coeff_aeval_of_forall_le hc hP])` (R is nontrivial at that point) and drop the new iff, or keep the iff and reduce Criterion's lemma to a one-line application of it.",
+   "issue": "`weightedHomogeneousComponent_mem_toricIdeal_iff` sits alongside `MonomialOrder.weightedHomogeneousComponent_mem_toricIdeal` (Criterion.lean:81). That lemma is this one's forward direction once `coeff_aeval_of_forall_le` is applied, but its proof does the same `aeval_single_monomial` calculation inline.",
+   "line": 143
+  },
+  {
+   "evidence": "Criterion.lean:134 `exact (isWeightedHomogeneous_monomial _ _ _ (hA _)).sub (isWeightedHomogeneous_monomial _ _ _ ((hA _).trans huv.symm))`",
+   "file": "TauCeti/RingTheory/MvPolynomial/ToricIdeal/Basic.lean",
+   "fix": "Replace the body of `h\u03b2` at Criterion.lean:134-135 with `isWeightedHomogeneous_monomial_sub_monomial huv`.",
+   "issue": "`isWeightedHomogeneous_monomial_sub_monomial` is already proved inline as `h\u03b2` in Criterion.lean:128-135, with an identical proof term.",
+   "line": 210
+  },
+  {
+   "evidence": "Criterion.lean:233 `induction hd : m.toSyn \u03b4 using WellFoundedLT.induction`; Criterion.lean:260 `Finset.exists_max_image _ (fun w \u21a6 m.toSyn (A w))`; Criterion.lean:253-256 use the same `coeff_weightedHomogeneousComponent` / `lt_of_le_of_ne` argument as MonomialOrder.lean:505-511.",
+   "file": "TauCeti/RingTheory/MvPolynomial/MonomialOrder.lean",
+   "fix": "Rewrite `degree_aeval_mem_closure` to use `induction_on_weight_support`, and replace Criterion.lean:253-256 with `weight_lt_of_mem_support_sub_weightedHomogeneousComponent hP\u03b4 hw`.",
+   "issue": "`induction_on_weight_support` and `weight_lt_of_mem_support_sub_weightedHomogeneousComponent` duplicate code in the private `degree_aeval_mem_closure`: its `WellFoundedLT.induction` on `m.toSyn \u03b4` with an `exists_max_image` step, and its bound on what remains outside the top component.",
+   "line": 473
+  },
+  {
+   "evidence": "Criterion.lean:90, 125 and 241 each read `rw [Finsupp.weight_apply, Finsupp.linearCombination_apply]`.",
+   "file": "TauCeti/Data/Finsupp/Weight.lean",
+   "fix": "Replace the `hA` proofs at Criterion.lean:88-90, 124-125 and 240-241 with `Finsupp.weight_eq_linearCombination _ _`.",
+   "issue": "The PR adds `Finsupp.weight_eq_linearCombination` but leaves three local `hA` restatements of it in Criterion.lean.",
+   "line": 165
+  }
+ ],
+ "head_sha": "5b09de670118babed8b20a332526a683b86f7706",
+ "merge_base_sha": "ae0f1478ec41d1d29726becd703866079bfbc408",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 25546,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "3d34a5d38713546a228ad290ed86c88b861cdce2ec6a553ecac0e31bac0dcffb",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261103T042655Z-25546-reuse-d5a045",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-03T04:26:55Z",
+ "submitted_by": "kim-em",
+ "summary": "The presentation theorem is new, but the PR adds a second copy of the SAGBI sufficiency machinery already in `SAGBI/Criterion.lean` (lifting a toric component through the binomials, weight homogeneity of binomials, descent on the top weight, the toric criterion for a weight component) instead of sharing one copy. It also rebuilds the existing `IsWeightedHomogeneous.weightedHomogeneousComponent_mul_right` by hand.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Finsupp/Weight.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/MvPolynomial/SAGBI/Criterion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Finsupp/Weight.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/MvPolynomial/WeightedHomogeneous.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 6,
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9e5ab25e946bc54240eda4e753664399fd5bee5fddf9a7d5d7922db8b08a9500",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 42548,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 42548,
+  "cache_read_input_tokens": 146607,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 744,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 744,
+    "cache_read_input_tokens": 45027,
+    "input_tokens": 2,
+    "output_tokens": 2859,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4983,
+  "output_tokens_details": {
+   "thinking_tokens": 1201
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
