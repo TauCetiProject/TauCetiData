@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.38180660000000005,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 57.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 32716,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 32716,
+    "cache_read_input_tokens": 110853,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 583,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 583,
+      "cache_read_input_tokens": 35356,
+      "input_tokens": 2,
+      "output_tokens": 2425,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4893,
+    "output_tokens_details": {
+     "thinking_tokens": 2208
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2bdb755239d3bd84760e99bc83166bdf7cc75a6b",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.381807,
+ "dedupe_key": "TauCetiProject/TauCeti|26406|985d90c48b68e68779d9cbd4bb1cbff3fbe11403|api-design|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "75daab76840676780f7bcb946b18aaed99d734f1126344b0bd28c4fbfb23f8a7",
+ "diff_sha256": "75daab76840676780f7bcb946b18aaed99d734f1126344b0bd28c4fbfb23f8a7",
+ "duration_s": 57.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Geometry/RingedSpace/LocallyRingedSpace.lean:46 `attribute [instance] LocallyRingedSpace.isLocalRing`.",
+   "file": "TauCeti/AlgebraicGeometry/FormalScheme/Spf/Basic.lean",
+   "fix": "Delete `isLocalRing_stalk`.",
+   "issue": "`Spf.isLocalRing_stalk` copies an instance Mathlib already provides: `IsLocalRing ((Spf A).presheaf.stalk p)` is found by the globally registered `LocallyRingedSpace.isLocalRing`, and the proof is literally `(Spf A).isLocalRing p`.",
+   "line": 189
+  },
+  {
+   "evidence": "Mathlib ResidueField.lean:45 `def residueField (x : X) : CommRingCat := \u21a7(IsLocalRing.ResidueField (X.presheaf.stalk x))`, :52 `def residue`. Roadmap AdicSpacesPartIII/README.md:266 names these as 'the residue ring and its quotient map used in the stalk comparison'.",
+   "file": "TauCeti/AlgebraicGeometry/FormalScheme/Spf/Basic.lean",
+   "fix": "State the equivalence on `(Spf A).residueField p` and the coefficient lemma with `(Spf A).residue p`.",
+   "issue": "`stalkResidueFieldEquiv` has domain `IsLocalRing.ResidueField ((Spf A).presheaf.stalk p)` and `stalkResidueFieldEquiv_residue_germ` (line 205) uses `IsLocalRing.residue _`. Mathlib's `(Spf A).residueField p` and `(Spf A).residue p` are not used, so the simp lemma won't match terms written with that API.",
+   "line": 195
+  },
+  {
+   "evidence": "The only exposure-dependent use in the diff is `completedNeighbourhoodColimitIso` in the same module.",
+   "file": "TauCeti/AlgebraicGeometry/FormalScheme/Spf/Basic.lean",
+   "fix": "Drop `@[expose]` unless a downstream consumer has to unfold the cocone; keep `simps`.",
+   "issue": "`completedNeighbourhoodCocone` is marked `@[expose, simps]`. The `simps` lemmas `_pt` and `_\u03b9_app` already characterise the vertex and legs, and the defeq to the stalk is only used inside this file (the type of `completedNeighbourhoodColimitIso`).",
+   "line": 99
+  }
+ ],
+ "head_sha": "985d90c48b68e68779d9cbd4bb1cbff3fbe11403",
+ "merge_base_sha": "be40152ac42d5dd4eca18eb51a6291e4329c8286",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 26406,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8e9f765091828c70668111a5f2ab85d9f62d7df9e158ef10cd70128248bcf6f8",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261103T112240Z-26406-api-design-e7a21d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-03T11:22:40Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR duplicates Mathlib's `LocallyRingedSpace.isLocalRing` instance and states the residue-field equivalence and its simp lemma with raw `IsLocalRing` terms instead of Mathlib's `residueField`/`residue` API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/FormalScheme/Spf/CompletedNeighbourhood.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/RingedSpace/LocallyRingedSpace/ResidueField.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/AdicSpacesPartIII/README.md",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/RingedSpace/LocallyRingedSpace.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "eb35246aa8f95da60c1628c33e44b92fdfb4dc0874760f9593c98bb4eceb946b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 32716,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 32716,
+  "cache_read_input_tokens": 110853,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 583,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 583,
+    "cache_read_input_tokens": 35356,
+    "input_tokens": 2,
+    "output_tokens": 2425,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4893,
+  "output_tokens_details": {
+   "thinking_tokens": 2208
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
