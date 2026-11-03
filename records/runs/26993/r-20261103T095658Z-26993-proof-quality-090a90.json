@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.30474939999999995,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 38.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 28274,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 28274,
+    "cache_read_input_tokens": 138307,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 452,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 452,
+      "cache_read_input_tokens": 31045,
+      "input_tokens": 2,
+      "output_tokens": 1118,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2542,
+    "output_tokens_details": {
+     "thinking_tokens": 708
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "cfa33eb8e04f9e3050605c81bd260124e503d906",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.304749,
+ "dedupe_key": "TauCetiProject/TauCeti|26993|5a03a78c6649964d579e516c51a8c04d862c9655|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "82f5fc764837a21ad9df63c0bef0fbf9367d5c0f3ca99dff3fce441e1954de5c",
+ "diff_sha256": "82f5fc764837a21ad9df63c0bef0fbf9367d5c0f3ca99dff3fce441e1954de5c",
+ "duration_s": 38.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 49\u201350 are `change \u27e8x, y, e\u27e9 \u2208 ArrowWalk.arrows (ArrowWalk.cons p e') at he` and `change x \u2208 ArrowWalk.vertices (ArrowWalk.cons p e')`, with no comment. For comparison, `target_mem` (lines 56\u201358) uses `vertices_eq_cons_map_target_arrows` (Walk.lean:190) with no unfolding.",
+   "file": "TauCeti/Combinatorics/Network/Ear/Basic.lean",
+   "fix": "Add a lemma about walks, e.g. `ArrowWalk.mem_vertices_of_mem_arrows_source : \u27e8x, y, e\u27e9 \u2208 p.arrows \u2192 x \u2208 p.vertices`. Prove it by `induction p` with `simp [arrows_cons, vertices_cons]` (or derive it from `map_target_arrows` plus `isChain_vertices`). Then `source_mem` becomes a one-liner without `change`.",
+   "issue": "`trace.source_mem` has two `change` steps that unfold the cons walk, with no comment explaining why. The proof also does an inline induction to show that an arrow's source is a vertex of the walk. That fact holds for any walk and is the counterpart of the `target_mem` argument, which already has a clean one-line proof through `vertices_eq_cons_map_target_arrows`.",
+   "line": 49
+  },
+  {
+   "evidence": "Mathlib uses `induction j using Fin.induction with` routinely, e.g. Mathlib/GroupTheory/Perm/Sign.lean:133. The cases line up exactly with `stage_zero` and `stage_succ : stage i.succ = (ear i).adjoin`, whose index is `i.castSucc`.",
+   "file": "TauCeti/Combinatorics/Network/Ear/Basic.lean",
+   "fix": "Use `induction j using Fin.induction with | zero => simpa [D.stage_zero] using hzero | succ i ih => rw [D.stage_succ]; exact hsucc i ih`.",
+   "issue": "`stage_induction` converts the `Fin` index to \u2115 by hand: it introduces an auxiliary `\u2200 m (hm : m \u2264 D.length)`, then rewrites with the ascription `(\u27e8m + 1, _\u27e9 : Fin _) = (\u27e8m, hm'\u27e9 : Fin _).succ` (proved by `ext; rfl`) and re-threads the bound proofs. All of that is index bookkeeping that hides a two-case argument.",
+   "line": 360
+  }
+ ],
+ "head_sha": "5a03a78c6649964d579e516c51a8c04d862c9655",
+ "merge_base_sha": "cfa33eb8e04f9e3050605c81bd260124e503d906",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 26993,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "77cfb57da78241fa7907c32820f7a91db95c3758c18448c56f90ddb39862e98d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261103T095658Z-26993-proof-quality-090a90",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-03T09:56:58Z",
+ "submitted_by": "kim-em",
+ "summary": "`ArrowWalk.trace.source_mem` uses two `change` steps with no comment saying why, and does an inline induction for a fact about walks that belongs in its own lemma. `stage_induction` builds a manual \u2115 induction with `Fin` index rewriting where `Fin.induction` does the job directly.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/Network/Walk.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/Network/Walk.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Fin",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Order/Fin",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "87be9f61050227fc887c7ec539878b774d1b8b57faec1f4f5b146329f2d44dde",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 28274,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 28274,
+  "cache_read_input_tokens": 138307,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 452,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 452,
+    "cache_read_input_tokens": 31045,
+    "input_tokens": 2,
+    "output_tokens": 1118,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2542,
+  "output_tokens_details": {
+   "thinking_tokens": 708
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
