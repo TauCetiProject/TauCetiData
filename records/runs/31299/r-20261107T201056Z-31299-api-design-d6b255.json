@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2869254,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 38.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 24833,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 24833,
+    "cache_read_input_tokens": 68507,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 840,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 840,
+      "cache_read_input_tokens": 27216,
+      "input_tokens": 2,
+      "output_tokens": 2000,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3726,
+    "output_tokens_details": {
+     "thinking_tokens": 1412
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "2f06c0d69fd88750b4be67237a9cd8e6d83b12aa",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.286925,
+ "dedupe_key": "TauCetiProject/TauCeti|31299|234c99fcc32a04c31a8b5f57c2b417808c2afacf|api-design|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "5b1ea07dbd23c52a209b387b5a3f47674db6eabccd2f15695184281b446fb99b",
+ "diff_sha256": "5b1ea07dbd23c52a209b387b5a3f47674db6eabccd2f15695184281b446fb99b",
+ "duration_s": 38.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Geometry/Manifold/Diffeomorph.lean:243-244 `@[simp, mfld_simps] theorem toEquiv_coe_symm (h) : \u21d1h.toEquiv.symm = h.symm`; no prodDiffeomorph_symm_apply in the diff.",
+   "file": "TauCeti/Geometry/Manifold/Gluing/Prod.lean",
+   "fix": "Add `@[simp] theorem prodDiffeomorph_symm_apply (x) : (h.prodDiffeomorph h').symm x = x`, proved from prodDiffeomorph_apply and Diffeomorph.symm_apply_apply. Either drop 'in both directions' from the toEquiv docstring or make sure it is true.",
+   "issue": "The prodDiffeomorph_toEquiv docstring says it covers both directions, but simp cannot reduce `(h.prodDiffeomorph h').symm x` to `x`. Mathlib's `Diffeomorph.toEquiv_coe_symm` rewrites `\u21d1h.toEquiv.symm` to `h.symm` (the wrong direction), so the `toEquiv = Equiv.refl` lemma never fires on symm applications.",
+   "line": 166
+  },
+  {
+   "evidence": "`private theorem prod_\u03b9_cover (x : D.toGlueData.glued \u00d7 D'.toGlueData.glued) : \u2203 ij y, Prod.map (D.toGlueData.\u03b9 ij.1) (D'.toGlueData.\u03b9 ij.2) y = x`, proved by two applications of `\u03b9_jointly_surjective`; used to build the public prodChartedSpace.",
+   "file": "TauCeti/Geometry/Manifold/Gluing/Prod.lean",
+   "fix": "Make it public as something like `TopCat.GlueData.prod_\u03b9_jointly_surjective`, in a topology-level GlueData file next to the \u03b9_jointly_surjective API, and import it here.",
+   "issue": "`prod_\u03b9_cover` is private, but it is general topology: its statement uses only Mathlib types (TopCat.GlueData, \u03b9, Prod.map) and its proof uses only \u03b9_jointly_surjective, with no manifold content. It is also a hypothesis of the public prodChartedSpace, which downstream users of the generic chartedSpaceOfIsOpenEmbedding API need to supply.",
+   "line": 43
+  }
+ ],
+ "head_sha": "234c99fcc32a04c31a8b5f57c2b417808c2afacf",
+ "merge_base_sha": "f0b1b42af130787dfc7846cb7c80c2a0de15d569",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 31299,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a40373b756c0a49b7adfa043f0ef82b6a693781098508481290c4ea9886138fc",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T201056Z-31299-api-design-d6b255",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T20:10:56Z",
+ "submitted_by": "kim-em",
+ "summary": "The product-gluing comparison API is mostly complete and the atlas body is correctly left unexposed, but the comparison diffeomorphism has no simp lemma for its inverse, and a general topological cover lemma is hidden as private.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Gluing/GlueData.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Gluing/GlueData.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/Diffeomorph.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0d7329cc200592cc325fd0da5c96a3bcfb1eeaa758d283f10e860465c32040f9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 24833,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 24833,
+  "cache_read_input_tokens": 68507,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 840,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 840,
+    "cache_read_input_tokens": 27216,
+    "input_tokens": 2,
+    "output_tokens": 2000,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3726,
+  "output_tokens_details": {
+   "thinking_tokens": 1412
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
