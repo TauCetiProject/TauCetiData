@@ -1,0 +1,252 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 1.0630695999999997,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 104.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 87790,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 87790,
+    "cache_read_input_tokens": 909908,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 32,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1197,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1197,
+      "cache_read_input_tokens": 89816,
+      "input_tokens": 2,
+      "output_tokens": 2190,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8932,
+    "output_tokens_details": {
+     "thinking_tokens": 3343
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "fc8b2141367a5c22e198bac6d15a6af86a24a39b",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 1.06307,
+ "dedupe_key": "TauCetiProject/TauCeti|31501|6fa0439b7e085b4c536e3addc4bd798a1ad31151|reuse|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "04338f751010696bd83df766708d7bbecd14e5a20d60e0938431f5d461928288",
+ "diff_sha256": "04338f751010696bd83df766708d7bbecd14e5a20d60e0938431f5d461928288",
+ "duration_s": 104.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Probability/Distributions/Gaussian/Fernique.lean:252 `lemma map_rotation_eq_self (h\u03bc : \u03bc[id] = 0) (\u03b8 : \u211d) : (\u03bc.prod \u03bc).map (ContinuousLinearMap.rotation \u03b8) = \u03bc.prod \u03bc` (namespace ProbabilityTheory.IsGaussian); Fernique.lean:110 `rotation_apply ... = (cos \u03b8 \u2022 x.1 + sin \u03b8 \u2022 x.2, -sin \u03b8 \u2022 x.1 + cos \u03b8 \u2022 x.2)`; Basic.lean:60 `instance isGaussian_gaussianReal`; Real.lean:358 `gaussianReal_map_neg`.",
+   "file": "TauCeti/Probability/Distributions/Gaussian/Poincare.lean",
+   "fix": "Delete the lemma. Get `MeasurePreserving (ContinuousLinearMap.rotation \u03b8) (\u03b3.prod \u03b3) (\u03b3.prod \u03b3)` from `\u27e8by fun_prop, IsGaussian.map_rotation_eq_self (\u03bc := gaussianReal 0 1) (by simp [integral_id_gaussianReal]) \u03b8\u27e9`. Either compose with `Prod.map id Neg.neg` (measure-preserving by `gaussianReal_map_neg`) or restate `H` in `integral_interp_deriv` and `hJ` in rotated coordinates `(c p.1 + s p.2, -s p.1 + c p.2)`.",
+   "issue": "`measurePreserving_orthogonal_gaussianReal` re-proves product-Gaussian orthogonal invariance by hand through characteristic functions. Mathlib already provides it as `IsGaussian.map_rotation_eq_self`; the PR's map is that rotation with the second coordinate negated, and it is only used with c = cos \u03b8, s = sin \u03b8.",
+   "line": 68
+  },
+  {
+   "evidence": "mathlib/Mathlib/Probability/Distributions/Gaussian/CharFun.lean:57 `lemma IsGaussian.charFunDual_eq'`; its only use in the diff is line 82 `simp only [charFunDual_gaussianReal_zero_one, ...]`.",
+   "file": "TauCeti/Probability/Distributions/Gaussian/Poincare.lean",
+   "fix": "Delete it together with `measurePreserving_orthogonal_gaussianReal` once `IsGaussian.map_rotation_eq_self` is used.",
+   "issue": "`charFunDual_gaussianReal_zero_one` is public scaffolding used only to prove the rotation lemma above. Mathlib's `IsGaussian.charFunDual_eq'` together with `isGaussian_gaussianReal` already gives it.",
+   "line": 51
+  },
+  {
+   "evidence": "mathlib/Mathlib/MeasureTheory/Integral/IntegrableOn.lean:171 `lemma Integrable.of_bound [IsFiniteMeasure \u03bc] {f : \u03b1 \u2192 E} (hf : AEStronglyMeasurable f \u03bc) (C : \u211d) (hfC : \u2200\u1d50 x \u2202\u03bc, \u2016f x\u2016 \u2264 C) : Integrable f \u03bc`.",
+   "file": "TauCeti/Probability/Distributions/Gaussian/Poincare.lean",
+   "fix": "Delete it and use `Integrable.of_bound hg C (ae_of_all _ fun x => by simpa using h x)` at all of its call sites (hasDerivAt_interp, integral_interp_deriv, hJ's i1/i2/hle, integral_integral_update_pi, hGint).",
+   "issue": "The private `integrable_of_abs_le` restates Mathlib's `Integrable.of_bound`, with a pointwise `|g x| \u2264 C` bound instead of an a.e. norm bound.",
+   "line": 154
+  }
+ ],
+ "head_sha": "6fa0439b7e085b4c536e3addc4bd798a1ad31151",
+ "merge_base_sha": "5f8b5c6fc72ef02143a5bd96d1b787615f8312df",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 31501,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "008920e858a61dea90601d19aa512ed7be07ebf016f4d8ead26fc9209d100fbd",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T171235Z-31501-reuse-f09daf",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T17:12:35Z",
+ "submitted_by": "kim-em",
+ "summary": "The Gaussian rotation-invariance lemma and its character-function helper re-derive Mathlib's `IsGaussian.map_rotation_eq_self`, and the private `integrable_of_abs_le` restates `Integrable.of_bound`; the Poincar\u00e9 results and coordinate-resampling lemmas are otherwise new.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory/Integral/Bochner/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Distributions/Gaussian",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Concentration/PoincareLogSobolev.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Gaussian",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Distributions/Gaussian/Multivariate.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Distributions/Gaussian/Fernique.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/ProductMeasure.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Distributions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/MeasureTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Concentration/EfronStein.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Distributions/Gaussian/Real.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 22,
+  "total_calls": 22,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e3032662a2f450e8fda9962e1e896d9b9dad3b89ab63984916afeb5b8c4823bb",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 87790,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 87790,
+  "cache_read_input_tokens": 909908,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 32,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1197,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1197,
+    "cache_read_input_tokens": 89816,
+    "input_tokens": 2,
+    "output_tokens": 2190,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8932,
+  "output_tokens_details": {
+   "thinking_tokens": 3343
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,161 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.27595840000000005,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 26115,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 26115,
+    "cache_read_input_tokens": 26612,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5949,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5949,
+      "cache_read_input_tokens": 23389,
+      "input_tokens": 2,
+      "output_tokens": 2084,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3085,
+    "output_tokens_details": {
+     "thinking_tokens": 1108
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "fc8b2141367a5c22e198bac6d15a6af86a24a39b",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.275958,
+ "dedupe_key": "TauCetiProject/TauCeti|31501|6fa0439b7e085b4c536e3addc4bd798a1ad31151|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "04338f751010696bd83df766708d7bbecd14e5a20d60e0938431f5d461928288",
+ "diff_sha256": "04338f751010696bd83df766708d7bbecd14e5a20d60e0938431f5d461928288",
+ "duration_s": 29.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The proof runs from the theorem at ~L271 to `linarith` at ~L355. `hJ` spans `have hJ : \u2200 \u03b8, J \u03b8 \u2264 D` through `linarith` before `have h\u03c6`.",
+   "file": "TauCeti/Probability/Distributions/Gaussian/Poincare.lean",
+   "fix": "Extract `hJ` as a private lemma, e.g. `integral_deriv_mul_deriv_rot_le` (`\u222b f'(p.1) f'(cos \u03b8 p.1 + sin \u03b8 p.2) \u2264 \u222b f'^2`). Optionally extract the monotonicity step `h\u03c6` too. Leave short comments marking the endpoint evaluation and the monotonicity argument.",
+   "issue": "`variance_le_integral_deriv_sq_gaussianReal` is about 85 lines. Its `hJ` block (about 35 lines proving `J \u03b8 \u2264 D` through rotation invariance and AM\u2013GM) is a reusable fact buried inside it. There are no comments explaining the overall structure.",
+   "line": 271
+  },
+  {
+   "evidence": "`have hcoord : \u2200 i : Fin n, \u222b\u207b x, evariance ... \u2264 ENNReal.ofReal (...)` spans most of the theorem body, with nested `hslice`, `hGm`, `hGint` and a calc block.",
+   "file": "TauCeti/Probability/Distributions/Gaussian/Poincare.lean",
+   "fix": "Extract `hcoord`, or at least `hslice` together with the measurability and integrability of `x \u21a6 \u222b y, h (update x i y)`, as a private lemma. The main proof then becomes Efron\u2013Stein plus `Finset.sum_le_sum`.",
+   "issue": "`variance_le_sum_integral_fderiv_sq_pi` is about 80 lines. Its `hcoord` block (about 55 lines: a slice-wise 1D Poincar\u00e9 bound followed by integration over the resampled coordinate) is a self-contained per-coordinate lemma inlined in the proof.",
+   "line": 405
+  },
+  {
+   "evidence": "The identical tactic lines appear in `i1`, `i2`, `hbd`; the `mul_le_mul (hB _) (hB _) (abs_nonneg _) hB0` line appears in `hint` and `hle`.",
+   "file": "TauCeti/Probability/Distributions/Gaussian/Poincare.lean",
+   "fix": "Add a private helper, e.g. `abs_sq_le_sq_of_abs_le`, or an `integrable_sq_of_abs_le` variant of `integrable_of_abs_le`, and use it at every site.",
+   "issue": "The same `|g x| \u2264 B \u2192 |g x ^ 2| \u2264 B ^ 2` argument (`rw [abs_of_nonneg (sq_nonneg _), \u2190 sq_abs]; exact pow_le_pow_left\u2080 (abs_nonneg _) (hB _) 2`) appears three times: `i1`, `i2` (in `hJ`) and `hbd` (in `hcoord`). The `|a*b| \u2264 B*B` product-bound pattern (`rw [abs_mul]; exact mul_le_mul (hB _) (hB _) (abs_nonneg _) hB0`) is also repeated in `integral_interp_deriv` and in `hle`.",
+   "line": 0
+  },
+  {
+   "evidence": "`h1` and `h2` repeat the same decomposition argument. `h3`/`h4` rewrite backwards through them, and `h5`/`h6` are trivial instances of the same fact.",
+   "file": "TauCeti/Probability/Distributions/Gaussian/Poincare.lean",
+   "fix": "Prove one helper lemma `L (a, b) = a * L (1, 0) + b * L (0, 1)` once (e.g. via `L.map_add`/`map_smul` or `simp [\u2190 ContinuousLinearMap.coprod_inl_inr]`) and get all four evaluations from it with a single `simp [M, helper]`.",
+   "issue": "`measurePreserving_orthogonal_gaussianReal` evaluates the composed functionals through a hand-written chain of six `have`s (`h1`\u2013`h6`), with explicit `map_add`/`map_smul` rewrites and `rw [\u2190 h1]; simp [M]` steps. This kind of chain breaks on Mathlib renames.",
+   "line": 66
+  }
+ ],
+ "head_sha": "6fa0439b7e085b4c536e3addc4bd798a1ad31151",
+ "merge_base_sha": "5f8b5c6fc72ef02143a5bd96d1b787615f8312df",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 31501,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "91a3bcd67e98e6d44453cb9b2dff0529f7b0080dc087c47b012a7dd35b6f291d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T171824Z-31501-proof-quality-e4db1d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T17:18:24Z",
+ "submitted_by": "kim-em",
+ "summary": "The two main theorems are each about 80 lines with no comments on their overall structure, and the bounded-square integrability argument is copied three times. These are fixable by moving the substantial steps into named lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e4f5bf272b761dede0e3ae14d88bf5294a9b94aaef34b06b46821ca6edde8e5b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 26115,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 26115,
+  "cache_read_input_tokens": 26612,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5949,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5949,
+    "cache_read_input_tokens": 23389,
+    "input_tokens": 2,
+    "output_tokens": 2084,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3085,
+  "output_tokens_details": {
+   "thinking_tokens": 1108
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
