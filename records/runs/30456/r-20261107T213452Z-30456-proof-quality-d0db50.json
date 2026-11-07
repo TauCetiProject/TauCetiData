@@ -1,0 +1,149 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2301062,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 20780,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 20780,
+    "cache_read_input_tokens": 22251,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4975,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4975,
+      "cache_read_input_tokens": 19028,
+      "input_tokens": 2,
+      "output_tokens": 1936,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2970,
+    "output_tokens_details": {
+     "thinking_tokens": 1008
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "385ec2ddd8ddf8cc779b78c176308cb9c6b55499",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.230106,
+ "dedupe_key": "TauCetiProject/TauCeti|30456|52abf0427ef15b02848be23ecf29c42fd62885d4|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "5b05731636b71920bbe155e1bddc44b5c23c8eaa3fa6d851a9bf73bf9429f8ad",
+ "diff_sha256": "5b05731636b71920bbe155e1bddc44b5c23c8eaa3fa6d851a9bf73bf9429f8ad",
+ "duration_s": 29.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Algebra/Homology/HomologicalComplex.lean:646 `theorem of_d (j : \u03b1) : of.d X d (j + 1) j = d j` has no casts.",
+   "file": "TauCeti/KnotTheory/Grid/Filtered/Complex.lean",
+   "fix": "State them as `(...).d (m + 1) m = ModuleCat.ofHom (gradedFilteredDifferential ...)` (respectively `alexanderFilteredDifferential`) and prove them by `ChainComplex.of_d _ _ _ m`.",
+   "issue": "`gradedFilteredComplex_d` and `alexanderFiltrationComplex_d` (:191) wrap the differential in `eqToHom` casts built from the `rfl`-proved `_X` lemmas, and their proofs are `ext c; rfl`.",
+   "line": 98
+  },
+  {
+   "evidence": "The `_X` lemmas at :93 and :185 are `(rfl)`, so every `eqToHom` here is a cast between definitionally equal objects.",
+   "file": "TauCeti/KnotTheory/Grid/Filtered/Complex.lean",
+   "fix": "State them as `... .f m = ModuleCat.ofHom (Submodule.inclusion _)` without the `eqToHom` factors.",
+   "issue": "`alexanderFiltrationComplexMap_f` and `alexanderFiltrationComplex\u03b9_f` (:229) have the same empty `eqToHom` wrapping, proved by `(rfl)`, so their simp normal forms carry needless casts.",
+   "line": 221
+  },
+  {
+   "evidence": "Proof bodies are `simp only [alexanderFiltrationComplex_d]; ext c; rfl` and `ext m c; rfl`, with no comment explaining the defeq.",
+   "file": "TauCeti/KnotTheory/Grid/Filtered/Complex.lean",
+   "fix": "After restating the `_d`/`_f` lemmas cast-free, prove these by `ext` plus `simp` using the `coe_*` and `Submodule.coe_inclusion` lemmas, or document each remaining `rfl`.",
+   "issue": "Because of the casts, the commuting squares in `alexanderFiltrationComplexMap` (:203) and `alexanderFiltrationComplex\u03b9` (:212), and the laws `alexanderFiltrationComplexMap_refl` (:265), `_comp` (:272) and `_\u03b9` (:280), are all closed by uncommented `ext ..; rfl` defeq unfolding through `ModuleCat.ofHom`, `eqToHom`, `LinearMap.restrict` and `Submodule.inclusion`.",
+   "line": 203
+  }
+ ],
+ "head_sha": "52abf0427ef15b02848be23ecf29c42fd62885d4",
+ "merge_base_sha": "385ec2ddd8ddf8cc779b78c176308cb9c6b55499",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 30456,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c0638117a4c3cbf58222fb864b3a2de048c69bf61be8dfab5aea9d15b8acd630",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T213452Z-30456-proof-quality-d0db50",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T21:34:52Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs mostly use robust automation, but the degreewise `_d`/`_f` lemmas wrap their statements in `eqToHom` casts that do nothing, which forces uncommented `ext; rfl` defeq proofs for every chain-map square and functoriality law. Mathlib's `ChainComplex.of_d` already gives the cast-free form.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Homology/HomologicalComplex.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "343ef42da20406768854b2a65ee616db8d5d21faa6c795fd8f899125d68f036c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 20780,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 20780,
+  "cache_read_input_tokens": 22251,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4975,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4975,
+    "cache_read_input_tokens": 19028,
+    "input_tokens": 2,
+    "output_tokens": 1936,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2970,
+  "output_tokens_details": {
+   "thinking_tokens": 1008
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
