@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.23062679999999997,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 30.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 20067,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 20067,
+    "cache_read_input_tokens": 65794,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 482,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 482,
+      "cache_read_input_tokens": 22808,
+      "input_tokens": 2,
+      "output_tokens": 1678,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2845,
+    "output_tokens_details": {
+     "thinking_tokens": 799
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f761b0549e867175609c1594d86d3d1d519c3569",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.230627,
+ "dedupe_key": "TauCetiProject/TauCeti|31724|6b1bdebed870c1ab1a3318f4a92ae0d92980bde2|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "1a56ce0bbe4b6524b8d53509c538994912906e8b54d9908aa2f7426f6c854e10",
+ "diff_sha256": "1a56ce0bbe4b6524b8d53509c538994912906e8b54d9908aa2f7426f6c854e10",
+ "duration_s": 30.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Identical `have : IsManifold I (1 + 1) M`, `have hV := ...`, `have hH := ...` lines open both private theorems; `have : IsManifold I (\u221e + 1) M := by simpa using ...` is repeated in `contMDiff_oneillAux`, `contMDiff_oneillA` and `contMDiff_oneillT`.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Submersion/ONeill.lean",
+   "fix": "Add one private lemma stating that both projection sections are MDifferentiableAt x, and one shared instance, and use them in all these proofs.",
+   "issue": "The same setup is copied verbatim into `oneillAux_apply` and `inner_oneillAux_add_inner`: the `IsManifold I (1 + 1) M` instance plus `hV`/`hH`, which state that both projections are differentiable at x (from `contMDiff_starProjection_ker`/`_orthogonal_ker` at `n := 1` with `.mdifferentiable`). The three smoothness theorems also each re-derive `IsManifold I (\u221e + 1) M`. This hides a reusable fact.",
+   "line": 108
+  },
+  {
+   "evidence": "Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean:298 `lemma isIdempotentElem_starProjection : IsIdempotentElem K.starProjection`; the same argument appears in `oneillA_starProjection_orthogonal_ker`, `oneillA_starProjection_ker`, `oneillT_starProjection_ker`, `oneillT_starProjection_orthogonal_ker` and `oneillAux_apply`.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Submersion/ONeill.lean",
+   "fix": "State one private @[simp] lemma for this idempotence, derived from Mathlib's `Submodule.isIdempotentElem_starProjection`, and use it in all five places.",
+   "issue": "The term `Submodule.starProjection_eq_self_iff.mpr (Submodule.starProjection_apply_mem (mfderiv I J f x).ker _)` is passed to `simp` five times: in all four projection simp lemmas and in `oneillAux_apply`. Each copy re-derives the same idempotence fact (projecting onto the kernel twice equals projecting once).",
+   "line": 76
+  }
+ ],
+ "head_sha": "6b1bdebed870c1ab1a3318f4a92ae0d92980bde2",
+ "merge_base_sha": "f761b0549e867175609c1594d86d3d1d519c3569",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 31724,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9726981465431e72ee28f66f3240951284804adae66cf9d048158e776de32586",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T222701Z-31724-proof-quality-bfc5ab",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T22:27:01Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are short and automation-based, but the same differentiability setup and the same idempotence term are copied across several proofs instead of being stated once as lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace/Projection",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a16e9a8f9af17a311cf9f02c30dd1e70bd5639422d8433e4b59ed078f712ff4c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 20067,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 20067,
+  "cache_read_input_tokens": 65794,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 482,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 482,
+    "cache_read_input_tokens": 22808,
+    "input_tokens": 2,
+    "output_tokens": 1678,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2845,
+  "output_tokens_details": {
+   "thinking_tokens": 799
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
