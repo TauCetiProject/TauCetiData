@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.544797,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 41.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 53411,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 53411,
+    "cache_read_input_tokens": 218705,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 6727,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 6727,
+      "cache_read_input_tokens": 49907,
+      "input_tokens": 2,
+      "output_tokens": 2394,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3686,
+    "output_tokens_details": {
+     "thinking_tokens": 1229
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.544797,
+ "dedupe_key": "TauCetiProject/TauCeti|29845|9959e5eb0a36b116cd0190e16dea5ae4b0be0d71|api-design|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "2320941744dcf7a6e9d839bdfc48f21b7640a4a393bb846abc05ca3f9790c72e",
+ "diff_sha256": "2320941744dcf7a6e9d839bdfc48f21b7640a4a393bb846abc05ca3f9790c72e",
+ "duration_s": 41.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "LocationScale.lean:155 `semicircleReal_eq_withDensity (a : \u211d) {v : \u211d\u22650} (hv : 0 < v)` is the general result it comes from; nothing in the proof depends on log potentials.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Move it to `Semicircle/LocationScale.lean` next to `semicircleReal_eq_withDensity`, generalized to `semicircleReal a v \u2264 ENNReal.ofReal (\u03c0 * \u221av)\u207b\u00b9 \u2022 volume` for `0 < v`.",
+   "issue": "`semicircleReal_zero_one_le` is a general density bound for the semicircle law, specialized to `0 1` and exported from the log-potential file.",
+   "line": 56
+  },
+  {
+   "evidence": "LocationScale.lean:79 `theorem ae_mem_Icc_semicircleReal (a : \u211d) (v : \u211d\u22650) : \u2200\u1d50 x \u2202semicircleReal a v, x \u2208 Icc (a - 2 * Real.sqrt v) (a + 2 * Real.sqrt v)`.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Delete it and use `ae_mem_Icc_semicircleReal 0 1` (with `simp` normalizing the endpoints) at its uses.",
+   "issue": "`ae_mem_Icc_semicircleReal_zero_one` adds a public duplicate of `ae_mem_Icc_semicircleReal 0 1`; its whole proof is `simpa`.",
+   "line": 73
+  },
+  {
+   "evidence": "PDF.lean:143 `instance nullSingletonClass_semicircleMeasure`; LocationScale.lean:182 proves `semicircleReal a v \u226a volume` inline in `ae_pos_semicircleReal` without exporting it.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Add `semicircleReal_singleton (a) (hv : v \u2260 0) : semicircleReal a v {x} = 0` (or absolute continuity `semicircleReal a v \u226a volume`) in LocationScale.lean, and use it here.",
+   "issue": "`semicircleReal_zero_one_singleton` (no atoms) is a general property of the law, stated only for `0 1` and in the wrong file. The parallel `semicircleMeasure` has an instance for it.",
+   "line": 79
+  },
+  {
+   "evidence": "e.g. `mem_slitPlane_sub {w : \u2102} (hw : 0 < w.im) (y : \u211d) : (w - y : \u2102) \u2208 Complex.slitPlane` uses nothing from this file.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Move them as public lemmas to a general complex-analysis home (e.g. near `Complex.slitPlane` or `UpperHalfPlane` infrastructure), or inline them if they are too small to stand alone.",
+   "issue": "`im_gt_of_mem_ball`, `norm_inv_sub_le`, `mem_slitPlane_sub` and `continuous_log_sub` mention only Mathlib types and do not depend on the semicircle law, yet they are hidden as `private`.",
+   "line": 235
+  },
+  {
+   "evidence": "Both are `Measure.restrict_eq_self_of_ae_mem ae_mem_Icc_semicircleReal_zero_one`.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Define the restriction lemma once (generalized to `a v` in LocationScale.lean if it is kept) and use it in both places.",
+   "issue": "`private restrict_Icc_semicircleReal_zero_one` repeats the local `hrestr` proved inside `integrable_log_abs_sub_semicircleReal` (line 88).",
+   "line": 231
+  }
+ ],
+ "head_sha": "9959e5eb0a36b116cd0190e16dea5ae4b0be0d71",
+ "merge_base_sha": "72cbdfb14e3d048fdf0a9a417b0b00bf875f61ab",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 29845,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8d7b3fca3671950ead69e9e109c1ace188660ad2f36750b1294a923c2cc93d06",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T101642Z-29845-api-design-6a569c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T10:16:42Z",
+ "submitted_by": "kim-em",
+ "summary": "The \u00a79.4 targets `integrable_log_abs_sub_semicircleReal` and `integral_log_abs_sub_semicircleReal` are exposed appropriately, but the file also publicly exports general semicircle-law facts specialized to `0 1`, one of which is a mere restatement of an existing lemma. General complex-analysis helpers are hidden as `private` instead of being moved to a canonical home.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/RandomMatrices",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Semicircle",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Semicircle/LocationScale.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 6,
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "abe139d1a2adcd11d982b12298da8357d775db6f6c896c4ef8eb7bbf156177b9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 53411,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 53411,
+  "cache_read_input_tokens": 218705,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 6727,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 6727,
+    "cache_read_input_tokens": 49907,
+    "input_tokens": 2,
+    "output_tokens": 2394,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3686,
+  "output_tokens_details": {
+   "thinking_tokens": 1229
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

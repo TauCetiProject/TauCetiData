@@ -1,0 +1,224 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.4396024,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 50.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 38516,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 38516,
+    "cache_read_input_tokens": 76852,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2194,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2194,
+      "cache_read_input_tokens": 39545,
+      "input_tokens": 2,
+      "output_tokens": 4137,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5804,
+    "output_tokens_details": {
+     "thinking_tokens": 1387
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.439602,
+ "dedupe_key": "TauCetiProject/TauCeti|29845|9959e5eb0a36b116cd0190e16dea5ae4b0be0d71|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "2320941744dcf7a6e9d839bdfc48f21b7640a4a393bb846abc05ca3f9790c72e",
+ "diff_sha256": "2320941744dcf7a6e9d839bdfc48f21b7640a4a393bb846abc05ca3f9790c72e",
+ "duration_s": 50.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 135-196: nested calc chains `hlog_low`/`hlog_high`/`hlog_bound`; the first bullet introduces `h\u03b5pos` and never uses it.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Move the bound into a private lemma (e.g. `abs_log_norm_add_I_mul_sub_le`) proved via abs_le/neg_abs_le, and use `Eventually.of_forall` for measurability.",
+   "issue": "`tendsto_log_norm_sub_integral` is about 110 lines; the domination bound (lines 135-196) is a hand-written abs_le/calc chain built inline, and the measurability bullet uses a `filter_upwards` with hypotheses it never needs.",
+   "line": 104
+  },
+  {
+   "evidence": "Lines 664-751.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Factor out steps such as `q*(1-q)^2 \u2264 b^2*(q+1)^2` and `q*(q+1)^2 \u2264 4`, use nlinarith/positivity instead of manual re-association, or add comments on the overall argument.",
+   "issue": "`m_boundary_q_estimate` is about 90 lines of manual inequality chains (hfour, hfour', hfour'', hprod with explicit mul_le_mul_of_nonneg_*) and has no comment on the plan.",
+   "line": 664
+  },
+  {
+   "evidence": "`simpa [z, a, b, q] using hest.1` at lines 680, 768, 789, 816, 846.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "State the lemmas with the explicit expressions `(m (x + \u03b5 * I)).re` etc., or with a named abbreviation that has simp lemmas.",
+   "issue": "`m_boundary_identities` and `m_boundary_q_estimate` put `let z a b q` in their statements, so `m_boundary_q_estimate`, `tendsto_m_boundary_normSq`, `tendsto_m_boundary_re` and `tendsto_eps_mul_m_boundary_im` all re-declare the same lets and unfold them with `simpa [z, a, b, q] using`, which relies on let-unfolding.",
+   "line": 618
+  },
+  {
+   "evidence": "Lines 173 and 194: `change ... \u2264 \u2016Real.log |x - y|\u2016 + Real.log (|x| + 3)` and `change \u2016...\u2016 \u2264 bound y`.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Use `simp only [bound]` or write the bound explicitly.",
+   "issue": "`change` used to unfold the local `bound` let, with no comment; the same happens at line 194.",
+   "line": 173
+  },
+  {
+   "evidence": "`\u00b7 change (m z).im ^ 2 + t * (m z).im = 1`",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Avoid the let, or rewrite with an explicit equation.",
+   "issue": "`change` unfolds the local `let z` without a comment.",
+   "line": 461
+  },
+  {
+   "evidence": "`change \u03b5 < (1 - c) ^ 2 / 2 at h\u03b5small`",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Use `Set.mem_Iio` (rw/simp).",
+   "issue": "`change` unfolds Iio membership without a comment.",
+   "line": 771
+  },
+  {
+   "evidence": "`change \u03b5 * b \u2264 \u03b5`",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Drop the lets and state the goal directly.",
+   "issue": "`change` unfolds the local let `b` without a comment.",
+   "line": 853
+  },
+  {
+   "evidence": "`change 0 < \u03b5 at h\u03b5`",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Use `Set.mem_Ioi`.",
+   "issue": "`change` unfolds Ioi membership without a comment.",
+   "line": 957
+  },
+  {
+   "evidence": "Both blocks: `rw [ae_iff]; convert hnull using 1; simp`.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Prove `\u2200\u1d50 y \u2202semicircleReal 0 1, y \u2260 x` once as a lemma (or via a NoAtoms instance) and reuse it.",
+   "issue": "The proof that the semicircle law is a.e. \u2260 x is copied verbatim at lines 130 and 198.",
+   "line": 130
+  },
+  {
+   "evidence": "`rintro \u27e8x, -, hx\u27e9; have := congrArg Complex.im hx; simp at this; linarith` appears twice, and in `hyz` as well.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Factor it into one private lemma `not_mem_range_ofReal_of_im_pos`.",
+   "issue": "The argument that z is not real when 0 < z.im is repeated in hasDerivAt_m (296), m_quad (303) and hasDerivAt_logPotential_eq_neg_m (`hyz`).",
+   "line": 296
+  },
+  {
+   "evidence": "Both are `Measure.restrict_eq_self_of_ae_mem ae_mem_Icc_semicircleReal_zero_one` (lines 89, 233).",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Declare it once before line 86 and use it in both places.",
+   "issue": "`restrict_Icc_semicircleReal_zero_one` repeats the local `hrestr` in `integrable_log_abs_sub_semicircleReal` (line 88).",
+   "line": 231
+  },
+  {
+   "evidence": "Lines 364-396.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Extract `2 m m' + m + z m' = 0` as a lemma and close with `ring`/`linear_combination` instead of `ring_nf`.",
+   "issue": "In `hasDerivAt_primitive`, the derivative goal is closed by `field_simp [hm0]; simp only [Pi.neg_apply]; ring_nf`, which depends on normal form. The derivative-of-quadratic relation (hq/hq0) is a reusable fact buried inside the proof.",
+   "line": 390
+  },
+  {
+   "evidence": "`have hyabs : |y| \u2264 2 := abs_le.mpr hy` is never referenced afterwards.",
+   "file": "TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "fix": "Remove it.",
+   "issue": "`hyabs` is never used; `hdiff_le` uses hy.1/hy.2 directly.",
+   "line": 155
+  }
+ ],
+ "head_sha": "9959e5eb0a36b116cd0190e16dea5ae4b0be0d71",
+ "merge_base_sha": "72cbdfb14e3d048fdf0a9a417b0b00bf875f61ab",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 29845,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e7e864fc21b4f2a14a57ed94cfc088850fd6d58081f078469d4763d70a77f2c5",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T101920Z-29845-proof-quality-487cfc",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T10:19:20Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs build, but three are long and hide reusable facts, several steps are copied between proofs, six `change` steps have no comment, and the `let`-based statements of the boundary lemmas force repeated `simpa [z, a, b, q]` unfolding at every call site.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Distributions/Semicircle/LogPotential.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7d4f555e70330706d5057ea8de29556f8c32f02adde5cd1afbc6ac4b39bb491e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 38516,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 38516,
+  "cache_read_input_tokens": 76852,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2194,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2194,
+    "cache_read_input_tokens": 39545,
+    "input_tokens": 2,
+    "output_tokens": 4137,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5804,
+  "output_tokens_details": {
+   "thinking_tokens": 1387
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
