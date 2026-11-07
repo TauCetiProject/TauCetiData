@@ -1,0 +1,156 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1988744,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 17141,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 17141,
+    "cache_read_input_tokens": 18552,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5035,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5035,
+      "cache_read_input_tokens": 15329,
+      "input_tokens": 2,
+      "output_tokens": 2220,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2901,
+    "output_tokens_details": {
+     "thinking_tokens": 842
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "385ec2ddd8ddf8cc779b78c176308cb9c6b55499",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.198874,
+ "dedupe_key": "TauCetiProject/TauCeti|30291|0e5d70fc4287dd5ea8bedd14e5fa6eadf426411c|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "bd080196147f83c6d570eca4909cf681da8416a1d32a1f8ed5ba5f0c37d8b3da",
+ "diff_sha256": "bd080196147f83c6d570eca4909cf681da8416a1d32a1f8ed5ba5f0c37d8b3da",
+ "duration_s": 25.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `coe_add_natCast_smul_ne_zero` in DividedPower.lean: lines 101, 143, 147, 186, plus two hab-variants at 120 and 126.",
+   "file": "TauCeti/Algebra/Lie/Weights/StructureConstant/DividedPower.lean",
+   "fix": "Add one lemma, e.g. `Weight.isNonZero_of_coe_eq_add_natCast_smul (h\u03b1 h\u03b2 hab) (h\u03b3 : \u2191\u03b3 = \u2191\u03b2 + (n:K) \u2022 \u2191\u03b1) : \u03b3.IsNonZero`, and use it at every site, including the `by` blocks inside statements.",
+   "issue": "The nonzero proof `rw [Weight.IsNonZero, Weight.IsZero, h\u03b3]; exact coe_add_natCast_smul_ne_zero \u2026` is repeated at lines 99, 120, 126, 142, 146 and 185, and the same pattern appears at KostantStability.lean:136,143.",
+   "line": 99
+  },
+  {
+   "evidence": "Identical tactic blocks at lines 144, 149\u2013151 and 189\u2013191.",
+   "file": "TauCeti/Algebra/Lie/Weights/StructureConstant/DividedPower.lean",
+   "fix": "Factor it into one lemma taking h\u03b3 and h\u03b4, and use it in the statement and body of `succ_mul_intDividedStructureConstant` and in `factorial_mul_intDividedStructureConstant_eq_prod`.",
+   "issue": "The step identity `rw [h\u03b4, h\u03b3]; push_cast; module` (\u03b2+(n+1)\u03b1 = \u03b1+(\u03b2+n\u03b1)) is duplicated at lines 144, 148\u2013151 and 188\u2013191.",
+   "line": 144
+  },
+  {
+   "evidence": "Lines 156\u2013163: `rw [\u2190 \u2026, \u2190 \u2026, \u2190 lie_zsmul, \u2190 \u2026]` followed by `rw [lie_smul, \u2190 ad_apply (R := K), pow_succ', mul_apply_eq_comp, smul_smul, Nat.factorial_succ]`.",
+   "file": "TauCeti/Algebra/Lie/Weights/StructureConstant/DividedPower.lean",
+   "fix": "First prove `ad^(n+1) (x \u03b2) = \u2045x \u03b1, ad^n (x \u03b2)\u2046` as a `have` (`pow_succ'` + `simp`), then reduce the rest with `simp [smul_smul, Nat.factorial_succ]` and `field_simp`.",
+   "issue": "`succ_mul_intDividedStructureConstant` closes with two rewrite chains of about ten named lemmas (`lie_zsmul`, `lie_smul`, `ad_apply`, `pow_succ'`, `mul_apply_eq_comp`, `smul_smul`, `Nat.factorial_succ`, \u2026) that will break on Mathlib renames.",
+   "line": 156
+  },
+  {
+   "evidence": "Lines 196\u2013206: a three-step calc where every step is `ring` or a single rewrite of `hrec`/`hprod`.",
+   "file": "TauCeti/Algebra/Lie/Weights/StructureConstant/DividedPower.lean",
+   "fix": "Replace the `rw [Finset.prod_range_succ, \u2026]` + `calc` with `rw [Finset.prod_range_succ, Nat.factorial_succ]; push_cast; linear_combination (n.factorial : \u2124) * hrec + N n * hprod` (or equivalent).",
+   "issue": "The closing `calc` of `factorial_mul_intDividedStructureConstant_eq_prod` restates long terms by hand to perform a ring rearrangement.",
+   "line": 197
+  }
+ ],
+ "head_sha": "0e5d70fc4287dd5ea8bedd14e5fa6eadf426411c",
+ "merge_base_sha": "385ec2ddd8ddf8cc779b78c176308cb9c6b55499",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 30291,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "edff9a61eb4813094fd8fcdc70dfe02948d7de83d70c54f55823f43d3e0f09d6",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T183017Z-30291-proof-quality-0f2b41",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T18:30:17Z",
+ "submitted_by": "kim-em",
+ "summary": "The same nonzero-root argument is re-proved inline five times and the same step identity three times instead of being factored into lemmas. Two proofs also use long named-lemma rewrite chains and a hand-written calc where robust automation would do.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Lie",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "49f489747d180f4b5c3402c969fbf4ef5ec3b883b439c6f3f7f52c9581af09ce",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 17141,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 17141,
+  "cache_read_input_tokens": 18552,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5035,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5035,
+    "cache_read_input_tokens": 15329,
+    "input_tokens": 2,
+    "output_tokens": 2220,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2901,
+  "output_tokens_details": {
+   "thinking_tokens": 842
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
