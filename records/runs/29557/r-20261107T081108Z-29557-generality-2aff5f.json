@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2889536,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 40.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 24220,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 24220,
+    "cache_read_input_tokens": 129548,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 151,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 151,
+      "cache_read_input_tokens": 27292,
+      "input_tokens": 2,
+      "output_tokens": 1494,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3461,
+    "output_tokens_details": {
+     "thinking_tokens": 978
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.288954,
+ "dedupe_key": "TauCetiProject/TauCeti|29557|760567f2a2db977607286bcebeb33190632267d7|generality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "3c0c2d51fd78391e0cb194eb7b5d9629310abd5f317c978567c663166cfadcf0",
+ "diff_sha256": "3c0c2d51fd78391e0cb194eb7b5d9629310abd5f317c978567c663166cfadcf0",
+ "duration_s": 40.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib Operations.lean:888 `OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartialHomeomorph E F) {f\u2080' : E \u2243L[\ud835\udd5c] F}`. In the same file, `isInvertible_of_mem_toOpenPartialHomeomorph_source` (line 102) and `contDiffAt_toOpenPartialHomeomorph_symm` (line 115) are stated over `E \u2192 F` with `A.IsInvertible`, and the latter follows exactly the proof pattern `obtain \u27e8A, hA'\u27e9 := \u2026IsInvertible; contDiffAt_symm (f\u2080' := A)`.",
+   "file": "TauCeti/Analysis/Calculus/InverseFunctionTheorem.lean",
+   "fix": "Restate it as `(\u03c8 : OpenPartialHomeomorph E F) (h\u03c8 : ContDiffOn \ud835\udd5c n \u03c8 \u03c8.source) (hinv : \u2200 x \u2208 \u03c8.source, (fderiv \ud835\udd5c \u03c8 x).IsInvertible) (hn : n \u2260 0) : ContDiffOn \ud835\udd5c n \u03c8.symm \u03c8.target`, with `[CompleteSpace E]` only, and rename it accordingly (e.g. `contDiffOn_symm_of_isInvertible_fderiv`). At the use site in LocalInverse, turn `\u27e8A, hA\u27e9 : IsUnit _` into `\u27e8ContinuousLinearEquiv.ofUnit A, hA\u27e9`.",
+   "issue": "The new public lemma is stated for `\u03c8 : OpenPartialHomeomorph E E` with `IsUnit (fderiv \ud835\udd5c \u03c8 x)`, but its proof only calls `OpenPartialHomeomorph.contDiffAt_symm`, which works for `E \u2192 F` with `f\u2080' : E \u2243L[\ud835\udd5c] F`. The `E \u2192 E`/`IsUnit` restriction is an assumption the proof never needs.",
+   "line": 158
+  },
+  {
+   "evidence": "Its only use is `rw [ContinuousLinearEquiv.coe_ofUnit, hA]` inside the new lemma's proof (diff line 168).",
+   "file": "TauCeti/Analysis/Calculus/InverseFunctionTheorem.lean",
+   "fix": "Remove `coe_ofUnit` once the lemma takes `IsInvertible`. If the use site still needs the coercion, use `rfl` or `show` there.",
+   "issue": "`ContinuousLinearEquiv.coe_ofUnit` is an `rfl` helper that is only needed because of the `IsUnit` statement above. Once the lemma takes `IsInvertible`, `obtain \u27e8e, he\u27e9` gives `\u2191e = fderiv \u2026` directly and nothing uses this helper.",
+   "line": 153
+  }
+ ],
+ "head_sha": "760567f2a2db977607286bcebeb33190632267d7",
+ "merge_base_sha": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 29557,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "262917cb5b97a5a20607f9a3ab60fcfb914bde858b51e864378d4b9e01a9ac08",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T081108Z-29557-generality-2aff5f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T08:11:08Z",
+ "submitted_by": "kim-em",
+ "summary": "The extracted lemma `OpenPartialHomeomorph.contDiffOn_symm_of_isUnit_fderiv` is limited to maps `E \u2192 E` with `IsUnit`, even though the Mathlib lemma it wraps and its neighbours in the same file work for `E \u2192 F` with `IsInvertible`. The `ContinuousLinearEquiv.coe_ofUnit` helper exists only because of that narrow statement.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/ContDiff/Operations.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/InverseFunctionTheorem.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/InverseFunctionTheorem.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 8,
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2af0d7edaebb83781210621a1a5454b0253b10028cdc3b24d4723409f40bc643",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 24220,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 24220,
+  "cache_read_input_tokens": 129548,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 151,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 151,
+    "cache_read_input_tokens": 27292,
+    "input_tokens": 2,
+    "output_tokens": 1494,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3461,
+  "output_tokens_details": {
+   "thinking_tokens": 978
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

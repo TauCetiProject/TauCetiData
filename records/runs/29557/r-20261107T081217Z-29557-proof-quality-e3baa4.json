@@ -1,0 +1,164 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2941348,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 30.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 26762,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 26762,
+    "cache_read_input_tokens": 68594,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1044,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1044,
+      "cache_read_input_tokens": 28941,
+      "input_tokens": 2,
+      "output_tokens": 1979,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3314,
+    "output_tokens_details": {
+     "thinking_tokens": 1198
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.294135,
+ "dedupe_key": "TauCetiProject/TauCeti|29557|760567f2a2db977607286bcebeb33190632267d7|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "3c0c2d51fd78391e0cb194eb7b5d9629310abd5f317c978567c663166cfadcf0",
+ "diff_sha256": "3c0c2d51fd78391e0cb194eb7b5d9629310abd5f317c978567c663166cfadcf0",
+ "duration_s": 30.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib `IsImage.lean:217` defines `restrOpen` via `IsImage.restr`; `restrOpen_source` (l.227) is the lemma that states the intersection form. The diff deletes `rw [OpenPartialHomeomorph.restrOpen_source]`.",
+   "file": "TauCeti/Geometry/Lie/Exponential/LocalInverse.lean",
+   "fix": "Rewrite before the constructor: `by rw [OpenPartialHomeomorph.restrOpen_source]; exact \u27e8_, hzeroU\u27e9`, or use `simp only [\u03c8, OpenPartialHomeomorph.restrOpen_source]`.",
+   "issue": "`hzero\u03c8` builds `0 \u2208 \u03c8.source` with the anonymous constructor `\u27e8_, hzeroU\u27e9`, which only works because Lean unfolds `\u03c8.source` (`restrOpen`, built via `IsImage.restr`) to `\u03c6.source \u2229 U`. The pre-PR code rewrote with `restrOpen_source` first.",
+   "line": 510
+  },
+  {
+   "evidence": "Lines 513, 519 and 526 each project `.2.1`/`.2.2` out of `hx : x \u2208 \u03c8.source`, and no `restrOpen_source` rewrite remains anywhere in the proof.",
+   "file": "TauCeti/Geometry/Lie/Exponential/LocalInverse.lean",
+   "fix": "Add `rw [OpenPartialHomeomorph.restrOpen_source] at hx`, or `simp only [\u03c8, OpenPartialHomeomorph.restrOpen_source] at hx`, before each projection. Alternatively, factor out one local `have hsrc : \u03c8.source = \u03c6.source \u2229 U` and use it at all three sites.",
+   "issue": "The same unfolding of `restrOpen`'s source happens in `hx.2.1` here, in `hx.2.2` at line 519, and in `hx.2.1` at line 526: `hx : x \u2208 \u03c8.source` is split as `x \u2208 \u03c6.source \u2229 (S \u2229 \u2026)` with no rewrite.",
+   "line": 513
+  },
+  {
+   "evidence": "`hd : (ofOpenPartialHomeomorph \u03c8 _ _).toPartialEquiv = \u03c8.toPartialEquiv`, so `congrArg (\u21d1) hd` is an equation between `PartialEquiv` coercions, yet it is composed directly with `h\u03c8F : \u21d1\u03c8 = F` and used to prove `mulInvariantExpChart = d`.",
+   "file": "TauCeti/Geometry/Lie/Exponential/LocalInverse.lean",
+   "fix": "Bridge the coercions with explicit lemmas, as `LocalCoordinates.lean:145` does with `\u0398.coe_toPartialEquiv`, or close the goals with `simp [PartialDiffeomorph.ofOpenPartialHomeomorph_toPartialEquiv, h\u03c8F]` as `Manifold.lean:115` does.",
+   "issue": "`hdsrc \u25b8 hzero\u03c8` and `h\u03c8F.symm.trans (congrArg (\u21d1) hd).symm` depend on Lean silently identifying `d.source` with `d.toPartialEquiv.source`, and `\u21d1d` and `\u21d1\u03c8` with the coercions of their `toPartialEquiv`s. That unfolding crosses the `PartialDiffeomorph` and `OpenPartialHomeomorph` coercion wrappers and is not documented.",
+   "line": 524
+  }
+ ],
+ "head_sha": "760567f2a2db977607286bcebeb33190632267d7",
+ "merge_base_sha": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 29557,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "33a62269b03ae9d1c9518091324008337c4ab73c6972c2f00f19733c911643a5",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T081217Z-29557-proof-quality-e3baa4",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T08:12:17Z",
+ "submitted_by": "kim-em",
+ "summary": "The extracted inverse-smoothness lemma is clean, but the shortened `LocalInverse.lean` proof replaces explicit `restrOpen_source` rewrites with undocumented unfolding of `restrOpen` and of the `PartialDiffeomorph`/`OpenPartialHomeomorph` coercions.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/OpenPartialHomeomorph",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Lie/Exponential/LocalInverse.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fec5514dbab7f79d046bb57dcca77972e12220d7f152322758f36e81283ab3c2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 26762,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 26762,
+  "cache_read_input_tokens": 68594,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1044,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1044,
+    "cache_read_input_tokens": 28941,
+    "input_tokens": 2,
+    "output_tokens": 1979,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3314,
+  "output_tokens_details": {
+   "thinking_tokens": 1198
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
