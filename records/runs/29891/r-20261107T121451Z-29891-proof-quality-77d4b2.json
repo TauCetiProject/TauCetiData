@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2867294,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 25293,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 25293,
+    "cache_read_input_tokens": 48107,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 1322,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 1322,
+      "cache_read_input_tokens": 27194,
+      "input_tokens": 2,
+      "output_tokens": 1489,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3737,
+    "output_tokens_details": {
+     "thinking_tokens": 1824
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.286729,
+ "dedupe_key": "TauCetiProject/TauCeti|29891|69ec72cc55460e0a68bafcaa59f0322fb1b3fb8f|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "ba4a9ae3243e0f8e225e986c4af146011b87b703b1e647a5f8be79ce1e08943f",
+ "diff_sha256": "ba4a9ae3243e0f8e225e986c4af146011b87b703b1e647a5f8be79ce1e08943f",
+ "duration_s": 36.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 401 derives exactly this fact from these two hypotheses: `have h\u03c3'm : \u03c3' m = m := by rw [h\u03c3', mul_apply, swap_apply_right, h\u03c3p]`.",
+   "file": "TauCeti/Combinatorics/NoncrossingPartition/Geodesic.lean",
+   "fix": "Remove `h\u03c3'm` and derive it inside the proof with `rw [h\u03c3', mul_apply, swap_apply_right, h\u03c3p]`.",
+   "issue": "`sameCycle_of_sameCycle_mul_swap` takes `h\u03c3'm : \u03c3' m = m`, which is redundant: it follows from `h\u03c3p` and `h\u03c3'`.",
+   "line": 121
+  },
+  {
+   "evidence": "Lines 251-252: `hmoved ... := hle w fun hw => hxw (h.eq_of_right hw)`. Lines 260-263 derive `h\u03c3m_le` from `h\u03c3'p` and `hK`. Line 264 passes both `hmoved` and `hle`.",
+   "file": "TauCeti/Combinatorics/NoncrossingPartition/Geodesic.lean",
+   "fix": "State it with the caller's actual hypotheses (`h\u03c3p hpm h\u03c3m h\u03c3' hle hinc' hK`) and derive the rest inside. Alternatively, factor `hmoved` and `h\u03c3m_le` into small named lemmas used by both halves.",
+   "issue": "`increasing_of_mul_swap` has 15 hypotheses, several of them redundant. `hmoved` follows from `hle` in one line, `h\u03c3m_le` follows from `hK` and `h\u03c3'p`, `h\u03c3'p`/`h\u03c3'x` stand in for `h\u03c3'`, and `h\u03c3\u03c3'` is just `sameCycle_collapse_of_mul_swap` applied. The helper has no meaning on its own outside the caller.",
+   "line": 152
+  },
+  {
+   "evidence": "Lines 265-267 pass `(sameCycle_of_sameCycle_mul_swap h\u03c3p h\u03c3' h\u03c3'm)` and `h\u03c3\u03c3'` as arguments.",
+   "file": "TauCeti/Combinatorics/NoncrossingPartition/Geodesic.lean",
+   "fix": "Take `h\u03c3p hpm h\u03c3m h\u03c3' hle` and call `sameCycle_of_sameCycle_mul_swap`/`sameCycle_collapse_of_mul_swap` inside, rather than threading their results through the signature.",
+   "issue": "`noncrossing_of_mul_swap` has the same problem. It takes `hmoved` (follows from `hle`), and takes `h\u03c3'\u03c3`/`h\u03c3\u03c3'` as hypotheses even though they are conclusions of the two lemmas just added.",
+   "line": 209
+  },
+  {
+   "evidence": "The grep hits at lines 131, 140, 149, 248, 250 and 406 repeat the same rewrite chain; line 127 has it too, as `rw [hxp, h\u03c3', mul_apply, swap_apply_left]`.",
+   "file": "TauCeti/Combinatorics/NoncrossingPartition/Geodesic.lean",
+   "fix": "Factor two private lemmas (e.g. `mul_swap_apply_left_of_eq`, `mul_swap_apply_of_ne_of_ne`) and use them in both `sameCycle_*` helpers, the parent theorem, and the second theorem.",
+   "issue": "The evaluation facts `\u03c3' p = \u03c3 m` and `\u03c3' x = \u03c3 x` (for `x \u2260 p, m`) for `\u03c3' = \u03c3 * swap p m` are re-proved with the same `rw [h\u03c3', mul_apply, swap_apply_\u2026]` chain in four declarations. The copy at line 149 is an inline `show \u2026 by rw` inside another `rw`.",
+   "line": 140
+  }
+ ],
+ "head_sha": "69ec72cc55460e0a68bafcaa59f0322fb1b3fb8f",
+ "merge_base_sha": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 29891,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "70fc8782d501f1f9011d9302ababac4534e5375b4d55a9651ff05a7ff9aac677",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T121451Z-29891-proof-quality-77d4b2",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T12:14:51Z",
+ "submitted_by": "kim-em",
+ "summary": "The split is mechanical: the helpers take facts the caller already derived as extra hypotheses (some of them redundant), and the `\u03c3 * swap p m` evaluation facts are re-proved inline in four declarations instead of being factored out once.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/GroupTheory/Perm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/NoncrossingPartition/Geodesic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/NoncrossingPartition/Geodesic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "45ccec653e3d1607021996dc4d244e9c66f2b2aaaa0e311a9bdf1185ceb7ec53",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 25293,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 25293,
+  "cache_read_input_tokens": 48107,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 1322,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 1322,
+    "cache_read_input_tokens": 27194,
+    "input_tokens": 2,
+    "output_tokens": 1489,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3737,
+  "output_tokens_details": {
+   "thinking_tokens": 1824
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
