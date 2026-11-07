@@ -1,0 +1,167 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.4033938000000001,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 30.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 37572,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 37572,
+    "cache_read_input_tokens": 175549,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 389,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 389,
+      "cache_read_input_tokens": 40406,
+      "input_tokens": 2,
+      "output_tokens": 1315,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3383,
+    "output_tokens_details": {
+     "thinking_tokens": 1219
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d406259a890e9a86ec475a6713071e36e0355114",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.403394,
+ "dedupe_key": "TauCetiProject/TauCeti|29207|132764762b0bc9b0a4b39a9cbde72c47bb93f790|naming|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "a93bd3afcba37e7b121c347fda54cbee8d9e703d39aba829b651b9629a5c6461",
+ "diff_sha256": "a93bd3afcba37e7b121c347fda54cbee8d9e703d39aba829b651b9629a5c6461",
+ "duration_s": 30.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/Matrix/Defs.lean:501 `theorem submatrix_map (f : \u03b1 \u2192 \u03b2) ... : (A.map f).submatrix e\u2081 e\u2082 = (A.submatrix e\u2081 e\u2082).map f`",
+   "file": "TauCeti/LinearAlgebra/Matrix/Block.lean",
+   "fix": "Rename it to `Matrix.toSquareBlockProp_map` and the companion lemma to `IsUnit.det_toSquareBlockProp_map`, then update the uses in BigCell.lean.",
+   "issue": "`map_toSquareBlockProp` states `(M.map f).toSquareBlockProp p = (M.toSquareBlockProp p).map f`; reading the left-hand side outer-first gives `toSquareBlockProp_map`, which is the order Mathlib uses for the identical shape. The `_root_.IsUnit.det_map_toSquareBlockProp` lemma at line 88 inherits the same order.",
+   "line": 83
+  },
+  {
+   "evidence": "code/TauCeti/LinearAlgebra/Matrix/Block.lean:130 `isUnit_det_toSquareBlockProp_lt`; code/TauCeti/LinearAlgebra/Matrix/LDU.lean:343 `det_toSquareBlockProp_blockLDU`; grep finds no other `minor` lemma for `toSquareBlockProp` determinants.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/GeneralLinear/BigCell.lean",
+   "fix": "Rename them to `isUnit_det_toSquareBlockProp_blockBigCellMatrix` and `isUnit_det_toSquareBlockProp_map_blockBigCellMatrix`.",
+   "issue": "`isUnit_blockBigCellMatrix_minor` concludes `IsUnit ((blockBigCellMatrix R b).toSquareBlockProp _).det` but says `minor` instead of `det_toSquareBlockProp`. The neighbouring lemmas use the latter (`isUnit_det_toSquareBlockProp_lt`, `det_toSquareBlockProp_blockLDU`). `isUnit_minor_map_blockBigCellMatrix` (line 142) has the same problem and puts `minor` in a different position, so the two names don't match each other either.",
+   "line": 75
+  }
+ ],
+ "head_sha": "132764762b0bc9b0a4b39a9cbde72c47bb93f790",
+ "merge_base_sha": "d406259a890e9a86ec475a6713071e36e0355114",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 29207,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "564a173377362f492c24a26e4ddfe276324e7105c4a4770b5b480309c60a201b",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T190129Z-29207-naming-7fca46",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T19:01:29Z",
+ "submitted_by": "kim-em",
+ "summary": "Two naming problems: the new entrywise-map lemma reads its statement in the reverse of Mathlib's order, and the two leading-minor unit lemmas use \"minor\" instead of the `det_toSquareBlockProp` terminology the neighbouring lemmas use. Namespaces and the other names are fine.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/Matrix",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 6,
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e8e943efb57b2c69f7cee38b636fd40b5ad655edb5322d28d3e1929605d10e82",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 37572,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 37572,
+  "cache_read_input_tokens": 175549,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 389,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 389,
+    "cache_read_input_tokens": 40406,
+    "input_tokens": 2,
+    "output_tokens": 1315,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3383,
+  "output_tokens_details": {
+   "thinking_tokens": 1219
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
