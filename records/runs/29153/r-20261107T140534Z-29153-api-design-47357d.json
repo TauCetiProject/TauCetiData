@@ -1,0 +1,168 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.4278168,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 42888,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 42888,
+    "cache_read_input_tokens": 39984,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 9350,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 9350,
+      "cache_read_input_tokens": 36761,
+      "input_tokens": 2,
+      "output_tokens": 2383,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3835,
+    "output_tokens_details": {
+     "thinking_tokens": 1433
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d406259a890e9a86ec475a6713071e36e0355114",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.427817,
+ "dedupe_key": "TauCetiProject/TauCeti|29153|2a875a270fc1030d079ee4fd7da5e79310ae906c|api-design|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "dfeb3ee4ea87db20146cec1354a59eb1f9376497c3dc450e7e06d65d1ab6616c",
+ "diff_sha256": "dfeb3ee4ea87db20146cec1354a59eb1f9376497c3dc450e7e06d65d1ab6616c",
+ "duration_s": 36.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PrismRealization.lean `apply_toTopObjMk`: `rw [Adjunction.homEquiv_unit]; rfl`. Grepping for `toTopObjMk` finds no `_def` lemma.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/TopAdj.lean",
+   "fix": "Drop `@[expose]` and add public lemmas in TopAdj.lean: `toTopObjMk_def` (proved by `(rfl)`) and `apply_toTopObjMk` (`F (toTopObjMk x w) = toSSetObjEquiv _ _ ((sSetTopAdj.homEquiv X T F).app _ x) w`). Then use them in PrismRealization.lean.",
+   "issue": "`toTopObjMk` is `@[expose]` only so that `apply_toTopObjMk` in PrismRealization.lean can close its goal with `rfl` across a module boundary. It has no unfolding lemma and no lemma connecting it to `sSetTopAdj.homEquiv`.",
+   "line": 268
+  },
+  {
+   "evidence": "`@[expose] noncomputable def Homotopy.toTop`, `@[expose, simps toFun invFun] noncomputable def toTopHomotopyEquiv`. The only downstream use, `weakEquivalence_of_homotopyEquiv`, calls `.isWeakHomotopyEquivalence`.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/PrismRealization.lean",
+   "fix": "Remove `@[expose]` from both. Prove `Homotopy.toTop_apply` with `(rfl)` so downstream code does not depend on the definitional unfolding.",
+   "issue": "`Homotopy.toTop` and `toTopHomotopyEquiv` are `@[expose]`, but no consumer unfolds them: `toTop_apply` is in the same file, `toTopHomotopyEquiv` only wraps `H.toTop` in `\u27e8_\u27e9`, and `@[simps]` produces the projection lemmas.",
+   "line": 0
+  },
+  {
+   "evidence": "Every use in the diff goes through `map_comap`, i.e. `StdSimplex.map_comap _ _ _` in `map_pieceWeights` and `exists_injective_toTopObjMk_eq`. Nothing unfolds `comap`.",
+   "file": "TauCeti/Geometry/Convex/ConvexSpace/Defs.lean",
+   "fix": "Remove `@[expose]`. Prove `weights_comap` with `(rfl)`, add `weights_comap_apply` as `@[simp]`, and add `@[simp] comap_map (hf) (x) : comap hf (x.map f) h = x`.",
+   "issue": "`StdSimplex.comap` is `@[expose]` although `weights_comap` already characterizes it. It also has only one inverse law (`map_comap`); the other one, comap \u2218 map = id, is missing, so the API does not show that `comap` inverts `map f` on its range.",
+   "line": 95
+  },
+  {
+   "evidence": "`private noncomputable def cumSum {n : \u2115} (g : Fin (n + 1) \u2192 \u211d) (N : \u2115) : \u211d := \u2211 j \u2208 Finset.univ.filter (fun j \u21a6 j.val < N), g j`",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/PrismRealization.lean",
+   "fix": "Move them to a public file for `Fin` sums (or express them through Mathlib's `Fin.partialSum`) and make them public. Generalize \u211d to an additive commutative monoid or group where the proofs allow it.",
+   "issue": "`cumSum` and its lemmas (`cumSum_succ`, `cumSum_of_le`, `sum_sub_cumSum`, `eq_of_cumSum_eq`, `cumSum_mono`, `sum_filter_lt_succ`, `sum_filter_prod`) are `private`, yet they mention only `Fin`/`\u211d`/`Finset` and do not depend on prisms. This is general telescoping infrastructure hidden in a topology file.",
+   "line": 216
+  },
+  {
+   "evidence": "Their statements mention only `\u0394[p] \u2297 \u0394[q]`, `objEquiv`, `Fin.succAbove`/`predAbove` and `nonDegenerateEquiv`. The proofs use only Mathlib's `objEquiv_\u03b4_apply` and `objEquiv_map_apply`.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/PrismRealization.lean",
+   "fix": "Make them public, in a TauCeti complement file for `SSet.prodStdSimplex` or `ProdStdSimplexOne`, or as a Mathlib upstream candidate.",
+   "issue": "`prodStdSimplex.objEquiv_\u03b4`, `objEquiv_\u03c3` and `\u03c3_\u03b4_succ_of_eq` are `private`, but they are general facts about Mathlib's `prodStdSimplex.objEquiv` that do not depend on geometric realization. The same goes for `prodStdSimplex\u2081.objEquiv_nonDegenerateEquiv_castSucc/_succ`, `injective_objEquiv_nonDegenerateEquiv` and `objEquiv_whiskerRight_app`.",
+   "line": 77
+  }
+ ],
+ "head_sha": "2a875a270fc1030d079ee4fd7da5e79310ae906c",
+ "merge_base_sha": "cff79bc8129424a9dd6db11c54db21802aeb9fbc",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 29153,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "dc32b616e445be241d1a678c8b149a50240bb3126419f25aea941657c0a92e0e",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T140534Z-29153-api-design-47357d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T14:05:34Z",
+ "submitted_by": "kim-em",
+ "summary": "Several bodies (`toTopObjMk`, `StdSimplex.comap`, `Homotopy.toTop`, `toTopHomotopyEquiv`) are `@[expose]`d where a characteristic lemma would do, and general helpers about `Fin` sums and Mathlib's `prodStdSimplex` are kept `private` in this file instead of being moved to their natural homes and made public. `StdSimplex.comap` also lacks the `comap_map` inverse lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c95eac40ca5656f05139efffbdb9ea717cbf909c18e153bd05837f0592b5845c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 42888,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 42888,
+  "cache_read_input_tokens": 39984,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 9350,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 9350,
+    "cache_read_input_tokens": 36761,
+    "input_tokens": 2,
+    "output_tokens": 2383,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3835,
+  "output_tokens_details": {
+   "thinking_tokens": 1433
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
