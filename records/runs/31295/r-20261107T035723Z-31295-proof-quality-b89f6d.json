@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.18240140000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 15700,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 15700,
+    "cache_read_input_tokens": 31987,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 2449,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 2449,
+      "cache_read_input_tokens": 16474,
+      "input_tokens": 2,
+      "output_tokens": 1817,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2519,
+    "output_tokens_details": {
+     "thinking_tokens": 1153
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "57cfc63ad4ea735fa8532c4eb95647b2495c6384",
+ "cli_dirty": false,
+ "cli_sha": "7fd3a39e02c5a16cf7be65508a7ffb2c336dcada",
+ "cost_usd": 0.182401,
+ "dedupe_key": "TauCetiProject/TauCeti|31295|4cdf63a4a4e36a5d9487ff81e99e18282a2816ae|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "d464709a8a1e4a3be2cfe02fd5e43e188857c8ddea2a4bb3b2fc6f10dbd0bb60",
+ "diff_sha256": "d464709a8a1e4a3be2cfe02fd5e43e188857c8ddea2a4bb3b2fc6f10dbd0bb60",
+ "duration_s": 25.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`ConvexOn.le_slope_of_hasDerivAt` and `ConvexOn.slope_le_of_hasDerivAt` take `(hx : x \u2208 S) (hy : y \u2208 S)` (mathlib/Mathlib/Analysis/Convex/Deriv.lean:596, :656). Here `S = Ioi 0` from `Real.convexOn_log_Gamma`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Gamma/Real.lean",
+   "fix": "Use `(Set.mem_Ioi.mpr (by linarith))` for `x + 1`, and `(Set.mem_Ioi.mpr hx)` or `(by simpa using hx)` for `x`, at both call sites (lines 87\u201388 and 95\u201396).",
+   "issue": "`(by change 0 < x + 1; linarith)` has no comment and relies on `x + 1 \u2208 Ioi 0` unfolding to `0 < x + 1`. Bare `hx : 0 < x` is passed as `x \u2208 Ioi 0` the same way. The same pattern appears at line 96 in `log_sub_inv_le_re_digamma`.",
+   "line": 88
+  },
+  {
+   "evidence": "`have hpoles : \u2200 m : \u2115, (x : \u2102) \u2260 -(m : \u2102) := by intro m hm; exact \u2026 (by exact_mod_cast hm)` appears in both proofs.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Gamma/Real.lean",
+   "fix": "Add one private lemma, e.g. `ofReal_ne_neg_nat {x : \u211d} (hx : \u2200 m : \u2115, x \u2260 -(m : \u211d)) : \u2200 m : \u2115, (x : \u2102) \u2260 -(m : \u2102)`, and use it at both places (with `real_ne_neg_nat_of_pos hx` in the second).",
+   "issue": "The step from `\u2200 m : \u2115, x \u2260 -(m : \u211d)` to `\u2200 m : \u2115, (x : \u2102) \u2260 -(m : \u2102)` (via `intro m hm; exact \u2026 (by exact_mod_cast hm)`) is written twice: in `deriv_Gamma_ofReal` (line 43) and again in `log_sub_inv_le_re_digamma` (line 99).",
+   "line": 99
+  }
+ ],
+ "head_sha": "4cdf63a4a4e36a5d9487ff81e99e18282a2816ae",
+ "merge_base_sha": "57cfc63ad4ea735fa8532c4eb95647b2495c6384",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 31295,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "155c2a1c93ea940bd99f22e6595d4ffbd4e06a1549e2fe953e0b0c7b8b423dad",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "7fd3a39e02c5a16cf7be65508a7ffb2c336dcada",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261107T035723Z-31295-proof-quality-b89f6d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-07T03:57:23Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs are short and use automation well, but two uncommented `change`s rely on `Set.Ioi` membership unfolding to `0 < x + 1`, and the same pole-avoidance coercion argument is written out twice instead of as one lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Convex/Deriv.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Convex",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3da6460dc81a08bc93e469514d4e49951335cd54166113d760d0ebc791f441e8",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 15700,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 15700,
+  "cache_read_input_tokens": 31987,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 2449,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 2449,
+    "cache_read_input_tokens": 16474,
+    "input_tokens": 2,
+    "output_tokens": 1817,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2519,
+  "output_tokens_details": {
+   "thinking_tokens": 1153
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
