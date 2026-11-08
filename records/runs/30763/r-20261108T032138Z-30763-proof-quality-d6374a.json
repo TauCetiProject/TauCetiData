@@ -1,0 +1,149 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2170688,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 23.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 21073,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 21073,
+    "cache_read_input_tokens": 21744,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5775,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5775,
+      "cache_read_input_tokens": 18521,
+      "input_tokens": 2,
+      "output_tokens": 1720,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2206,
+    "output_tokens_details": {
+     "thinking_tokens": 531
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a67a65006c07449dcb2ebe1a3a8b6bf6e0b909f8",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.217069,
+ "dedupe_key": "TauCetiProject/TauCeti|30763|328783f1bfd38d51b0f9921807162a69c6d5609c|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "21c0a77f24231d3ef63e4365d4f0cc3de5d2f8c8c29034076558f24639402364",
+ "diff_sha256": "21c0a77f24231d3ef63e4365d4f0cc3de5d2f8c8c29034076558f24639402364",
+ "duration_s": 23.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 63-73 use only `\u03bc`, `hlim`, `a`, `b`; grep for `Ioc (t - b) (t - a)` limits finds no existing lemma in Renewal/.",
+   "file": "TauCeti/Probability/Renewal/IntervalLimit.lean",
+   "fix": "Extract it as a standalone lemma (e.g. `tendsto_measureReal_Ioc_tsub_of_tendsto_measureReal_Ioc`) and call it from the main proof.",
+   "issue": "`href` (shifting `Ioc t (t+d)` limits to the reflected cells `Ioc (t-b) (t-a)`) is a general fact about `\u03bc` and `hlim` that does not involve `h`, yet it is buried in a ~110-line proof.",
+   "line": 63
+  },
+  {
+   "evidence": "Lines 75-114 depend only on `h`, `A`, `r`, `hh` and not on `\u03bc`; the main theorem spans lines 45-157.",
+   "file": "TauCeti/Probability/Renewal/IntervalLimit.lean",
+   "fix": "Factor it into a lemma giving lower/upper mesh sums that bracket `r * \u222b 0..A` with a gap `r * \u03b4 * (h 0 - h A)` tending to zero, so the main theorem reduces to the squeeze.",
+   "issue": "The uniform-mesh setup (`\u03b4`, `p`, `L`, `U`) together with `hbracket`, `hgap` and `herr` is a self-contained Darboux bracket with a vanishing gap, inlined into a proof well over 50 lines.",
+   "line": 75
+  },
+  {
+   "evidence": "`simpa [L, I, p, mul_assoc, Real.toNNReal_mul, Real.toNNReal_natCast] using mul_le_mul_of_nonneg_left hb.1 hr` and the matching `hb.2` line.",
+   "file": "TauCeti/Probability/Renewal/IntervalLimit.lean",
+   "fix": "State the term identity `h (\u03b4 n * k : \u211d).toNNReal = h (p n k)` once as a `have` and finish each direction with `simp only [that, ...]`.",
+   "issue": "Both directions of `hbracket` close through a `simpa` that unfolds the local `let`s and rewrites with `Real.toNNReal_mul` and `Real.toNNReal_natCast`, which will break if those simp lemmas change.",
+   "line": 98
+  }
+ ],
+ "head_sha": "328783f1bfd38d51b0f9921807162a69c6d5609c",
+ "merge_base_sha": "a67a65006c07449dcb2ebe1a3a8b6bf6e0b909f8",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 30763,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f3303f48c32988e58528fb6b6fdfa71567f14ded5eb3082b8c94806985f1c206",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261108T032138Z-30763-proof-quality-d6374a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T03:21:38Z",
+ "submitted_by": "kim-em",
+ "summary": "The main interval-limit theorem is about 110 lines and keeps two reusable facts inline (the reflected interval-cell limit and the uniform-mesh Darboux bracket with its vanishing gap), and its bracket step closes through an unfolding-heavy `simpa`. The other proofs are short, robust and free of undocumented defeq.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability/Renewal",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "da0aa9de18b8bdcc1d1dcd43f43885a8e5b727d6788046b51c9e63282ba799f7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 21073,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 21073,
+  "cache_read_input_tokens": 21744,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5775,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5775,
+    "cache_read_input_tokens": 18521,
+    "input_tokens": 2,
+    "output_tokens": 1720,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2206,
+  "output_tokens_details": {
+   "thinking_tokens": 531
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
