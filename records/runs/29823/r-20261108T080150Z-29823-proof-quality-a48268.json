@@ -1,0 +1,159 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3046664,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 27.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 30379,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 30379,
+    "cache_read_input_tokens": 55112,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 4949,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 4949,
+      "cache_read_input_tokens": 28653,
+      "input_tokens": 4,
+      "output_tokens": 1883,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2529,
+    "output_tokens_details": {
+     "thinking_tokens": 623
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.304666,
+ "dedupe_key": "TauCetiProject/TauCeti|29823|f08ff5f288121299edf06ac9fc1d65bca956f8f7|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "7645b9c270430251c0c1a77f51fa6fbe6c10d874967fb1d437d49a3e568610d9",
+ "diff_sha256": "7645b9c270430251c0c1a77f51fa6fbe6c10d874967fb1d437d49a3e568610d9",
+ "duration_s": 27.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `apply_eq_re_smul_one_add_im_smul_I` finds TranslationKernel.lean:158,196,246 with the same `simpa using ... (fderiv \u211d (fun w \u21a6 x w i) z : \u2102 \u2192\u2097[\u211d] \u211d) v`, and Symmetry.lean:320-322 has the private `clm_apply_coe`.",
+   "file": "TauCeti/Analysis/PDE/Vortex/TranslationKernel.lean",
+   "fix": "Factor out one lemma, e.g. `clm_apply_eq_re_mul_add_im_mul (L : \u2102 \u2192L[\u211d] \u211d) (v : \u2102) : L v = v.re * L 1 + v.im * L I`. Make it public or put it next to `LinearMap.apply_eq_re_smul_one_add_im_smul_I` in TauCeti/LinearAlgebra/Complex/Module.lean, and use it at all three sites.",
+   "issue": "The local `hlin` step (expand `fderiv \u211d (fun w \u21a6 x w i) z v` in the frame `(1, I)`) is copied word for word at lines 155, 193 and 243. Symmetry.lean already has a similar private `clm_apply_coe` for `Circle`.",
+   "line": 155
+  },
+  {
+   "evidence": "Lines 182-191 and 215-221/237-239 contain the same `h\u03ba.mono fun w hw \u21a6 by simp [hw]` and `congrArg (fun e : EuclideanSpace \u211d (Fin 3) \u21a6 e 1) hsol.self_of_nhds` blocks.",
+   "file": "TauCeti/Analysis/PDE/Vortex/TranslationKernel.lean",
+   "fix": "Add private lemmas `covariantTranslation_zero_eventuallyEq` / `_one_eventuallyEq` (from `curvature_eventuallyEq`) and a lemma giving the two holomorphicity-row identities at `z`, then use them in both proofs.",
+   "issue": "Two blocks are copied between `gaugeAdjoint_\u2026` (lines 182-191) and `linearizedEquation_\u2026` (lines 215-221, 237-239): the eventual equalities `h0`/`h1` for the connection components, and the extraction of `he1`/`he2` from `hsol.self_of_nhds`.",
+   "line": 182
+  },
+  {
+   "evidence": "Lines 201-276; the simp lists at 256-263 and 267-274 match apart from `linearizedEquation_apply_one`/`_two`.",
+   "file": "TauCeti/Analysis/PDE/Vortex/TranslationKernel.lean",
+   "fix": "Factor out a lemma for the derivative of the holomorphicity rows along `v` (the content of `hr1`/`hr2`, using symmetry of second derivatives). Run the shared simp set once, e.g. by proving r1 and r2 together via `fin_cases` with `<;>`. Add comments stating which identity closes each row (`d\u2081 d\u2080 = 0` plus the derivative of the equation).",
+   "issue": "`linearizedEquation_covariantTranslation_of_equation_eq_zero` is ~75 lines. In r1 (line 256) and r2 (line 267) the same 20-lemma `simp only [... fderiv_clm_apply hdp ..., ContinuousLinearMap.flip_apply, hsp.eq _ v, ...]` chain is repeated, and `hr1`/`hr2` use the same pattern again. These chains break on Mathlib renames and hide the reusable fact behind the proof. Only one inline comment explains the proof's structure.",
+   "line": 201
+  }
+ ],
+ "head_sha": "f08ff5f288121299edf06ac9fc1d65bca956f8f7",
+ "merge_base_sha": "afa08a3ed16fb167e35de371afb1eb03fbc5913a",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 29823,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "46f49753ce29331f278242f0dee886498c11fa8e0fdc4a332dccbcabac548ae9",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261108T080150Z-29823-proof-quality-a48268",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-08T08:01:50Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs are sound, but the same steps are copied three times, two kernel proofs duplicate their setup, and the ~75-line `linearizedEquation_covariantTranslation_of_equation_eq_zero` proof repeats a long named-lemma `simp only` chain for r1 and r2 with no comments on its structure.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/Vortex/Symmetry.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/Vortex/Deformation.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7109a9e4c30aab7e9c03e2c4b18f24971a4f1ac238778c70cdfa5765a687fe56",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 30379,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 30379,
+  "cache_read_input_tokens": 55112,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 4949,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 4949,
+    "cache_read_input_tokens": 28653,
+    "input_tokens": 4,
+    "output_tokens": 1883,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2529,
+  "output_tokens_details": {
+   "thinking_tokens": 623
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
