@@ -1,0 +1,171 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.25861520000000005,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 34.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 33084
+    },
+    "cache_creation_input_tokens": 33084,
+    "cache_read_input_tokens": 95276,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1989
+      },
+      "cache_creation_input_tokens": 1989,
+      "cache_read_input_tokens": 34318,
+      "input_tokens": 4,
+      "output_tokens": 2494,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3705,
+    "output_tokens_details": {
+     "thinking_tokens": 1317
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "d92acc5c0393646e14960dfd4972fc836aad3ebe",
+ "cli_dirty": false,
+ "cli_sha": "ed074b817fd7829d95916602741abda3d4378dd0",
+ "cost_usd": 0.258615,
+ "dedupe_key": "TauCetiProject/TauCeti|33612|c074c4b78d084445f7edec5eec5e69e3ed440150|api-design|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "46d8debcc8e8ee82e40f30b36445053ba511c07ce0b88be93221ff38293b69f1",
+ "diff_sha256": "46d8debcc8e8ee82e40f30b36445053ba511c07ce0b88be93221ff38293b69f1",
+ "duration_s": 34.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Comparison.lean:50-51: `theorem forall_map_I_mul_eq_iff {L : \u2102 \u2192L[\u211d] V} {A : V \u2192L[\u211d] V} (hA : \u2200 v, A (A v) = -v) : (\u2200 w, L (I * w) = A (L w)) \u2194 L 1 + A (L I) = 0`. Its proof uses only `map_add`, `map_smul` and `module`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/Weak/Comparison.lean",
+   "fix": "Move it to an early linear-algebra or complex-structure file, for example next to the complex-module material in `TauCeti/Geometry/Symplectic/Complex/Module/Basic.lean` or a `ContinuousLinearMap` file on \u2102. Keep it public there and import it here.",
+   "issue": "`forall_map_I_mul_eq_iff` only involves Mathlib types (`\u2102 \u2192L[\u211d] V`, an endomorphism with `A \u2218 A = -id`) and does not depend on the weak equation. It is general infrastructure, but it lives in a leaf file that imports the manifold, Floer and JHolomorphic modules, so linear-algebra consumers cannot reach it cheaply.",
+   "line": 50
+  },
+  {
+   "evidence": "The grep of `namespace IsWeakCauchyRiemannHalfOn` (lines 161-199) finds only `continuousOn`, `memWkpLoc_one`, `ae_eq_of_hasWeakFDerivOn`, `mono`, `mono_exponent` and `isWeakCauchyRiemannOn_interior`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/Weak.lean",
+   "fix": "Add `IsWeakCauchyRiemannHalfOn.memLpLoc : MemLpLoc p U u` and `IsWeakCauchyRiemannHalfOn.completeSpace`. Also add the half-plane derivative-independence characterization in terms of `MemWkpLoc p U 1 u`.",
+   "issue": "The file builds both predicates in parallel, but `IsWeakCauchyRiemannHalfOn` has no `memLpLoc` or `completeSpace` accessor and no `isWeakCauchyRiemannHalfOn_iff_forall_hasWeakFDerivOn`. `IsWeakCauchyRiemannOn` has all three (lines 106, 114, 151).",
+   "line": 161
+  },
+  {
+   "evidence": "Line 202: `theorem isWeakCauchyRiemannHalfOn_coe_iff : IsWeakCauchyRiemannHalfOn p (\u03a9 : Set \u2102) J \u03b7 u \u2194 IsWeakCauchyRiemannOn p \u03a9 J \u03b7 u` has no attribute. Its right-hand side is strictly simpler and does not loop.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/Weak.lean",
+   "fix": "Tag `isWeakCauchyRiemannHalfOn_coe_iff` and `isWeakCauchyRiemannOn_const_iff` with `@[simp]`.",
+   "issue": "`isWeakCauchyRiemannHalfOn_coe_iff` rewrites the half-plane predicate on an open set to the canonical open-set predicate, and `isWeakCauchyRiemannOn_const_iff` (line 244) gives the characteristic form for constant maps. Both are normal-form rewrites, and neither is tagged `@[simp]`.",
+   "line": 202
+  },
+  {
+   "evidence": "Line 341: `fderiv \u211d id z I + (I \u2022 ContinuousLinearMap.id \u211d \u2102) (fderiv \u211d id z 1) \u2260 0`. The roadmap (PSHCA README:870-871) asks only that the swapped definition reverse the verdicts, not for exported `fderiv` lemmas.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/Weak.lean",
+   "fix": "State the roadmap check at the predicate level, for example by defining the swapped variant locally and proving the reversed verdicts. Otherwise turn these into `example`s or `private` lemmas, or give them names scoped to the check, such as `IsWeakCauchyRiemannOn.swapped_id_ne_zero`.",
+   "issue": "`fderiv_id_swapped` and `fderiv_conj_swapped` (line 346) are public root-namespace `TauCeti.fderiv_*` lemmas. They state one-off numeric facts about `I \u2022 id`, not reusable facts about `fderiv`, and they do not mention the predicate. The names read as general derivative API.",
+   "line": 340
+  }
+ ],
+ "head_sha": "c074c4b78d084445f7edec5eec5e69e3ed440150",
+ "merge_base_sha": "d92acc5c0393646e14960dfd4972fc836aad3ebe",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 33612,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "adc229f7e822f5cf5d4aae73406b80a4360659afc74f1729ed1d219151339cc0",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "ed074b817fd7829d95916602741abda3d4378dd0",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261109T022321Z-33612-api-design-a942e8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-09T02:23:21Z",
+ "submitted_by": "kim-em",
+ "summary": "The predicates and core API are sound, but a general linear-algebra lemma sits in a heavy comparison file, the half-plane predicate lacks accessors the open-set predicate has, normal-form lemmas lack `@[simp]`, and two roadmap checks are published as root-namespace `fderiv_*` lemmas with misleading names.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/PseudoholomorphicCurveAnalysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/PseudoholomorphicCurveAnalysis/README.md",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "45e96634059f89bac45e5f565a130d8e8dfb83bf57f43cf6f915f5afa04ce96f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 33084
+  },
+  "cache_creation_input_tokens": 33084,
+  "cache_read_input_tokens": 95276,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1989
+    },
+    "cache_creation_input_tokens": 1989,
+    "cache_read_input_tokens": 34318,
+    "input_tokens": 4,
+    "output_tokens": 2494,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3705,
+  "output_tokens_details": {
+   "thinking_tokens": 1317
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
