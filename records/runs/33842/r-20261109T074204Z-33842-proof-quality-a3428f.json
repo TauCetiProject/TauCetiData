@@ -1,0 +1,193 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.5048400000000001,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 61.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 42013,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 42013,
+    "cache_read_input_tokens": 303120,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 579,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 579,
+      "cache_read_input_tokens": 44657,
+      "input_tokens": 2,
+      "output_tokens": 1905,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5402,
+    "output_tokens_details": {
+     "thinking_tokens": 2108
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7ca783d4c8d324c9c74efaacd641c8a40f69f284",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.50484,
+ "dedupe_key": "TauCetiProject/TauCeti|33842|b828af72da1b56e0a9dbed16c4fb4d7fdc0e06af|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "c5c0ac7356a55df762450fc03e441363bc04fe2795b3cb79c42ac189fd0c59bb",
+ "diff_sha256": "c5c0ac7356a55df762450fc03e441363bc04fe2795b3cb79c42ac189fd0c59bb",
+ "duration_s": 61.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Analysis/Calculus/FDeriv/Prod.lean:74,79: `HasFDerivAt (fun e => (e, f\u2080)) (inl \ud835\udd5c E F) e\u2080`, `HasFDerivAt (fun f => (e\u2080, f)) (inr \ud835\udd5c E F) f\u2080`; the goal after `rw [mixedDirections_cons]` / `rw [mixedDirections_nil_cons]` has the explicit pair.",
+   "file": "TauCeti/Analysis/Calculus/CoordinateDeriv.lean",
+   "fix": "Give `hstep` an explicit direction `v` with the hypothesis `g' u = v`, discharged by `ContinuousLinearMap.inl_apply`/`inr_apply`. Alternatively rewrite with those lemmas before the `Eq.trans`.",
+   "issue": "`refine Eq.trans ?_ (hstep _ hL (hasFDerivAt_prodMk_right x \u03be) _).symm` (and the same at line 432 with `hasFDerivAt_prodMk_left`) only works because `inr \u211d _ _ (single j 1)` / `inl \u211d _ _ (single j 1)` is definitionally equal to `(0, single j 1)` / `(single j 1, 0)` through the continuous linear map coercion. Nothing documents this.",
+   "line": 421
+  },
+  {
+   "evidence": "Line 425 `rfl` vs line ~436 `simp only [mixedDeriv_def, coordinateDeriv_cons]`; `coordinateDeriv_cons` exists at CoordinateDeriv.lean:83.",
+   "file": "TauCeti/Analysis/Calculus/CoordinateDeriv.lean",
+   "fix": "Replace `rfl` with `simp only [mixedDeriv_def, coordinateDeriv_cons, coordinateDeriv_nil]`, or with explicit `rw` steps using those lemmas.",
+   "issue": "The nil branch ends in a bare `rfl` that unfolds `mixedDeriv [] (j :: js)` and `coordinateDeriv` by definition. The comment says what unfolds, not why a rewrite cannot be used, and the cons branch closes the same kind of goal with `simp only [mixedDeriv_def, coordinateDeriv_cons]`.",
+   "line": 425
+  },
+  {
+   "evidence": "grep `coefficient_sum|coeffAddMonoidHom|coefficientLinearMap` in TauCeti/Analysis/Pseudodifferential: no matches.",
+   "file": "TauCeti/Analysis/Pseudodifferential/Symbol/Classical.lean",
+   "fix": "Add a `@[simp] Symbol.coefficient_sum` lemma (or a coefficient additive homomorphism) in Symbol/Basic.lean and use it in place of `hsum`.",
+   "issue": "The coefficient of a sum of symbols is obtained from a throwaway `map_sum (AddMonoidHom.mk' (fun b => b.coefficient p) fun _ _ => rfl)`. This hides a reusable fact, and no such lemma exists yet.",
+   "line": 104
+  }
+ ],
+ "head_sha": "b828af72da1b56e0a9dbed16c4fb4d7fdc0e06af",
+ "merge_base_sha": "385ec2ddd8ddf8cc779b78c176308cb9c6b55499",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 33842,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e3813d62982d6bfedc352e6cbc576079883470d262083728a2e484d04d0968f9",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261109T074204Z-33842-proof-quality-a3428f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-09T07:42:04Z",
+ "submitted_by": "kim-em",
+ "summary": "`mixedDeriv_eq_iteratedFDeriv` closes its steps by silently relying on the definitional equality of `inl`/`inr` applied to a vector with the explicit pair, and by a bare `rfl` that unfolds `mixedDeriv`. `exists_remainder` builds a throwaway additive homomorphism inline where a reusable `Symbol.coefficient_sum` lemma belongs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential/Symbol/Classical.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/CoordinateDeriv.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/CoordinateDeriv.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/CoordinateDeriv.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/CoordinateDeriv.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 10,
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "55504591437f55f152d7d5ec733af82bfe9e0eccc75fc7b619ca162d71883f47",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 42013,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 42013,
+  "cache_read_input_tokens": 303120,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 579,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 579,
+    "cache_read_input_tokens": 44657,
+    "input_tokens": 2,
+    "output_tokens": 1905,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5402,
+  "output_tokens_details": {
+   "thinking_tokens": 2108
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
