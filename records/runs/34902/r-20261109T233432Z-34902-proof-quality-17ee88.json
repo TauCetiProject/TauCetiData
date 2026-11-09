@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3367208,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 44.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 28471,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 28471,
+    "cache_read_input_tokens": 120464,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 555,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 555,
+      "cache_read_input_tokens": 31139,
+      "input_tokens": 2,
+      "output_tokens": 2263,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4241,
+    "output_tokens_details": {
+     "thinking_tokens": 1381
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6c649f0da8e4b3026457caeca52a8c250de8deed",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.336721,
+ "dedupe_key": "TauCetiProject/TauCeti|34902|e803f7a1ef14821c264f3ce99866febd9963b4b2|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "61a0f493a83c001e75e4a22528d36ae719916db7ccb15e353598b10bb529abc5",
+ "diff_sha256": "61a0f493a83c001e75e4a22528d36ae719916db7ccb15e353598b10bb529abc5",
+ "duration_s": 44.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`eigenvectorMap` builds the second vector from `sq_ne_one_of_ne_one h\u03b6`, and the theorem's proof is `(rfl)`.",
+   "file": "TauCeti/RepresentationTheory/Symmetric/Four/Alternating.lean",
+   "fix": "Make `sq_ne_one_of_ne_one` public, drop `h\u03b6'`, and state the right-hand side with `symmetricGroupFourTwoDimensionalEigenvector (\u03b6 ^ 2) (sq_ne_one_of_ne_one h\u03b6)`.",
+   "issue": "`alternatingGroupFourTwoDimensionalEquiv_symm_apply` takes `h\u03b6' : \u03b6 ^ 2 \u2260 1`, which already follows from `h\u03b6`. The `(rfl)` proof works only because proofs are irrelevant; the hypothesis is a workaround for `sq_ne_one_of_ne_one` being private.",
+   "line": 332
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Group/Submonoid/Operations.lean:760 marks `codRestrict` `@[to_additive (attr := simps apply)]`, which generates `MonoidHom.codRestrict_apply`; that lemma is already used at Subgroup/Basic.lean:1152.",
+   "file": "TauCeti/GroupTheory/Perm/FinFour/Alternating.lean",
+   "fix": "Add `@[simp] private theorem coe_threeCycle : (threeCycle : Perm (Fin 3)) = [0, 1, 2].formPerm := rfl` and rewrite with it. Rewrite with `MonoidHom.codRestrict_apply`, then `Subtype.ext_iff`/`Subgroup.coe_pow`. In `hc`, use `ZeroMemClass.coe_zero` and the coefficient lemmas. For the last case, use `ofAdd_neg`/`decide` or add a comment.",
+   "issue": "After the rewrites, these proofs close with an uncommented `rfl` that unfolds definitions: `coe_threeCyclePowEquiv` (line ~100) unfolds the private `threeCycle`; `symmetricGroupFourMatchingHom_coe_eq_pow` (~118) and `alternatingGroupFourZModThreeHom_eq_iff` (~128) unfold the `MonoidHom.codRestrict` coercion. The same pattern appears in the second file: `hc` in `eigenvectorMap_bijective` (`rw [hab]; rfl`) and the last case of `alternatingGroupFourZModThreeHom_classData_rep` (`(ofAdd 1)\u207b\u00b9 = ofAdd 2` by `rfl`).",
+   "line": 100
+  }
+ ],
+ "head_sha": "e803f7a1ef14821c264f3ce99866febd9963b4b2",
+ "merge_base_sha": "6c649f0da8e4b3026457caeca52a8c250de8deed",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 34902,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0fa54b3993e97f6c97eda8fa2e96ff29f39d4efa82d8cfc473f835686566d0e9",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261109T233432Z-34902-proof-quality-17ee88",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-09T23:34:32Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs are mostly robust, but one public theorem takes a hypothesis it does not need, and several proofs end in an uncommented `rfl` that unfolds a private definition or a `codRestrict` coercion even though named lemmas exist or could be added.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Subgroup",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Submonoid",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Subgroup/Defs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Submonoid/Operations.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e5d6f4d4e17004ace298c6ad4ddfa353265bc36fe0f1e7960018e431d44292ed",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 28471,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 28471,
+  "cache_read_input_tokens": 120464,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 555,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 555,
+    "cache_read_input_tokens": 31139,
+    "input_tokens": 2,
+    "output_tokens": 2263,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4241,
+  "output_tokens_details": {
+   "thinking_tokens": 1381
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
