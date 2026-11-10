@@ -1,0 +1,159 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1601488,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 30.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 17971
+    },
+    "cache_creation_input_tokens": 17971,
+    "cache_read_input_tokens": 38449,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2955
+      },
+      "cache_creation_input_tokens": 2955,
+      "cache_read_input_tokens": 18239,
+      "input_tokens": 2,
+      "output_tokens": 1872,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3129,
+    "output_tokens_details": {
+     "thinking_tokens": 1186
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "5bae5769634e6767673c3ccd90b67ade29d0dfa8",
+ "cli_dirty": true,
+ "cli_sha": "ec743f1d0395cf594d81d6ae92ce538a59ce10d4",
+ "cost_usd": 0.160149,
+ "dedupe_key": "TauCetiProject/TauCeti|31401|33ecfca396a9598477896e7eb8876ed7e19fc902|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "bf944c446aa47f52e218f1d7a9dd3f53f82fd2a11a6ffea78a90df63c6534c2b",
+ "diff_sha256": "bf944c446aa47f52e218f1d7a9dd3f53f82fd2a11a6ffea78a90df63c6534c2b",
+ "duration_s": 30.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The `refine ((isBigO_refl (fun z : \u2102 \u21a6 z\u207b\u00b9) _).mul_isLittleO (\u2026 .sub \u2026)).congr' ?_ ?_` block appears twice. `fun z \u21a6 ((\u2026analyticAt z).dslope 0).differentiableAt` appears twice. `grep 'dslope.*=o\\['` over Mathlib finds no existing lemma for this.",
+   "file": "TauCeti/Analysis/Complex/Liouville.lean",
+   "fix": "Factor out a lemma such as `Differentiable.dslope_isLittleO_pow` (from `f =o[cobounded \u2102] z^(n+1)`, conclude `dslope f 0 =o[cobounded \u2102] z^n`) plus a `Differentiable.dslope` lemma. Then apply each of them twice.",
+   "issue": "`hc`/`hc1`, `h1`/`h2` and `hg`/`hg2` are the same argument written twice, at degree 2\u21921 and then 1\u21920. Each copy has the same `isBigO_refl \u2026 mul_isLittleO \u2026 congr'` block with the same `filter_upwards`/`simp [dslope_of_ne, slope_def_field, \u2026]` closer. The underlying fact (for entire `f`, `f =o z^(n+1)` implies `dslope f 0 =o z^n` and `dslope f 0` is entire) is reusable but is not exported.",
+   "line": 60
+  },
+  {
+   "evidence": "`have hreal (R : \u211d) (hRL : L \u2264 R) (w : \u2102) (hw : w \u2208 Metric.ball 0 R) : (H w).re \u2264 Real.log C + R ^ p` is 14 lines and uses only the maximum-modulus principle, not Borel\u2013Carath\u00e9odory.",
+   "file": "TauCeti/Analysis/Complex/BorelCaratheodory.lean",
+   "fix": "Extract `hreal` as a separate lemma (maximum modulus on the ball gives a bound on `Re H`). The main theorem then reduces to the Borel\u2013Carath\u00e9odory estimate.",
+   "issue": "The proof runs 56 lines (`obtain` through the final `nlinarith`). The `hreal` block is a self-contained, reusable fact: a bound on `\u2016exp \u2218 H\u2016` over large circles gives `Re H \u2264 log C + R^p` on the enclosed disk. It is inlined as a local `have`.",
+   "line": 32
+  },
+  {
+   "evidence": "Line 79: `rw [Real.mul_rpow \u2026] at hbc; nlinarith`. Line 85: `dsimp [K]; nlinarith`, which depends on `hm` and `hbc'` without naming them.",
+   "file": "TauCeti/Analysis/Complex/BorelCaratheodory.lean",
+   "fix": "Give the explicit algebra: state `hbc'` as an equation-level `calc`, or pass the needed products to `nlinarith [mul_le_mul_of_nonneg_left \u2026]` with a comment. Close the final goal with `linarith [hm, hbc']` once `K * \u2016z\u2016^p` is expanded.",
+   "issue": "`hbc'` and the final goal are each closed by an `nlinarith` over `rpow` terms after a `dsimp`/`rw` of local `let`s. Nothing states which product terms are needed, so the reason the bound holds is hidden and the step breaks easily if the `let` shapes change.",
+   "line": 76
+  }
+ ],
+ "head_sha": "33ecfca396a9598477896e7eb8876ed7e19fc902",
+ "merge_base_sha": "5bae5769634e6767673c3ccd90b67ade29d0dfa8",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 31401,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5287c3f5c2e07cc5f0aab00e3e8ced48264b78fa93921231f15a92fbbebfae24",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "ec743f1d0395cf594d81d6ae92ce538a59ce10d4",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261110T092745Z-31401-proof-quality-ce36c3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-10T09:27:45Z",
+ "submitted_by": "kim-em",
+ "summary": "`Differentiable.eq_affine_of_isLittleO_sq` writes the same 'divided difference lowers growth by one power' reasoning out twice (constant, little-o and differentiability steps) instead of factoring it into a lemma. `Differentiable.isBigO_of_cexp_isBigO` is a 56-line proof that buries a reusable maximum-modulus step and closes with arithmetic `nlinarith` calls that are hard to follow.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0a5a7d210a8edf233e4a20db493026d419b4282cd10bbbc42074b621680464a9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 17971
+  },
+  "cache_creation_input_tokens": 17971,
+  "cache_read_input_tokens": 38449,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2955
+    },
+    "cache_creation_input_tokens": 2955,
+    "cache_read_input_tokens": 18239,
+    "input_tokens": 2,
+    "output_tokens": 1872,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3129,
+  "output_tokens_details": {
+   "thinking_tokens": 1186
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
