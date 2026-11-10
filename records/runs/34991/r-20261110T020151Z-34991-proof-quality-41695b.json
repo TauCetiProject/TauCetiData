@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2681774,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 25182,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 25182,
+    "cache_read_input_tokens": 41047,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 5000,
+       "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 5000,
+      "cache_read_input_tokens": 23405,
+      "input_tokens": 4,
+      "output_tokens": 2039,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2924,
+    "output_tokens_details": {
+     "thinking_tokens": 711
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "6c649f0da8e4b3026457caeca52a8c250de8deed",
+ "cli_dirty": false,
+ "cli_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "cost_usd": 0.268177,
+ "dedupe_key": "TauCetiProject/TauCeti|34991|855d3fcc880d543a2b43d278c7c390c5bb9c0d97|proof-quality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "9a401158f183086e9bf226412d30e00b17b3372793d5dd1162d30590704a5b0d",
+ "diff_sha256": "9a401158f183086e9bf226412d30e00b17b3372793d5dd1162d30590704a5b0d",
+ "duration_s": 29.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`rankOne_tmul` (TensorProduct.lean:78-92) and Pfister/Basic.lean:142-145 do the same `Fin.cast`/`finProdFinEquiv` bookkeeping, closing with plain `simp` (plus `omega` in Pfister) and no `rfl` or `change`.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/RegularFormClass/TensorProduct.lean",
+   "fix": "Add `RegularFormPresentation.tmul_one : p.tmul one = p`, proved via `RegularFormPresentation.ext` and `tmul_apply` like `rankOne_tmul`, then get the isometry by rewriting with it, dropping the `rfl` and the `change`.",
+   "issue": "`Fin.ext (by simp [e, j, finProdFinEquiv, finCongr]; rfl)` closes on an accidental defeq of `finCongr`/`Fin.cast`; line 327's `change _ * (x (e i) * x (e i)) = ...` has no comment saying why it is needed, and the closing `simp [RegularFormPresentation.one]` unfolds a definition.",
+   "line": 325
+  },
+  {
+   "evidence": "mathlib/Mathlib/Algebra/Central/Basic.lean:62-65: `lemma of_algEquiv (e : D \u2243\u2090[K] D') ... have \u27e8k, hk\u27e9 := h.1 ((MulEquivClass.apply_mem_center_iff e.symm).mpr hx); \u27e8k, by simpa [ofId] using congr(e $hk)\u27e9`.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/RegularFormClass/Clifford.lean",
+   "fix": "Move it into a lemma, either a cross-universe `IsCentral` transfer along `\u2243\u2090` or `even_finrank_of_algEquiv_isCentral` (CliffordAlgebra Q \u2243\u2090[K] A with A central implies finrank even), and call that lemma from the theorem.",
+   "issue": "The evenness derivation re-proves Mathlib's `Algebra.IsCentral.of_algEquiv` inline just because the universes differ (the `simpa [Algebra.ofId] using congr(e.symm $hk)` step is copied from it), which hides a reusable fact.",
+   "line": 203
+  }
+ ],
+ "head_sha": "855d3fcc880d543a2b43d278c7c390c5bb9c0d97",
+ "merge_base_sha": "6c649f0da8e4b3026457caeca52a8c250de8deed",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 34991,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0929a65d9b35fae639ae77e05e857c7669f7ad0f6a465855c97cc4fce31cb824",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "2b4a9560bfc197a6e7b24c19d6da62b88addf4d3",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261110T020151Z-34991-proof-quality-41695b",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-10T02:01:51Z",
+ "submitted_by": "kim-em",
+ "summary": "The new proof of `presentedForm_tmul_one` closes with an undocumented `change` and a trailing defeq `rfl`. `cliffordInvariant_formClass_eq_mk` copies the proof of Mathlib's `IsCentral.of_algEquiv` inline instead of factoring that reusable fact into a lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Central",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Central/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/RegularFormClass/TensorProduct.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bdb30d326e67c5e11e1070ea4eddb8c7b5fa5ca158dcdb52ed44d29970ddd246",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 25182,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "cache_creation_input_tokens": 25182,
+  "cache_read_input_tokens": 41047,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 5000,
+     "ephemeral_5m_input_tokens": 0
+    },
+    "cache_creation_input_tokens": 5000,
+    "cache_read_input_tokens": 23405,
+    "input_tokens": 4,
+    "output_tokens": 2039,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2924,
+  "output_tokens_details": {
+   "thinking_tokens": 711
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
