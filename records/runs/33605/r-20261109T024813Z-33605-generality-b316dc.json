@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2453762,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 37.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 31459
+    },
+    "cache_creation_input_tokens": 31459,
+    "cache_read_input_tokens": 51386,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5091
+      },
+      "cache_creation_input_tokens": 5091,
+      "cache_read_input_tokens": 29591,
+      "input_tokens": 2,
+      "output_tokens": 2367,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3889,
+    "output_tokens_details": {
+     "thinking_tokens": 1450
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "d92acc5c0393646e14960dfd4972fc836aad3ebe",
+ "cli_dirty": false,
+ "cli_sha": "ed074b817fd7829d95916602741abda3d4378dd0",
+ "cost_usd": 0.245376,
+ "dedupe_key": "TauCetiProject/TauCeti|33605|0bf5588cc6264b1e718e9371ebd1d748e57be476|generality|claude-opus-5-5|78fad9c56c378616|production|1",
+ "diff_blob": "76011ebed73b4d2885dd19f851a4c3b548d6a053c326a2b04f61dc53e8fbe9a0",
+ "diff_sha256": "76011ebed73b4d2885dd19f851a4c3b548d6a053c326a2b04f61dc53e8fbe9a0",
+ "duration_s": 37.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The proofs use only `ContDiffOn.fderiv_of_isOpen`, `ContDiffOn.clm_comp` and `fderiv_comp_fderiv_symm`, and the last is stated over `\ud835\udd5c` in `FDeriv/Equiv.lean:36`.",
+   "file": "TauCeti/Analysis/Calculus/AdaptedChart.lean",
+   "fix": "Use `variable {\ud835\udd5c E F : Type*} [NontriviallyNormedField \ud835\udd5c] [NormedSpace \ud835\udd5c E] [NormedSpace \ud835\udd5c F]` and `def pullbackEnd (e : OpenPartialHomeomorph E F) (J : F \u2192 F \u2192L[\ud835\udd5c] F) (p : E) : E \u2192L[\ud835\udd5c] E := (fderiv \ud835\udd5c e.symm (e p)).comp ((J (e p)).comp (fderiv \ud835\udd5c e p))`, with matching `ContDiffOn \ud835\udd5c` hypotheses.",
+   "issue": "`pullbackEnd`, `pullbackEnd_apply`, `contDiffOn_pullbackEnd` and `fderiv_comp_pullbackEnd` are stated only over `\u211d`, but they are pure calculus with nothing specific to `\u211d`.",
+   "line": 70
+  },
+  {
+   "evidence": "These proofs use only `adaptedNormalExtension_zero`, `hasFDerivAt_adaptedNormalExtension_zero`, `fderiv_adaptedNormalExtension_intertwines` and `adaptedNormalExtension_inl`, all stated over `\ud835\udd5c` in `NormalExtension.lean:109,146,163,181`.",
+   "file": "TauCeti/Analysis/Calculus/AdaptedChart.lean",
+   "fix": "State them for `[NontriviallyNormedField \ud835\udd5c]`, `[NormedSpace \ud835\udd5c V] [NormedSpace \ud835\udd5c W]` and `J : W \u2192 W \u2192L[\ud835\udd5c] W`. Keep `\u211d` only for `isInvertible_fderiv_adaptedNormalExtension_zero_iff`, `exists_adaptedChart` and the `\u2102 \u00d7 {0}` Check.",
+   "issue": "The flattening and intertwining lemmas (`symm_apply_of_coe_eq_adaptedNormalExtension`, `isImage_of_coe_eq_adaptedNormalExtension`, `fderiv_symm_apply_of_coe_eq_adaptedNormalExtension`, `pullbackEnd_of_coe_eq_adaptedNormalExtension`) and the flat Check `pullbackEnd_of_coe_eq_adaptedNormalExtension_inl` fix `\ud835\udd5c = \u211d` without using it. The first two do not even use derivatives.",
+   "line": 172
+  }
+ ],
+ "head_sha": "0bf5588cc6264b1e718e9371ebd1d748e57be476",
+ "merge_base_sha": "d92acc5c0393646e14960dfd4972fc836aad3ebe",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 33605,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8f99a87619329dfc214554e5c15a324f10846b6ffd578e478b50ee96e9ef5ab3",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "ed074b817fd7829d95916602741abda3d4378dd0",
+ "rubrics_version": "78fad9c56c378616",
+ "run_id": "r-20261109T024813Z-33605-generality-b316dc",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-09T02:48:13Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The `pullbackEnd` API and the flattening/intertwining lemmas are fixed to `\u211d` even though they use nothing about `\u211d`, while `adaptedNormalExtension` and `FDeriv/Equiv` are stated over any `NontriviallyNormedField \ud835\udd5c`. Only the lemmas involving `IsMaximalTotallyReal` and the complex-line Check need `\u211d`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/NormalExtension.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/InverseFunctionTheorem.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "18321bdc05bff3e9b3229545da2b90290cdb842c0e9b016b6c30d9956f469bfc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 31459
+  },
+  "cache_creation_input_tokens": 31459,
+  "cache_read_input_tokens": 51386,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5091
+    },
+    "cache_creation_input_tokens": 5091,
+    "cache_read_input_tokens": 29591,
+    "input_tokens": 2,
+    "output_tokens": 2367,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3889,
+  "output_tokens_details": {
+   "thinking_tokens": 1450
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
