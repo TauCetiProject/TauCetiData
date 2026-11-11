@@ -1,0 +1,169 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.16697900000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 14963
+    },
+    "cache_creation_input_tokens": 14963,
+    "cache_read_input_tokens": 121720,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5837
+      },
+      "cache_creation_input_tokens": 5837,
+      "cache_read_input_tokens": 35126,
+      "input_tokens": 4,
+      "output_tokens": 2127,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3389,
+    "output_tokens_details": {
+     "thinking_tokens": 1005
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "29b9cc14af71b7c058316535d555c9bbf64b2df7",
+ "cli_dirty": true,
+ "cli_sha": "7d59664ab04bad503c5c7c52ecca48e16177ff3d",
+ "cost_usd": 0.166979,
+ "dedupe_key": "TauCetiProject/TauCeti|37348|b3b6ba9c073621c5729fdd9c8fc3f6202a4884e6|api-design|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "be03bd56da6ba436d830504bd0fbeb8811606c7507337a6029fd03e1e2e1ffad",
+ "diff_sha256": "be03bd56da6ba436d830504bd0fbeb8811606c7507337a6029fd03e1e2e1ffad",
+ "duration_s": 36.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "HalfAngle.lean:34: `theorem one_sub_cos_pos {\u03b8 : \u211d} (h\u2080 : 0 < \u03b8) (h\u2081 : \u03b8 < 2 * \u03c0) : 0 < 1 - cos \u03b8`",
+   "file": "TauCeti/Analysis/SpecialFunctions/Gamma/Stirling.lean",
+   "fix": "Delete the private copy. Import TauCeti.Analysis.SpecialFunctions.Trigonometric.HalfAngle and use `TauCeti.one_sub_cos_pos h\u03b4 (by linarith)` here and in SectorialDigamma.lean.",
+   "issue": "The private `one_sub_cos_pos` duplicates the existing public `TauCeti.one_sub_cos_pos` (same name, weaker hypotheses there). The new digamma bound in SectorialDigamma.lean also rebuilds the fact inline as `hcos`.",
+   "line": 112
+  },
+  {
+   "evidence": "SectorialDigamma.lean:306 `have hslit : s \u2208 slitPlane := mem_slitPlane_iff_arg.mpr \u27e8by intro heq ...` matches the body of Stirling.lean:85-87; SlitPlane.lean has no such lemma.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Gamma/Stirling.lean",
+   "fix": "Make it a public lemma in TauCeti/Analysis/Complex/SlitPlane.lean and use it at all three sites.",
+   "issue": "`mem_slitPlane_of_abs_arg_le` uses only Mathlib types but is private. The same proof is written out inline in SectorialDigamma.lean at line 306 and again in the new `norm_digamma_sub_log_add_inv_two_mul_le_of_abs_arg_le` near line 546.",
+   "line": 85
+  },
+  {
+   "evidence": "Their statements mention only `Int.fract`, `Continuous`, `HasDerivWithinAt` and `|\u00b7|`; their proofs use no Gamma or digamma lemmas.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Gamma/SectorialDigamma.lean",
+   "fix": "Make them public in a floor/fractional-part file, e.g. next to Mathlib.MeasureTheory.Function.Floor, under fract-based names.",
+   "issue": "`continuous_fract_kernel`, `hasDerivWithinAt_fract_kernel` (343) and `abs_fract_kernel_le` (362) are facts about `Int.fract` alone and do not depend on digamma, yet they are private.",
+   "line": 338
+  }
+ ],
+ "head_sha": "b3b6ba9c073621c5729fdd9c8fc3f6202a4884e6",
+ "merge_base_sha": "29b9cc14af71b7c058316535d555c9bbf64b2df7",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 37348,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a8e02c0afb91ccc2a90e666057f036520e32d21fc974591e9a5b79c25a40d46a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "7d59664ab04bad503c5c7c52ecca48e16177ff3d",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261111T053915Z-37348-api-design-599b9a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-11T05:39:15Z",
+ "submitted_by": "kim-em",
+ "summary": "General helper lemmas are kept private instead of public and reused: one duplicates the existing public TauCeti.one_sub_cos_pos, one is a slit-plane fact copied three times, and three are general Int.fract facts. The main theorems and the second-order digamma bound are exposed correctly.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Gamma/SectorialDigamma.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/SlitPlane.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Gamma/SectorialDigamma.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "152ee383ad6a50237574cc153ec6fa1a78c0aedb93e0a564f3999f84940cef06",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 14963
+  },
+  "cache_creation_input_tokens": 14963,
+  "cache_read_input_tokens": 121720,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5837
+    },
+    "cache_creation_input_tokens": 5837,
+    "cache_read_input_tokens": 35126,
+    "input_tokens": 4,
+    "output_tokens": 2127,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3389,
+  "output_tokens_details": {
+   "thinking_tokens": 1005
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

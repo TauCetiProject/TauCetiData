@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3944016,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 59.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 37844
+    },
+    "cache_creation_input_tokens": 37844,
+    "cache_read_input_tokens": 361248,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 3663
+      },
+      "cache_creation_input_tokens": 3663,
+      "cache_read_input_tokens": 60181,
+      "input_tokens": 2,
+      "output_tokens": 2775,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6643,
+    "output_tokens_details": {
+     "thinking_tokens": 2375
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "29b9cc14af71b7c058316535d555c9bbf64b2df7",
+ "cli_dirty": true,
+ "cli_sha": "7d59664ab04bad503c5c7c52ecca48e16177ff3d",
+ "cost_usd": 0.394402,
+ "dedupe_key": "TauCetiProject/TauCeti|37348|b3b6ba9c073621c5729fdd9c8fc3f6202a4884e6|reuse|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "be03bd56da6ba436d830504bd0fbeb8811606c7507337a6029fd03e1e2e1ffad",
+ "diff_sha256": "be03bd56da6ba436d830504bd0fbeb8811606c7507337a6029fd03e1e2e1ffad",
+ "duration_s": 59.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "code/TauCeti/Analysis/SpecialFunctions/Trigonometric/HalfAngle.lean:34: `theorem one_sub_cos_pos {\u03b8 : \u211d} (h\u2080 : 0 < \u03b8) (h\u2081 : \u03b8 < 2 * \u03c0) : 0 < 1 - cos \u03b8`",
+   "file": "TauCeti/Analysis/SpecialFunctions/Gamma/Stirling.lean",
+   "fix": "Delete the private lemma and import `TauCeti.Analysis.SpecialFunctions.Trigonometric.HalfAngle`. Use `TauCeti.one_sub_cos_pos h\u03b4 (by linarith [Real.pi_pos])` in `stirlingConst_nonneg`, and for `hc` in the SectorialDigamma theorem use `half_pos (TauCeti.one_sub_cos_pos h\u03b4 (by linarith [Real.pi_pos]))`.",
+   "issue": "The private `one_sub_cos_pos` (0 < \u03b4 < \u03c0 \u21d2 0 < 1 - cos \u03b4) duplicates the public `TauCeti.one_sub_cos_pos`, which covers the wider range 0 < \u03b8 < 2\u03c0. The new `norm_digamma_sub_log_add_inv_two_mul_le_of_abs_arg_le` in SectorialDigamma.lean also re-derives `cos \u03b4 < 1` inline (`hcos` via `cos_lt_cos_of_nonneg_of_le_pi`).",
+   "line": 112
+  },
+  {
+   "evidence": "Stirling.lean:85-87 `mem_slitPlane_iff_arg.mpr \u27e8fun h \u21a6 by rw [h, abs_of_pos pi_pos] at hs; linarith, hs0\u27e9` vs SectorialDigamma.lean:306-309 and the new theorem's `have hslit : s \u2208 slitPlane := mem_slitPlane_iff_arg.mpr \u27e8by intro heq; rw [heq, abs_of_pos Real.pi_pos] at hs; linarith, hs0\u27e9`",
+   "file": "TauCeti/Analysis/SpecialFunctions/Gamma/Stirling.lean",
+   "fix": "Prove `mem_slitPlane_of_abs_arg_le` once as a public lemma next to `mul_norm_add_le_norm_add_ofReal_of_abs_arg_le` in TauCeti/Analysis/Complex/SectorBounds.lean. Use it in both SectorialDigamma theorems and in Stirling.lean, and drop the private copy.",
+   "issue": "The private `mem_slitPlane_of_abs_arg_le` proves the same fact as the inline `hslit` block in the new `norm_digamma_sub_log_add_inv_two_mul_le_of_abs_arg_le`. That theorem's whole opening (s = 0 case, `hslit`, `hcos`, `hc`) also copies the existing `norm_digamma_sub_log_le_of_abs_arg_le` (SectorialDigamma.lean:304-313).",
+   "line": 85
+  },
+  {
+   "evidence": "Body is `rw [div_div]; exact Complex.norm_digamma_sub_log_add_inv_two_mul_le_of_abs_arg_le h\u03b4 h\u03b4\u03c0 hz`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Gamma/Stirling.lean",
+   "fix": "Delete it. At its two uses, call `(Complex.norm_digamma_sub_log_add_inv_two_mul_le_of_abs_arg_le h\u03b4 h\u03b4\u03c0 hz).trans_eq (div_div ..).symm`, or state the public bound directly in the form `2 / (1 - cos \u03b4) ^ 3 / \u2016s\u2016 ^ 2`.",
+   "issue": "The private `norm_deriv_stirlingError_le` restates the public `Complex.norm_digamma_sub_log_add_inv_two_mul_le_of_abs_arg_le` up to `div_div`.",
+   "line": 105
+  }
+ ],
+ "head_sha": "b3b6ba9c073621c5729fdd9c8fc3f6202a4884e6",
+ "merge_base_sha": "29b9cc14af71b7c058316535d555c9bbf64b2df7",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 37348,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1779636c5c8f1369bdc17611645b1dd52c67f2deb701aee6990ff22b867cded8",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "7d59664ab04bad503c5c7c52ecca48e16177ff3d",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261111T053740Z-37348-reuse-0c68ed",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-11T05:37:40Z",
+ "submitted_by": "kim-em",
+ "summary": "The Stirling and second-order digamma results are new: neither Mathlib nor TauCeti has a Stirling formula for Gamma. The PR does re-prove an existing public lemma (`TauCeti.one_sub_cos_pos`), proves the same slit-plane step twice, and adds a thin private wrapper around the new public digamma bound.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Gamma/SectorialDigamma.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Trigonometric/HalfAngle.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Gamma/Log.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Stirling.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Gamma/Vertical.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Integrals/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 15,
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "cf54c9ee7d9d206899098b2450ae4acef4753143a6427c462f8052dbdbfe00ab",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 37844
+  },
+  "cache_creation_input_tokens": 37844,
+  "cache_read_input_tokens": 361248,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3663
+    },
+    "cache_creation_input_tokens": 3663,
+    "cache_read_input_tokens": 60181,
+    "input_tokens": 2,
+    "output_tokens": 2775,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6643,
+  "output_tokens_details": {
+   "thinking_tokens": 2375
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
