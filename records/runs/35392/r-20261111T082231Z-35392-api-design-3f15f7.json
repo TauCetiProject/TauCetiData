@@ -1,0 +1,161 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1180318,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5735
+    },
+    "cache_creation_input_tokens": 5735,
+    "cache_read_input_tokens": 63304,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 3111
+      },
+      "cache_creation_input_tokens": 3111,
+      "cache_read_input_tokens": 32964,
+      "input_tokens": 2,
+      "output_tokens": 2751,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3834,
+    "output_tokens_details": {
+     "thinking_tokens": 1574
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "83769e442d55cda9d85b3927a93b286831c595ff",
+ "cli_dirty": false,
+ "cli_sha": "7d59664ab04bad503c5c7c52ecca48e16177ff3d",
+ "cost_usd": 0.118032,
+ "dedupe_key": "TauCetiProject/TauCeti|35392|99f45a402de37e0675871e25b77707a5dc02c7bb|api-design|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "f018caea0df07636ac673c6b12bec912e343a370dc1b39fb01d33cf2898c4b49",
+ "diff_sha256": "f018caea0df07636ac673c6b12bec912e343a370dc1b39fb01d33cf2898c4b49",
+ "duration_s": 36.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The statements in the file mention only `ContDiff`, `fderiv`, `tsupport` and `ContinuousLinearMap`, none of which are manifold notions.",
+   "file": "TauCeti/Analysis/Calculus/ContDiff/Cutoff.lean",
+   "fix": "Make it a plain `import`.",
+   "issue": "`public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace` is only needed by the proof of `ContDiff.contDiff_cutoff_perturbation_of_contDiffAt` (`contMDiff_of_tsupport`, `contMDiff_iff_contDiff`), yet it re-exports the manifold library to every consumer of this calculus module.",
+   "line": 8
+  },
+  {
+   "evidence": "The statement uses only `fderiv`, `ContinuousLinearMap.id` and `Diffeomorph`, which the existing public imports already provide.",
+   "file": "TauCeti/Geometry/Manifold/Diffeomorph/Perturbation.lean",
+   "fix": "Use a plain `import`, like the neighbouring `import Mathlib.Analysis.Calculus.ContDiff.RCLike`.",
+   "issue": "`public import Mathlib.Analysis.Calculus.MeanValue` is only used in the proof of `exists_diffeomorph_apply_eq_of_norm_fderiv_sub_id_le` (`lipschitzWith_of_nnnorm_fderiv_le`).",
+   "line": 12
+  },
+  {
+   "evidence": "Germ.lean:171,181 are the only uses, and both are inside the private proof.",
+   "file": "TauCeti/Geometry/Manifold/Diffeomorph/Germ.lean",
+   "fix": "Change it to a plain `import`, matching the existing `import TauCeti.Analysis.Calculus.BumpFunction.Cutoff`.",
+   "issue": "`public import TauCeti.Analysis.Calculus.ContDiff.Cutoff` is used only inside the private theorem `exists_pos_forall_exists_diffeomorph_eqOn`, so it needlessly enlarges the public import surface of Germ.",
+   "line": 11
+  },
+  {
+   "evidence": "Conclusion: `TendstoUniformlyOn (fun k \u21a6 fderiv \ud835\udd5c (fseq k \u2218 g)) (fun _ \u21a6 ContinuousLinearMap.id \ud835\udd5c F) l K`.",
+   "file": "TauCeti/Analysis/Calculus/FDeriv/UniformConvergence.lean",
+   "fix": "Rename it to something like `TendstoUniformlyOn.fderiv_comp_rightInverse` and update its use at Diffeomorph/Cutoff.lean:134.",
+   "issue": "The name `TendstoUniformlyOn.fderiv_comp_eq_id` reads as an equality, but the conclusion is uniform convergence of `fderiv (fseq k \u2218 g)` to `id` on `K`; `eq_id` describes only an internal proof step (`hder`).",
+   "line": 32
+  }
+ ],
+ "head_sha": "99f45a402de37e0675871e25b77707a5dc02c7bb",
+ "merge_base_sha": "23caf7311c77a86c3a20d58a0b596b6da705bd94",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 35392,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0206e06c2f1238b8f0a70109ffcaf78e35424e194df4f793b82de3df9683fa0e",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "7d59664ab04bad503c5c7c52ecca48e16177ff3d",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261111T082231Z-35392-api-design-3f15f7",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-11T08:22:31Z",
+ "submitted_by": "kim-em",
+ "summary": "The new declarations are reasonably placed and public, but three imports only needed inside proofs are exported publicly, and one theorem name misdescribes its conclusion.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3b59b081816decdbd3e183c880a611628d3cdcbb802a81763ca7eb049a72d89c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 5735
+  },
+  "cache_creation_input_tokens": 5735,
+  "cache_read_input_tokens": 63304,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3111
+    },
+    "cache_creation_input_tokens": 3111,
+    "cache_read_input_tokens": 32964,
+    "input_tokens": 2,
+    "output_tokens": 2751,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3834,
+  "output_tokens_details": {
+   "thinking_tokens": 1574
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
