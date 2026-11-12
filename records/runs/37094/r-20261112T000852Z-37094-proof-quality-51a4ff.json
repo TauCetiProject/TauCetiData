@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.10585620000000001,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4340
+    },
+    "cache_creation_input_tokens": 4340,
+    "cache_read_input_tokens": 86021,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 813
+      },
+      "cache_creation_input_tokens": 813,
+      "cache_read_input_tokens": 23285,
+      "input_tokens": 2,
+      "output_tokens": 1898,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3346,
+    "output_tokens_details": {
+     "thinking_tokens": 1225
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "941bb58ae04c2464c632a44d715f17b21b6bea5e",
+ "cli_dirty": true,
+ "cli_sha": "df23a6843eed9bca6cf4d1216e9851b62b868ff7",
+ "cost_usd": 0.105856,
+ "dedupe_key": "TauCetiProject/TauCeti|37094|aad146cdc2d9ac926e84d200a2500e0a988d88d9|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "81f1e68704d2674f861533cce0ee4c9d1d024a40f45994707fb9d3a8714333b3",
+ "diff_sha256": "81f1e68704d2674f861533cce0ee4c9d1d024a40f45994707fb9d3a8714333b3",
+ "duration_s": 29.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib has these lemmas: `Mathlib/LinearAlgebra/Quotient/Basic.lean:64 restrictScalarsEquiv_symm_mk`, `Quotient/Defs.lean:264 quotEquivOfEq_mk`, `Isomorphisms.lean:57 quotKerEquivOfSurjective_apply_mk`.",
+   "file": "TauCeti/RingTheory/Polynomial/HermiteInterpolation.lean",
+   "fix": "Prove it with `simp [taylorJetQuotientEquiv, Submodule.Quotient.restrictScalarsEquiv_symm_mk, Submodule.quotEquivOfEq_mk, LinearMap.quotKerEquivOfSurjective_apply_mk]`, or an equivalent `rw` chain.",
+   "issue": "`taylorJetQuotientEquiv_mk` is proved by `rfl`, which unfolds through `restrictScalarsEquiv.symm`, `Submodule.quotEquivOfEq` and `quotKerEquivOfSurjective`. That is accidental definitional equality across wrappers and breaks if any of those definitions changes.",
+   "line": 105
+  },
+  {
+   "evidence": "`Mathlib/RingTheory/Ideal/Quotient/Defs.lean:219 quotEquivOfEq_mk` and `Ideal/Quotient/Operations.lean:259 quotientInfRingEquivPiQuotient_mk_apply` exist.",
+   "file": "TauCeti/RingTheory/Polynomial/HermiteInterpolation.lean",
+   "fix": "Use `simp [hermiteQuotientEquiv, Ideal.quotEquivOfEq_mk, Ideal.quotientInfRingEquivPiQuotient_mk_apply]`.",
+   "issue": "`hermiteQuotientEquiv_mk` is proved by `rfl` through `Ideal.quotEquivOfEq` and `quotientInfRingEquivPiQuotient`, again relying on definitional unfolding across wrappers.",
+   "line": 199
+  },
+  {
+   "evidence": "Line 207 is `rfl`; the statement composes `Ideal.Quotient.mk`, `hermiteQuotientEquiv` and `taylorJetQuotientEquiv`.",
+   "file": "TauCeti/RingTheory/Polynomial/HermiteInterpolation.lean",
+   "fix": "Prove it as `by rw [hermiteQuotientEquiv_mk, taylorJetQuotientEquiv_mk]; rfl`, or with `simp` using those lemmas, so that only `hermiteJet_apply`-level unfolding remains.",
+   "issue": "`hermiteJet_eq_taylorJetQuotientEquiv` is closed by `rfl`, so the factorization through projection, CRT and Taylor coordinates rests entirely on kernel unfolding of both composite equivalences. The two `_mk` lemmas above are never used to explain why it holds.",
+   "line": 207
+  },
+  {
+   "evidence": "Line 335: `fin_cases i <;> fin_cases k <;> simp <;> rfl`; line 360: `fin_cases k <;> simp <;> rfl`.",
+   "file": "TauCeti/RingTheory/Polynomial/HermiteInterpolation.lean",
+   "fix": "Find the lemma for the residual goal (for example a `hasseDeriv`/`derivative` evaluation or a `Pi.zero_apply`) and add it to the `simp` set, so each branch closes with `simp [...]` alone. Otherwise, add a comment saying what `rfl` discharges.",
+   "issue": "The repeated-node example ends with `fin_cases i <;> fin_cases k <;> simp <;> rfl`. Whatever residual goal `simp` leaves is closed by unexplained definitional unfolding, which is brittle under simp-set changes. The same pattern appears at line 360 in the characteristic-2 `ordinaryHermiteJet` example.",
+   "line": 335
+  }
+ ],
+ "head_sha": "aad146cdc2d9ac926e84d200a2500e0a988d88d9",
+ "merge_base_sha": "941bb58ae04c2464c632a44d715f17b21b6bea5e",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 37094,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fd3a36fcccb1e64d207f3a36efdb7f999a3d82fec9e3818f688e5ae22760c524",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "df23a6843eed9bca6cf4d1216e9851b62b868ff7",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261112T000852Z-37094-proof-quality-51a4ff",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-12T00:08:52Z",
+ "submitted_by": "kim-em",
+ "summary": "Three `rfl` proofs depend on undocumented definitional unfolding through Mathlib's quotient and Chinese-remainder wrappers, when Mathlib has `_mk` lemmas for each wrapper; two examples also end in `simp <;> rfl` on unnamed residual goals.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Polynomial/HermiteInterpolation.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3a8d15e2ea8658d46ec4c4bdb0cceb96390bc92c6ae5c4fed30656056a78e181",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 4340
+  },
+  "cache_creation_input_tokens": 4340,
+  "cache_read_input_tokens": 86021,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 813
+    },
+    "cache_creation_input_tokens": 813,
+    "cache_read_input_tokens": 23285,
+    "input_tokens": 2,
+    "output_tokens": 1898,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3346,
+  "output_tokens_details": {
+   "thinking_tokens": 1225
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
