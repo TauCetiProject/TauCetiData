@@ -1,0 +1,172 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.19657600000000003,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 37.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 11640
+    },
+    "cache_creation_input_tokens": 11640,
+    "cache_read_input_tokens": 264680,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1564
+      },
+      "cache_creation_input_tokens": 1564,
+      "cache_read_input_tokens": 57154,
+      "input_tokens": 2,
+      "output_tokens": 1569,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4270,
+    "output_tokens_details": {
+     "thinking_tokens": 1805
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a5f657a8a599df1444fc31f45e80599e451c62ca",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.196576,
+ "dedupe_key": "TauCetiProject/TauCeti|39003|45d2f2f71031195ac23f6b4443d60a140b6eb3fc|api-design|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "2c241e257b470bdd91960ef48d16dfb884f691d9e79a2cac01331abdeb103554",
+ "diff_sha256": "2c241e257b470bdd91960ef48d16dfb884f691d9e79a2cac01331abdeb103554",
+ "duration_s": 37.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The statement mentions only Mathlib's `TemperedDistribution.smulLeftCLM` and real powers, and its proof does not depend on `inclusion`. LineDeriv.lean:`have hw : (1 + \u2016x\u2016 ^ 2) ^ ((r + 1) / 2) * (1 + \u2016x\u2016 ^ 2) ^ ((-1 : \u211d) / 2) = (1 + \u2016x\u2016 ^ 2) ^ (r / 2) := by rw [\u2190 Real.rpow_add ...]`.",
+   "file": "TauCeti/Analysis/Sobolev/BesselPotential/Inclusion.lean",
+   "fix": "Move both lemmas to `BesselPotential/Schwartz.lean` next to `smulLeftCLM_fourier_toDistr_eq`, make them public, and reuse the composition lemma in `smulLeftCLM_fourier_lineDerivOp_eq` instead of re-proving the weight product.",
+   "issue": "`smulLeftCLM_rpow_sub_smulLeftCLM` (\u27e8\u03be\u27e9^(r-s)\u00b7\u27e8\u03be\u27e9^s\u00b7f = \u27e8\u03be\u27e9^r\u00b7f on any tempered distribution) is general Bessel-weight infrastructure but is `private`. LineDeriv.lean re-derives the same `rpow_add` weight identity inline (the `hw`/`hsymb` step of `smulLeftCLM_fourier_lineDerivOp_eq`). The private bound `norm_one_add_norm_sq_rpow_sub_le` is in the same position.",
+   "line": 59
+  },
+  {
+   "evidence": "Their statements involve only `SchwartzMap.gaussian`, `\u2202_{1}` and integrals over \u211d, with nothing specific to the Bessel-potential space. The public `norm_toLp_gaussian_sq_add_norm_toLp_lineDerivOp_one_gaussian_sq` is proved by `rw` with exactly these two lemmas.",
+   "file": "TauCeti/Analysis/Sobolev/BesselPotential/OneDimensional.lean",
+   "fix": "Export them as `SchwartzMap.norm_toLp_gaussian_sq` and `SchwartzMap.norm_toLp_lineDerivOp_gaussian_sq` (for example in `SchwartzSpace/Gaussian.lean` or this file), and derive the sum lemma from them.",
+   "issue": "`integral_norm_gaussian_sq` and `integral_norm_lineDerivOp_one_gaussian_sq` are reusable facts about `SchwartzMap.gaussian` (the separate L\u00b2 norms of g and g\u2032) but are `private`. The only public form is the sum `\u2016g\u2016\u2082\u00b2 + \u2016g\u2032\u2016\u2082\u00b2`, so a consumer who needs one of the two terms must re-prove it.",
+   "line": 57
+  }
+ ],
+ "head_sha": "45d2f2f71031195ac23f6b4443d60a140b6eb3fc",
+ "merge_base_sha": "cb25b39fd76823c2ad2f4ff2d1916ab97f86b5fd",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 39003,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "12c0abb72a39ce27d488176f497713194ed8825968d051e10f0af715b230949a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261112T160404Z-39003-api-design-3c2cd5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-12T16:04:04Z",
+ "submitted_by": "kim-em",
+ "summary": "The new `lineDerivCLM` API (distribution and Schwartz characterisations, linearity in the direction, inclusion compatibility, norm bound) is complete, and its simp annotations match Mathlib's `lineDerivOp_left_*` conventions. Two general results are kept `private` when they should be exported: the Bessel-weight composition law, which LineDeriv.lean re-derives inline, and the L\u00b2 integrals of the Gaussian and its derivative.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Function/Lp/Norm.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/FunctionalSpaces/BesselPotentialSpace.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Distribution/DerivNotation.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 7,
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2afc637da1a8e2bb917a7df771c2e7761e8c366be0a6cf3dc6aae45541572c5c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 11640
+  },
+  "cache_creation_input_tokens": 11640,
+  "cache_read_input_tokens": 264680,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1564
+    },
+    "cache_creation_input_tokens": 1564,
+    "cache_read_input_tokens": 57154,
+    "input_tokens": 2,
+    "output_tokens": 1569,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4270,
+  "output_tokens_details": {
+   "thinking_tokens": 1805
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
