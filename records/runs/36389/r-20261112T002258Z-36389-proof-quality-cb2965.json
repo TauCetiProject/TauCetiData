@@ -1,0 +1,156 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.0738364,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1069
+    },
+    "cache_creation_input_tokens": 1069,
+    "cache_read_input_tokens": 24317,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1069
+      },
+      "cache_creation_input_tokens": 1069,
+      "cache_read_input_tokens": 24317,
+      "input_tokens": 2,
+      "output_tokens": 3181,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3181,
+    "output_tokens_details": {
+     "thinking_tokens": 725
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "83769e442d55cda9d85b3927a93b286831c595ff",
+ "cli_dirty": false,
+ "cli_sha": "df23a6843eed9bca6cf4d1216e9851b62b868ff7",
+ "cost_usd": 0.073836,
+ "dedupe_key": "TauCetiProject/TauCeti|36389|f5aea8e731f1f0e13603933018320acb317ab0ab|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "8ac12aec90ec855807f85c770187d868784d1c60ec0ddcb25b986f86c0825061",
+ "diff_sha256": "8ac12aec90ec855807f85c770187d868784d1c60ec0ddcb25b986f86c0825061",
+ "duration_s": 29.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Identical `change (coslice.objEquiv (coslice.objEquiv.symm \u27e8cone x ...\u27e9))` blocks in isIso_toCoslice (both branches), cosliceIso_hom_base and cosliceIso_hom_app_vertex.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Coslice.lean",
+   "fix": "Add one lemma, e.g. `coslice.objEquiv ((toCoslice x).app n s) = \u27e8cone x n.unop.len s, cone_inl x _ s\u27e9`, proved by `Equiv.apply_symm_apply`, and rewrite with it in all four places.",
+   "issue": "The same `change ... coslice.objEquiv (coslice.objEquiv.symm \u27e8cone x _ s, cone_inl x _ s\u27e9)` unfolding of `toCoslice`/`cosliceIso` appears four times: twice in `isIso_toCoslice` (~272, ~281), then in `cosliceIso_hom_base` and `cosliceIso_hom_app_vertex`. A reusable evaluation fact is hidden behind repeated defeq.",
+   "line": 272
+  },
+  {
+   "evidence": "e.g. `erw [SimplexCategory.rev_map_apply]` in prepend_zero/prepend_succ; `erw [coslice.objEquiv_map_coe, Equiv.apply_symm_apply, Equiv.apply_symm_apply]` in toCosliceApp_naturality.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Coslice.lean",
+   "fix": "Add `toOrderHom`-level application lemmas for `SimplexCategory.rev.map`/`joinVertex.map` (or state the existing ones in the needed form) and plain `rw`/`simp` lemmas for the nerve/yoneda evaluations, then replace each `erw` with `rw`/`simp`.",
+   "issue": "`erw` is used throughout, so the rewrites only fire up to definitional unfolding and are fragile: prepend_zero, prepend_succ (`rev_map_apply`, `joinVertex_map_*`), cone_naturality (`yonedaEquiv_symm_naturality_left`, `totalArrow_whiskerLeft`, `totalArrow_precomp_zero_succ`), coneSimplex, coneSimplex_cone, toCosliceApp_naturality and cosliceIso_hom_base.",
+   "line": 70
+  },
+  {
+   "evidence": "Duplicated `have h'' := congrArg (fun k \u21a6 SSet.yonedaEquiv k _) h'; rw [...] at h''` blocks in both branches.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Coslice.lean",
+   "fix": "Factor a lemma computing `SSet.yonedaEquiv (stdSimplex.map g \u226b stdSimplex.map h)` / vertex evaluation of `stdSimplex.map`, or prove the vertex equations by `simp` with such a lemma, so each branch is one `simpa` from coneIso_inl/coneIso_inr.",
+   "issue": "coneIso_naturality (~40 lines) repeats the same structure in its `zero` and `succ` branches: build h, h', h'' and then run a 6\u201310-step `rw [SSet.yonedaEquiv_comp, stdSimplex.hom_app_apply, SSet.yonedaEquiv_map, stdSimplex.objEquiv_symm_apply, ...] at h''` chain. coneIso_inr has the same chain. This is brittle to renames and hides the reusable fact.",
+   "line": 101
+  },
+  {
+   "evidence": "`simp only [\u2190 SSet.yonedaEquiv_naturality]\n  rfl` in cone_inl.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Coslice.lean",
+   "fix": "Close it with an explicit lemma (e.g. `ComposableArrows.precomp_obj_zero` plus `SSet.yonedaEquiv_const`/`nerveEquiv` simp lemmas), or comment why `rfl` is needed.",
+   "issue": "cone_inl ends with an uncommented `rfl` after `simp only [\u2190 SSet.yonedaEquiv_naturality]`, which relies on the definitional equality between `precomp ... |>.obj 0`-style evaluation and `nerveEquiv.symm x`.",
+   "line": 149
+  },
+  {
+   "evidence": "`have hh := (eq_of_heq (Quiver.Total.mk.inj h).2.2).trans ...`; `erw [hmap, Under.comp_right, Under.comp_right, Under.eqToHom_right, Under.eqToHom_right]`; `erw [hi, hj, ...]`.",
+   "file": "TauCeti/CategoryTheory/ComposableArrows/Under.lean",
+   "fix": "Prove a lemma `(precomp F f).map (homOfLE (Fin.zero_le i.succ)) = f \u226b F.map (homOfLE (Fin.zero_le i))` once and use it with `simp`. Use `Under.eqToHom_right`/`simp` instead of the `rfl`-proved `hi`/`hj` and `erw`.",
+   "issue": "toUnder_precomp gets the structure-arrow equation from `eq_of_heq (Quiver.Total.mk.inj h).2.2`, then needs `erw` and `by rfl` identities for `eqToHom` on `Under.right`. This is unfolding-heavy plumbing in place of a direct statement.",
+   "line": 62
+  }
+ ],
+ "head_sha": "f5aea8e731f1f0e13603933018320acb317ab0ab",
+ "merge_base_sha": "83769e442d55cda9d85b3927a93b286831c595ff",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 36389,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "11f14755804d8f122f12a7efe9de559c1d962698ea11596b5eca7f61d7042e0e",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "df23a6843eed9bca6cf4d1216e9851b62b868ff7",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261112T002258Z-36389-proof-quality-cb2965",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-12T00:22:58Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs repeatedly unfold the comparison map with the same `change`, lean on `erw` to rewrite through definitional unfolding, and duplicate long brittle `yonedaEquiv` rewrite chains instead of factoring evaluation lemmas.",
+ "tool_trace_meta": {
+  "successful_calls": 0,
+  "total_calls": 0,
+  "trace_truncated": false
+ },
+ "transcript_blob": "df0364d8b3bd812abfee6cccdf0748d35a7ff7f1e4d4d5977d6aade51aca9382",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 1069
+  },
+  "cache_creation_input_tokens": 1069,
+  "cache_read_input_tokens": 24317,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 2,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1069
+    },
+    "cache_creation_input_tokens": 1069,
+    "cache_read_input_tokens": 24317,
+    "input_tokens": 2,
+    "output_tokens": 3181,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3181,
+  "output_tokens_details": {
+   "thinking_tokens": 725
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
