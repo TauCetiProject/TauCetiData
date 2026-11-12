@@ -1,0 +1,219 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.6857181999999999,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 58.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 86067
+    },
+    "cache_creation_input_tokens": 86067,
+    "cache_read_input_tokens": 604716,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2447
+      },
+      "cache_creation_input_tokens": 2447,
+      "cache_read_input_tokens": 86843,
+      "input_tokens": 2,
+      "output_tokens": 2603,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6718,
+    "output_tokens_details": {
+     "thinking_tokens": 1972
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "396c3bd971e9722aa8656231760e710fe641d8cf",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.685718,
+ "dedupe_key": "TauCetiProject/TauCeti|36136|532ce09e586a893f2b23a5594510148bcdb7fe19|reuse|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "91770a254327c94c62b2a4c75fc84862eb0b3fed0fade0182963a5b4a1b28c0d",
+ "diff_sha256": "91770a254327c94c62b2a4c75fc84862eb0b3fed0fade0182963a5b4a1b28c0d",
+ "duration_s": 58.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Analysis/Calculus/ParametricIntegral.lean:349 `theorem hasFTaylorSeriesUpToOn_integral_of_le_bound`; already used the same way in TauCeti/Analysis/Pseudodifferential/Kernel.lean:318 (`contDiff_quantizationKernel_of_bound`).",
+   "file": "TauCeti/Analysis/Pseudodifferential/ProperSupport.lean",
+   "fix": "Apply `hasFTaylorSeriesUpToOn_integral_of_le_bound` on `Metric.ball p\u2080 1` with `p := fun p \u03b7 \u21a6 ftaylorSeries \u211d (fun q \u21a6 g \u03b7 \u2022 f (q.1, q.2 - (2*\u03c0)\u2022\u03b7)) p` and `bound i \u03b7 := C_i * (2^(|s_i|/2) * 2^|s_i| * \u27e8p\u2080.2\u27e9^(s_i)) * (\u27e82\u03c0\u03b7\u27e9^|s_i| * \u2016g \u03b7\u2016)` from `HasLocalGrowth f i`. This gives `ContDiff` and `iteratedFDeriv (shiftIntegral g f) = \u222b g \u03b7 \u2022 iteratedFDeriv f (\u00b7, \u00b7 - 2\u03c0\u03b7)` in one step; get `mixedDeriv_shiftIntegral` from it via `mixedDeriv_eq_iteratedFDeriv`.",
+   "issue": "`contDiff_shiftIntegral` and `iteratedFDerivAlong_shiftIntegral` (plus `hasFDerivAt_shiftIntegral`, `fderiv_shiftIntegral_apply`, `HasLocalGrowth.fderiv_apply`, `HasLocalGrowth.bound_zero/bound_one`, `continuous_shiftIntegral`) re-derive smoothness of a parametric integral by induction on one-step `hasFDerivAt_integral_of_dominated_of_fderiv_le`.",
+   "line": 0
+  },
+  {
+   "evidence": "code/TauCeti/Analysis/Calculus/CoordinateDeriv.lean:187-203 `norm_le_sum_single` uses the same `opNorm_le_bound`/`map_sum`/`map_smul_univ`/`norm_prod`/`PiLp.norm_apply_le` chain as the new lemma at :713.",
+   "file": "TauCeti/Analysis/Calculus/CoordinateDeriv.lean",
+   "fix": "Factor one lemma for a finite family `e : \u03b9 \u2192 E` with coordinates `c : E \u2192 \u03b9 \u2192 \u211d` such that `v = \u2211 l, c v l \u2022 e l` and `\u2016c v l\u2016 \u2264 \u2016v\u2016`, concluding `\u2016M\u2016 \u2264 \u2211 r : Fin k \u2192 \u03b9, \u2016M (e \u2218 r)\u2016`. Derive both `norm_le_sum_single` and the mixed-direction case from it.",
+   "issue": "`ContinuousMultilinearMap.norm_le_sum_mixedDirection` copies the proof of the existing `ContinuousMultilinearMap.norm_le_sum_single` (expand each argument in a coordinate family, `M.map_sum`, `map_smul_univ`, bound each coordinate by `\u2016v\u2016`), changing only the index type and the family.",
+   "line": 713
+  },
+  {
+   "evidence": "grep `integral_fourierChar_mul_fourier` in code/TauCeti finds only its declaration (Fourier.lean:570) and the docstring list entry (Fourier.lean:95); mathlib/Mathlib/Analysis/Fourier/Notation.lean:211 `fourierInv_fourier_eq`.",
+   "file": "TauCeti/Analysis/Distribution/SchwartzSpace/Fourier.lean",
+   "fix": "Delete it. Where needed, use `FourierTransform.fourierInv_fourier_eq` with `fourierInv_coe, Real.fourierInv_eq`, as `integral_fourier_eq_apply_zero` already does.",
+   "issue": "`SchwartzMap.integral_fourierChar_mul_fourier` is a thin restatement of `fourierInv_fourier_eq` with `Real.fourierInv_eq` unfolded, and nothing uses it (the quantization proof goes through `fourier_smulLeftCLM_sub_apply`).",
+   "line": 570
+  }
+ ],
+ "head_sha": "532ce09e586a893f2b23a5594510148bcdb7fe19",
+ "merge_base_sha": "396c3bd971e9722aa8656231760e710fe641d8cf",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 36136,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "05471bdbf9b7e53b352ba3e8b9dc90b4b100f229ab8ee236fd594d34a3b9d39d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261112T161437Z-36136-reuse-cffac0",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-12T16:14:37Z",
+ "submitted_by": "kim-em",
+ "summary": "The new kernel-cutoff material is mostly new, but `contDiff_shiftIntegral`/`iteratedFDerivAlong_shiftIntegral` hand-roll all-orders differentiation under the integral that Mathlib's `hasFTaylorSeriesUpToOn_integral_of_le_bound` provides (and TauCeti already uses that way). There is also a near-clone of `norm_le_sum_single` and an unused Fourier-inversion wrapper.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/TaylorIntegral.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/CoordinateDeriv.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "mathlib/Mathlib/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential/Composition/Expansion.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential/Composition/Expansion.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential/Kernel.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 14,
+  "total_calls": 15,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4209fc250b04c4e416c8a4e23f4453c8f79920b90dd3a7af8de77fdc21bef36e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 86067
+  },
+  "cache_creation_input_tokens": 86067,
+  "cache_read_input_tokens": 604716,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2447
+    },
+    "cache_creation_input_tokens": 2447,
+    "cache_read_input_tokens": 86843,
+    "input_tokens": 2,
+    "output_tokens": 2603,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6718,
+  "output_tokens_details": {
+   "thinking_tokens": 1972
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
