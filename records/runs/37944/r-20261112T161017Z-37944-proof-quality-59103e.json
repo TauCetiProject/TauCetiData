@@ -1,0 +1,179 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.18281540000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 40.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 10684
+    },
+    "cache_creation_input_tokens": 10684,
+    "cache_read_input_tokens": 186877,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1449
+      },
+      "cache_creation_input_tokens": 1449,
+      "cache_read_input_tokens": 41550,
+      "input_tokens": 2,
+      "output_tokens": 2350,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4599,
+    "output_tokens_details": {
+     "thinking_tokens": 1680
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "a6027b1d24fcb935c53bd5b50d11b40991cda418",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.182815,
+ "dedupe_key": "TauCetiProject/TauCeti|37944|556251635ba23fbffa009ff504c7ddada4b70990|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "72655e2411e432d1702c4a68d65a461510fdc294132aa5c6a19ea63773224bee",
+ "diff_sha256": "72655e2411e432d1702c4a68d65a461510fdc294132aa5c6a19ea63773224bee",
+ "duration_s": 40.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Topology/Algebra/Module/Equiv/Basic.lean:611 `def toUnit (f : M \u2243L[R] M) : (M \u2192L[R] M)\u02e3 where val := f; inv := f.symm`, which is exactly the construction the PR repeats.",
+   "file": "TauCeti/Analysis/Pseudodifferential/Positivity.lean",
+   "fix": "Write `rw [\u2190 he]; exact e.toUnit.isUnit` (or `(ContinuousLinearEquiv.toUnit e).isUnit`), and rename the obtained equation (e.g. `hee`).",
+   "issue": "`isStrictlyPositive_coefficient_principal` proves `IsUnit` by hand via `isUnit_iff_exists \u27e8e.symm, by ext; simp [ContinuousLinearMap.mul_def], ...\u27e9`, duplicating Mathlib's `ContinuousLinearEquiv.toUnit`; `obtain \u27e8e, he\u27e9 := isElliptic_iff.1 he ...` also shadows the hypothesis `he`.",
+   "line": 0
+  },
+  {
+   "evidence": "See the quoted `rw` lists in the diff: each depends on the exact syntactic shape after every intermediate rename-sensitive lemma.",
+   "file": "TauCeti/Analysis/Pseudodifferential/Positivity.lean",
+   "fix": "Reduce each to a targeted `simp [inner_add_left, AddChar.map_add_eq_mul, Circle.smul_def, smul_smul, \u2190 mul_assoc, hphase]`, or to one `rw` of the key fact (`hphase`, homogeneity, `rpow_add`) followed by `simp`/`module`/`field_simp`, rather than spelling out every rewrite.",
+   "issue": "`exp_smul_quantizeSchwartzValue_cutoffExponential_one` ends with an 11-lemma `rw [one_smul, mul_one, inner_add_left, AddChar.map_add_eq_mul, Circle.smul_def, Circle.smul_def, smul_smul, Circle.coe_mul, \u2190 mul_assoc, hphase, one_mul]`, a brittle chain over Circle/AddChar coercions. The same pattern appears in `Classical.lean` `tendsto_rpow_neg_smul_coefficient_smul` (`heq`: `rw [smul_sub, show ..., smul_smul, \u2190 Real.rpow_add ht, neg_add_cancel, Real.rpow_zero, one_smul, add_sub_cancel]`) and in its `herr` calc step (`rw [\u2190 Real.rpow_neg_one, mul_left_comm, mul_left_comm (t ^ (-m)), \u2190 Real.rpow_add ht0]; ring_nf`).",
+   "line": 0
+  },
+  {
+   "evidence": "Both proofs call `one_add_norm_sq_rpow_half_le (by positivity) ht0 \u27e8by rw [ht\u2026]; nlinarith, by rw [ht\u2026]; nlinarith\u27e9` with hand-built `max` constants `M`.",
+   "file": "TauCeti/Analysis/Pseudodifferential/Symbol/Classical.lean",
+   "fix": "Factor out a lemma such as: for `\u2016\u03b6 - \u03be\u2016 \u2264 \u2016\u03be\u2016/2` and `1 \u2264 t`, `(1 + \u2016t \u2022 \u03b6\u2016 ^ 2) ^ (s / 2) \u2264 M \u03be s * t ^ s`. Use it in both places, so that `herr` is a short squeeze and the error bound is reusable.",
+   "issue": "`tendsto_rpow_neg_smul_coefficient_smul` is about 70 lines. Its `herr` block inlines the annulus argument (`h\u03b61`, `h\u03b62`, `ht\u03b6`, `hlo`, `hhi`, `one_add_norm_sq_rpow_half_le ... \u27e8by rw [ht\u03b6]; nlinarith, ...\u27e9`), and `exists_norm_rpow_neg_smul_coefficient_le` in Positivity.lean repeats the same argument (`ht\u03be`, `ht2`, `one_add_norm_sq_rpow_half_le ... nlinarith`).",
+   "line": 0
+  }
+ ],
+ "head_sha": "556251635ba23fbffa009ff504c7ddada4b70990",
+ "merge_base_sha": "a6027b1d24fcb935c53bd5b50d11b40991cda418",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 37944,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "74579531cee04eed968ea0f7d69b6b9a0139b4822284d7fd3a00ab9a5deaa06a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261112T161017Z-37944-proof-quality-59103e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-12T16:10:17Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are sound and commented, but the strict-positivity proof rebuilds Mathlib's `ContinuousLinearEquiv.toUnit` by hand, several steps are long brittle `rw` chains, and the annulus Japanese-bracket bound is duplicated inside an approximately 70-line proof instead of being factored out.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module/Equiv.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module/Equiv/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module/Equiv",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 7,
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bd64cd7b769fb8f50226d1ccdaecd8fc7962a9a099821e70c1c03e2a26b9ba79",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 10684
+  },
+  "cache_creation_input_tokens": 10684,
+  "cache_read_input_tokens": 186877,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1449
+    },
+    "cache_creation_input_tokens": 1449,
+    "cache_read_input_tokens": 41550,
+    "input_tokens": 2,
+    "output_tokens": 2350,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4599,
+  "output_tokens_details": {
+   "thinking_tokens": 1680
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
