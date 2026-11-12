@@ -1,0 +1,149 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1138974,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8626
+    },
+    "cache_creation_input_tokens": 8626,
+    "cache_read_input_tokens": 84057,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 7561
+      },
+      "cache_creation_input_tokens": 7561,
+      "cache_read_input_tokens": 42561,
+      "input_tokens": 2,
+      "output_tokens": 2203,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2697,
+    "output_tokens_details": {
+     "thinking_tokens": 843
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "396c3bd971e9722aa8656231760e710fe641d8cf",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.113897,
+ "dedupe_key": "TauCetiProject/TauCeti|39043|71aa8d72f1b70d7441ddb46f2827fd553fdeb461|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "0cf0c39c48c764d58e3a9cc29b1b227419ee9e89111096535dbd8799522b98ab",
+ "diff_sha256": "0cf0c39c48c764d58e3a9cc29b1b227419ee9e89111096535dbd8799522b98ab",
+ "duration_s": 25.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The map_add' bodies at lines 657, 718 and 768 are identical up to `h x.2` vs `x.2`; the `_apply` proofs at 674, 744 and 795 use the same lemma list.",
+   "file": "TauCeti/Analysis/Holder/OpenSet.lean",
+   "fix": "Factor a private constructor that rebuilds an element from its zero extension, taking the `ContDiffOn`/H\u00f6lder data on the new set, with its own `coe` lemma and linearity proofs, and define the three maps through it.",
+   "issue": "`restrictL`, `inclusionSuccL` (712) and `inclusionL` (761) each repeat the same `ofContDiffOn (Function.extend Subtype.val \u21d1f 0)` construction with identical `map_add'`/`map_smul'` proofs, and their `_apply` lemmas (674, 744, 795) are copies of one `simp only` list.",
+   "line": 650
+  },
+  {
+   "evidence": "Repeated `rw [iteratedFDeriv_eq f (fun y \u21a6 extend_apply f y.2) i \u27e8x, _\u27e9]; exact (f.iteratedFDeriv _).norm_coe_le_norm _` pattern.",
+   "file": "TauCeti/Analysis/Holder/OpenSet.lean",
+   "fix": "Add a lemma `\u2016iteratedFDeriv \u211d i (extend \u21d1f 0) x\u2016 \u2264 \u2016f.iteratedFDeriv i\u2016` for `x \u2208 \u03a9` (or for any `g` agreeing with f on \u03a9) and use it at each site.",
+   "issue": "The step 'rewrite iteratedFDeriv of the zero extension by `iteratedFDeriv_eq`, then `norm_coe_le_norm`' is spelled out by hand five times: lines 668, 728-732, 779, twice in `holderOnWith_iteratedFDeriv_of_convex` (the `have he` blocks), and again at 838.",
+   "line": 668
+  },
+  {
+   "evidence": "Lines 780-787: `rw [norm_eq f]; push_cast; nlinarith` after four `have`s.",
+   "file": "TauCeti/Analysis/Holder/OpenSet.lean",
+   "fix": "Prove it directly with `add_le_add (le_mul_of_one_le_left hS h\u2081) (mul_le_mul_of_nonneg_right h\u2082 hH)` after `mul_add`, or extract a small lemma.",
+   "issue": "The `inclusionL` norm bound is closed by `nlinarith` with four hand-supplied hints (`hS`, `hH`, `h\u2081`, `h\u2082`), which hides that the bound is just `1\u00b7S + c\u00b7H \u2264 max 1 c \u00b7 (S + H)`.",
+   "line": 787
+  }
+ ],
+ "head_sha": "71aa8d72f1b70d7441ddb46f2827fd553fdeb461",
+ "merge_base_sha": "a5f657a8a599df1444fc31f45e80599e451c62ca",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 39043,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7227e7a231c1508aaf2a5c2c1468f8933a83b02f750aa7ff6b07a3ccd36e100c",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261112T152304Z-39043-proof-quality-6181d1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-12T15:23:04Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are readable and the definitional-equality steps are documented, but the three continuous linear maps repeat the same construction and the same derivative-bound argument instead of factoring them out, and one norm bound closes with an opaque `nlinarith` that relies on hand-picked hints.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Holder",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0b38dfdb9d48bbe7104c189e783af4214e4ad97727acd239c5dd16bc3c0e6585",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 8626
+  },
+  "cache_creation_input_tokens": 8626,
+  "cache_read_input_tokens": 84057,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7561
+    },
+    "cache_creation_input_tokens": 7561,
+    "cache_read_input_tokens": 42561,
+    "input_tokens": 2,
+    "output_tokens": 2203,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2697,
+  "output_tokens_details": {
+   "thinking_tokens": 843
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
