@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1271262,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 23.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 10427
+    },
+    "cache_creation_input_tokens": 10427,
+    "cache_read_input_tokens": 124036,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 671
+      },
+      "cache_creation_input_tokens": 671,
+      "cache_read_input_tokens": 47582,
+      "input_tokens": 2,
+      "output_tokens": 1334,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2508,
+    "output_tokens_details": {
+     "thinking_tokens": 1131
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d9fbe7bd6aedb5ed0ffb867836c3ed71aa7d28e5",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.127126,
+ "dedupe_key": "TauCetiProject/TauCeti|37009|c9bfcc1dcfef90342247e133e5f8042b6456eba0|generality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "c85232767ef243d8f05c1d1d88a2572468df56cfce6d1ae6adba005dd4a9ee3d",
+ "diff_sha256": "c85232767ef243d8f05c1d1d88a2572468df56cfce6d1ae6adba005dd4a9ee3d",
+ "duration_s": 23.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `mfderiv_mem_ball_of_apply_eq_self` finds only its definition and docstring. `mfderiv_smul_mem_ball_of_smul_eq_self` uses the `SMul K M` structure only to form the function `(k \u2022 \u00b7)`, so it is really a statement about one map.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Isometry/Tangent.lean",
+   "fix": "State one lemma for an arbitrary `f : M \u2192 M` with `f p = p` and `\u2200 u w, inner (mfderiv I I f p u) (mfderiv I I f p w) = inner u w`, concluding `mfderiv I I f p w \u2208 Metric.ball 0 r`. Derive the isometry version from it via `\u03a6.inner_mfderiv` (or drop it as unused), and derive the action version with `f := (k \u2022 \u00b7)`. Remove the duplicate private `norm_congr`/`inner_congr` helpers.",
+   "issue": "`RiemannianIsometry.mfderiv_mem_ball_of_apply_eq_self` re-proves the special case of `mfderiv_smul_mem_ball_of_smul_eq_self` (Action.lean:197) for an isometry, using a separate private `norm_congr`. Nothing in the PR uses it; FixedPoints.lean:188/213/239 use only the action version.",
+   "line": 126
+  },
+  {
+   "evidence": "The proof uses only `hkp : k \u2022 p = p` and the inner-product hypothesis on `mfderiv I I (k \u2022 \u00b7) p`; no group or action lemma appears.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Isometry/Action.lean",
+   "fix": "Restate it for a general map `f` as described in the previous finding, and keep the `k \u2022 \u00b7` form only as a one-line corollary if call sites need it.",
+   "issue": "`mfderiv_smul_mem_ball_of_smul_eq_self` is stated for `k \u2022 \u00b7` with `[SMul K M]`, but the proof never uses the action. This is under-generalization of the same fact flagged above.",
+   "line": 197
+  }
+ ],
+ "head_sha": "c9bfcc1dcfef90342247e133e5f8042b6456eba0",
+ "merge_base_sha": "d9fbe7bd6aedb5ed0ffb867836c3ed71aa7d28e5",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 37009,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6e894c941eb4113b46b3906656799f22cf359a1b635b6490167d44146ea33934",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261112T230301Z-37009-generality-74bc00",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-12T23:03:01Z",
+ "submitted_by": "kim-em",
+ "summary": "The ball-stability fact for a differential at a fixed point is proved twice for special cases (once for an isometry, once for a scalar action), each with its own private helper lemma. It should be one general lemma for an arbitrary map with the two versions derived from it. The remaining statements (arbitrary groups, `ContMDiffConstSMul` instead of joint smoothness, the linear `isSymplectic_invariants_of_inner` with the manifold statement derived from it) sit at the natural level.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "41bd1e4b444389f94b7c53c64b0e69b3c3d45f4c019d544efaccd1df2bf52ddb",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 10427
+  },
+  "cache_creation_input_tokens": 10427,
+  "cache_read_input_tokens": 124036,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 671
+    },
+    "cache_creation_input_tokens": 671,
+    "cache_read_input_tokens": 47582,
+    "input_tokens": 2,
+    "output_tokens": 1334,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2508,
+  "output_tokens_details": {
+   "thinking_tokens": 1131
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
