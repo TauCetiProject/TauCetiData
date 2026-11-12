@@ -1,0 +1,164 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1215132,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 37.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4778
+    },
+    "cache_creation_input_tokens": 4778,
+    "cache_read_input_tokens": 89156,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1305
+      },
+      "cache_creation_input_tokens": 1305,
+      "cache_read_input_tokens": 23867,
+      "input_tokens": 2,
+      "output_tokens": 1592,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3988,
+    "output_tokens_details": {
+     "thinking_tokens": 1912
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "941bb58ae04c2464c632a44d715f17b21b6bea5e",
+ "cli_dirty": true,
+ "cli_sha": "df23a6843eed9bca6cf4d1216e9851b62b868ff7",
+ "cost_usd": 0.121513,
+ "dedupe_key": "TauCetiProject/TauCeti|37096|55e98847494ea6d8dcd8857907cb0c09d4e3f9d0|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "948fc8866d6ac72b0a67dab9db8630755f060a3aba6cfb8aac29ec77f446b06e",
+ "diff_sha256": "948fc8866d6ac72b0a67dab9db8630755f060a3aba6cfb8aac29ec77f446b06e",
+ "duration_s": 37.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Data/Finsupp/Order.lean:277 `theorem tsub_apply ... (f - g) a = f a - g a := rfl`; `hasseDeriv_monomial` (TauCeti/Algebra/MvPolynomial/HasseDeriv/Basic.lean:94) produces `monomial (m - d)`.",
+   "file": "TauCeti/Analysis/Polynomial/HasseDerivBound.lean",
+   "fix": "Add `Finsupp.tsub_apply` to the opening `rw` list (or `simp only [Finsupp.tsub_apply]` before the calc) and write the calc in terms of `\u03bc s - d s` throughout.",
+   "issue": "The calc in `norm_eval_hasseDeriv_monomial_le` goes from `\u2016a s ^ ((\u03bc - d) s)\u2016` to `\u2016a s\u2016 ^ (\u03bc s - d s)`, and `norm_pow_le _ _` closes it only because the two exponents are definitionally equal through the Finsupp subtraction.",
+   "line": 195
+  },
+  {
+   "evidence": "Lines 152-155 and 165-169 (univariate) and 230-234 and 245-250 (multivariate) are the same derivation.",
+   "file": "TauCeti/Analysis/Polynomial/HasseDerivBound.lean",
+   "fix": "Add `MvPolynomial.norm_eval_hasseDeriv_monomial_one_le` (the `c = 1` case). Then add one entry lemma per namespace, e.g. `norm_jet_entry_le : \u2016M r c\u2016 \u2264 \u220f s, choose (\u03bc c s) (d r s) * A r s ^ (\u03bc c s - d r s)` (and the univariate analogue), and derive the `sup'` and sum-of-squares forms from it in one line each.",
+   "issue": "All four jet row lemmas repeat the same per-entry derivation (lines 145, 158, 221, 237): `rw [hM]`, apply the monomial bound, then `gcongr` with `hA`. The two multivariate ones also repeat `rw [norm_one, one_mul]` because there is no multivariate counterpart of `norm_hasseDeriv_X_pow_eval_le`.",
+   "line": 221
+  },
+  {
+   "evidence": "Grep hits at lines 48, 58 and 72 of the examples file.",
+   "file": "TauCeti/Examples/Analysis/Polynomial/HasseDerivBound.lean",
+   "fix": "Use `by decide` or `by ext; simp; omega`, or compute the sum with `Finset.sum_Icc_succ_top` / `simp [Finset.sum_Icc_...]`, so the proof does not depend on how `Icc` is implemented.",
+   "issue": "`show Icc 1 2 = {1, 2} by rfl` works only because `rfl` unfolds the `LocallyFiniteOrder \u2115` implementation. The same pattern appears at lines 58 and 72.",
+   "line": 48
+  }
+ ],
+ "head_sha": "55e98847494ea6d8dcd8857907cb0c09d4e3f9d0",
+ "merge_base_sha": "941bb58ae04c2464c632a44d715f17b21b6bea5e",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 37096,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8f5ad8019f1438d6092938667329b0e07add9ad147f4ec15a83cc50929022f4a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "df23a6843eed9bca6cf4d1216e9851b62b868ff7",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261112T001426Z-37096-proof-quality-80d87d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-12T00:14:26Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are short and readable, but `MvPolynomial.norm_eval_hasseDeriv_monomial_le` only works because `(\u03bc - d) s` and `\u03bc s - d s` are definitionally equal for Finsupp, which nothing documents. The per-entry jet bound is also re-derived inline in all four row lemmas instead of being factored out once per namespace.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/MvPolynomial/HasseDeriv",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "51f2a084b4b6d87a3d0b2744534cae8c00fa8a32956644fbe7edc7ec85edbba6",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 4778
+  },
+  "cache_creation_input_tokens": 4778,
+  "cache_read_input_tokens": 89156,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1305
+    },
+    "cache_creation_input_tokens": 1305,
+    "cache_read_input_tokens": 23867,
+    "input_tokens": 2,
+    "output_tokens": 1592,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3988,
+  "output_tokens_details": {
+   "thinking_tokens": 1912
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
