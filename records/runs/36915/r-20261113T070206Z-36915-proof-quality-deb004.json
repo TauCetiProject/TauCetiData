@@ -1,0 +1,149 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.13818960000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 34.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7258
+    },
+    "cache_creation_input_tokens": 7258,
+    "cache_read_input_tokens": 115318,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 6068
+      },
+      "cache_creation_input_tokens": 6068,
+      "cache_read_input_tokens": 58254,
+      "input_tokens": 2,
+      "output_tokens": 2415,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3941,
+    "output_tokens_details": {
+     "thinking_tokens": 1744
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "941bb58ae04c2464c632a44d715f17b21b6bea5e",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.13819,
+ "dedupe_key": "TauCetiProject/TauCeti|36915|a7dd3295c064af17ac2e69c65e5dd0f44c4cc9d8|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "904abd0496fada99d5269eb778ae5e6fc23459ed73fa7ce997f0d7c81c49a64e",
+ "diff_sha256": "904abd0496fada99d5269eb778ae5e6fc23459ed73fa7ce997f0d7c81c49a64e",
+ "duration_s": 34.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `restrict_iff.2 .*nnholderNorm_le` hits On.lean:758 and On.lean:859 with parallel `rwa [NNReal.coe_\u2026]` lines. The three `iteratedFDeriv_*\u2097` proofs are the same rewrite chain.",
+   "file": "TauCeti/Analysis/Holder/Iterated/On.lean",
+   "fix": "Factor out one private constructor taking `f : CkHolderOnSpace k' \u03b1' \u03a9 F`, an order bound `k \u2264 k'` and a `HolderOnWith C \u03b1 (iteratedFDerivWithin \u211d k (extend \u21d1f) \u03a9) \u03a9` hypothesis. Give it a lemma for its `iteratedFDeriv` and a lemma `nnHolderNorm (\u2026) \u2264 C`, and derive the three maps and their norm bounds from these.",
+   "issue": "`restrict\u2097`, `inclusion\u2097` and `succInclusion\u2097` each build `ofContDiffOn (extend \u21d1f) \u2026` with the same sup-norm bound argument. Each has its own `iteratedFDeriv_*\u2097` lemma (`rw [_, LinearMap.coe_mk, AddHom.coe_mk, iteratedFDeriv_ofContDiffOn, iteratedFDerivWithin_extend \u2026]`). `inclusionL` and `succInclusionL` also repeat the `HolderWith.restrict_iff.2 (\u2026).nnholderNorm_le` plus `NNReal` coercion `rwa` chain (lines 758, 859).",
+   "line": 0
+  },
+  {
+   "evidence": "Diff lines: `rw [Subsingleton.elim m 0]\\n  rfl`; `rw [iteratedFDerivHolder_apply, iteratedFDeriv_ofContDiffOn]\\n    rfl`; `iteratedFDerivWithin_extend f le_rfl (i.is_le.trans k.le_succ) x.2]\\n  rfl`; `rw [\u2190 norm_toJet, HolderJet.norm_eq]\\n  rfl`.",
+   "file": "TauCeti/Analysis/Holder/Iterated/On.lean",
+   "fix": "Replace each with explicit steps: `Fin.val_last`, `Fin.coe_castSucc`/`Fin.ext`, `Set.domRestrict_apply`, `toFun_eq_coe`/`ContinuousMultilinearMap.curry0_apply`, and `simp only [iteratedFDeriv, iteratedFDerivHolder]` in `norm_eq`. Where defeq is truly needed, add a comment saying why.",
+   "issue": "Several proofs end in `rfl` and rely on undocumented definitional equality. `iteratedFDeriv_zero_apply` (`rw [Subsingleton.elim m 0]; rfl`) unfolds `toFun`/`curry0`. `coe_iteratedFDerivHolder_ofContDiffOn` (`\u2026; rfl`) relies on `\u2191(Fin.last k) \u2261 k`. `iteratedFDeriv_succInclusion\u2097` (`\u2026; rfl`) relies on `\u27e8\u2191i, _\u27e9 \u2261 i.castSucc`. `norm_eq` (also in Basic.lean) closes by unfolding `iteratedFDeriv`/`iteratedFDerivHolder` to `fieldL`/`ofLp.2`.",
+   "line": 313
+  },
+  {
+   "evidence": "`hext \u2026 := Subtype.val_injective.extend_apply g 0 \u27e8y, hy\u27e9` and `hext' \u2026 := Subtype.val_injective.extend_apply g e \u27e8y, hy\u27e9`; On.lean `extend_coe \u2026 := Subtype.val_injective.extend_apply g 0 x`.",
+   "file": "TauCeti/Analysis/Calculus/UniformLimitsDeriv.lean",
+   "fix": "State one general `have` (or a small public lemma `Function.extend_subtype_val_of_mem`) with the fill value as a parameter, and use it in both files.",
+   "issue": "`hext` and `hext'` are the same fact for two fill values (`0` and `e`). On.lean then proves it a third time as the private `extend_coe`/`extend_of_mem`. The reusable fact that the extension along `Subtype.val` agrees on `s` stays private and duplicated.",
+   "line": 84
+  }
+ ],
+ "head_sha": "a7dd3295c064af17ac2e69c65e5dd0f44c4cc9d8",
+ "merge_base_sha": "941bb58ae04c2464c632a44d715f17b21b6bea5e",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 36915,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a6393f92d2bf492f8671551628fca63e2e4f859ca64462656447216907b495ba",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T070206Z-36915-proof-quality-deb004",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T07:02:06Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are mostly robust, but the three restricted/inclusion constructions repeat the same build-and-bound reasoning, and several proofs close with undocumented `rfl` across Fin coercions and wrapper unfoldings.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Holder",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0a8b82b3f06ca8bee74c1778b81836da7810c7808f3edcf67fce945bdaa7ea14",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 7258
+  },
+  "cache_creation_input_tokens": 7258,
+  "cache_read_input_tokens": 115318,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6068
+    },
+    "cache_creation_input_tokens": 6068,
+    "cache_read_input_tokens": 58254,
+    "input_tokens": 2,
+    "output_tokens": 2415,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3941,
+  "output_tokens_details": {
+   "thinking_tokens": 1744
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
