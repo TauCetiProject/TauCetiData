@@ -1,0 +1,159 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1501342,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 12912
+    },
+    "cache_creation_input_tokens": 12912,
+    "cache_read_input_tokens": 103311,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5149
+      },
+      "cache_creation_input_tokens": 5149,
+      "cache_read_input_tokens": 39064,
+      "input_tokens": 4,
+      "output_tokens": 2059,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3244,
+    "output_tokens_details": {
+     "thinking_tokens": 1397
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "4d91513e4d30746eb1fa96658c18e051c772e55e",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.150134,
+ "dedupe_key": "TauCetiProject/TauCeti|38554|88831e686f53613c61e64875b97523b41e1d4c1d|api-design|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "67fd7f20709928f7385ee16619340cedd8bba026346473782f8254d4264bbdf0",
+ "diff_sha256": "67fd7f20709928f7385ee16619340cedd8bba026346473782f8254d4264bbdf0",
+ "duration_s": 29.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Its hypotheses `hsmul`/`hbound` and conclusion mention only `NormedAddCommGroup`/`NormedSpace \u211d` data; nothing in the proof uses `M`, `N`, `riemannianExp` or `riemannianLog`.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Isometry/Smooth.lean",
+   "fix": "Move it into the `TauCeti` namespace in `TauCeti/Analysis/Normed/Affine/Isometry/StrictConvex.lean` (or a sibling normed-space file) and make it public.",
+   "issue": "`dist_eq_of_forall_norm_sub_bounds` is general normed-space infrastructure (statement and proof involve only `V`, `W`, norms and `Icc`/`ball`) but is `private` inside a Riemannian file.",
+   "line": 61
+  },
+  {
+   "evidence": "The statement uses only Mathlib types; it is the local analogue of the scaling step behind `Isometry.affineIsometryOfStrictConvexSpace`, not a step specific to this file's proof.",
+   "file": "TauCeti/Analysis/Normed/Affine/Isometry/StrictConvex.lean",
+   "fix": "Make it public (`TauCeti.apply_smul_of_forall_dist_eq`).",
+   "issue": "`apply_smul_of_forall_dist_eq` (a distance-preserving map fixing 0 on a ball scales along rays in a strictly convex target) is a standalone reusable result in its canonical home, but is `private`.",
+   "line": 42
+  },
+  {
+   "evidence": "`Isometry/Basic.lean:118` has `protected def symm`; `Isometry/Distance.lean:86` has `@[simp] theorem toIsometryEquiv_symm`.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Isometry/Smooth.lean",
+   "fix": "Add `@[simp] theorem IsometryEquiv.symm_toRiemannianIsometry (e : M \u2243\u1d62 N) : (e.toRiemannianIsometry I J).symm = e.symm.toRiemannianIsometry J I` (proved by `ext; simp`).",
+   "issue": "The new constructor `IsometryEquiv.toRiemannianIsometry` has no lemma for its interaction with `symm`, although `RiemannianIsometry.symm` exists and `Distance.lean` already develops the parallel `toIsometryEquiv_symm`.",
+   "line": 300
+  }
+ ],
+ "head_sha": "88831e686f53613c61e64875b97523b41e1d4c1d",
+ "merge_base_sha": "4d91513e4d30746eb1fa96658c18e051c772e55e",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 38554,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "80abde5cac135a01248a87cc344f28b8423ecb9837995ec43910dee3dca34ed8",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T081430Z-38554-api-design-f706cf",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T08:14:30Z",
+ "submitted_by": "kim-em",
+ "summary": "The main results are public with the right simp round-trips, but a general normed-space lemma is hidden as `private` in a manifold file, and `toRiemannianIsometry` has no lemma for its interaction with `symm`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Distance.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Distance.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c170b25cffd65a0fb1f3e611e716501e16eba3217874bbd623c9c6e58c726261",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 12912
+  },
+  "cache_creation_input_tokens": 12912,
+  "cache_read_input_tokens": 103311,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5149
+    },
+    "cache_creation_input_tokens": 5149,
+    "cache_read_input_tokens": 39064,
+    "input_tokens": 4,
+    "output_tokens": 2059,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3244,
+  "output_tokens_details": {
+   "thinking_tokens": 1397
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
