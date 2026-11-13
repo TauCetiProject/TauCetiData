@@ -1,0 +1,154 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1242112,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 32.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7729
+    },
+    "cache_creation_input_tokens": 7729,
+    "cache_read_input_tokens": 75751,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 6662
+      },
+      "cache_creation_input_tokens": 6662,
+      "cache_read_input_tokens": 38409,
+      "input_tokens": 2,
+      "output_tokens": 2205,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3520,
+    "output_tokens_details": {
+     "thinking_tokens": 1611
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "83769e442d55cda9d85b3927a93b286831c595ff",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.124211,
+ "dedupe_key": "TauCetiProject/TauCeti|36593|f04a02d3dd222aa17e1bb6d47826f03ada433ef4|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "a471a14934f432b0d7ba95ceedf8014f0dbd11af0a96b01bcb74abb5f692ab71",
+ "diff_sha256": "a471a14934f432b0d7ba95ceedf8014f0dbd11af0a96b01bcb74abb5f692ab71",
+ "duration_s": 32.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Both proofs contain `rw [\u2190 sum_homogeneousComponent F, map_sum, map_sum, ... DirectSum.sum_apply, Finset.sum_eq_single \u03bd]` followed by the same three side goals using `mvPolynomialHom_map_of_isHomogeneous ha (homogeneousComponent_isHomogeneous _ _), mk_apply, DirectSum.of_eq_of_ne _ _ _ (Ne.symm h\u03bc)`.",
+   "file": "TauCeti/RingTheory/Regular/AssociatedGraded.lean",
+   "fix": "Derive `hcomp` from the existing lemma: apply it to `F.map mk`, use `hP` to get `of \u03bd 0 = 0`, then rewrite with the commutation lemma and `mvPolynomialHom_map_of_isHomogeneous`/`gradedPiece_mk_eq_zero_iff`.",
+   "issue": "`hcomp` in `mvPolynomialHom_injective` re-derives the 20-line `sum_homogeneousComponent`/`Finset.sum_eq_single`/`DirectSum.of_eq_of_ne` extraction already carried out in `Ideal.AssociatedGraded.mvPolynomialHom_homogeneousComponent`.",
+   "line": 182
+  },
+  {
+   "evidence": "grep of ./mathlib/Mathlib/RingTheory/MvPolynomial for `homogeneousComponent_map|map_homogeneousComponent` returns no matches; the only Tau Ceti hit is this local `have` (AssociatedGraded.lean:614).",
+   "file": "TauCeti/RingTheory/Ideal/AssociatedGraded.lean",
+   "fix": "State it as a public lemma (e.g. `MvPolynomial.homogeneousComponent_map` for any ring hom) in `TauCeti/RingTheory/MvPolynomial/Homogeneous.lean` and use it here and in the refactored `mvPolynomialHom_injective`.",
+   "issue": "The local `hmap : homogeneousComponent \u03bc (F.map f) = (homogeneousComponent \u03bc F).map f` is a general MvPolynomial fact. No lemma for it exists in Mathlib or Tau Ceti, so it should not be hidden inside this proof.",
+   "line": 614
+  },
+  {
+   "evidence": "In the negative branch the proof rewrites `homogeneousComponent_eq_zero \u03bd F (by omega)` and then proves every summand vanishes, which is exactly the third obligation of `sum_eq_single \u03bd` in the positive branch.",
+   "file": "TauCeti/RingTheory/Ideal/AssociatedGraded.lean",
+   "fix": "Drop the case split and discharge the `\u03bd \u2209 Finset.range _` obligation of `Finset.sum_eq_single` with `homogeneousComponent_eq_zero` + `map_zero`.",
+   "issue": "The `by_cases h\u03bd : \u03bd \u2264 F.totalDegree` split, which roughly doubles the proof (lines 620-645), is unneeded: when `\u03bd` is out of range the summand is already zero. The same split appears in `mvPolynomialHom_injective` (Regular/AssociatedGraded.lean:184).",
+   "line": 620
+  }
+ ],
+ "head_sha": "f04a02d3dd222aa17e1bb6d47826f03ada433ef4",
+ "merge_base_sha": "83769e442d55cda9d85b3927a93b286831c595ff",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 36593,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1a5979a6b973802194537d261d96de995b38642db9f8a6e10e39ed741f51c108",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T042236Z-36593-proof-quality-74b674",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T04:22:36Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are robust and commented where long, but the degree-\u03bd extraction argument is duplicated across two files and a reusable component/map commutation fact is buried as a local `have`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/MvPolynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fac4d824c208a5ffafed704b02ef9891a3b095e8714932213d20e0241eed52f7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 7729
+  },
+  "cache_creation_input_tokens": 7729,
+  "cache_read_input_tokens": 75751,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6662
+    },
+    "cache_creation_input_tokens": 6662,
+    "cache_read_input_tokens": 38409,
+    "input_tokens": 2,
+    "output_tokens": 2205,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3520,
+  "output_tokens_details": {
+   "thinking_tokens": 1611
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
