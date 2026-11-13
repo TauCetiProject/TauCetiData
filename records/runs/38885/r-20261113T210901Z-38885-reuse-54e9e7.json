@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.450265,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 49.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 62452
+    },
+    "cache_creation_input_tokens": 62452,
+    "cache_read_input_tokens": 262445,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 3180
+      },
+      "cache_creation_input_tokens": 3180,
+      "cache_read_input_tokens": 62495,
+      "input_tokens": 2,
+      "output_tokens": 1484,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4273,
+    "output_tokens_details": {
+     "thinking_tokens": 1615
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "30f41378f0cb1d569f51d8a4d0cb74aea8a80e44",
+ "cli_dirty": false,
+ "cli_sha": "a1ad48d79377dd8ae71cb5be749b477bf31b62e7",
+ "cost_usd": 0.450265,
+ "dedupe_key": "TauCetiProject/TauCeti|38885|8f587e319f4fedd1bf32b97a1b2ba4e2e4163b2a|reuse|claude-opus-5-5|7e5d77b079cd17d0|production|1",
+ "diff_blob": "200a4d270d1df4c32456b714a728a43b83a2e46fbcd3794bd046692d5149cca3",
+ "diff_sha256": "200a4d270d1df4c32456b714a728a43b83a2e46fbcd3794bd046692d5149cca3",
+ "duration_s": 49.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Peetre.lean:182 states the same conclusion from `\u2016x\u2016 = c * \u2016y\u2016`, which implies both hypotheses of the new lemma, since `\u2016y\u2016 \u2264 c\u2016y\u2016 = \u2016x\u2016 \u2264 c\u2016x\u2016` when `c \u2265 1`. The only use of the old lemma is at Peetre.lean:240.",
+   "file": "TauCeti/Analysis/SpecialFunctions/JapaneseBracket/Peetre.lean",
+   "fix": "Make the old lemma a corollary of the new one: `one_add_norm_sq_rpow_le_of_norm_le_mul hc s h.le (by rw [h]; nlinarith [norm_nonneg y])`. Alternatively, delete it and rewrite its single use (`one_add_norm_smul_sq_rpow_le`, line 240) to call the new lemma.",
+   "issue": "`one_add_norm_sq_rpow_le_of_norm_le_mul` generalizes the existing `one_add_norm_sq_rpow_le_of_norm_eq_mul` (line 182), yet the old lemma keeps its own near-clone proof (the same two-case split on the sign of `s`, the same `Real.rpow_le_rpow` / `rpow_le_rpow_of_nonpos` steps). The result is two parallel proofs of one estimate.",
+   "line": 208
+  },
+  {
+   "evidence": "HomogeneousSymbol.lean:431 `def compPosition ... coefficient p := a.coefficient (g p.1, p.2)`. Pullback.lean:439 `compPosition_eq_pullback`. Each `*_pullback` lemma at Pullback.lean:445-476 mirrors a `*_compPosition` lemma at HomogeneousSymbol.lean:449-476, and both sets are proved by `rfl`.",
+   "file": "TauCeti/Analysis/Pseudodifferential/Symbol/Pullback.lean",
+   "fix": "Keep one construction. Either define `compPosition a g hg := a.pullback g (fun _ \u21a6 .id \u211d E) hg contDiff_const _` and derive its lemmas from the `pullback` ones, or replace `compPosition` and its uses with `pullback` at `L = id`, removing the duplicate lemma family.",
+   "issue": "`HomogeneousSymbol.pullback g L` contains the existing `HomogeneousSymbol.compPosition g` as its `L = id` case (the PR's own `compPosition_eq_pullback`). The PR nevertheless adds a second simp API (`zero_/add_/neg_/sub_/smul_/comp_pullback`) that restates `zero_/add_/neg_/sub_/smul_/comp_compPosition` (HomogeneousSymbol.lean:449-476) one by one.",
+   "line": 420
+  }
+ ],
+ "head_sha": "8f587e319f4fedd1bf32b97a1b2ba4e2e4163b2a",
+ "merge_base_sha": "30f41378f0cb1d569f51d8a4d0cb74aea8a80e44",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 38885,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "64dcb6e6d594dbb736294ac56c39f30f6146baf02da1dc2d55bd199dd0faee0f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "a1ad48d79377dd8ae71cb5be749b477bf31b62e7",
+ "rubrics_version": "7e5d77b079cd17d0",
+ "run_id": "r-20261113T210901Z-38885-reuse-54e9e7",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T21:09:01Z",
+ "submitted_by": "kim-em",
+ "summary": "The PR's symbol-level pullback is new, but it adds two parallel APIs next to existing ones: a Japanese-bracket comparison lemma that re-proves an existing special case with the same proof, and a homogeneous-symbol pullback whose identity-family case is the existing `compPosition` API with its own simp set.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/JapaneseBracket/Peetre.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential/Symbol/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Pseudodifferential/HomogeneousSymbol.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 8,
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4d154fe2916dfbffad78c898f41a356d78359f5121cd219596dca48d187590e4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 62452
+  },
+  "cache_creation_input_tokens": 62452,
+  "cache_read_input_tokens": 262445,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3180
+    },
+    "cache_creation_input_tokens": 3180,
+    "cache_read_input_tokens": 62495,
+    "input_tokens": 2,
+    "output_tokens": 1484,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4273,
+  "output_tokens_details": {
+   "thinking_tokens": 1615
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
