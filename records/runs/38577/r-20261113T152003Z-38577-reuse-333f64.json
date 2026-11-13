@@ -1,0 +1,202 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.5659288,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 63.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 68843
+    },
+    "cache_creation_input_tokens": 68843,
+    "cache_read_input_tokens": 414909,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 18,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2948
+      },
+      "cache_creation_input_tokens": 2948,
+      "cache_read_input_tokens": 70827,
+      "input_tokens": 2,
+      "output_tokens": 2679,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6933,
+    "output_tokens_details": {
+     "thinking_tokens": 2903
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3780371ca1bebf9f1c2bb3d753e4bb56c9526023",
+ "cli_dirty": false,
+ "cli_sha": "439670a91abba51f3d7186e2ce6fb05e46ab3285",
+ "cost_usd": 0.565929,
+ "dedupe_key": "TauCetiProject/TauCeti|38577|ae766979bc39df4b75c4a3ea41da34b22613257b|reuse|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "66ae73c6a1d03566c638e493b475e442a89130c69dd769a8531445dae55c3773",
+ "diff_sha256": "66ae73c6a1d03566c638e493b475e442a89130c69dd769a8531445dae55c3773",
+ "duration_s": 63.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "PrincipalSymbol.lean:104-142 against Complex.lean:117-158: identical proof terms (`exists_rightInverse_of_surjective`, `LinearMap.range_eq_top.2`, `.choose`/`.choose_spec`).",
+   "file": "TauCeti/Geometry/Manifold/DifferentialOperator/Complex.lean",
+   "fix": "Make the lift and `evalOneAt` generic in one place, either over `\ud835\udd5c` with `[RCLike \ud835\udd5c]` for `C^\u221e\u27eeI, M; \ud835\udcd8(\u211d, \ud835\udd5c), \ud835\udd5c\u27ef` or algebraically, given the ideal `J` and a cotangent linear equivalence `J.Cotangent \u2243\u2097 V`, next to `cotangentSymbol` in TauCeti/RingTheory/Derivation/PrincipalSymbol.lean. Then instantiate it for both the real and the complex case.",
+   "issue": "`complexIdealDifferential`, `complexIdealDifferential_apply`, `exists_complexIdealDifferential_comp_eq_id`, `complexCovectorLift`, `complexCovectorLift_apply_self`, `mvfderiv_complexCovectorLift`, `evalOneAt` copy the private `vanishingIdealDifferential`, `vanishingIdealDifferential_apply`, `exists_vanishingIdealDifferential_comp_eq_id`, `covectorLift`, `covectorLift_apply_self`, `mvfderiv_covectorLift`, `evalOneAt` in PrincipalSymbol.lean:104-142, with only \u211d/`smoothVanishingIdeal`/`smoothCotangentEquiv` changed to \u2102/`complexSmoothVanishingIdeal`/`complexSmoothCotangentEquiv`.",
+   "line": 117
+  },
+  {
+   "evidence": "PrincipalSymbol.lean:154-156 `((evalOneAt x).compMultilinearMap ((commutatorSymbol \u2026) D)).compLinearMap fun _ \u21a6 covectorLift hx` against Complex.lean:171-174 (same term). The `hc/hd/hg/commutatorSymbol_apply_sub_mem_smul_top` proof skeleton at PrincipalSymbol.lean:167-182 matches Complex.lean:186-206.",
+   "file": "TauCeti/Geometry/Manifold/DifferentialOperator/Complex.lean",
+   "fix": "State the commutator symbol and these four lemmas once for the shared construction from the previous finding. That includes the `_eq_zero_of_mem_differentialOperators` lemma, so the `forall` iff uses it as in PrincipalSymbol.lean:240. Derive both the real and complex versions from it.",
+   "issue": "`complexSmoothCommutatorSymbol`, `complexSmoothCommutatorSymbol_mvfderiv`, `_comp_perm`, `mk_algebraMap_complexSmoothCommutatorSymbol` and `forall_complexSmoothCommutatorSymbol_eq_zero_iff` repeat `smoothCommutatorSymbol`, `smoothCommutatorSymbol_mvfderiv`, `smoothCommutatorSymbol_comp_perm`, `mk_algebraMap_smoothCommutatorSymbol` and `forall_smoothCommutatorSymbol_eq_zero_iff` (PrincipalSymbol.lean:151-241) step for step. The reverse direction of the `forall` lemma also reproves `smoothCommutatorSymbol_eq_zero_of_mem_differentialOperators` inline, because no complex counterpart exists.",
+   "line": 165
+  },
+  {
+   "evidence": "PrincipalSymbol.lean:297-305 `map_smul_univ \u2026 Finset.prod_const \u2026` matches Complex.lean `complexSmoothPrincipalSymbol_smul_covector`, and PrincipalSymbol.lean:321-341 matches `complexSmoothPrincipalSymbol_comp`.",
+   "file": "TauCeti/Geometry/Manifold/DifferentialOperator/Complex.lean",
+   "fix": "Define the principal symbol, `(m! : \ud835\udd5c)\u207b\u00b9 * \u03c3(\u03be, \u2026, \u03be)`, once on the shared commutator symbol and prove homogeneity and multiplicativity there. Then restate the real and complex versions only if they have consumers.",
+   "issue": "`complexSmoothPrincipalSymbol`, `_def`, `_mvfderiv`, `_zero`, `_add`, `_smul`, `_smul_covector` and `_comp` duplicate `smoothPrincipalSymbol` and the matching lemmas at PrincipalSymbol.lean:251-341, including the `commutatorSymbol_comp_const`/`Dual.apply_one_mul_eq`/`Nat.cast_add_choose`/`field_simp` proof of `_comp`.",
+   "line": 290
+  }
+ ],
+ "head_sha": "ae766979bc39df4b75c4a3ea41da34b22613257b",
+ "merge_base_sha": "3780371ca1bebf9f1c2bb3d753e4bb56c9526023",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 38577,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d7fd3511a2f719d5ad928f17feb41f686d82ffd17888f370f5d4d119fe6dc766",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "439670a91abba51f3d7186e2ce6fb05e46ab3285",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T152003Z-38577-reuse-333f64",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T15:20:03Z",
+ "submitted_by": "kim-em",
+ "summary": "Lines 115\u2013390 of the new Complex.lean are a line-for-line \u211d\u2192\u2102 clone of the real `TauCeti/Geometry/Manifold/DifferentialOperator/PrincipalSymbol.lean` (covector lift, commutator symbol, principal symbol and their API), which should be one shared construction instantiated twice. The order-one splitting and the new ComplexDerivation lemma reuse existing API (`differentialOperatorsOneEquiv`, `complexDerivationEquivComplexifiedVectorField_symm_apply_apply`) correctly.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/DifferentialOperator/PrincipalSymbol.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Algebra/VanishingIdeal/Complex.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Derivation/PrincipalSymbol.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/DifferentialOperator/FirstOrder.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Derivation/FirstOrder.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/DifferentialOperator/Complex.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Derivation/DifferentialOperator.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorField/ComplexDerivation.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 12,
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "809a39f5615302617932c79a007199c5834db86dab4ecd379ec4dbe2f7798afa",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 68843
+  },
+  "cache_creation_input_tokens": 68843,
+  "cache_read_input_tokens": 414909,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 18,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2948
+    },
+    "cache_creation_input_tokens": 2948,
+    "cache_read_input_tokens": 70827,
+    "input_tokens": 2,
+    "output_tokens": 2679,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6933,
+  "output_tokens_details": {
+   "thinking_tokens": 2903
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
