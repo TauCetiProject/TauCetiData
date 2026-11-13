@@ -1,0 +1,211 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.9045768,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 59.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 115086
+    },
+    "cache_creation_input_tokens": 115086,
+    "cache_read_input_tokens": 1054754,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 24,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1495
+      },
+      "cache_creation_input_tokens": 1495,
+      "cache_read_input_tokens": 118525,
+      "input_tokens": 2,
+      "output_tokens": 1809,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5905,
+    "output_tokens_details": {
+     "thinking_tokens": 2052
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3780371ca1bebf9f1c2bb3d753e4bb56c9526023",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.904577,
+ "dedupe_key": "TauCetiProject/TauCeti|39197|343b5ba857c2947ba159381597d8354df08efeef|api-design|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "0a413ef6ae08b4fe8e24cf0888d25bada0bd7d83f35956f9092d27d898bb3014",
+ "diff_prompt_sha256": "15e3c04ddc560c20e2e8bca6a1988b590b20fb0aee0847cf3d0b50c311b30322",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "0a413ef6ae08b4fe8e24cf0888d25bada0bd7d83f35956f9092d27d898bb3014",
+ "duration_s": 59.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Analysis/Normed/Field/WithAbs.lean:366-378 defines `algebraOfLiesOver := (map v w).toAlgebra` and its `IsScalarTower` and `ContinuousSMul` instances. mathlib/.../NumberField/Completion/LiesOverInstances.lean:18 marks the equivalent scoped instances `deprecated_module`.",
+   "file": "TauCeti/NumberTheory/NumberField/InfinitePlace/Completion/Extension.lean",
+   "fix": "Use `letI := AbsoluteValue.Completion.algebraOfLiesOver v.1 w.1` at use sites, as Mathlib now does. If a scoped instance is kept, define it as `AbsoluteValue.Completion.algebraOfLiesOver v.1 w.1` and delete `instIsScalarTower` and `instContinuousSMul` so Mathlib's instances apply.",
+   "issue": "`TauCeti.InfinitePlace.LiesOver.instAlgebra` re-implements the body of Mathlib's `AbsoluteValue.Completion.algebraOfLiesOver` (`(map v.1 w.1).toAlgebra`). `instIsScalarTower` and `instContinuousSMul` re-prove instances Mathlib already provides for that algebra. Together they rebuild, under a TauCeti name, the surface of Mathlib's `NumberField.LiesOver` scoped instances, which Mathlib has deprecated.",
+   "line": 56
+  },
+  {
+   "evidence": "The proof is `(AbsoluteValue.Completion.isometry_map v.1 w.1).norm_map_of_map_zero (map_zero _) x` and uses nothing specific to number fields. `completionMap` no longer exists after the bump.",
+   "file": "TauCeti/NumberTheory/NumberField/InfinitePlace/Completion/Extension.lean",
+   "fix": "Restate it as public `AbsoluteValue.Completion.norm_map` for arbitrary `v w` with `[w.LiesOver v]`, next to `isometry_map`, and rename the two `*_completionMap` lemmas to `*_map`.",
+   "issue": "`NumberField.InfinitePlace.Completion.norm_completionMap` now states `\u2016AbsoluteValue.Completion.map v.1 w.1 x\u2016 = \u2016x\u2016`, a general fact about absolute-value completions. It sits in the number-field namespace and is named after the removed `completionMap`. The same obsolete name stays in `completionNormalizedAbsValue_completionMap` and `prod_completionNormalizedAbsValue_completionMap`.",
+   "line": 90
+  },
+  {
+   "evidence": "grep `absoluteArtinMap_eq_of_mk_eq_fieldArtinMap` finds the same layer-restriction argument at CharacterFormula.lean:192 and Local/ArtinMap.lean:152.",
+   "file": "TauCeti/NumberTheory/ClassFieldTheory/Brauer/Archimedean/ArtinMap.lean",
+   "fix": "Move it, public, to Formation/FieldArtinMap.lean next to `absoluteArtinMap_eq_of_mk_eq_fieldArtinMap`, and use it at those other sites.",
+   "issue": "`private theorem artinMap_layer_of_mk_eq_fieldArtinMap` holds for an arbitrary `cf : ClassFormation (unitsFormation F)` and has nothing archimedean about it. Its `hmem`/`hsymm`/`abelianizationRestrict_mk` argument is written out again in Brauer/CharacterFormula.lean:183-192 and Local/ArtinMap.lean:157ff.",
+   "line": 120
+  }
+ ],
+ "head_sha": "343b5ba857c2947ba159381597d8354df08efeef",
+ "merge_base_sha": "3780371ca1bebf9f1c2bb3d753e4bb56c9526023",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 39197,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ca632882f37510c33bc014ee9df10ba0ac3e6487125248fe976c3a722afc5b01",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T032505Z-39197-api-design-db3346",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T03:25:05Z",
+ "submitted_by": "kim-em",
+ "summary": "The bump adds scoped instances in TauCeti that re-create Mathlib's deprecated `NumberField.LiesOver` instances by duplicating `algebraOfLiesOver` and its instances, keeps a general completion-norm lemma under an obsolete name in the wrong namespace, and hides a general class-formation layer lemma as `private` while its proof is repeated elsewhere.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Read"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Normed/Field/WithAbs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Normed/Field/WithAbs.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/ClassFieldTheory/Local/ArtinMap.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/ClassFieldTheory/Brauer/CharacterFormula.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 12,
+  "total_calls": 13,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e2bfcc7ff3af61679d998613f3b1ad07ab064c07e7d52edef49ea73f1be54eb5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 115086
+  },
+  "cache_creation_input_tokens": 115086,
+  "cache_read_input_tokens": 1054754,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 24,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1495
+    },
+    "cache_creation_input_tokens": 1495,
+    "cache_read_input_tokens": 118525,
+    "input_tokens": 2,
+    "output_tokens": 1809,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5905,
+  "output_tokens_details": {
+   "thinking_tokens": 2052
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
