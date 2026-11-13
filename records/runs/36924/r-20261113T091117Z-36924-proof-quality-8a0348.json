@@ -1,0 +1,142 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.0891332,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6001
+    },
+    "cache_creation_input_tokens": 6001,
+    "cache_read_input_tokens": 49361,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 4812
+      },
+      "cache_creation_input_tokens": 4812,
+      "cache_read_input_tokens": 25275,
+      "input_tokens": 2,
+      "output_tokens": 1835,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2462,
+    "output_tokens_details": {
+     "thinking_tokens": 1005
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3602eb5f808b6a2cf7c25cf639ff8333c96f5fb9",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.089133,
+ "dedupe_key": "TauCetiProject/TauCeti|36924|19c511cc605a0bada61ee17f00e99cc937a51c5a|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "8eef3f34e97685121a803df0d775392ec9c680675dd9feb61413e5eba9811bd6",
+ "diff_sha256": "8eef3f34e97685121a803df0d775392ec9c680675dd9feb61413e5eba9811bd6",
+ "duration_s": 25.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Proof spans the diff hunk from `set h` to the final `linarith`. Only the three section comments structure it, and the potential block is about a third of the lines.",
+   "file": "TauCeti/Analysis/PDE/Vortex/Reduced/Functional.lean",
+   "fix": "Factor out a lemma such as `integrable_potential_midpoint` / `two_mul_integral_potential_midpoint_le` (hypotheses `hu hv`). The main theorem then just combines it with the linear term and the parallelogram step. The inline `hconv` can be dropped by using `ConvexOn.2` on `Real.convexOn_exp_two_mul_sub_one_sub_two_mul` with `1/2` weights inside that lemma.",
+   "issue": "`sobolevReducedFunctional_midpoint_add_add_le` is about 70 lines. The `hconv`/`hpot`/`hmid`/`hpot'` block proves a standalone fact: if the potentials of `u` and `v` are integrable, the potential of `midpoint \u211d u v` is integrable and twice its integral is at most the sum of theirs. That fact is buried inside the proof.",
+   "line": 578
+  },
+  {
+   "evidence": "Basic.lean:395 `theorem W1p.valueL_apply ... := (rfl)`. Basic.lean:463 `theorem W1p.value_sub_ae` already gives the a.e. identity needed.",
+   "file": "TauCeti/Analysis/PDE/Vortex/Minimizer.lean",
+   "fix": "Show `W1p.value v = W1p.value u` via `Lp.ext` and `filter_upwards [W1p.value_sub_ae v u, hc, W1p.value v |> Lp.coeFn ...]`, or use `sub_eq_zero.mp` plus `map_sub W1p.valueL v u` once. Either way, use the existing `W1p.value_sub_ae` (Basic.lean:463) instead of rewriting through the `rfl` lemma.",
+   "issue": "`rw [\u2190 sub_eq_zero, \u2190 W1p.valueL_apply, \u2190 W1p.valueL_apply, \u2190 map_sub, W1p.valueL_apply]` threads through `W1p.valueL_apply`, which holds by `(rfl)` (Basic.lean:395). This is a brittle named-lemma chain used to reach the value of `v - u`.",
+   "line": 245
+  }
+ ],
+ "head_sha": "19c511cc605a0bada61ee17f00e99cc937a51c5a",
+ "merge_base_sha": "3602eb5f808b6a2cf7c25cf639ff8333c96f5fb9",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 36924,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "138d95399bfb9c763016d9fa5dd27addecdc1188065b1eb482b8d182bc39382c",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T091117Z-36924-proof-quality-8a0348",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T09:11:17Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are robust and free of undocumented defeq, but the ~70-line midpoint convexity proof buries a reusable potential-convexity fact, and the uniqueness proof ends with a rewrite chain through a `rfl` lemma where an existing API lemma fits.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Sobolev/W1p/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6ffde309c60c573c668f791f01f6eea3269da1978f9085b296ca98655d740191",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 6001
+  },
+  "cache_creation_input_tokens": 6001,
+  "cache_read_input_tokens": 49361,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4812
+    },
+    "cache_creation_input_tokens": 4812,
+    "cache_read_input_tokens": 25275,
+    "input_tokens": 2,
+    "output_tokens": 1835,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2462,
+  "output_tokens_details": {
+   "thinking_tokens": 1005
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
