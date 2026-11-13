@@ -1,0 +1,171 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1769458,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 12830
+    },
+    "cache_creation_input_tokens": 12830,
+    "cache_read_input_tokens": 167179,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 4460
+      },
+      "cache_creation_input_tokens": 4460,
+      "cache_read_input_tokens": 46186,
+      "input_tokens": 4,
+      "output_tokens": 2227,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3966,
+    "output_tokens_details": {
+     "thinking_tokens": 1198
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "3780371ca1bebf9f1c2bb3d753e4bb56c9526023",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.176946,
+ "dedupe_key": "TauCetiProject/TauCeti|38510|348df1e197e14e630e79c2ef595f1a8241e1f745|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "7456bb095dd4125b72fb4b4fb9b6701e7f65e9b4d14531ede4aefbdfdf111cfb",
+ "diff_sha256": "7456bb095dd4125b72fb4b4fb9b6701e7f65e9b4d14531ede4aefbdfdf111cfb",
+ "duration_s": 36.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "AsymptoticOperator.lean:419 `private theorem fderiv_add_one_snd (hper : \u2200 s t, \u03be (s, t + 1) = \u03be (s, t)) (s t : \u211d) : fderiv \u211d \u03be (s, t + 1) = fderiv \u211d \u03be (s, t)`, with the same two-line `Periodic \u03be (0, 1)` / `hp.fderiv` proof.",
+   "file": "TauCeti/Geometry/Symplectic/Floer/SmallHamiltonian.lean",
+   "fix": "Make `fderiv_add_one_snd` (TauCeti/Geometry/Symplectic/Floer/AsymptoticOperator.lean:419) public, or move it next to `Function.Periodic.fderiv` in TauCeti/Analysis/Calculus/PeriodicDeriv.lean, and use it at both sites.",
+   "issue": "The proof that the derivative of a map of period one in `t` is periodic is copied inline twice: `hBper` (hp\u03be/hd) in `integral_inner_fderiv_slice_eq` and `h\u03beper` in `eq_comp_fst_of_isComplexLinearMap_perturbedFDeriv` (line ~540). The same lemma already exists as a private helper in another file.",
+   "line": 419
+  },
+  {
+   "evidence": "`set Jc : V \u2192L[\u211d] V := J.toLinearMap.toContinuousLinearMap` appears in 5 declarations. `have hJ : \u2200 v, \u2016J v\u2016 = \u2016v\u2016 := \u03c9.norm_apply_eq_norm_of_apply_apply_self_eq_inner ...` appears in both `mul_integral_norm_sq_slice_le` and `neg_mul_integral_norm_sq_slice_le`.",
+   "file": "TauCeti/Geometry/Symplectic/Floer/SmallHamiltonian.lean",
+   "fix": "Add one private lemma `fderiv \u211d (fun y \u21a6 J (f y)) z v = J (fderiv \u211d f z v)` for differentiable `f` (or `HasFDerivAt.almostComplexStructure`), and a lemma giving `\u2016J v\u2016 = \u2016v\u2016` from `hg`. Use them at all sites.",
+   "issue": "The derivative of `fun y \u21a6 J (f y)` is computed by hand three times, each time by setting up `Jc := J.toLinearMap.toContinuousLinearMap`, building a `HasFDerivAt`, then `rw [h.fderiv]; simp [Jc]`. This happens in `fderiv_imag_apply_real`, `fderiv_real_apply_real` and `hdJ\u03be` in `integral_inner_fderiv_slice_eq`. The norm fact `hJ : \u2016J v\u2016 = \u2016v\u2016` is also re-derived in two lemmas.",
+   "line": 133
+  },
+  {
+   "evidence": "The terms `hc\u03be.inner (Jc.continuous.comp (((hd2X.comp (hu.continuous.comp hsl)).clm_apply (continuous_fderiv_slice hu s (1, 0))).clm_apply hc\u03be))` in the two lemmas are identical.",
+   "file": "TauCeti/Geometry/Symplectic/Floer/SmallHamiltonian.lean",
+   "fix": "Factor out one private lemma `continuous_inner_fderiv_fderiv_hamiltonianVectorField_slice` (hH, hu, h\u03be, s) and use it in both places.",
+   "issue": "The continuity proof for the integrand `t \u21a6 \u27ea\u03be, J (d\u00b2X_H(u)(\u2202s u) \u03be)\u27eb` is written twice, as `hcont` in `neg_mul_integral_norm_sq_slice_le` and `hA\u2082` in `integral_inner_fderiv_slice_eq`. Each copy also rebuilds `hd2X` and `hsl`. `hsl` is redefined in three lemmas, while `continuous_fderiv_slice` already exists.",
+   "line": 337
+  },
+  {
+   "evidence": "The proof runs from about line 388 to line 452 and mixes periodicity (`hBper`), the pointwise algebra (`hpt`), and four continuity facts (`hA\u2081`, `hA\u2082`, `hdB`, `hc\u03be`).",
+   "file": "TauCeti/Geometry/Symplectic/Floer/SmallHamiltonian.lean",
+   "fix": "Move `hpt` into its own private lemma, e.g. `inner_fderiv_real_real_add_norm_sq_eq`, stating that `\u27ea\u03be, \u2202s \u03b7\u27eb + \u2016\u03b7\u2016\u00b2 = 2\u2016\u03b7\u2016\u00b2 + \u27ea\u03be, J d\u00b2X_H(u)(\u2202s u) \u03be\u27eb + \u2202t\u27eaJ\u03be, \u03b7\u27eb`. The integral lemma then only integrates it and uses periodicity.",
+   "issue": "`integral_inner_fderiv_slice_eq` has a proof of about 65 lines. Its pointwise identity `hpt`, which is the core of the integration by parts using the symmetry of `J dX_H` and the skew-adjointness of `J`, is buried inside it alongside the continuity and periodicity bookkeeping.",
+   "line": 373
+  }
+ ],
+ "head_sha": "348df1e197e14e630e79c2ef595f1a8241e1f745",
+ "merge_base_sha": "3780371ca1bebf9f1c2bb3d753e4bb56c9526023",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 38510,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "869dacd7ac8a149715599e90a83ee6b545b7dec8ba4d579f36b79048424c9dd4",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T024149Z-38510-proof-quality-3b5ac5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T02:41:49Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs are readable, but several pieces of reasoning are written out more than once instead of being factored into lemmas, and one proof is long enough that its main step is hard to see.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Calculus/FDeriv",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Symplectic/Floer/AsymptoticOperator.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Symplectic/Floer/AsymptoticOperator.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "bb8dceb33a69f5c70cfb9bfb150666962c3f551c62f108607b04e40f18a5b971",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 12830
+  },
+  "cache_creation_input_tokens": 12830,
+  "cache_read_input_tokens": 167179,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4460
+    },
+    "cache_creation_input_tokens": 4460,
+    "cache_read_input_tokens": 46186,
+    "input_tokens": 4,
+    "output_tokens": 2227,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3966,
+  "output_tokens_details": {
+   "thinking_tokens": 1198
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
