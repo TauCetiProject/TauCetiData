@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3008684,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 45297
+    },
+    "cache_creation_input_tokens": 45297,
+    "cache_read_input_tokens": 55137,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1482
+      },
+      "cache_creation_input_tokens": 1482,
+      "cache_read_input_tokens": 49476,
+      "input_tokens": 2,
+      "output_tokens": 2345,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3167,
+    "output_tokens_details": {
+     "thinking_tokens": 1095
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "f8678f01ea1c385da65ed164d58346989f7966af",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.300868,
+ "dedupe_key": "TauCetiProject/TauCeti|37894|09d0197fc7d4ccd305d555f7d12347fef46ba9e7|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "726bb71bb032c1c64184fbde15e140a3d4a223a726b9d4d5f4a2f4778248671d",
+ "diff_sha256": "726bb71bb032c1c64184fbde15e140a3d4a223a726b9d4d5f4a2f4778248671d",
+ "duration_s": 29.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Searching for `apply Complex.ext <;> simp [log_re, log_im]` matches only Exponential.lean:164 and :243, and the `rw` chains before them are nearly identical. Mathlib has no lemma stating `log u = arg u * I` when `\u2016u\u2016 = 1`.",
+   "file": "TauCeti/Analysis/PDE/Vortex/FramedGauge/Exponential.lean",
+   "fix": "Extract one helper, e.g. for `u : \u2102 \u2192 Circle`, `h =\u1d50 u - 1` and `L =\u1d50 log (1 + h)`, conclude `(-I) \u2022 L =\u1d50 arg u`, and use it in both proofs.",
+   "issue": "The `harg` block repeats the pointwise argument already in `exists_continuous_mem_realSobolevFunctions_eq_exp` (line 164): `filter_upwards`, then the `rw [hz, Pi.smul_apply, smul_eq_mul, \u2026, add_sub_cancel]` chain, then `apply Complex.ext <;> simp [log_re, log_im]`. The fact `-I * log (1 + (u - 1)) = arg u` for circle-valued `u` is never stated as a lemma.",
+   "line": 243
+  },
+  {
+   "evidence": "Both proofs open with `rw [norm_div, norm_pow, norm_neg, norm_one, one_pow, \u2026, Complex.norm_natCast]` on the same coefficient `(-1) ^ n / (n + 1)`.",
+   "file": "TauCeti/Analysis/Sobolev/BesselPotential/PowerSeries.lean",
+   "fix": "Add one lemma computing the coefficient norm, e.g. `\u2016((-1)^n/(n+1) : \u2102)\u2016 = (n+1)\u207b\u00b9`, and derive both the summability bound and `ha` from it.",
+   "issue": "The coefficient norm `\u2016(-1)^n/(n+1)\u2016` is computed by two separate `rw` chains: once in `exists_memSobolev_ae_eq_log_one_add` (with `div_le_one_of_le\u2080`) and again in `ha` of `exists_norm_toBesselPotentialSpace_sub_le_of_ae_eq_log_one_add`.",
+   "line": 188
+  }
+ ],
+ "head_sha": "09d0197fc7d4ccd305d555f7d12347fef46ba9e7",
+ "merge_base_sha": "f8678f01ea1c385da65ed164d58346989f7966af",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 37894,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "d04e30e79b8a5d827d0112f729110b973564b2d1eafc9e2632ca8910c3ceb9cc",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T034013Z-37894-proof-quality-b731e8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T03:40:13Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are robust and well commented, but the arg/log identity for circle-valued maps is proved twice in Exponential.lean and the log-series coefficient bound is recomputed in two theorems of PowerSeries.lean instead of being factored out.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Complex",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "29abaa0c85b5f3d554ac63568c66a63da90bdc35bbffd8f25baf5a76c79c75d2",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 45297
+  },
+  "cache_creation_input_tokens": 45297,
+  "cache_read_input_tokens": 55137,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1482
+    },
+    "cache_creation_input_tokens": 1482,
+    "cache_read_input_tokens": 49476,
+    "input_tokens": 2,
+    "output_tokens": 2345,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3167,
+  "output_tokens_details": {
+   "thinking_tokens": 1095
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
