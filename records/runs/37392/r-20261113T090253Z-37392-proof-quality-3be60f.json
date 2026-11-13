@@ -1,0 +1,149 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2976526,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 32.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 44121
+    },
+    "cache_creation_input_tokens": 44121,
+    "cache_read_input_tokens": 52258,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 3185
+      },
+      "cache_creation_input_tokens": 3185,
+      "cache_read_input_tokens": 46597,
+      "input_tokens": 2,
+      "output_tokens": 2183,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3329,
+    "output_tokens_details": {
+     "thinking_tokens": 1328
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "29b9cc14af71b7c058316535d555c9bbf64b2df7",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.297653,
+ "dedupe_key": "TauCetiProject/TauCeti|37392|8e8e9e978e61720bb935230f41f71dc2e93076cd|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "7622052188e28195455318f7f98b470ac2f60435f4d196ce38cec7cc15b170e6",
+ "diff_sha256": "7622052188e28195455318f7f98b470ac2f60435f4d196ce38cec7cc15b170e6",
+ "duration_s": 32.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `abs_le.1 (key i)` hits Trajectory.lean:125, Gluing.lean:169 and Gluing.lean:187, each with the same `nlinarith [abs_nonneg (q i), \u2026]` step.",
+   "file": "TauCeti/Analysis/Calculus/Morse/Quartic/Gluing.lean",
+   "fix": "Factor out a lemma `(\u2200 i, |f i| \u2264 1) \u2192 f \u2208 Icc (-1) 1` and a scalar lemma `|a| \u2264 1 \u2192 x \u2208 Ioc 0 1 \u2192 |a * x| \u2264 1`, then reduce each mem_Icc proof to a `split_ifs` over these.",
+   "issue": "`quarticGluingEarly_mem_Icc`, `quarticGluingLate_mem_Icc` and `quarticTrajectoryPoint_mem_Icc` (Trajectory.lean:115) repeat the same `key : \u2200 i, |\u2026| \u2264 1` plus `\u27e8fun i \u21a6 (abs_le.1 (key i)).1, \u2026\u27e9` scaffold. Inside them the `|q i * x| \u2264 1` from `|q i| \u2264 1`, `0 < x \u2264 1` argument is repeated four times via `nlinarith`.",
+   "line": 154
+  },
+  {
+   "evidence": "Gluing.lean diff lines `rw [ite_eq_right hpq, ite_eq_left hpr', ite_eq_left hpr', mul_zero, zero_mul, mul_zero]` and `rw [ite_eq_right fun h \u21a6 hpr' (h.trans hrq'.symm), ite_eq_right hpr', ite_eq_left hrq', hrq']`.",
+   "file": "TauCeti/Analysis/Calculus/Morse/Quartic/Gluing.lean",
+   "fix": "Derive `p i = 0` / `r i = q i` as now, then close each case with `split_ifs <;> simp_all` (or `simp [hpr', hrq', h0]`) rather than the positional ite rewrites.",
+   "issue": "`quarticGluingEarly_zero` and `quarticGluingLate_zero` close their cases with chains of `rw [ite_eq_right fun h \u21a6 hpr' (h.trans hrq'.symm), ite_eq_right hpr', \u2026]` using hand-built proof terms. Reordering the definition's branches breaks them, and the script hides that the argument is a simple case split.",
+   "line": 282
+  },
+  {
+   "evidence": "Proof body in the diff: `rw [quarticGluingEarly_apply, ite_eq_right hpq, ite_eq_left hpr, \u2190 mul_assoc, hq2, one_mul, mul_pow (q i), sq (q i), hq2, one_mul, Real.mul_inv_sqrt_one_add_sq_div_sqrt_one_sub_sq, \u2190 mul_assoc, \u2190 Real.exp_add, neg_add_cancel, Real.exp_zero, one_mul]`.",
+   "file": "TauCeti/Analysis/Calculus/Morse/Quartic/Gluing.lean",
+   "fix": "After unfolding the ite, apply `Real.mul_inv_sqrt_one_add_sq_div_sqrt_one_sub_sq` once the `q i` factors are cancelled with `hq2` via `simp`/`field_simp`, then close with `simp [\u2190 Real.exp_add]`.",
+   "issue": "`exp_neg_mul_mul_quarticGluingEarly_div_sqrt_one_sub_sq` is a single 13-step rewrite chain (`\u2190 mul_assoc, hq2, one_mul, mul_pow (q i), sq (q i), hq2, \u2026, neg_add_cancel, Real.exp_zero, one_mul`) that depends on exact term shapes.",
+   "line": 345
+  }
+ ],
+ "head_sha": "8e8e9e978e61720bb935230f41f71dc2e93076cd",
+ "merge_base_sha": "29b9cc14af71b7c058316535d555c9bbf64b2df7",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 37392,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "12e568c65dddf318a2c6b04b78262b784387552ab518d8df6818e070b0476d8d",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T090253Z-37392-proof-quality-3be60f",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T09:02:53Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are mostly readable, but one bound argument is triplicated across the mem_Icc lemmas and a few proofs rely on long brittle ite/rw chains.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Morse",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "536b69e277bf9b5ef7d79a5e29454a45ea554e5da3a0ade4f1432efc22f7b606",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 44121
+  },
+  "cache_creation_input_tokens": 44121,
+  "cache_read_input_tokens": 52258,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3185
+    },
+    "cache_creation_input_tokens": 3185,
+    "cache_read_input_tokens": 46597,
+    "input_tokens": 2,
+    "output_tokens": 2183,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3329,
+  "output_tokens_details": {
+   "thinking_tokens": 1328
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
