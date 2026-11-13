@@ -1,0 +1,156 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.0653114,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1068
+    },
+    "cache_creation_input_tokens": 1068,
+    "cache_read_input_tokens": 23317,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1068
+      },
+      "cache_creation_input_tokens": 1068,
+      "cache_read_input_tokens": 23317,
+      "input_tokens": 2,
+      "output_tokens": 2765,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2765,
+    "output_tokens_details": {
+     "thinking_tokens": 893
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "396c3bd971e9722aa8656231760e710fe641d8cf",
+ "cli_dirty": false,
+ "cli_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "cost_usd": 0.065311,
+ "dedupe_key": "TauCetiProject/TauCeti|38440|535556613ee64b652948e4f5e0ffebe33ba659d3|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "6e2e472d3ccdb88b39a323daecc0ba608d94944258a3315475afe3b67677b553",
+ "diff_sha256": "6e2e472d3ccdb88b39a323daecc0ba608d94944258a3315475afe3b67677b553",
+ "duration_s": 25.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Five `show ... from` coercions in `exists_isAffineOpen_basicOpen_mem_of_isClosed`. None of them has a justifying comment.",
+   "file": "TauCeti/AlgebraicGeometry/Cohomology/AffinenessCriterion.lean",
+   "fix": "Rewrite with the membership lemma for `Hom.preimage` (e.g. `Hom.mem_preimage`/`Opens.mem_preimage` via `rw`/`simp`). If that is not possible, add one comment saying why the `show` is needed.",
+   "issue": "`show I.subscheme\u03b9 y \u2208 U from hy \u25b8 hxU`, `show I.subscheme\u03b9 y \u2208 B from hy`, and later `show y \u2208 I.subscheme\u03b9 \u207b\u00b9\u1d41 U from hpre \u25b8 hz` (hle), `show y \u2208 I.subscheme\u03b9 \u207b\u00b9\u1d41 X.basicOpen g from hpre \u25b8 hyU` (refine), and `show I.subscheme\u03b9 y \u2208 U from hy \u25b8 hxU` (hyU) all depend on preimage membership unfolding by defeq. None of them has a comment.",
+   "line": 89
+  },
+  {
+   "evidence": "`have hUB : IsCompl (I.subscheme\u03b9 \u207b\u00b9\u1d41 U) (I.subscheme\u03b9 \u207b\u00b9\u1d41 B) := by constructor ...` with a hand-written `simp only [Opens.coe_inf, Hom.coe_preimage, ...]` chain.",
+   "file": "TauCeti/AlgebraicGeometry/Cohomology/AffinenessCriterion.lean",
+   "fix": "Factor it into a lemma, e.g. `isCompl_preimage_of_range_subset`. As an alternative, state it at the `Set` level and close it with `simp`/`grind` on `Set.disjoint_iff`/`Set.eq_univ_iff`.",
+   "issue": "The `hUB` proof (preimages of `U` and `{x}\u1d9c` under `subscheme\u03b9` are complementary when `range = U\u1d9c \u222a {x}`) is about 20 lines of `ext`/`simp only` set-chasing. It is inlined into a roughly 45-line proof, and it is a general fact about preimages of a covering pair along a map whose range lies in `U\u1d9c \u222a {x}`.",
+   "line": 76
+  },
+  {
+   "evidence": "`simp_rw [mul_assoc, \u2190 Finset.mul_sum, hc, mul_one]\n  rfl`",
+   "file": "TauCeti/AlgebraicGeometry/Modules/LinearCombination.lean",
+   "fix": "Use an explicit lemma or `exact` to identify the section types, or put a comment at the `rfl` naming the definitional unfolding it depends on.",
+   "issue": "`epi_linearCombination` ends with a bare `rfl`. It identifies `t' * 1` / `t'` with `t` across the free/unit sheaf section type and `\u0393(X, U)` by accidental defeq, with no comment. The same wrapper defeq is used through the `let a'`/`let t'` retyping.",
+   "line": 121
+  },
+  {
+   "evidence": "The `hspan` proof inside `isAffine_of_subsingleton_cohomology_one`.",
+   "file": "TauCeti/AlgebraicGeometry/Cohomology/AffinenessCriterion.lean",
+   "fix": "Use `Subsingleton.elim`/the existing `leTop`-at-`\u22a4` simp lemma, or `simpa using ha.symm.trans hc`, so the defeq is not hard-coded.",
+   "issue": "`simp only [show (Opens.leTop \u22a4 : (\u22a4 : X.Opens) \u27f6 \u22a4) = \ud835\udfd9 _ from rfl, op_id, X.presheaf.map_id, ConcreteCategory.id_apply] at h1; exact h1` is a brittle named-lemma chain built around an inline `show ... from rfl`.",
+   "line": 143
+  },
+  {
+   "evidence": "The final `refine ... ; refine Finset.sum_congr ...; exact congrArg ...` block appears verbatim in both lemmas.",
+   "file": "TauCeti/AlgebraicGeometry/Modules/LinearCombination.lean",
+   "fix": "Factor a `linearCombination_app_sum_smul` equation lemma, `(linearCombination f).app U (\u03a3 a\u2096 \u2022 e\u2096) = \u03a3 a\u2096 * f k|_U`, and derive both existence statements from it.",
+   "issue": "`exists_linearCombination_app_eq` and `exists_linearCombination_app_eq_sum` end with the same two-line `freeHomEquiv_symm_val_app_sum_smul ... |>.trans` / `Finset.sum_congr ... eval_unitHomEquiv_globalSectionsSmul` argument.",
+   "line": 93
+  }
+ ],
+ "head_sha": "535556613ee64b652948e4f5e0ffebe33ba659d3",
+ "merge_base_sha": "396c3bd971e9722aa8656231760e710fe641d8cf",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 38440,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ffedada110c772bf971d921a524907a11996a617dcaa9123b5756fcf42832119",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "e8e11c86caf02b0cd2e152b49d788546b900d74b",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T024623Z-38440-proof-quality-66faf1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T02:46:23Z",
+ "submitted_by": "kim-em",
+ "summary": "Several steps rely on undocumented definitional unfolding (`show ... from` between `Hom.preimage`/`Set` membership and `\u0393`, plus a closing `rfl` across the free-sheaf/`\u0393(X, U)` wrapper), and the `IsCompl` sub-proof is reusable reasoning inlined into a long proof.",
+ "tool_trace_meta": {
+  "successful_calls": 0,
+  "total_calls": 0,
+  "trace_truncated": false
+ },
+ "transcript_blob": "71602b6872f63d58753ba4174d27e6fd2b6452bbdce60400055288492fb27fb4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 1068
+  },
+  "cache_creation_input_tokens": 1068,
+  "cache_read_input_tokens": 23317,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 2,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1068
+    },
+    "cache_creation_input_tokens": 1068,
+    "cache_read_input_tokens": 23317,
+    "input_tokens": 2,
+    "output_tokens": 2765,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2765,
+  "output_tokens_details": {
+   "thinking_tokens": 893
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
