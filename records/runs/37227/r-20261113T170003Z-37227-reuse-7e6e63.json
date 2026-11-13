@@ -1,0 +1,162 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.30684239999999996,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 30.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 46483
+    },
+    "cache_creation_input_tokens": 46483,
+    "cache_read_input_tokens": 128937,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1505
+      },
+      "cache_creation_input_tokens": 1505,
+      "cache_read_input_tokens": 48201,
+      "input_tokens": 2,
+      "output_tokens": 1062,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2430,
+    "output_tokens_details": {
+     "thinking_tokens": 742
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "da527980caecf7e72838e069c01f4a7e7633eca3",
+ "cli_dirty": false,
+ "cli_sha": "439670a91abba51f3d7186e2ce6fb05e46ab3285",
+ "cost_usd": 0.306842,
+ "dedupe_key": "TauCetiProject/TauCeti|37227|b4c5bc2e52bc400788e9120130279946a7b756d7|reuse|claude-opus-5-5|aa4c12c153bafd36|production|1",
+ "diff_blob": "0379a62a93dc0de000093077a5a85527748d468163ac49bb981e214a20c0abf8",
+ "diff_sha256": "0379a62a93dc0de000093077a5a85527748d468163ac49bb981e214a20c0abf8",
+ "duration_s": 30.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:88 `theorem newtonianKernel_two : newtonianKernel 2 = 0`; Distribution.lean:65 `private lemma newtonianKernel_zero_function : newtonianKernel 0 = 0`; Potential.lean:129 already uses `rw [newtonianKernel_two, zero_convolution]`.",
+   "file": "TauCeti/Analysis/PDE/FundamentalSolution/Euclidean/Potential.lean",
+   "fix": "Make `newtonianKernel_zero_function` public, place it beside `newtonianKernel_two` in `Euclidean/Basic.lean` and give it a canonical name (for example `newtonianKernel_dim_zero`). Then write `rcases h with rfl | rfl <;> rw [<that lemma> / newtonianKernel_two, zero_convolution]`, matching the existing pattern at Potential.lean:129.",
+   "issue": "The `hzero` block re-proves `newtonianKernel n = 0` for `n = 0, 2` by unfolding with `funext`/`simp [newtonianKernel_def]`. The `n = 2` case is exactly the public `@[simp] TauCeti.newtonianKernel_two`, and the `n = 0` case is the existing `newtonianKernel_zero_function` lemma (currently private).",
+   "line": 104
+  },
+  {
+   "evidence": "Same located lemmas: Basic.lean:88 `newtonianKernel_two` and Distribution.lean:65 `newtonianKernel_zero_function`.",
+   "file": "TauCeti/Analysis/PDE/FundamentalSolution/Euclidean/DistributionalLaplacian.lean",
+   "fix": "Use `\u27e80, by rw [newtonianKernel_two]; funext; simp\u27e9` for `n = 2`, and the made-public dimension-zero lemma from the first finding for `n = 0`.",
+   "issue": "`exists_newtonianKernel_eq_mul_norm` repeats the same derivation for its `n = 0` and `n = 2` branches with `funext fun x \u21a6 by simp [newtonianKernel_def]`.",
+   "line": 72
+  }
+ ],
+ "head_sha": "b4c5bc2e52bc400788e9120130279946a7b756d7",
+ "merge_base_sha": "da527980caecf7e72838e069c01f4a7e7633eca3",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 37227,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "6564a0e20893da55c8cf51e0688b1441208d81844d9ed0dafbf12485f6831116",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "439670a91abba51f3d7186e2ce6fb05e46ab3285",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T170003Z-37227-reuse-7e6e63",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T17:00:03Z",
+ "submitted_by": "kim-em",
+ "summary": "The one-dimensional case is new material and correctly reuses Mathlib's `LipschitzWith.integral_lineDeriv_mul_eq`, `lipschitzWith_smul` and `InnerProductSpace.volume_ball_of_dim_odd`. However, the new proofs re-derive inline the existing facts `newtonianKernel 2 = 0` and `newtonianKernel 0 = 0` instead of using the existing lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/FundamentalSolution/Euclidean/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/FundamentalSolution/Euclidean/Distribution.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/PDE/FundamentalSolution/Euclidean/Potential.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f4934934e59cfeae99b02e3f5f7238444f298f5debc365d2df2f1ed8ff333727",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 46483
+  },
+  "cache_creation_input_tokens": 46483,
+  "cache_read_input_tokens": 128937,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1505
+    },
+    "cache_creation_input_tokens": 1505,
+    "cache_read_input_tokens": 48201,
+    "input_tokens": 2,
+    "output_tokens": 1062,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2430,
+  "output_tokens_details": {
+   "thinking_tokens": 742
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
