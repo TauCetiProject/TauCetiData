@@ -1,0 +1,135 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2843422,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 47.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 43842
+    },
+    "cache_creation_input_tokens": 43842,
+    "cache_read_input_tokens": 83201,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [],
+    "output_tokens": 2423,
+    "output_tokens_details": {
+     "thinking_tokens": 224
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "83769e442d55cda9d85b3927a93b286831c595ff",
+ "cli_dirty": false,
+ "cli_sha": "439670a91abba51f3d7186e2ce6fb05e46ab3285",
+ "cost_usd": 0.284342,
+ "dedupe_key": "TauCetiProject/TauCeti|36593|f04a02d3dd222aa17e1bb6d47826f03ada433ef4|proof-quality|claude-opus-5-5|aa4c12c153bafd36|production|2",
+ "diff_blob": "a471a14934f432b0d7ba95ceedf8014f0dbd11af0a96b01bcb74abb5f692ab71",
+ "diff_sha256": "a471a14934f432b0d7ba95ceedf8014f0dbd11af0a96b01bcb74abb5f692ab71",
+ "duration_s": 47.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 186-196 contain `rw [\u2190 sum_homogeneousComponent F, map_sum, map_sum, ..., DirectSum.sum_apply, Finset.sum_eq_single \u03bd]` followed by the same three side goals as `Ideal/AssociatedGraded.lean:620-634`.",
+   "file": "TauCeti/RingTheory/Regular/AssociatedGraded.lean",
+   "fix": "Derive `hcomp` from `DFunLike.congr_fun (mvPolynomialHom_homogeneousComponent ha \u03bd _) \u03bd`, combined with `hP`, `mvPolynomialHom_map_of_isHomogeneous`, `mk_apply`, `DirectSum.of_eq_same` and `gradedPiece_mk_eq_zero_iff`.",
+   "issue": "`hcomp` still repeats the `sum_homogeneousComponent` / `Finset.sum_eq_single \u03bd` / `DirectSum.of_eq_of_ne` argument (lines 184-198) already proved as `Ideal.AssociatedGraded.mvPolynomialHom_homogeneousComponent`. The author's reply says this was fixed, but commit f04a02d3dd22 still has it.",
+   "line": 182
+  },
+  {
+   "evidence": "grep for `homogeneousComponent_map|map_homogeneousComponent|hmap` in the three touched files finds only this local `have` at line 614.",
+   "file": "TauCeti/RingTheory/Ideal/AssociatedGraded.lean",
+   "fix": "State it as a public lemma (e.g. `MvPolynomial.homogeneousComponent_map`) in `TauCeti/RingTheory/MvPolynomial/Homogeneous.lean` and use it here.",
+   "issue": "The local `hmap : homogeneousComponent \u03bc (F.map f) = (homogeneousComponent \u03bc F).map f` is a general polynomial fact hidden inside this proof.",
+   "line": 614
+  },
+  {
+   "evidence": "The negative branch rewrites with `homogeneousComponent_eq_zero \u03bd F (by omega)` and proves `hzero` for every \u03bc, which is the third obligation of `sum_eq_single \u03bd`.",
+   "file": "TauCeti/RingTheory/Ideal/AssociatedGraded.lean",
+   "fix": "Drop the split. Apply `Finset.sum_eq_single \u03bd` once and close the out-of-range case with `homogeneousComponent_eq_zero` and `map_zero`.",
+   "issue": "The `by_cases h\u03bd : \u03bd \u2264 F.totalDegree` split roughly doubles the proof (lines 620-645). The negative branch repeats the argument that every summand vanishes, which is exactly the 'not in the range' side goal of `Finset.sum_eq_single \u03bd`. The same split is at `Regular/AssociatedGraded.lean:184`.",
+   "line": 620
+  }
+ ],
+ "head_sha": "f04a02d3dd222aa17e1bb6d47826f03ada433ef4",
+ "merge_base_sha": "83769e442d55cda9d85b3927a93b286831c595ff",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 36593,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "bc617fcb1ee94ba2b54e731594939d4d6d9f91f1bc19dc39fc36d230dada548f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 2,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "439670a91abba51f3d7186e2ce6fb05e46ab3285",
+ "rubrics_version": "aa4c12c153bafd36",
+ "run_id": "r-20261113T102009Z-36593-proof-quality-a3cea7",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-13T10:20:09Z",
+ "submitted_by": "kim-em",
+ "summary": "The current head still repeats the degree-\u03bd argument in `hcomp`, keeps the general homogeneous-component/coefficient-map fact as a local `have`, and keeps an unneeded `by_cases` split, even though the author's reply says the first was fixed.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Regular/AssociatedGraded.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ec16660096f28d5414fb4ff7ebb46feec19c38a5376f278e7c7fea799411a0f1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 43842
+  },
+  "cache_creation_input_tokens": 43842,
+  "cache_read_input_tokens": 83201,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [],
+  "output_tokens": 2423,
+  "output_tokens_details": {
+   "thinking_tokens": 224
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
