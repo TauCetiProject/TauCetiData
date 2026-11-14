@@ -1,0 +1,164 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1466654,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 38.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9228
+    },
+    "cache_creation_input_tokens": 9228,
+    "cache_read_input_tokens": 181227,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 450
+      },
+      "cache_creation_input_tokens": 450,
+      "cache_read_input_tokens": 40322,
+      "input_tokens": 2,
+      "output_tokens": 1958,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3212,
+    "output_tokens_details": {
+     "thinking_tokens": 852
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "71ce0a33087999414b8424bf26c3a1d9fbbce54e",
+ "cli_dirty": false,
+ "cli_sha": "b0aec30cddeb7f9dd3a2ef7031e8ef5d2758c986",
+ "cost_usd": 0.146665,
+ "dedupe_key": "TauCetiProject/TauCeti|38893|8e23e34046f526b4f31d593e58735e0c67d0c624|proof-quality|claude-opus-5-5|130078c6de925454|production|1",
+ "diff_blob": "0076a213232a05297577aab715fc4f0dc8c5863562ac17b2d63be9c45f656869",
+ "diff_sha256": "0076a213232a05297577aab715fc4f0dc8c5863562ac17b2d63be9c45f656869",
+ "duration_s": 38.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib `MFDeriv/NormedSpace.lean:592` defines `mvfderiv g x := (fromTangentSpace (g x)).toContinuousLinearMap \u2218L mfderiv g x`, so the two statements differ only by that identity factor. The diff shows the two proof bodies are line-for-line parallel.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/FirstJet/Basic.lean",
+   "fix": "Prove `jet_snd_eq_mvfderiv` from `jet_snd_eq_mfderiv` by unfolding `mvfderiv` and using that `NormedSpace.fromTangentSpace` is the identity. Alternatively, move the shared differentiable/non-differentiable argument into one private lemma.",
+   "issue": "`jet_snd_eq_mvfderiv` repeats the whole proof of `jet_snd_eq_mfderiv`: the same `hw` helper, the same `by_cases` on differentiability and the same `rwa` chain through `mdifferentiableAt_iff_source_of_mem_source`.",
+   "line": 575
+  },
+  {
+   "evidence": "Diff: `rw [horizontalLift_eq_flatLift_sub]` followed by `change ... ` and then `rw [ofDeriv_fst, sub_zero, flatLift_apply]`, with no comment.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/FirstJet/Connection.lean",
+   "fix": "Rewrite with `ContinuousLinearMap.sub_apply` and `Prod.fst_sub` (or `simp only [ContinuousLinearMap.sub_apply, Prod.fst_sub, ofDeriv_fst, sub_zero, flatLift_apply]`) instead of `change`, or add a comment saying why a rewrite does not work.",
+   "issue": "`horizontalLift_fst` uses `change (flatLift I F x v).1 - (ofDeriv I F x _).1 = _` with no comment explaining why it is needed. It relies on `Prod.fst` of a `ContinuousLinearMap` subtraction reducing definitionally.",
+   "line": 381
+  },
+  {
+   "evidence": "Diff: `simp only [Trivial.fiberBundle_trivializationAt', Trivial.trivialization_symm_apply]` then `rfl`, with no comment. In the jet_snd proofs, `\u00b7 rfl` closes the goal left by `fderivWithin_zero_of_not_differentiableWithinAt` without explanation.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/FirstJet/Connection.lean",
+   "fix": "Replace each bare `rfl` with the lemma it stands for, for example `Prod.ext rfl rfl` with `Trivial.trivialization_symm_apply` and `ContinuousLinearMap.zero_apply`, or a `simp` step. Or add a comment like the one in `jet_trivial_snd_eq_mvfderiv` saying what the defeq is.",
+   "issue": "`connectionEquiv_trivial_apply` ends `simp only [...]` with a bare `rfl` that closes an undocumented definitional equality between the value coordinate and `j.1` across the trivial trivialization. The non-differentiable branches of `jet_snd_eq_mfderiv` and `jet_snd_eq_mvfderiv` (`\u00b7 rfl` after `fderivWithin_zero_of_not_differentiableWithinAt`) do the same.",
+   "line": 545
+  }
+ ],
+ "head_sha": "8e23e34046f526b4f31d593e58735e0c67d0c624",
+ "merge_base_sha": "71ce0a33087999414b8424bf26c3a1d9fbbce54e",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 38893,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9586d2d5841bc483e51b52be61990cbbada70307d25e09c1fe0a78cb7286a1dc",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "b0aec30cddeb7f9dd3a2ef7031e8ef5d2758c986",
+ "rubrics_version": "130078c6de925454",
+ "run_id": "r-20261114T120307Z-38893-proof-quality-61a8d6",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-14T12:03:07Z",
+ "submitted_by": "kim-em",
+ "summary": "Two derivative-coordinate lemmas repeat the same 12-line proof, and a few steps rely on an uncommented `change` or bare `rfl` closers that depend on unstated definitional equality.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/MFDeriv",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/MFDeriv/NormedSpace.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a95f7bbb75f0a7c72f1094a470642d4d606cfaf84fd37c9ea1786cd198019b8b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 9228
+  },
+  "cache_creation_input_tokens": 9228,
+  "cache_read_input_tokens": 181227,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 450
+    },
+    "cache_creation_input_tokens": 450,
+    "cache_read_input_tokens": 40322,
+    "input_tokens": 2,
+    "output_tokens": 1958,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3212,
+  "output_tokens_details": {
+   "thinking_tokens": 852
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
