@@ -1,0 +1,170 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.5394826,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 45.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 85855
+    },
+    "cache_creation_input_tokens": 85855,
+    "cache_read_input_tokens": 86858,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5443
+      },
+      "cache_creation_input_tokens": 5443,
+      "cache_read_input_tokens": 83635,
+      "input_tokens": 2,
+      "output_tokens": 3092,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4641,
+    "output_tokens_details": {
+     "thinking_tokens": 2122
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "713c61f447b3672a4cdcc5b5609c6f9ec30541e5",
+ "cli_dirty": false,
+ "cli_sha": "db07de9d95b402804c6c163f282c4108cb5ba86b",
+ "cost_usd": 0.539483,
+ "dedupe_key": "TauCetiProject/TauCeti|41424|d29570e4153714d62cc27c1ab457ea83b8f692d3|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "899e591235d6fe485223af93904e2c6710b62d30549ec17d4e166d4d73b604d6",
+ "diff_sha256": "899e591235d6fe485223af93904e2c6710b62d30549ec17d4e166d4d73b604d6",
+ "duration_s": 45.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The statements mention only `Sigma.\u03b9`, `Sigma.desc` and `HasCoproduct`; nothing in them depends on nerve homology.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Homology/Basic.lean",
+   "fix": "Move both, public, into `TauCeti/CategoryTheory/Limits/Shapes/Products.lean` (which this PR already extends), or replace them with the Mathlib `Sigma.\u03b9_comp_desc_assoc` chain.",
+   "issue": "`\u03b9_comp_desc_desc` and `\u03b9_comp_desc_id_desc` are general `Sigma.\u03b9`/`Sigma.desc` identities about arbitrary coproducts in any category, but they are `private` here.",
+   "line": 45
+  },
+  {
+   "evidence": "`private lemma totalArrow_congr_idx {m : \u2115} (F : ComposableArrows C m) ...` and `private lemma totalArrow_\u03b4 ... := totalArrow_map (SimplexCategory.\u03b4 i) F a b hab`.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Basic.lean",
+   "fix": "Make them public: `ComposableArrows.totalArrow_congr` in `TauCeti/CategoryTheory/ComposableArrows/Basic.lean` and `nerve.totalArrow_\u03b4` next to `totalArrow_map`.",
+   "issue": "`totalArrow_congr_idx` (transporting `totalArrow` along index equalities) and `totalArrow_\u03b4` (the face specialization of public `totalArrow_map`) are general `ComposableArrows`/nerve lemmas hidden as `private`. Later postcomp and face arguments in the roadmap will need them again.",
+   "line": 185
+  },
+  {
+   "evidence": "`private lemma \u03b9NormalizedCategoryChainComplex_eq_\u03b9 (M : C \u2964 A) {n : \u2115} (y : (nerve C).nonDegenerate n) : \u03b9NormalizedCategoryChainComplex M (nerveNonDegSimplex y) = Sigma.\u03b9 ... y`.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Homology/Normalized.lean",
+   "fix": "Make both public. Tag `\u03b9NormalizedCategoryChainComplex_eq_\u03b9` with `@[simp]` (or `@[reassoc (attr := simp)]`) so consumers can compute in the normalized complex without unfolding the splitting.",
+   "issue": "`\u03b9NormalizedCategoryChainComplex_eq_\u03b9` identifies the normalized generator on a nondegenerate simplex with the splitting summand inclusion. This is the characteristic introduction lemma for `normalizedCategoryChainComplex`, but it is `private`. `\u03b9CategorySimplicialObject_map_of_epi` (the action of epimorphisms on summands) is likewise hidden.",
+   "line": 225
+  },
+  {
+   "evidence": "Compare `@[reassoc] lemma \u03b9CategoryChainComplex_categoryChainComplexCoeffMap_f` with `@[reassoc (attr := simp)] lemma \u03b9CategoryChainComplex_categoryChainComplexMap_f`.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Homology/Basic.lean",
+   "fix": "Use `@[reassoc (attr := simp)]` on both coefficient-map lemmas.",
+   "issue": "`\u03b9CategoryChainComplex_categoryChainComplexCoeffMap_f` and `\u03b9CategoryChainComplex\u2080_categoryChainComplexCoeffMap_f` are only `@[reassoc]`. Their simplicial counterpart `\u03b9CategorySimplicialObject_coeffMap_app` and the functor-map analogues `\u03b9CategoryChainComplex_categoryChainComplexMap_f` and `\u03b9CategoryChainComplex\u2080_..._Map_f` are `@[reassoc (attr := simp)]`, so the coefficient-map summand formulas are not simp normal forms.",
+   "line": 420
+  },
+  {
+   "evidence": "`def nerveNonDegSimplex {n : \u2115} (y : (nerve C).nonDegenerate n) : ComposableArrows C n := y.1`, and `nerveNonDegSimplex_mk` is its only lemma.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Homology/Normalized.lean",
+   "fix": "Either drop the wrapper and use `y.1` directly, or add `@[simp] lemma nerveNonDegSimplex_eq (y) : nerveNonDegSimplex y = y.1 := (rfl)` (or make it an `abbrev`).",
+   "issue": "`nerveNonDegSimplex` is a public opaque `def` for `y.1`. Only the `_mk` simp lemma is provided, so terms written as `y.1` and terms written as `nerveNonDegSimplex y` do not rewrite into each other, which makes the normalized-complex API harder to use.",
+   "line": 49
+  },
+  {
+   "evidence": "Only `normalizedCategoryChainComplexXIsoOfUnique_hom` is stated, and the `inv` field is a raw `Cofan.IsColimit.desc`.",
+   "file": "TauCeti/AlgebraicTopology/SimplicialSet/Nerve/Homology/Normalized.lean",
+   "fix": "Add `@[reassoc (attr := simp)] lemma \u03b9NormalizedCategoryChainComplex_xIsoOfUnique_inv`, stating that `\u03b9NormalizedCategoryChainComplex M (nerveNonDegSimplex default) \u226b inv = \ud835\udfd9 _` (or the general `y` form with `eqToHom`).",
+   "issue": "`normalizedCategoryChainComplexXIsoOfUnique` has a `_hom` simp lemma but no characterization of `inv`. Users must unfold `Cofan.IsColimit.desc` to compute with it.",
+   "line": 268
+  }
+ ],
+ "head_sha": "d29570e4153714d62cc27c1ab457ea83b8f692d3",
+ "merge_base_sha": "713c61f447b3672a4cdcc5b5609c6f9ec30541e5",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 41424,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5a47c18171a53a652cd470238f5c60eb0c7a3d059896709f6f1c6e44ff8272f2",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "db07de9d95b402804c6c163f282c4108cb5ba86b",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261115T102811Z-41424-api-design-198ab4",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T10:28:11Z",
+ "submitted_by": "kim-em",
+ "summary": "Several general or characteristic lemmas are hidden as `private`, the coefficient-map summand lemmas lack `@[simp]` while their functor-map siblings have it, and `nerveNonDegSimplex` is an opaque `Subtype.val` wrapper with incomplete API.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6a7de028f7ce14ea3471eb73828b9acb4019e3955d42ebc77578b93124648f5b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 85855
+  },
+  "cache_creation_input_tokens": 85855,
+  "cache_read_input_tokens": 86858,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5443
+    },
+    "cache_creation_input_tokens": 5443,
+    "cache_read_input_tokens": 83635,
+    "input_tokens": 2,
+    "output_tokens": 3092,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4641,
+  "output_tokens_details": {
+   "thinking_tokens": 2122
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
