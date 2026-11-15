@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1924626,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 53.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8018
+    },
+    "cache_creation_input_tokens": 8018,
+    "cache_read_input_tokens": 165583,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 6955
+      },
+      "cache_creation_input_tokens": 6955,
+      "cache_read_input_tokens": 83323,
+      "input_tokens": 2,
+      "output_tokens": 3848,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5962,
+    "output_tokens_details": {
+     "thinking_tokens": 1899
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1f2f7d518c3e81587107d99655344ac1a45f0233",
+ "cli_dirty": false,
+ "cli_sha": "a2e8223fb2d54dbcaf79f1a69160932a57d6fa15",
+ "cost_usd": 0.192463,
+ "dedupe_key": "TauCetiProject/TauCeti|42175|3896db704cbd4a7223b879704a998c87b04543b9|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "5f863205ccf29f1a15368a8b2d69f8e413f7a6d44f66abaa001b2bb7bee14784",
+ "diff_sha256": "5f863205ccf29f1a15368a8b2d69f8e413f7a6d44f66abaa001b2bb7bee14784",
+ "duration_s": 53.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:162 and UnitKilling.lean:645 both run `isCoalgHom_barMap.apply_eq_of_mem_filtration (isCoalgHom_id A) (fun w hw \u21a6 by rw [\u2190 LinearMap.comp_apply, \u2190 AInfinityHom.taylor_def, \u2026])`.",
+   "file": "TauCeti/Algebra/Homology/AInfinity/Algebra/Strictification/Basic.lean",
+   "fix": "Add a public lemma `AInfinityHom.taylor_comp_apply_of_taylor_eq_letter_of_mem_filtration` (or `barMap_apply_eq_self_of_mem_filtration`) and use it in both places.",
+   "issue": "The `hbar : g.barMap z = z` argument (identity Taylor on filtration \u21d2 barMap identity there, then `taylor_comp`) is duplicated verbatim at UnitKilling.lean:645.",
+   "line": 162
+  },
+  {
+   "evidence": "Both sites: `cohomologicalUnit_iff.2 \u27e8\u2026 \u25b8 he.degree_zero, fun x \u21a6 by rw [\u2026, h\ud835\udc9c.cohomologicalUnit_binary_left he], fun x \u21a6 by rw [\u2026 binary_right he]\u27e9`.",
+   "file": "TauCeti/Algebra/Homology/AInfinity/Algebra/Strictification/Basic.lean",
+   "fix": "State `IsMinimal.cohomologicalUnit_of_m_two_eq` next to `cohomologicalUnit_of_taylor_eq` in CohomologicalUnit.lean and use it at both sites.",
+   "issue": "Transferring a cohomological unit to a minimal algebra with the same grading and `m 2` is re-proved inline twice (lines 144 and 216).",
+   "line": 144
+  },
+  {
+   "evidence": "Both proofs: `of_mem_filtration \u2026 (PiTensorProduct.tprod R fun i \u21a6 koszulTwist ((k:\u2124)-1-i) (x i))`, `rw [taylor_of_tprod, taylor_of_tprod, \u2026]`, `simpa only [koszulTwist_koszulTwist]`.",
+   "file": "TauCeti/Algebra/Homology/AInfinity/Algebra/Strictification/Basic.lean",
+   "fix": "Extract `m_eq_of_taylor_eq_on_filtration` (same grading, Taylor maps agree on `filtration k` \u21d2 `m k` agree) and derive both from it.",
+   "issue": "`hm2'` re-derives `m k` equality from Taylor agreement on the filtration by the same koszulTwist/`taylor_of_tprod` manipulation as `m_limit_of_le` (Limit.lean:172).",
+   "line": 150
+  },
+  {
+   "evidence": "Both chains end with `Finset.sum_range_succ, dite_eq_left (by omega), \u2190 add_assoc, negOnePowCast_add _ 1, negOnePowCast_one, mul_neg_one, neg_add_cancel, zero_smul]`.",
+   "file": "TauCeti/Algebra/Homology/AInfinity/Algebra/Strictification/Stasheff.lean",
+   "fix": "Factor a lemma for the cancellation of the two adjacent binary collapses (koszul sign plus `negOnePowCast_add`) and handle the sign bookkeeping with `simp`/`abel` rather than a manual chain.",
+   "issue": "The cancellation of the binary collapses at slots `j-1` and `j` around `e` is a roughly 30-lemma `rw` chain, and it is duplicated almost exactly in `unitKillingCochain_barDifferential_prefix` (UnitKilling.lean:401). The chains break on renames and hide the reason the terms cancel.",
+   "line": 402
+  },
+  {
+   "evidence": "Stasheff.lean:283 onward; the `rw [\u2026] at hzero` block in `taylor_barDifferential_duplicateAt`; the 20-step `rw` in `hochschildDifferential_unitKillingCochain_same`.",
+   "file": "TauCeti/Algebra/Homology/AInfinity/Algebra/Strictification/Stasheff.lean",
+   "fix": "Split the cases into named lemmas or add comments tying each branch to the docstring's case list, and break the large `rw` blocks into named intermediate `have`s.",
+   "issue": "`taylor_barDifferential_duplicateAt_ne_two` is about 60 lines of nested `by_cases` (fit, d=1, d=m+4, d\u2264m+2 with block/outside, d=m+3 with p=0/1, j=0) with no comments, and its `\ud835\udc9f` argument is used only to state the result. `IsMinimal.taylor_barDifferential_duplicateAt` and `hochschildDifferential_unitKillingCochain_same` are similarly long, opaque rewrite chains.",
+   "line": 283
+  },
+  {
+   "evidence": "`rw [dite_eq_left (by omega), dite_eq_left (by omega)]; rfl` after `(\ud835\udc9f := fun r \u21a6 \ud835\udc9f r.castSucc)` at both sites.",
+   "file": "TauCeti/Algebra/Homology/AInfinity/Algebra/Strictification/UnitKilling.lean",
+   "fix": "Use `congrArg \ud835\udc9f (Fin.ext rfl)` or rewrite with `Fin.castSucc_mk`.",
+   "issue": "The final `rfl` closes `\ud835\udc9f \u27e8r, _\u27e9 = \ud835\udc9f (Fin.castSucc \u27e8r, _\u27e9)` by unfolding `Fin.castSucc`, an undocumented defeq. The same `rfl` closes `hinit` in `hochschildDifferential_unitKillingCochain_same`.",
+   "line": 555
+  },
+  {
+   "evidence": "`have he' : e \u2208 (\ud835\udc9c.grading.shift 1).piece (-1) := by rwa [InternalGrading.shift_piece, neg_add_cancel]` at UnitKilling.lean:208 and 228.",
+   "file": "TauCeti/Algebra/Homology/AInfinity/Algebra/Strictification/UnitKilling.lean",
+   "fix": "Add `InternalGrading.mem_shift_one_piece_neg_one_of_mem_zero` (or generalise `mem_shift_one_piece`) and use it at all three sites.",
+   "issue": "`e \u2208 (\ud835\udc9c.grading.shift 1).piece (-1)` is re-derived from `he : e \u2208 piece 0` at lines 208 and 228, while CohomologicalUnit.lean proves the same fact only as `CohomologicalUnit.mem_shift_one_piece`.",
+   "line": 208
+  },
+  {
+   "evidence": "Identical `hlow` binders in `taylor_barDifferential_duplicateAt_ne_two`, `_row`, `IsMinimal.taylor_barDifferential_duplicateAt`, `taylor_of_tprod_last_eq_zero`, `rescaled_stasheff_duplicateAt`, `hochschildDifferential_unitKillingCochain_same`, `exists_gauge_kill_slot(s)`, `exists_strictUnit_step_of_mem_dualPiece`.",
+   "file": "TauCeti/Algebra/Homology/AInfinity/Algebra/Strictification/UnitKilling.lean",
+   "fix": "Introduce a predicate such as `KillsUnitUpTo \ud835\udc9c e n` (and one for the slot hypothesis) and state the lemmas and the stage structure in terms of it.",
+   "issue": "The five-line `hlow` hypothesis (`\u2200 k, k.1 \u2260 2 \u2192 k.1 \u2264 m + 2 \u2192 \u2200 x, (\u2203 r, x r = e) \u2192 taylor \u2026 = 0`) and the `hIH` slot hypothesis are copied into about ten signatures across Stasheff.lean, UnitKilling.lean and Basic.lean (including `StrictificationStage.taylor_eq_zero`), which obscures the induction structure.",
+   "line": 0
+  }
+ ],
+ "head_sha": "3896db704cbd4a7223b879704a998c87b04543b9",
+ "merge_base_sha": "9f43ade06282c2bb5b67fcacc22d93e6c5bb34a7",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42175,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b44a60a70e2b3e683516de94b74fa70c026548355b528f11101dd4f4f1046d17",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "a2e8223fb2d54dbcaf79f1a69160932a57d6fa15",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261115T181221Z-42175-proof-quality-ff66fe",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T18:12:21Z",
+ "submitted_by": "kim-em",
+ "summary": "Substantial reasoning is duplicated across files instead of factored into lemmas, several proofs are long brittle rewrite chains without structural comments, and two steps close by undocumented `Fin.castSucc` defeq.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/Homology/AInfinity/Algebra",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "85d2a25da6f7b820cdcf521fd3dddffb1278d478510a6c844aba17b3ee2f3780",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 8018
+  },
+  "cache_creation_input_tokens": 8018,
+  "cache_read_input_tokens": 165583,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6955
+    },
+    "cache_creation_input_tokens": 6955,
+    "cache_read_input_tokens": 83323,
+    "input_tokens": 2,
+    "output_tokens": 3848,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5962,
+  "output_tokens_details": {
+   "thinking_tokens": 1899
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
