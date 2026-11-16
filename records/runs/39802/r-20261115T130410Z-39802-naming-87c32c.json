@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1904598,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 38.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 19091
+    },
+    "cache_creation_input_tokens": 19091,
+    "cache_read_input_tokens": 84144,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 8169
+      },
+      "cache_creation_input_tokens": 8169,
+      "cache_read_input_tokens": 47533,
+      "input_tokens": 2,
+      "output_tokens": 2193,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3908,
+    "output_tokens_details": {
+     "thinking_tokens": 1728
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1f2f7d518c3e81587107d99655344ac1a45f0233",
+ "cli_dirty": false,
+ "cli_sha": "a2e8223fb2d54dbcaf79f1a69160932a57d6fa15",
+ "cost_usd": 0.19046,
+ "dedupe_key": "TauCetiProject/TauCeti|39802|e3349135fd5d1204bbd22830445b11bf8d847cf1|naming|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "94829377a4255ce3046efb733e215bef210774a3288ab4fdbc33c20c0483fce2",
+ "diff_sha256": "94829377a4255ce3046efb733e215bef210774a3288ab4fdbc33c20c0483fce2",
+ "duration_s": 38.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "CanonicalFactor.lean:30 defines `canonicalFactorNumerator R a w = ((R:\u2102)^2 - conj a * w)/R`; lines 56\u201357 and 94\u201396 restate that expression by hand; LocalLogDeriv.lean:142 and :178 need `simpa only [q, canonicalFactorNumerator_apply]` to use them.",
+   "file": "TauCeti/Analysis/Complex/CanonicalFactor.lean",
+   "fix": "State both lemmas through `canonicalFactorNumerator R a` (composed with `\u00b7 - z\u2080` for the logDeriv one) and rename them `norm_canonicalFactorNumerator_eval_circle` and `norm_logDeriv_canonicalFactorNumerator_comp_sub_le` (or similar).",
+   "issue": "`norm_canonicalFactor_numerator_eval_circle` (line 56) and `norm_logDeriv_canonicalFactor_numerator_le` (line 94) are about the normalized function `(R^2 - conj a * w)/R`, which is exactly `canonicalFactorNumerator R a`, but they write it out by hand and name it with the split token `canonicalFactor_numerator`. That breaks the rule that each `_`-separated piece of a name maps to a definition, and it is inconsistent with the neighbouring `canonicalFactorNumerator_apply`, `differentiable_canonicalFactorNumerator` and `canonicalFactorNumerator_ne_zero`.",
+   "line": 56
+  },
+  {
+   "evidence": "Line 71 concludes `R^2 - r*\u2016t\u2016 \u2264 \u2016(R:\u2102)^2 - conj a * t\u2016` and line 81 concludes `0 < \u2016(R:\u2102)^2 - conj a * t\u2016`, both without `/R`, whereas line 31 defines `canonicalFactorNumerator` with the `/R`.",
+   "file": "TauCeti/Analysis/Complex/CanonicalFactor.lean",
+   "fix": "Use one spelling per object: either restate these through `canonicalFactorNumerator` (e.g. `norm_canonicalFactorNumerator_pos` with the `/R` included), or give the un-normalized expression a name that does not collide with the definition.",
+   "issue": "`sub_mul_norm_le_norm_canonicalFactor_numerator` (line 68) and `norm_canonicalFactor_numerator_pos` (line 79) use the same `canonicalFactor_numerator` spelling for the un-normalized `R^2 - conj a * t`, with no division by `R`. So one name token covers two different objects, and only one of them is the defined `canonicalFactorNumerator`.",
+   "line": 68
+  }
+ ],
+ "head_sha": "e3349135fd5d1204bbd22830445b11bf8d847cf1",
+ "merge_base_sha": "1f2f7d518c3e81587107d99655344ac1a45f0233",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 39802,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "ea3f64e914a56ab1a513c3635092f99e1b926e141eae4c9ed10f592d91bfa141",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "a2e8223fb2d54dbcaf79f1a69160932a57d6fa15",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261115T130410Z-39802-naming-87c32c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-15T13:04:10Z",
+ "submitted_by": "kim-em",
+ "summary": "Most new names describe their conclusions in standard terms, but CanonicalFactor.lean uses `canonicalFactor_numerator` for both the defined normalized `canonicalFactorNumerator` and the un-normalized `R\u00b2 - conj a * t`, without ever stating those lemmas through the definition.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Complex/CanonicalDecomposition.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "51d550538b7a274d4a9f0208d003b2802a8f088f470bc90078bdbc2396a3f526",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 19091
+  },
+  "cache_creation_input_tokens": 19091,
+  "cache_read_input_tokens": 84144,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8169
+    },
+    "cache_creation_input_tokens": 8169,
+    "cache_read_input_tokens": 47533,
+    "input_tokens": 2,
+    "output_tokens": 2193,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3908,
+  "output_tokens_details": {
+   "thinking_tokens": 1728
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
