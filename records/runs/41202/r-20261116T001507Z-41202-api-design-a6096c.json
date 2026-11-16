@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.46304959999999995,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 37.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 74614
+    },
+    "cache_creation_input_tokens": 74614,
+    "cache_read_input_tokens": 78618,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5860
+      },
+      "cache_creation_input_tokens": 5860,
+      "cache_read_input_tokens": 73686,
+      "input_tokens": 2,
+      "output_tokens": 1701,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3712,
+    "output_tokens_details": {
+     "thinking_tokens": 2221
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "cli_dirty": false,
+ "cli_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "cost_usd": 0.46305,
+ "dedupe_key": "TauCetiProject/TauCeti|41202|ba800acdc33af6d5e9edbe30deee98f0c26a5d08|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "2e8572844a33ab37d2cc57f794b953d22b2b38604b5cdba2d6faf67d37044fde",
+ "diff_sha256": "2e8572844a33ab37d2cc57f794b953d22b2b38604b5cdba2d6faf67d37044fde",
+ "duration_s": 37.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "In the diff, `theorem smul_mk ... = if h : 2 \u2022 (a : \u039b) \u2264 ... then mk k \u27e8l k - (a : \u039b), by ... grind, ...\u27e9 else mk (k * g) \u27e8..., by ... grind, by ... grind\u27e9 := (rfl)`. No branch lemmas exist. The internal proofs (`smul_root`, `chiswellEmbed_smul`) all go through the private `smul_mk_eq_quotientMk`.",
+   "file": "TauCeti/GroupTheory/LambdaTree/Chiswell.lean",
+   "fix": "Add two lemmas, `smul_mk_of_two_nsmul_le` (`h : 2 \u2022 (a:\u039b) \u2264 l k + l g - l (k * g)` \u2192 `k \u2022 mk g a = mk k \u27e8l k - a, _, _\u27e9`) and `smul_mk_of_lt` (the other branch \u2192 `mk (k * g) \u27e8a + l (k * g) - l g, _, _\u27e9`), stated with the membership proofs as hypotheses or `by` terms. Mark them `@[simp]`, or keep the `dite` form only as `smul_mk_def`.",
+   "issue": "`ChiswellTree.smul_mk` is the only public lemma for `k \u2022 mk g a`. Its right-hand side is a `dite` that embeds the `grind` membership proofs. To use it, a caller must `split_ifs` and then match those proof terms, and there is no simp-normal form for either branch. The file itself works around this through the private `smulPair`/`smul_mk_eq_quotientMk`.",
+   "line": 0
+  },
+  {
+   "evidence": "The GTree.lean docstring lists `TauCeti.GTree.basedLength_cayleyBaseVertex` and `TauCeti.GTree.chiswellEmbed_cayley_bijective`, and the PR defines `theorem chiswellEmbed_cayley_bijective` and `theorem IsTree.exists_toSerreGraphAut_smul_eq_rev_iff`.",
+   "file": "",
+   "fix": "Replace these names in the description with the declaration names the code actually defines.",
+   "issue": "The PR description, which becomes the release note, names declarations that do not exist: `LyndonLength.Chiswell l`, `basedLength_chiswellBase`, `IsTree.exists_toSerreGraph_dart_rev_iff`, `GTree.basedLength_cayley_one`, `GTree.bijective_chiswellEmbed_cayley`. The code actually defines `ChiswellTree`, `basedLength_chiswellTree_root`, `exists_toSerreGraphAut_smul_eq_rev_iff`, `basedLength_cayleyBaseVertex`, and `chiswellEmbed_cayley_bijective`.",
+   "line": 0
+  }
+ ],
+ "head_sha": "ba800acdc33af6d5e9edbe30deee98f0c26a5d08",
+ "merge_base_sha": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 41202,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "da8c04c839c37884325da8b109f8a5b634f71aad33232bb1cc9c65f6c7fc0eba",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T001507Z-41202-api-design-a6096c",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T00:15:07Z",
+ "submitted_by": "kim-em",
+ "summary": "The Chiswell `G`-action's only characteristic lemma, `ChiswellTree.smul_mk`, states the result as a `dite` with inline proof terms, so callers cannot rewrite with it cleanly; it needs a lemma for each branch. The release-note description also names declarations that do not exist.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Combinatorics/Quiver",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "fd3bfd22e150e6523b1499b4799a628d8aa16d0e230a3dfb7c552cacc73b0ea0",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 74614
+  },
+  "cache_creation_input_tokens": 74614,
+  "cache_read_input_tokens": 78618,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5860
+    },
+    "cache_creation_input_tokens": 5860,
+    "cache_read_input_tokens": 73686,
+    "input_tokens": 2,
+    "output_tokens": 1701,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3712,
+  "output_tokens_details": {
+   "thinking_tokens": 2221
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
