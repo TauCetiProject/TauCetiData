@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1488464,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7758
+    },
+    "cache_creation_input_tokens": 7758,
+    "cache_read_input_tokens": 211622,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1347
+      },
+      "cache_creation_input_tokens": 1347,
+      "cache_read_input_tokens": 55920,
+      "input_tokens": 2,
+      "output_tokens": 1890,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3385,
+    "output_tokens_details": {
+     "thinking_tokens": 972
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "4caf68dc9fe57dcd98422514629aa79c09be1a66",
+ "cli_dirty": false,
+ "cli_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "cost_usd": 0.148846,
+ "dedupe_key": "TauCetiProject/TauCeti|41658|4464a0874c2c973332eb72d3c2d6a15b3153cde5|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "49a8538b237a8b3d2835cacb3be7773a2865a0d42b19a4f491c90de4f3c950be",
+ "diff_sha256": "49a8538b237a8b3d2835cacb3be7773a2865a0d42b19a4f491c90de4f3c950be",
+ "duration_s": 36.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Algebra/ContinuedFractions/Translations.lean:82,85,88 define `nth_cont_eq_succ_nth_contAux`, `num_eq_conts_a`, `den_eq_conts_b`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/IncompleteGamma/ContinuedFraction.lean",
+   "fix": "Rewrite with `GenContFract.den_eq_conts_b`, `GenContFract.num_eq_conts_a` and `GenContFract.nth_cont_eq_succ_nth_contAux` instead of `rfl`.",
+   "issue": "`hd : dens n = (contsAux (n + 1)).b := rfl` relies on how `GenContFract.dens` and `conts` unfold, not on a stated lemma. The same happens with `hnum`/`hden` at lines 864-865.",
+   "line": 814
+  },
+  {
+   "evidence": "Lines 355-356 and 386-387: `push_cast` followed by `rfl`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/IncompleteGamma/ContinuedFraction.lean",
+   "fix": "Close with `simp`/`norm_cast`/`ring_nf` on an explicit equation, or state the cast equality as a `have` and `rw` it, so no bare `rfl` is needed after `push_cast`.",
+   "issue": "`tricomiContFractSol_two_mul_add_one` ends with `push_cast; rfl`: the goal is only closed because the cast and parenthesisation shapes (`((k+1 : \u2115) : \u2102)` vs `(k : \u2102) + 1`, `(2*k+1 : \u2115)`) happen to be definitionally equal. The same pattern is used for `hnum` at line 387 inside `neg_one_pow_mul_prod_tricomiContFractNum`.",
+   "line": 356
+  },
+  {
+   "evidence": "grep `prod_ne_zero_iff` hits lines 543, 571, 678, 711.",
+   "file": "TauCeti/Analysis/SpecialFunctions/IncompleteGamma/ContinuedFraction.lean",
+   "fix": "Factor out a lemma such as `prod_Icc_tricomiContFractNum_ne_zero` (and the signed variant) and use it at lines 543, 571, 678 and 711.",
+   "issue": "The non-vanishing of `\u220f j \u2208 Icc 1 m, tricomiContFractNum a z j` (and of `(-1)^m * \u220f \u2026`) is re-proved inline four times via `Finset.prod_ne_zero_iff.2 fun j hj => tricomiContFractNum_ne_zero ha hz \u2026`.",
+   "line": 543
+  },
+  {
+   "evidence": "Lines 697-757: `hprefix`, `htail`, `hsplit`, `hrev1`, `hrev2` do not depend on the specific definition of `T`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/IncompleteGamma/ContinuedFraction.lean",
+   "fix": "Extract a general private lemma: if `T M \u2260 0` and `3\u2016T m\u2016 \u2264 \u2016T (m+1)\u2016` for all `m \u2265 M`, then `\u2016\u2211 m \u2208 Ico N n, T m\u2016 \u2192 \u221e`. Then apply it to the Tricomi terms.",
+   "issue": "`tendsto_norm_sum_tricomiContFractSol_atTop` is about 60 lines with no structural comments. Its core is a generic fact about any sequence satisfying `3\u2016T m\u2016 \u2264 \u2016T (m+1)\u2016` from some point on (the prefix bound `\u2016\u2211\u2016 \u2264 \u00bd\u2016T\u2016`, then divergence), and that fact is buried inside the proof.",
+   "line": 697
+  }
+ ],
+ "head_sha": "4464a0874c2c973332eb72d3c2d6a15b3153cde5",
+ "merge_base_sha": "4caf68dc9fe57dcd98422514629aa79c09be1a66",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 41658,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2757db08c4664245d97d681eddbc6f3f9d4047081029704152f75fee83ef905f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T211651Z-41658-proof-quality-fac278",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T21:16:51Z",
+ "submitted_by": "kim-em",
+ "summary": "Several steps rely on definitional unfolding where Mathlib has lemmas, a non-vanishing argument is repeated four times, and the main divergence proof is about 60 lines with no structural comments.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/IncompleteGamma/ContinuedFraction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/IncompleteGamma",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e4bc134cb58ffb3e457270e548825039bc50a855e84f35015390d3bd977c872e",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 7758
+  },
+  "cache_creation_input_tokens": 7758,
+  "cache_read_input_tokens": 211622,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1347
+    },
+    "cache_creation_input_tokens": 1347,
+    "cache_read_input_tokens": 55920,
+    "input_tokens": 2,
+    "output_tokens": 1890,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3385,
+  "output_tokens_details": {
+   "thinking_tokens": 972
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
