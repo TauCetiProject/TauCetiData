@@ -1,0 +1,214 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.4479449999999999,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 51.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 32967
+    },
+    "cache_creation_input_tokens": 32967,
+    "cache_read_input_tokens": 835950,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 20,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1329
+      },
+      "cache_creation_input_tokens": 1329,
+      "cache_read_input_tokens": 105777,
+      "input_tokens": 2,
+      "output_tokens": 2293,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5792,
+    "output_tokens_details": {
+     "thinking_tokens": 1617
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0afcaa7ea7c9debf20bad5dcaf790bcff851afb",
+ "cli_dirty": false,
+ "cli_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "cost_usd": 0.447945,
+ "dedupe_key": "TauCetiProject/TauCeti|40358|b60599ca429ba28a9b6aec6b7a7c50962687daa7|reuse|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "13f45d17016e49eea3db87abb0fcd4662c418a1e27e39f60d0d7a7d6eeb5ef86",
+ "diff_sha256": "13f45d17016e49eea3db87abb0fcd4662c418a1e27e39f60d0d7a7d6eeb5ef86",
+ "duration_s": 51.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ConformalCurvature.lean:128 `theorem weylTensor_eq_zero_iff (hf : IsLocalRiemannianIsometry I J f) (x : M)` and :146 `cottonTensor_eq_zero_iff`; Curvature.lean:141 `mfderiv_curvatureTensor`; Flat.lean:121-124 repeats the surjectivity argument.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CovariantDerivative/Curvature/ConformallyFlat/Chart.lean",
+   "fix": "Make it a public `TauCeti.IsLocalRiemannianIsometry.curvatureTensor_eq_zero_iff (hf) (x)` in `Riemannian/Isometry/Curvature.lean`, next to `mfderiv_curvatureTensor`, and call `hf.curvatureTensor_eq_zero_iff` at Chart.lean lines 251-253, 284 and 337.",
+   "issue": "Private `curvatureTensor_eq_zero_iff_of_isLocalRiemannianIsometry` copies, for the curvature tensor, the public `IsLocalRiemannianIsometry.weylTensor_eq_zero_iff` / `cottonTensor_eq_zero_iff`, using the same ext/`mfderiv_surjective` proof. The same argument is already inlined at `Riemannian/Isometry/Flat.lean:111-124`.",
+   "line": 95
+  },
+  {
+   "evidence": "Solvability.lean:462 and Chart.lean:158 both use `tangentSpaceOpenEquiv_mfderiv_apply (I' := I) (f := Opens.inclusion _) (A := id) rfl _`; Restriction.lean:76 has only `subtype_val`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CovariantDerivative/Curvature/Weyl/Solvability.lean",
+   "fix": "Add one public `IsLocalRiemannianIsometry.opens_inclusion (h : W \u2264 W\u2080)` next to `IsLocalRiemannianIsometry.subtype_val` in `Riemannian/Isometry/Restriction.lean:76` and use it in both files, for example by building `hf\u2081` in Chart.lean from `hf.comp (IsLocalRiemannianIsometry.opens_inclusion hW\u2081W)`.",
+   "issue": "Private `isLocalRiemannianIsometry_opens_inclusion` (Opens.inclusion is a local Riemannian isometry) is proved again inline inside `isLocalRiemannianIsometry_rescale_opens` in Chart.lean (the `hteq` and `isInvertible_mfderiv` blocks at lines 154-180).",
+   "line": 450
+  },
+  {
+   "evidence": "Tangent/Basic.lean:887 `@[simp] theorem mfderiv_inclusion_apply {U V : Opens M} (h : U \u2264 V) (x : U) (v) : mfderiv I I (Opens.inclusion h) x v = v`, proved by the same `tangentSpaceOpenEquiv_mfderiv_apply ... (A := id) rfl` step.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CovariantDerivative/Curvature/ConformallyFlat/Chart.lean",
+   "fix": "Replace with `rw [Manifold.mfderiv_inclusion_apply]` (plus `rfl` for the `tangentSpaceOpenEquiv` coercion), or drop it entirely once the shared `opens_inclusion` lemma exists.",
+   "issue": "`hteq` (and `hmf` in Solvability.lean:456-462) works out the inclusion's differential from `tangentSpaceOpenEquiv_mfderiv_apply` + `mfderiv_id`, which is exactly what the existing simp lemma `mfderiv_inclusion_apply` already states.",
+   "line": 155
+  }
+ ],
+ "head_sha": "b60599ca429ba28a9b6aec6b7a7c50962687daa7",
+ "merge_base_sha": "b0afcaa7ea7c9debf20bad5dcaf790bcff851afb",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 40358,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "a0be2aaa5f7171f66141b6b953901550f0fd44c5c126df0834e09ab49cdfe72a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T060731Z-40358-reuse-b245aa",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T06:07:31Z",
+ "submitted_by": "kim-em",
+ "summary": "The new mathematics is genuinely new, but the PR adds a private curvature-vanishing transport lemma that is the unexported curvature sibling of existing public isometry API, and writes the open-inclusion local-isometry argument twice instead of reusing `mfderiv_inclusion_apply`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Restriction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/LocalDiffeomorph",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/LocalDiffeomorph/OpenSubset.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/LocalDiffeomorph/OpenSubset.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/ConformalCurvature.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Isometry/Flat.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Tangent/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 14,
+  "total_calls": 14,
+  "trace_truncated": false
+ },
+ "transcript_blob": "508c9141b1e45e0fc1cf4e8d70a24be7f6a27ebe101294a0f093bf5307f20397",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 32967
+  },
+  "cache_creation_input_tokens": 32967,
+  "cache_read_input_tokens": 835950,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 20,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1329
+    },
+    "cache_creation_input_tokens": 1329,
+    "cache_read_input_tokens": 105777,
+    "input_tokens": 2,
+    "output_tokens": 2293,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5792,
+  "output_tokens_details": {
+   "thinking_tokens": 1617
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
