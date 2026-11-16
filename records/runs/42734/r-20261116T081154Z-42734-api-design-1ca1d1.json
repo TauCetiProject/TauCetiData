@@ -1,0 +1,186 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.22260760000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 47.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 11142
+    },
+    "cache_creation_input_tokens": 11142,
+    "cache_read_input_tokens": 290628,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1581
+      },
+      "cache_creation_input_tokens": 1581,
+      "cache_read_input_tokens": 77255,
+      "input_tokens": 2,
+      "output_tokens": 2795,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5437,
+    "output_tokens_details": {
+     "thinking_tokens": 1929
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "02e67850bc7b61fc5bbf9e6b53815c76af8f9d12",
+ "cli_dirty": false,
+ "cli_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "cost_usd": 0.222608,
+ "dedupe_key": "TauCetiProject/TauCeti|42734|62fc0c14e7da12393a2dbd9726457993dd7f04da|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "508eb2c01aaeed59ec17991a02afc4b8d6c6edaa27b141c7a784746d39e3da66",
+ "diff_sha256": "508eb2c01aaeed59ec17991a02afc4b8d6c6edaa27b141c7a784746d39e3da66",
+ "duration_s": 47.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The proof only uses `borelSubgroup_le_extendedElementarySubgroup`; Mathlib's GroupTheory/DoubleCoset.lean has no `subgroupOf` lemma (grep shows no matches).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Bruhat/TitsSystem.lean",
+   "fix": "State it for arbitrary `H \u2264 E` (e.g. `DoubleCoset.mem_doubleCoset_subgroupOf_iff`) in a general Subgroup/DoubleCoset file and use it in TitsSystem.lean, Decomposition.lean and Quotient.lean.",
+   "issue": "`mem_doubleCoset_subgroupOf_extendedElementarySubgroup_iff` is general infrastructure: double cosets of `H.subgroupOf E` are restrictions of ambient double cosets of `H` whenever `H \u2264 E`; nothing depends on Chevalley data.",
+   "line": 360
+  },
+  {
+   "evidence": "The proof uses only `DoubleCoset.mem_doubleCoset` and `mul_mem`; no such lemma is in Mathlib's DoubleCoset.lean (grep of its lemma list).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Bruhat/TitsSystem.lean",
+   "fix": "Generalize to arbitrary subgroups `H K`, make it public, and place it alongside the DoubleCoset lemma above.",
+   "issue": "Private `mul_mem_doubleCoset_borel_both` is a generic double-coset fact (`b\u2081 \u2208 H`, `b\u2082 \u2208 K`, `y \u2208 doubleCoset z H K` \u21d2 `b\u2081 * y * b\u2082 \u2208 doubleCoset z H K`) hidden as Chevalley-specific.",
+   "line": 230
+  },
+  {
+   "evidence": "Statement LHS is the defined subgroup; RHS is a compound inf/map expression.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Bruhat/Decomposition.lean",
+   "fix": "Remove `@[simp]` and keep it as a named characterization, as with the untagged `bruhatCell_weylProjection`.",
+   "issue": "`inversionPositivePoints_weylProjection_eq` is `@[simp]`, so simp rewrites the named subgroup `inversionPositivePoints K (weylProjection K n)` into `positivePoints \u2293 map conj negativePoints`, destroying the definition's normal form.",
+   "line": 0
+  },
+  {
+   "evidence": "Parabolic.lean:62 defines `puncturedPositivePoints_le_iff`; Positive/Basic.lean:215 defines `positivePoints_le_iff`; no analogue exists for `inversionPositivePoints`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Bruhat/Decomposition.lean",
+   "fix": "Add `inversionPositivePoints_le_iff : D.inversionPositivePoints A w \u2264 P \u2194 \u2200 \u03b3 \u2208 inversions \u2026 w\u207b\u00b9, \u2200 u, D.rootSubgroupPoints \u03b3 A u \u2208 P` and use it in `inversionPositivePoints_le_positivePoints`, `inversionPositivePoints_le_map_conj_negativePoints` and `map_conj_weylElement_inversionPositivePoints_le`.",
+   "issue": "`inversionPositivePoints` lacks a containment criterion `inversionPositivePoints_le_iff`, unlike `puncturedPositivePoints_le_iff`, `positivePoints_le_iff` and `negativePoints_le_iff`. As a result, three proofs unfold `inversionPositivePoints_def` + `iSup\u2082_le_iff` by hand.",
+   "line": 0
+  }
+ ],
+ "head_sha": "62fc0c14e7da12393a2dbd9726457993dd7f04da",
+ "merge_base_sha": "7b3aaabdeaef0c48b006d1ff4aa81e1f83ba020e",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42734,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3f316cc23a532d5ee8abe427cd1178087c15d9c5861b86ed8be6d9d37c4201d9",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T081154Z-42734-api-design-1ca1d1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T08:11:54Z",
+ "submitted_by": "kim-em",
+ "summary": "Two subgroup-generic double-coset lemmas are kept Chevalley-specific (one private) instead of living in a general file, a @[simp] lemma rewrites the named inversion subgroup into an intersection, and `inversionPositivePoints` lacks the `le_iff` criterion its siblings have.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/Chevalley",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/GroupTheory/DoubleCoset.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/GroupTheory/TitsSystem",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/GroupTheory/DoubleCoset.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 7,
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4fc8f51fd6b47702a27ee6061c1eb468ad6b5feb49d221ddd8d44fa41bba4879",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 11142
+  },
+  "cache_creation_input_tokens": 11142,
+  "cache_read_input_tokens": 290628,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1581
+    },
+    "cache_creation_input_tokens": 1581,
+    "cache_read_input_tokens": 77255,
+    "input_tokens": 2,
+    "output_tokens": 2795,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5437,
+  "output_tokens_details": {
+   "thinking_tokens": 1929
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

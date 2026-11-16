@@ -1,0 +1,177 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.18793619999999997,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 47.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 10030
+    },
+    "cache_creation_input_tokens": 10030,
+    "cache_read_input_tokens": 136451,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 8967
+      },
+      "cache_creation_input_tokens": 8967,
+      "cache_read_input_tokens": 68757,
+      "input_tokens": 2,
+      "output_tokens": 3371,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5524,
+    "output_tokens_details": {
+     "thinking_tokens": 2017
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "02e67850bc7b61fc5bbf9e6b53815c76af8f9d12",
+ "cli_dirty": false,
+ "cli_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "cost_usd": 0.187936,
+ "dedupe_key": "TauCetiProject/TauCeti|42734|62fc0c14e7da12393a2dbd9726457993dd7f04da|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "508eb2c01aaeed59ec17991a02afc4b8d6c6edaa27b141c7a784746d39e3da66",
+ "diff_sha256": "508eb2c01aaeed59ec17991a02afc4b8d6c6edaa27b141c7a784746d39e3da66",
+ "duration_s": 47.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "In the diff: `change (D.extendedElementarySubgroup K).subtype '' _ * ...` (two times) and `change (D.rootSubgroupPoints \u03b3 K).range.map (MulAut.conj (ni : D.points K)).toMonoidHom \u2264 ...`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Bruhat/Decomposition.lean",
+   "fix": "Rewrite with `Subgroup.coe_subtype` or a `bruhatCell_def`-style lemma stated with `.subtype`, and use `simp only [ni]` instead of `change`. Otherwise, add a comment explaining why `change` is needed.",
+   "issue": "There are uncommented `change` steps in `bruhatCell_simple_mul_eq_of_notMem_inversions` and `bruhatCell_simple_mul_eq_union_of_mem_inversions`. Both rely on `Subtype.val` being definitionally equal to `(extendedElementarySubgroup K).subtype`. `map_conj_weylElement_inversionPositivePoints_le` also has an uncommented `change` that unfolds the `iSup` body and the coercion of `ni`.",
+   "line": 0
+  },
+  {
+   "evidence": "In the diff: `change (((n : D.extendedElementarySubgroup K) : D.points K) \u2208 D.borelSubgroup K) \u2194 ...`, `change (QuotientGroup.mk tN : N \u29f8 B.subgroupOf N) \u2208 Subgroup.closure S`, and `change (D.weylElement ... * D.weylElement ...) \u2208 D.borelSubgroup K`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Bruhat/TitsSystem.lean",
+   "fix": "Use `Subgroup.mem_subgroupOf`, `Subgroup.mem_comap` and `MonoidHom.mem_ker`/`QuotientGroup.mk'_apply` rewrites, and add a `coe_simpleRepAux` simp lemma. Otherwise, add a comment explaining each `change`.",
+   "issue": "There are uncommented `change` steps in `intersection_extendedElementarySubgroup_eq`, `closure_titsSystemSimple` (the `QuotientGroup.mk tN` goal), and the `exists_simpleRep_mul_self_mem` field of `titsSystem`. All three unfold `subgroupOf`, `comap` or `simpleRepAux` membership by definitional equality.",
+   "line": 0
+  },
+  {
+   "evidence": "In the diff: `have hmk : D.titsSystemWeylGroupEquiv K (QuotientGroup.mk nN) = D.weylProjection K n := (rfl)`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Weyl/Quotient.lean",
+   "fix": "Prove `hmk` with `D.titsSystemWeylGroupEquiv_mk K nN`, and close the surjectivity goal with `titsSystemWeylProjection_mk`.",
+   "issue": "`weylProjection_eq_one_iff_mem_range_torusPoints` proves `hmk` by `(rfl)` through `MulEquiv.ofBijective` and `QuotientGroup.lift`, although this PR adds the API lemma `titsSystemWeylGroupEquiv_mk`. In `titsSystemWeylProjection_bijective`, surjectivity is also closed by `rfl` through `subgroupNToWeylSubgroup`.",
+   "line": 0
+  },
+  {
+   "evidence": "`code/TauCeti/Algebra/AlgebraicGroup/Chevalley/Weyl/Root.lean:81` defines `exists_unit_conj_rootSubgroupPoints`, which already gives `MulAut.conj g (x_\u03b3 u) = x_{w\u03b3}(c*u)`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Bruhat/Decomposition.lean",
+   "fix": "Use the existing `exists_unit_conj_rootSubgroupPoints` directly, or extract one lemma such as `inv_mul_rootSubgroupPoints_mul_mem_range (n) : n\u207b\u00b9 * x_\u03b3(u) * n \u2208 (rootSubgroupPoints (w\u207b\u00b9 \u03b3)).range`.",
+   "issue": "The same `himg := \u27e8_, \u27e8u, rfl\u27e9, rfl\u27e9; rw [map_range_rootSubgroupPoints_conj, map_inv] at himg; rcases himg` sequence appears three times. Each copy re-derives that conjugating `x_\u03b3(u)` by `n\u207b\u00b9` gives an element of the root subgroup at `w\u207b\u00b9\u03b3`. The instances are `inversionPositivePoints_le_map_conj_negativePoints` (Decomposition.lean), and `rootSubgroup_mul_mem_doubleCoset_of_mem_posRoots` and `rootSubgroup_unit_mul_mem_doubleCoset_of_mem_negRoots` (TitsSystem.lean).",
+   "line": 0
+  },
+  {
+   "evidence": "See the repeated `let nN`, `have htn` and `have hisupp`/`hipos` blocks in the diff.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Weyl/Quotient.lean",
+   "fix": "Add a `toTitsSystemSubgroupN` definition with a coercion lemma, a lemma `inv_mul_torusPoints_mul_mem_borelSubgroup`, and a lemma `simpleIndex_mem_simplyConnectedBase_support`, and use them at every site.",
+   "issue": "Three arguments are repeated inline instead of being factored out. (1) The lift `\u27e8\u27e8n.1, weylSubgroup_le_extendedElementarySubgroup K n.2\u27e9, by rw [titsSystem_subgroupN K]; exact n.2\u27e9` of `n : weylSubgroup K` into `(titsSystem K).subgroupN` appears in `bruhatCell_weylProjection`, `weylProjection_eq_one_iff_mem_range_torusPoints` and `titsSystemWeylProjection_bijective`. (2) The `htn` fact that `n\u207b\u00b9 * torusPoints s * n \u2208 borelSubgroup` appears in `exists_mem_inversionPositivePoints_mul_mem_borelSubgroup` and `mul_doubleCoset_weylElement_subset`. (3) The proof that the simple index lies in the base support, `t.support_rationalBase ht \u25b8 simpleIndex_mem_support i` (and the `hipos` variant built on it), appears about eight times.",
+   "line": 0
+  },
+  {
+   "evidence": "In the diff: the `have hnotmem : ... := by intro hmem ... exact lt_irrefl _ ...` block, and the `| succ m ih =>` branch of the Decomposition proof.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Weyl/Quotient.lean",
+   "fix": "Extract `hnotmem` as a lemma about the Tits system Bruhat cells, extract the `hnv_len` length computation as a lemma about the root system, and add comments on the induction structure in both proofs.",
+   "issue": "`ncard_inversions_titsSystemWeylProjection_eq_wordLength` is about 75 lines with no comments explaining its structure. The roughly 35-line `hnotmem` block inside it is a standalone fact: if `\u2113(s\u1d62 y) > \u2113(y)`, then `\u03b1\u1d62 \u2209 inversions(w_y\u207b\u00b9)`. `exists_mem_inversionPositivePoints_mul_borelSubgroup_of_mem_positivePoints` (Decomposition.lean, about 70 lines) has the same problem: its succ case mixes the length bookkeeping (`hnv_len`) with the group-element calculation, and neither is commented.",
+   "line": 0
+  },
+  {
+   "evidence": "Both proofs contain identical `let m := ...`, `have hm : Function.Injective m := Units.map_injective ...` and `exact h?.symm.trans ((congrArg m (Subgroup.mem_bot.mp _)).trans m.map_one)` lines.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/Chevalley/Borel.lean",
+   "fix": "Extract a private lemma that turns triviality of a lattice-level element in `\u22a5` into triviality of the corresponding point, or reuse the `pointsToLatticeHom` injectivity that this PR adds in Positive/Parabolic.lean.",
+   "issue": "`positivePoints_inf_range_torusPoints_eq_bot` and `negativePoints_inf_borelSubgroup_eq_bot` repeat the same setup: the `m := Units.map (toMatrixAlgEquiv ...)` definition, the injectivity proof `hm`, and the final `Subtype.ext` transport.",
+   "line": 125
+  }
+ ],
+ "head_sha": "62fc0c14e7da12393a2dbd9726457993dd7f04da",
+ "merge_base_sha": "7b3aaabdeaef0c48b006d1ff4aa81e1f83ba020e",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42734,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f6777050ede1926796a01f396033573d12311827676ea73347d4bb3897efebde",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T081505Z-42734-proof-quality-a39a03",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T08:15:05Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs repeatedly use uncommented `change` steps and rebuild the same conjugation and lifting arguments by hand. Two proofs of about 70 lines each contain an unextracted lemma and have no comments explaining their structure.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Algebra/AlgebraicGroup/Chevalley",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "18a0074f8ce5dca941ef2e3cfb6c37b7f4d691bcc35899e2420578e6f6ee0aae",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 10030
+  },
+  "cache_creation_input_tokens": 10030,
+  "cache_read_input_tokens": 136451,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8967
+    },
+    "cache_creation_input_tokens": 8967,
+    "cache_read_input_tokens": 68757,
+    "input_tokens": 2,
+    "output_tokens": 3371,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5524,
+  "output_tokens_details": {
+   "thinking_tokens": 2017
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

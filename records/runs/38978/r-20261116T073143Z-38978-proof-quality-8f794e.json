@@ -1,0 +1,188 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.32019980000000003,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 44.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 24794
+    },
+    "cache_creation_input_tokens": 24794,
+    "cache_read_input_tokens": 547109,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 905
+      },
+      "cache_creation_input_tokens": 905,
+      "cache_read_input_tokens": 105262,
+      "input_tokens": 2,
+      "output_tokens": 2164,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4338,
+    "output_tokens_details": {
+     "thinking_tokens": 1503
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "cli_dirty": false,
+ "cli_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "cost_usd": 0.3202,
+ "dedupe_key": "TauCetiProject/TauCeti|38978|ba718994ba6731fe391591fee6c2a02e7ec0d872|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "f79e8fb3688d0d757ce3124851d7e51c03239e5ff1668be6f33f91dc21676a94",
+ "diff_prompt_sha256": "bee61ad7571614d0b63a5086ae20e3f468a2700860630127746839ef1ca560b9",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "f79e8fb3688d0d757ce3124851d7e51c03239e5ff1668be6f33f91dc21676a94",
+ "duration_s": 44.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:550 and :593 contain the same `have hFx` block word for word; l.823\u2013830 rebuild it through `hslice`.",
+   "file": "TauCeti/Analysis/Calculus/Incidence/Basic.lean",
+   "fix": "Add one lemma, e.g. `fderiv_slice_eq_comp_inl (hF : DifferentiableAt \u211d F (x, p)) : fderiv \u211d (fun x' \u21a6 F (x', p)) x = (fderiv \u211d F (x, p)).comp (.inl \u211d E P)`, and use it in all three places.",
+   "issue": "The same `have hFx : HasFDerivAt (fun x' \u21a6 F (x', p)) ((fderiv \u211d F (x, p)).comp (ContinuousLinearMap.inl \u211d E P)) x := \u2026.comp x (hasFDerivAt_prodMk_left x p)` followed by `rw [hFx.fderiv]` appears in `IsRegularIncidenceParameterOn.surjective_coprod` (l.550) and `isRegularIncidenceParameterOn_iff_surjective_coprod` (l.593). `IsRegularIncidenceParameterOn.comp` re-derives the same slice derivative again through `hslice` (l.823ff).",
+   "line": 550
+  },
+  {
+   "evidence": "Lines 793\u2013815 and 816\u2013830 repeat the same `hmaps` / `differentiableAt` / `differentiableAt_of_fderiv_surjective` sequence.",
+   "file": "TauCeti/Analysis/Calculus/Incidence/Basic.lean",
+   "fix": "Factor out one preliminary lemma that gives, at an incidence point, the differentiability of `\u03c6`, `\u03c8`, `\u03c7`, `F` and `j` together with the chain-rule `HasFDerivAt` for both composed maps. Then derive `hF'`, `hj'` and the surjectivity step from it, or at minimum add comments marking the three phases.",
+   "issue": "`IsRegularIncidenceParameterOn.comp` has a proof of about 50 lines. It runs `obtain \u27e8hU, hEq\u27e9 := hmaps \u2026`, `h.differentiableAt hU hEq` and `differentiableAt_of_fderiv_surjective (h\u03c6/h\u03c8/h\u03c7 \u2026)` three times: in `hF'` (l.793), in `hj'` (l.805) and in the main body. There is no comment explaining the overall structure.",
+   "line": 777
+  },
+  {
+   "evidence": "Basic.lean:860 `simpa using IsRegularIncidenceParameterOn.comp h\u2080 (U' := U) (\u03c6 := eE.symm) \u2026`.",
+   "file": "TauCeti/Analysis/Calculus/Incidence/Basic.lean",
+   "fix": "State the needed function and set equalities explicitly (for example with `ContinuousLinearEquiv.apply_symm_apply` and `preimage_preimage`), then `rw`/`convert` with them, or use `simp only` with a named lemma list.",
+   "issue": "The forward direction of `isRegularIncidenceParameterOn_comp_equiv_iff` closes with `simpa using IsRegularIncidenceParameterOn.comp h\u2080 \u2026`. That `simpa` must simplify composites of the four equivalences with their inverses (`eE (eE.symm _)` and so on) inside the lambdas, and also nested preimages of `U`, all by unrestricted simp. It is terse but fragile, and the reason it works is hidden. The earlier `simpa using h` that turns `p'` into `eP.symm (eP p')` has the same problem.",
+   "line": 860
+  },
+  {
+   "evidence": "RelativeTranslate.lean:311.",
+   "file": "TauCeti/Analysis/Calculus/Incidence/RelativeTranslate.lean",
+   "fix": "Replace it with `simpa [Function.comp_def] using h`, or derive the slice directly from `hasFDerivAt_relativeTranslate` together with `hmin.fderiv_eq_zero`.",
+   "issue": "`hasFDerivAt_relativeTranslate_of_eventually_nonneg_of_eq_zero` closes with `rwa [Function.comp_def, ContinuousLinearMap.comp_assoc, ContinuousLinearMap.fst_comp_inl, ContinuousLinearMap.comp_id] at h`, a chain of four named-lemma rewrites that breaks if Mathlib renames any of them.",
+   "line": 311
+  }
+ ],
+ "head_sha": "ba718994ba6731fe391591fee6c2a02e7ec0d872",
+ "merge_base_sha": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 38978,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b0a0f5fe5bfddb55b1ace2bc3ab315b5c0a2671dbfcbce732839091869f6639c",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T073143Z-38978-proof-quality-8f794e",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T07:31:43Z",
+ "submitted_by": "kim-em",
+ "summary": "Proofs are mostly short and use robust automation, but the slice-derivative calculation is repeated three times instead of factored into a lemma, and the chart-transfer proof `IsRegularIncidenceParameterOn.comp` repeats its setup three times without any structure. Two closing steps are brittle: a `simpa` that depends on many simp lemmas and a chain of named-lemma rewrites.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Incidence/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Calculus/Incidence/RelativeTranslate.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 7,
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "73e76c2f501c45ee1d963159c6b157bbbf46ea65db251d0722960b34855ff8bd",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 24794
+  },
+  "cache_creation_input_tokens": 24794,
+  "cache_read_input_tokens": 547109,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 905
+    },
+    "cache_creation_input_tokens": 905,
+    "cache_read_input_tokens": 105262,
+    "input_tokens": 2,
+    "output_tokens": 2164,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4338,
+  "output_tokens_details": {
+   "thinking_tokens": 1503
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
