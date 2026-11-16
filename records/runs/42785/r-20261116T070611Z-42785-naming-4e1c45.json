@@ -1,0 +1,178 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2629598,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 46.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 19418
+    },
+    "cache_creation_input_tokens": 19418,
+    "cache_read_input_tokens": 278229,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2273
+      },
+      "cache_creation_input_tokens": 2273,
+      "cache_read_input_tokens": 100569,
+      "input_tokens": 2,
+      "output_tokens": 2755,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5510,
+    "output_tokens_details": {
+     "thinking_tokens": 2505
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7ab96ed195deeb2718e7ac87715be4afc6c1d55d",
+ "cli_dirty": false,
+ "cli_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "cost_usd": 0.26296,
+ "dedupe_key": "TauCetiProject/TauCeti|42785|8855e3f544d0d6a8af9ef59a2e879a3f071eb6ad|naming|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "18b87a7d5ca9229498396a67f4747697b0e885608903b708932bf9f7e3cb4a36",
+ "diff_prompt_sha256": "188063c2336ff6a9649acd9a90a893ae67e17adbd06cb506fa48d1605f923c4a",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "18b87a7d5ca9229498396a67f4747697b0e885608903b708932bf9f7e3cb4a36",
+ "duration_s": 46.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "line 84 `namespace TauCeti`; line 193 `def unitizationConjElem (u : Unitization R B) (p : B) : B := u.fst \u2022 p + u.snd * p`; `inr_unitizationConjElem` states it equals `u * p`.",
+   "file": "TauCeti/Analysis/CStarAlgebra/Projection/Perturbation.lean",
+   "fix": "Move it to the `Unitization` namespace under a name describing the product (e.g. `Unitization.mulInr`), and rename `inr_unitizationConjElem`, `star_unitizationConjElem_mul_self`, `unitizationConjElem_mul_star_self`, `isPartialIsometry_unitizationConjElem` to match.",
+   "issue": "`TauCeti.unitizationConjElem (u : Unitization R B) (p : B)` takes a Mathlib type as its first explicit argument but lives in `TauCeti`, so dot notation is lost; 'Conj' is also misleading because the definition is the product `u * p`, not a conjugation.",
+   "line": 193
+  },
+  {
+   "evidence": "Naming conventions: `*` \u21a6 `mul`. Mathlib CStarMatrix.lean only defines the instance field `hMul` (line 301); no Mathlib theorem uses `hMul` in its name.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/Block.lean",
+   "fix": "Rename to `ofMatrix_symm_mul`, protected `CStarMatrix.mul_assoc`, protected `CStarMatrix.norm_mul_le`, and update all uses (including ProjectionEquiv.lean).",
+   "issue": "`ofMatrix_symm_hMul`, `hMul_assoc`, `norm_hMul_le` name `*` as `hMul`; Mathlib's symbol dictionary names `*` as `mul` regardless of heterogeneity, and this PR itself uses protected `CStarMatrix.mul_sub`/`sub_mul`/`mul_one`/`one_mul` for the same rectangular product.",
+   "line": 0
+  },
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/Matrix/DotProduct.lean:120 `lemma self_mul_conjTranspose_eq_zero ... : A * A\u1d34 = 0 \u2194 A = 0`, which this lemma's proof calls.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/Block.lean",
+   "fix": "Rename to `CStarMatrix.self_mul_conjTranspose_eq_zero`.",
+   "issue": "`CStarMatrix.mul_conjTranspose_self_eq_zero` (`M * M\u1d34 = 0 \u2194 M = 0`) diverges from the Mathlib name for the same statement on `Matrix`.",
+   "line": 0
+  },
+  {
+   "evidence": "Adjacent declarations in the same file name `v * v.conjTranspose` as `mul_conjTranspose_self`.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/Block.lean",
+   "fix": "Rename to `isStarProjection_mul_conjTranspose_self_of_isIdempotentElem`.",
+   "issue": "`isStarProjection_mul_conjTranspose_of_isIdempotentElem` concludes `IsStarProjection (v * v.conjTranspose)` but drops the `_self` used by the adjacent `norm_mul_conjTranspose_self` and `mul_conjTranspose_mul_self_of_isIdempotentElem`.",
+   "line": 0
+  }
+ ],
+ "head_sha": "8855e3f544d0d6a8af9ef59a2e879a3f071eb6ad",
+ "merge_base_sha": "02e67850bc7b61fc5bbf9e6b53815c76af8f9d12",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42785,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "15090e2acfbb798a6680915f261080c0c7741279e296b137556a706472c5dbcd",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T070611Z-42785-naming-4e1c45",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T07:06:11Z",
+ "submitted_by": "kim-em",
+ "summary": "Several names depart from Mathlib terminology or the PR's own conventions (`hMul` in names, `mul_conjTranspose_self_eq_zero`, a missing `_self`), and `unitizationConjElem` is in `TauCeti` despite taking a `Unitization` as its first explicit argument.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/CStarAlgebra/CStarMatrix.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/CStarAlgebra/CStarMatrix.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/CStarAlgebra/Projection/Perturbation.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6ebd527e5f65bf37a83df7062bafce6dd5f514db90b80b037175282c0851bb0c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 19418
+  },
+  "cache_creation_input_tokens": 19418,
+  "cache_read_input_tokens": 278229,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2273
+    },
+    "cache_creation_input_tokens": 2273,
+    "cache_read_input_tokens": 100569,
+    "input_tokens": 2,
+    "output_tokens": 2755,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5510,
+  "output_tokens_details": {
+   "thinking_tokens": 2505
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

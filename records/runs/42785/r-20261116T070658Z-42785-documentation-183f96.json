@@ -1,0 +1,183 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3368686,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 57.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 19230
+    },
+    "cache_creation_input_tokens": 19230,
+    "cache_read_input_tokens": 547453,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 3884
+      },
+      "cache_creation_input_tokens": 3884,
+      "cache_read_input_tokens": 98866,
+      "input_tokens": 2,
+      "output_tokens": 1957,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6559,
+    "output_tokens_details": {
+     "thinking_tokens": 3689
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7ab96ed195deeb2718e7ac87715be4afc6c1d55d",
+ "cli_dirty": false,
+ "cli_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "cost_usd": 0.336869,
+ "dedupe_key": "TauCetiProject/TauCeti|42785|8855e3f544d0d6a8af9ef59a2e879a3f071eb6ad|documentation|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "18b87a7d5ca9229498396a67f4747697b0e885608903b708932bf9f7e3cb4a36",
+ "diff_prompt_sha256": "188063c2336ff6a9649acd9a90a893ae67e17adbd06cb506fa48d1605f923c4a",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "18b87a7d5ca9229498396a67f4747697b0e885608903b708932bf9f7e3cb4a36",
+ "duration_s": 57.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ProjectionEquiv.lean:471 \"Using `Matrix.fromBlocks_one_sub_mul_self_of_mul_eq`, `stabilizedSymmetry p q v` squares to `1`\u2026\"; :502 \"Using `Matrix.fromBlocks_one_sub_mul_fromBlocks_mul_fromBlocks_one_sub_of_mul_eq`, conjugating\u2026\"; PartialIsometry.lean:115.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/ProjectionEquiv.lean",
+   "fix": "Remove the \"Using \u2026\" and \"(by \u2026)\" clauses and the proof sketch. State only the hypotheses and the conclusion.",
+   "issue": "The docstrings of `stabilizedSymmetry_mul_self` (line 471) and `stabilizedSymmetry_mul_fromBlocks_mul` (line 502) open with \"Using `Matrix.\u2026`\", and the module docstring (lines 43-45) cites the same helper lemmas in a \"(by \u2026)\" aside. That describes the proof, not the result. The same problem is in `TauCeti/Algebra/Star/PartialIsometry.lean:115`, where the docstring of `IsPartialIsometry.of_isIdempotentElem_star_mul_self` sketches the argument with `x = u * star u * u - u`.",
+   "line": 471
+  },
+  {
+   "evidence": "`stabilizedSymmetry_mul_fromBlocks_mul` takes `(hvvv : v * v.conjTranspose * v = v)`, which is separate from `hv\u2081` and `hv\u2082`.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/ProjectionEquiv.lean",
+   "fix": "Add the extra hypothesis `v * v\u1d34 * v = v` (automatic over a C\u22c6-algebra) to the `stabilizedSymmetry` docstring. Call `stabilizedProjection` \"the block matrix \u2026, which is a star projection when `v` implements a Murray\u2013von Neumann equivalence over a C\u22c6-algebra\".",
+   "issue": "The docstring of `stabilizedSymmetry`, stated for any `[Ring A] [StarRing A]`, says it conjugates `fromBlocks p 0 0 0` to `fromBlocks 0 0 0 q` \"when `v` implements a Murray\u2013von Neumann equivalence\". The theorem that proves this, `stabilizedSymmetry_mul_fromBlocks_mul`, also needs `hvvv : v * v\u1d34 * v = v`. That identity follows from the equivalence only when the star is proper (for example over a C\u22c6-algebra), not in a general star ring. Similarly, `stabilizedProjection` (line 526) is called \"the stabilized star projection\" without hypotheses, but it is a projection only under the hypotheses of `isStarProjection_stabilizedProjection`.",
+   "line": 456
+  },
+  {
+   "evidence": "Statement: `p.MurrayVonNeumannEquiv (fromBlocks p (0 : CStarMatrix m n A) 0 0)`.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/ProjectionEquiv.lean",
+   "fix": "Reword both as \"Placing `p` in the top-left corner (`fromBlocks p 0 0 0`) \u2026\" and \"Placing `q` in the bottom-right corner (`fromBlocks 0 0 0 q`) \u2026\".",
+   "issue": "The docstring of `murrayVonNeumannEquiv_inlCorner` says \"Padding a star projection by zero blocks in the top-left corner\", but `p` sits in the top-left corner (`fromBlocks p 0 0 0`) and the zeros fill the other blocks. The docstring of `murrayVonNeumannEquiv_inrCorner` (line 299) has the mirror-image problem.",
+   "line": 246
+  },
+  {
+   "evidence": "Block.lean: `theorem mul_conjTranspose_mul_self_of_isIdempotentElem \u2026 : v * v.conjTranspose * v = v`; the separate `theorem isStarProjection_mul_conjTranspose_of_isIdempotentElem \u2026 : IsStarProjection (v * v.conjTranspose)`.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/Block.lean",
+   "fix": "Add `CStarMatrix.isStarProjection_mul_conjTranspose_of_isIdempotentElem` to that bullet as the lemma for the projection claim.",
+   "issue": "The \"Main results\" entry credits `mul_conjTranspose_mul_self_of_isIdempotentElem` with also proving that `v * v.conjTranspose` is a star projection. That lemma only proves `v * v\u1d34 * v = v`. The projection claim is proved by `isStarProjection_mul_conjTranspose_of_isIdempotentElem`.",
+   "line": 44
+  }
+ ],
+ "head_sha": "8855e3f544d0d6a8af9ef59a2e879a3f071eb6ad",
+ "merge_base_sha": "02e67850bc7b61fc5bbf9e6b53815c76af8f9d12",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42785,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "97fd090e14a28b8544009f3a5c0fae0dea5e090fe533539b2cf89f524f44a7ed",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "documentation",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T070658Z-42785-documentation-183f96",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T07:06:58Z",
+ "submitted_by": "kim-em",
+ "summary": "The files and declarations are documented, but some docstrings narrate the proof, one overclaims what its theorem needs, and the corner-padding and module-summary wording is misleading.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Data/Matrix/Block.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 6,
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0339633b99b695bbe3b618a25e9167fd1cedb55fb271ebbd7eddd802fe440823",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 19230
+  },
+  "cache_creation_input_tokens": 19230,
+  "cache_read_input_tokens": 547453,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3884
+    },
+    "cache_creation_input_tokens": 3884,
+    "cache_read_input_tokens": 98866,
+    "input_tokens": 2,
+    "output_tokens": 1957,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6559,
+  "output_tokens_details": {
+   "thinking_tokens": 3689
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

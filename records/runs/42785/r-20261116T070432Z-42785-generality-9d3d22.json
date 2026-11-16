@@ -1,0 +1,174 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3292204,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 52.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 20553
+    },
+    "cache_creation_input_tokens": 20553,
+    "cache_read_input_tokens": 557997,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2026
+      },
+      "cache_creation_input_tokens": 2026,
+      "cache_read_input_tokens": 101951,
+      "input_tokens": 2,
+      "output_tokens": 1605,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5740,
+    "output_tokens_details": {
+     "thinking_tokens": 3174
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7ab96ed195deeb2718e7ac87715be4afc6c1d55d",
+ "cli_dirty": false,
+ "cli_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "cost_usd": 0.32922,
+ "dedupe_key": "TauCetiProject/TauCeti|42785|8855e3f544d0d6a8af9ef59a2e879a3f071eb6ad|generality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "18b87a7d5ca9229498396a67f4747697b0e885608903b708932bf9f7e3cb4a36",
+ "diff_prompt_sha256": "188063c2336ff6a9649acd9a90a893ae67e17adbd06cb506fa48d1605f923c4a",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "18b87a7d5ca9229498396a67f4747697b0e885608903b708932bf9f7e3cb4a36",
+ "duration_s": 52.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `isPartialIsometry_unitizationConjElem u.property hp` hits Perturbation.lean:543, Perturbation.lean:560, and ProjectionEquiv.lean:423, each in the same `\u27e8unitizationConjElem u p, isPartialIsometry_\u2026, star_\u2026_mul_self, \u2026_mul_star_self\u27e9` term.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/ProjectionEquiv.lean",
+   "fix": "Add `IsStarProjection.exists_isPartialIsometry_of_unitization_unitary_conj {B} [NonUnitalCStarAlgebra B] (hp : IsStarProjection p) (u : unitary (Unitization \u2102 B)) (h : u * p * star u = q) : \u2203 v : B, IsPartialIsometry v \u2227 star v * v = p \u2227 v * star v = q` in Perturbation.lean. Derive `exists_isPartialIsometry_of_norm_sub_lt_one`, `exists_isPartialIsometry_of_path`, and the matrix lemma from it.",
+   "issue": "`MurrayVonNeumannEquiv.of_unitization_unitary_conj` is the `B = CStarMatrix n n A` case of a general fact: a unitary of `Unitization \u2102 B` conjugating star projection `p` to `q` yields `v : B` with `IsPartialIsometry v \u2227 star v * v = p \u2227 v * star v = q`. The same four-line proof is repeated at Perturbation.lean:542-545 and 559-562.",
+   "line": 415
+  },
+  {
+   "evidence": "Block.lean `instIsProperStar` installs `CStarAlgebra.spectralOrder` locally. Mathlib CStarMatrix.lean needs `PartialOrder`/`StarOrderedRing` only for the norm (line 555 onward), and the norm is not used here.",
+   "file": "TauCeti/Analysis/CStarAlgebra/CStarMatrix/ProjectionEquiv.lean",
+   "fix": "Drop `[PartialOrder A] [StarOrderedRing A]` from `of_unitization_unitary_conj`, or remove the lemma once the general version above exists.",
+   "issue": "`[PartialOrder A] [StarOrderedRing A]` are unused. The statement involves only `unitary (Unitization \u2102 (CStarMatrix n n A))`, which needs no norm, and the proof uses `murrayVonNeumannEquiv_iff_exists_isPartialIsometry`, which only needs `IsProperStar`, supplied by `instIsProperStar` from `NonUnitalCStarAlgebra A` alone.",
+   "line": 415
+  }
+ ],
+ "head_sha": "8855e3f544d0d6a8af9ef59a2e879a3f071eb6ad",
+ "merge_base_sha": "02e67850bc7b61fc5bbf9e6b53815c76af8f9d12",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42785,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0e11e00bf21c19f2d6fc28baf923732803d54b4f6e08446211137031ca836be4",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T070432Z-42785-generality-9d3d22",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T07:04:32Z",
+ "submitted_by": "kim-em",
+ "summary": "The non-unital transfer from a unitization unitary to a partial isometry is proved three times, with one copy stated only for matrices. That matrix-only copy also takes order instances it never uses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/CStarAlgebra/CStarMatrix.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/CStarAlgebra/CStarMatrix/ProjectionEquiv.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/CStarAlgebra/Projection/Perturbation.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/CStarAlgebra/CStarMatrix/ProjectionEquiv.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/CStarAlgebra/Projection/Perturbation.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/CStarAlgebra/CStarMatrix.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 7,
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "cd82889298529d72c203ed63fde8ca1ef53c4fcb2d206311491478609e83cdb4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 20553
+  },
+  "cache_creation_input_tokens": 20553,
+  "cache_read_input_tokens": 557997,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2026
+    },
+    "cache_creation_input_tokens": 2026,
+    "cache_read_input_tokens": 101951,
+    "input_tokens": 2,
+    "output_tokens": 1605,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5740,
+  "output_tokens_details": {
+   "thinking_tokens": 3174
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
