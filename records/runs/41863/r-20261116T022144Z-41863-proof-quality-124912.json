@@ -1,0 +1,161 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1719766,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 33.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 11879
+    },
+    "cache_creation_input_tokens": 11879,
+    "cache_read_input_tokens": 213348,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 4152
+      },
+      "cache_creation_input_tokens": 4152,
+      "cache_read_input_tokens": 75913,
+      "input_tokens": 4,
+      "output_tokens": 1957,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3494,
+    "output_tokens_details": {
+     "thinking_tokens": 1432
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "713c61f447b3672a4cdcc5b5609c6f9ec30541e5",
+ "cli_dirty": false,
+ "cli_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "cost_usd": 0.171977,
+ "dedupe_key": "TauCetiProject/TauCeti|41863|3f60bee9b3cf19f00a909df592864e1a5109576c|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "01526b5ecb465c1a12a2d3dc57a20d61c8d49c91139a0c9e1ecac074f0cb6897",
+ "diff_sha256": "01526b5ecb465c1a12a2d3dc57a20d61c8d49c91139a0c9e1ecac074f0cb6897",
+ "duration_s": 33.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `AdjoinSimple.algebraMap_gen, h` finds the same rewrite sequence at TamelyRamified.lean:92, 256, 300 and Kummer.lean:378, 478, 483. `baseChange` repeats it for `h\u03b2\u2081` and `h\u03b3\u2081` using `IntermediateField.algebraMap_apply`.",
+   "file": "TauCeti/RingTheory/DiscreteValuationRing/BaseChange/TamelyRamified.lean",
+   "fix": "Add one lemma, e.g. `AdjoinSimple.gen_pow_eq_algebraMap_of_pow_eq (hx : x ^ n = algebraMap A E a) : AdjoinSimple.gen K x ^ n = algebraMap A K\u27eex\u27ef a` (plus a variant for an `IntermediateField` subtype), and use it at every site. The replaced code did this in one line: `Subtype.ext (by simpa [...] using h\u03b1)`.",
+   "issue": "The proof that `AdjoinSimple.gen K x ^ n = algebraMap A K\u27eex\u27ef \u03c0` from `x ^ n = algebraMap A \u03a9 \u03c0` is a five-step `rw [map_pow, AdjoinSimple.algebraMap_gen, h, IsScalarTower.algebraMap_apply \u2026, \u2190 \u2026, \u2190 \u2026]` chain inside `(algebraMap _ _).injective`. The same chain appears at TamelyRamified.lean:92, :256 and :300, at Kummer.lean:378, :478 and :483, and at the `h\u03b2\u2081`/`h\u03b3\u2081` steps of `IsTamelyRamifiedWRT.baseChange`. It is fragile under renames.",
+   "line": 92
+  },
+  {
+   "evidence": "Kummer.lean:203 `unfold Localization.localRingHom` inside `ramificationIdx_eq_one_and_isSeparable_of_tame_liesOver`.",
+   "file": "TauCeti/RingTheory/DiscreteValuationRing/BaseChange/Kummer.lean",
+   "fix": "Rewrite with a `Localization.localRingHom` characterisation lemma, or state a small lemma `Localization.localRingHom_injective_of_injective` and use it here.",
+   "issue": "`unfold Localization.localRingHom` exposes the internals of a Mathlib definition so that `IsLocalization.map_injective_of_injective'` can apply. This breaks if Mathlib changes how `localRingHom` is defined.",
+   "line": 203
+  },
+  {
+   "evidence": "TamelyRamified.lean:82-85.",
+   "file": "TauCeti/RingTheory/DiscreteValuationRing/BaseChange/TamelyRamified.lean",
+   "fix": "Remove them if instance search succeeds without them. Otherwise add a comment naming the diamond they resolve.",
+   "issue": "`etale_integralClosure_adjoin_of_tame` installs `let : Module \u2026 := Algebra.toModule` and `let : SMul \u2026 := Algebra.toSMul` with no explanation. Overriding instances like this hides an instance diamond and depends on definitional unfolding.",
+   "line": 82
+  },
+  {
+   "evidence": "TamelyRamified.lean:149-153.",
+   "file": "TauCeti/RingTheory/DiscreteValuationRing/BaseChange/TamelyRamified.lean",
+   "fix": "Add `@[simp]`-style coercion facts for `\u03c8S'_A\u2081` and `gB` (or build them with `AlgHom.mk'`/`restrictScalars`, which come with lemmas) and close the goal with `simp`. Alternatively, add a comment explaining the definitional equality.",
+   "issue": "`h\u03c8T` ends with `rw [Algebra.TensorProduct.lift_tmul]; rfl`. The `rfl` identifies `\u03c8S'_A\u2081 s * gB b` with `\u03c8S' s * gB_ring b`, which holds only because the ad hoc `{ toRingHom := \u2026 }` wrappers unfold to the same thing. Nothing documents this.",
+   "line": 153
+  }
+ ],
+ "head_sha": "3f60bee9b3cf19f00a909df592864e1a5109576c",
+ "merge_base_sha": "4caf68dc9fe57dcd98422514629aa79c09be1a66",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 41863,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "407dd8737acf2e9e2148ec3aab4dc102d03ac6b9a998e93881f164cf33fa03dd",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T022144Z-41863-proof-quality-124912",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T02:21:44Z",
+ "submitted_by": "kim-em",
+ "summary": "The same long chain of rewrites that moves `x ^ n = \u03c0` from the ambient field into an adjoined field `K\u27eex\u27ef` is copied at least eight times instead of being factored into a lemma. Several steps also rely on unfolding a definition or on undocumented definitional equality between hand-built structures.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/DiscreteValuationRing/BaseChange",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/DiscreteValuationRing/BaseChange/TamelyRamified.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "db8b52e23f5f074531a3ca7ae1833956893719c996621a434a5359dc318d2c17",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 11879
+  },
+  "cache_creation_input_tokens": 11879,
+  "cache_read_input_tokens": 213348,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4152
+    },
+    "cache_creation_input_tokens": 4152,
+    "cache_read_input_tokens": 75913,
+    "input_tokens": 4,
+    "output_tokens": 1957,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3494,
+  "output_tokens_details": {
+   "thinking_tokens": 1432
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
