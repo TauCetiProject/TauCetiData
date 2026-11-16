@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.33302980000000004,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 56.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 24971
+    },
+    "cache_creation_input_tokens": 24971,
+    "cache_read_input_tokens": 400374,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2712
+      },
+      "cache_creation_input_tokens": 2712,
+      "cache_read_input_tokens": 93285,
+      "input_tokens": 2,
+      "output_tokens": 4103,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6403,
+    "output_tokens_details": {
+     "thinking_tokens": 2430
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7b3aaabdeaef0c48b006d1ff4aa81e1f83ba020e",
+ "cli_dirty": false,
+ "cli_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "cost_usd": 0.33303,
+ "dedupe_key": "TauCetiProject/TauCeti|42588|b5570e64b9a5075445099b0c0c22766356799b50|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "1b0f9a2e77c99d47fdd7d81aa9c7b2506f19ea9134d04d9f6493d417d53ce578",
+ "diff_sha256": "1b0f9a2e77c99d47fdd7d81aa9c7b2506f19ea9134d04d9f6493d417d53ce578",
+ "duration_s": 56.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Neither proof uses `IntegralModel` or Hopf structure. `SInteger/Basic.lean` has no monotonicity or completion-membership lemma (its declarations are `mem_integer_empty_iff` and instances), and Mathlib has no `integer_mono`/`integer_anti` (grep returned nothing).",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdelicPoints/IntegralModel.lean",
+   "fix": "Move both to `TauCeti/RingTheory/DedekindDomain/SInteger/Basic.lean`, stated for `S.integer K` with an arbitrary set `S` (for example `Set.integer_mono`), and use them here.",
+   "issue": "`mem_sIntegers_iff_forall_adicCompletionIntegers` and `sIntegers_mono` are general facts about `Set.integer` (they use only Mathlib types and nothing from algebraic groups) but are stated only through the local `SIntegers` abbrev, in an algebraic-group file.",
+   "line": 83
+  },
+  {
+   "evidence": "Their statements use only `AdeleRing`, `Algebra.ofId` and `Subalgebra`. Their proofs are `inferInstanceAs` of `discreteTopology_principalSubgroup` and `IsClosedEmbedding.subtypeVal (isClosed_principalSubgroup F)` from Discrete.lean:69/97.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdelicPoints/Basic.lean",
+   "fix": "Relocate them, public, to `TauCeti/NumberTheory/NumberField/Global/Adeles/Discrete.lean` next to `isClosed_principalSubgroup`/`discreteTopology_principalSubgroup`, as the range of `Algebra.ofId`.",
+   "issue": "The private `principalSubalgebra`, `discreteTopology_principalSubalgebra` and `isClosedEmbedding_principalSubalgebra_val` are general facts about `F \u2286 \ud835\udd38_F`, not specific to the adelic-points argument.",
+   "line": 483
+  },
+  {
+   "evidence": "`enlarge` uses `letI : Algebra (SIntegers F S) (SIntegers F T) := sIntegersAlgebraOfSubset hST` inside its `coordinate` field. `localPoints_enlarge` has to rebuild both private lets to state anything about the tensors.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdelicPoints/IntegralModel.lean",
+   "fix": "Make the inclusion algebra `\ud835\udcaa_{F,S} \u2192 \ud835\udcaa_{F,T}` and its scalar tower public (a named def plus tower lemma in the SInteger files). Add a public `enlarge_toBase_tmul`-type lemma describing `(M.enlarge hST).toBase (r \u2297\u209c a)`.",
+   "issue": "`sIntegersAlgebraOfSubset` and `sIntegersTowerOfSubset` are private, but the public `(M.enlarge hST).coordinate` is `SIntegers F T \u2297[SIntegers F S] M.coordinate` built with that algebra instance. Users cannot form or rewrite tensors `r \u2297\u209c a` in the enlarged model or restate `localPoints_enlarge`-style facts.",
+   "line": 540
+  },
+  {
+   "evidence": "Neither definition has a `mem_*` lemma. `mem_range_localIntegralHom_iff` gets membership by `Subtype.range_val.symm \u25b8 Iff.rfl`, which relies on defeq.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdelicPoints/IntegralModel.lean",
+   "fix": "Add `@[simp] mem_localIntegerSubalgebra_iff : x \u2208 localIntegerSubalgebra S v hv \u2194 x \u2208 v.adicCompletionIntegers F` and `@[simp] mem_sIntegersSubalgebra_iff : x \u2208 sIntegersSubalgebra hST \u2194 x \u2208 SIntegers F T`.",
+   "issue": "The public definitions `localIntegerSubalgebra` and `sIntegersSubalgebra` have no membership or coercion lemmas, so users must unfold the structure literals.",
+   "line": 300
+  },
+  {
+   "evidence": "Only `adelicRestrictedProductEquiv_fst`/`_snd_apply`, `levelChangeEquiv_apply`, and `infiniteProjection_infiniteEmbed`-style lemmas are provided.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdelicPoints/RestrictedProduct.lean",
+   "fix": "Add `@[simp] adelicRestrictedProductEquiv_symm_apply` (equal to `(prodEquiv F H).symm (p.1, M.restrictedProductEquiv.symm p.2)`), `@[simp] levelChangeEquiv_symm_apply : ((M\u2081.levelChangeEquiv M\u2082).symm x) v = x v`, and `@[simp] infiniteEmbed_ofConv_apply`/`finiteEmbed_ofConv_apply` giving `(x.ofConv h, 1)`/`(1, y.ofConv h)`.",
+   "issue": "The equivalences have incomplete apply API. `adelicRestrictedProductEquiv` has no `symm` apply lemma, and `levelChangeEquiv` has no `symm_apply`. In Basic.lean, `infiniteEmbed`/`finiteEmbed` have no `ofConv` evaluation lemma (only projection lemmas).",
+   "line": 330
+  },
+  {
+   "evidence": "Each wrapper body is a single Mathlib term, and the `_apply` lemmas are proved by `rfl`.",
+   "file": "TauCeti/Algebra/AlgebraicGroup/AdelicPoints/Basic.lean",
+   "fix": "Delete the three wrappers and their `_apply` lemmas. Define `infiniteLocalProjection`, `infiniteProjection` and `finiteProjection` directly via `Pi.evalAlgHom F _ w`, `AlgHom.fst F _ _` and `AlgHom.snd F _ _`.",
+   "issue": "`infiniteEvalAlgHom`, `adeleFstAlgHom` and `adeleSndAlgHom` are public wrappers that only rename `Pi.evalAlgHom`, `AlgHom.fst` and `AlgHom.snd`. They duplicate Mathlib API, and every lemma about the projections has to unfold them (`prodEquiv_fst` rewrites `adeleFstAlgHom`, `infinitePiEquiv_apply` rewrites `infiniteEvalAlgHom`).",
+   "line": 162
+  }
+ ],
+ "head_sha": "b5570e64b9a5075445099b0c0c22766356799b50",
+ "merge_base_sha": "b0afcaa7ea7c9debf20bad5dcaf790bcff851afb",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42588,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "18817b40a051b48002c548fcb905f4955f2642574c6f123c764205dbfafad066",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T010259Z-42588-api-design-c1a17a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T01:02:59Z",
+ "submitted_by": "kim-em",
+ "summary": "Several general S-integer and principal-adele facts are hidden as private or stranded in the algebraic-group files, the `enlarge` construction depends on a private instance, and several new definitions lack their characterizing lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/DedekindDomain/SInteger/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/NumberTheory/NumberField/Global/Adeles/Discrete.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 8,
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2a8dff48395980a915eb11721d307222a27c41886d22371705f9e640dc917e0f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 24971
+  },
+  "cache_creation_input_tokens": 24971,
+  "cache_read_input_tokens": 400374,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2712
+    },
+    "cache_creation_input_tokens": 2712,
+    "cache_read_input_tokens": 93285,
+    "input_tokens": 2,
+    "output_tokens": 4103,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6403,
+  "output_tokens_details": {
+   "thinking_tokens": 2430
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,192 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2285036,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 42.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9482
+    },
+    "cache_creation_input_tokens": 9482,
+    "cache_read_input_tokens": 423168,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1339
+      },
+      "cache_creation_input_tokens": 1339,
+      "cache_read_input_tokens": 88294,
+      "input_tokens": 2,
+      "output_tokens": 2290,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4821,
+    "output_tokens_details": {
+     "thinking_tokens": 1942
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "cli_dirty": false,
+ "cli_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "cost_usd": 0.228504,
+ "dedupe_key": "TauCetiProject/TauCeti|40566|160a5ce3d4f1d86bcbfcf0b4fd7ecd5887b39fd8|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "d3d989e25bf9bbd1e63c897a9c30d3d9eec6bbd11b7b449756e4713f495644f0",
+ "diff_sha256": "d3d989e25bf9bbd1e63c897a9c30d3d9eec6bbd11b7b449756e4713f495644f0",
+ "duration_s": 42.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diff: `\u00b7 simp [hilbertSign_one]\\n    rfl`.",
+   "file": "TauCeti/Data/ZMod/IntUnitsPower.lean",
+   "fix": "Close the goal with explicit lemmas, e.g. `simp [hilbertSign_one, ZMod.val_one]`, or add a comment justifying the `rfl`.",
+   "issue": "`coe_hilbertSign` finishes with `simp [hilbertSign_one]` and then a bare `rfl`. That `rfl` depends on how the `\u2124\u02e3` coercion and `(-1) ^ (1 : ZMod 2).val` unfold, and nothing explains why.",
+   "line": 113
+  },
+  {
+   "evidence": "Diff: `rw [\u2190 e.map_app]\\n    rfl` inside `Fintype.sum_equiv e.toEquiv`.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Arf/Basic.lean",
+   "fix": "Use the coercion simp lemma, e.g. `simp [e.map_app]` or `exact congrArg _ (e.map_app v).symm`, instead of the defeq `rfl`.",
+   "issue": "`IsometryEquiv.gaussSum_eq` runs `rw [\u2190 e.map_app]` and then `rfl`. The `rfl` silently identifies `e.toEquiv v` with `e v` through the coercion.",
+   "line": 131
+  },
+  {
+   "evidence": "Diff: `arf_symplecticPlane, arf_pi_symplecticPlane_zero]\\n  rfl`.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Arf/Classification.lean",
+   "fix": "Replace it with `simp` or `norm_num`.",
+   "issue": "`arf_symplecticPlane_one_prod_pi_zero` closes `1 * 1 + 0 = 1` in `ZMod 2` with a bare `rfl`, which relies on kernel reduction of `ZMod` arithmetic.",
+   "line": 151
+  },
+  {
+   "evidence": "Lines 240, 347, 376, 377 build the same `Fintype.ofEquiv` instance, and all three proofs end with `eq_of_neg_one_pow_val_mul_two_pow_eq hg`.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Arf/Basic.lean",
+   "fix": "Factor out one lemma, e.g. `arf_eq_of_gaussSum_eq`: for finite-dimensional forms with nondegenerate polar form, equal dimension and equal Gauss sums give equal `arf`. Alternatively, state `gaussSum_eq_of_finrank_eq` for a `Fintype.ofFinite` instance. Then derive the three results from that lemma.",
+   "issue": "`IsometryEquiv.arf_eq` (347), `arf_prod` (376-377) and `arf_pi` repeat the same block: get a symplectic basis, build a `Fintype` with `Fintype.ofEquiv _ b.equivFun.toEquiv.symm`, compute `finrank = 2 * m`, rewrite with `gaussSum_eq_of_finrank_eq`, and cancel with `eq_of_neg_one_pow_val_mul_two_pow_eq`.",
+   "line": 347
+  },
+  {
+   "evidence": "The grep hits at 502/524, 539/548 and 560/572 are line-for-line duplicates.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Arf/Basic.lean",
+   "fix": "Extract a private lemma for each fact: the filter equality, the integer-cast partition, and the card from finrank. Better still, derive the `= 1` count lemmas from the `= 0` ones and the partition.",
+   "issue": "The filter equation `{Q v = 1} = {\u00acQ v = 0}` is proved twice (502 and 524). The `hpart` cast is repeated (539, 548), and `hcard : (Fintype.card V : \u2124) = 2 ^ (2 * m)` is repeated (560, 572).",
+   "line": 502
+  },
+  {
+   "evidence": "The proof bodies are the same apart from swapped `h0`/`h1` branches and `zero`/`one` names.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Arf/Basic.lean",
+   "fix": "Derive each `= 1` version from its `= 0` version using `ZMod.ne_zero_iff_eq_one` and the sign or partition identities.",
+   "issue": "`arf_eq_one_iff_gaussSum_neg` copies the whole case split from `arf_eq_zero_iff_gaussSum_pos`. In the same way, `card_subtype_apply_eq_one_of_pos_of_finrank_eq` and `arf_eq_one_iff_card_..._lt_...` copy their `= 0` counterparts.",
+   "line": 0
+  },
+  {
+   "evidence": "Grep: Prod.lean:776-779 and 801, Radical.lean:318. `isSymm_polarBilin` (Radical.lean:119) is stated only for `QuadraticForm R M`.",
+   "file": "TauCeti/LinearAlgebra/QuadraticForm/Prod.lean",
+   "fix": "Add a `QuadraticMap.isRefl_polarBilin` lemma for general `QuadraticMap R M P`, since the existing `isSymm_polarBilin` covers only `QuadraticForm`. Also factor out a `polar_pi_single` lemma for the `Pi.single` evaluation.",
+   "issue": "The proof that `polarBilin` is reflexive, `fun x y \u21a6 (polar_comm _ y x).trans`, is written out by hand 7 times: 3 in `nondegenerate_polarBilin_prod_iff`, 3 in `nondegenerate_polarBilin_pi_iff`, 1 in Radical.lean:318. The `Finset.sum_eq_single i` block in `nondegenerate_polarBilin_pi_iff` also appears twice.",
+   "line": 776
+  }
+ ],
+ "head_sha": "160a5ce3d4f1d86bcbfcf0b4fd7ecd5887b39fd8",
+ "merge_base_sha": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 40566,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5cda20a5535660228429d737d8f5b7223cb262002445d940d58a06df86dae377",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T003428Z-40566-proof-quality-5dfe8d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T00:34:28Z",
+ "submitted_by": "kim-em",
+ "summary": "Three proofs end in an undocumented bare `rfl` that depends on definitional unfolding, and several reusable facts are copied inline across proofs instead of being factored into lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/QuadraticForm",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5087d21dcf31d0027f30452e490104734470a545b64237eaed94248338436e7a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 9482
+  },
+  "cache_creation_input_tokens": 9482,
+  "cache_read_input_tokens": 423168,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1339
+    },
+    "cache_creation_input_tokens": 1339,
+    "cache_read_input_tokens": 88294,
+    "input_tokens": 2,
+    "output_tokens": 2290,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4821,
+  "output_tokens_details": {
+   "thinking_tokens": 1942
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
