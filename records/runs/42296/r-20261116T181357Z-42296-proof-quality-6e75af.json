@@ -1,0 +1,168 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1134696,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 30.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6319
+    },
+    "cache_creation_input_tokens": 6319,
+    "cache_read_input_tokens": 75853,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 326
+      },
+      "cache_creation_input_tokens": 326,
+      "cache_read_input_tokens": 28924,
+      "input_tokens": 2,
+      "output_tokens": 2336,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3334,
+    "output_tokens_details": {
+     "thinking_tokens": 709
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "cli_dirty": false,
+ "cli_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "cost_usd": 0.11347,
+ "dedupe_key": "TauCetiProject/TauCeti|42296|5504453117899d1e355fd8a6a65487182a20a06e|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "33d8aced1c802ed28524d2146857db77b0a25bdc1a8a829e483387a1736c9e5d",
+ "diff_sha256": "33d8aced1c802ed28524d2146857db77b0a25bdc1a8a829e483387a1736c9e5d",
+ "duration_s": 30.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`\u00b7 obtain \u27e8_, _\u27e9 := W.rotation d\n      rfl`",
+   "file": "TauCeti/KnotTheory/Foam/ClosedWeb/RotationSystem.lean",
+   "fix": "Remove the `obtain` and close both cases with `simp [Perm.mul_apply]` (as the `.inr` case already does), or prove `h` with `Perm.sumCongr_mul`-style simp lemmas.",
+   "issue": "In `faceCount_ribbonGraph`, the `.inl` case of `h` uses `obtain \u27e8_, _\u27e9 := W.rotation d; rfl`. The `obtain` destructures a term absent from the goal, and the case is closed by undocumented defeq through `sumCongr`/`prodCongr`/`Perm.mul_apply`.",
+   "line": 298
+  },
+  {
+   "evidence": "rw [BipartiteRibbonGraph.faceCount_def, \u2190 Nat.card_eq_fintype_card, \u2190 orbitCount_def, ... orbitCount_mul_comm]",
+   "file": "TauCeti/KnotTheory/Foam/ClosedWeb/RotationSystem.lean",
+   "fix": "Split it into a stated intermediate fact (for example `faceCount = orbitCount (rotW * rotB)`) and close the rest with `simp [...]` plus `omega`.",
+   "issue": "The closing `rw` chain of `faceCount_ribbonGraph` strings together 13 named lemmas (`faceCount_def`, `Nat.card_eq_fintype_card`, `orbitCount_def`, `facePerm_def`, `orbitCount_inv`, `orbitCount_sumCongr`, `orbitCount_one`, `Nat.card_prod`, `orbitCount_mul_comm`, ...). This is brittle under renames.",
+   "line": 302
+  },
+  {
+   "evidence": "`exact (by norm_num [Nat.card_eq_fintype_card] : Nat.card (Fin 3 \u00d7 Bool) = 6)`",
+   "file": "TauCeti/KnotTheory/Foam/ClosedWeb/RotationSystem.lean",
+   "fix": "Use an explicit unfolding lemma for `theta.End`/`theta.Edge` (or a comment justifying the defeq), and replace `have hr ...; exact hr` with `omega`.",
+   "issue": "In `faceCount_ribbonGraph_theta`, `hcard` proves `Nat.card theta.End = 6` by `exact` on a statement about `Fin 3 \u00d7 Bool`. This relies on undocumented defeq `theta.End \u2261 Fin 3 \u00d7 Bool`. The subsequent `have hr ... := by omega; exact hr` is a redundant detour.",
+   "line": 357
+  },
+  {
+   "evidence": "`map_whiteEnd d := by rcases d with \u27e8e, b\u27e9 | \u27e8c, b\u27e9 <;> rfl`; `map_rotW d := by rcases ... <;> rfl`",
+   "file": "TauCeti/KnotTheory/Foam/ClosedWeb/RotationSystem.lean",
+   "fix": "Close these cases with `simp` using the stated characteristic lemmas instead of defeq.",
+   "issue": "In `Iso.ribbonGraph`, `map_whiteEnd`, `map_rotW` and the circle case of `map_rotB` are closed by bare `rfl` through `Equiv.sumCongr`/`prodCongr`, even though the file defines simp lemmas `ribbonWhiteEnd_inl/inr` and `ribbonRotW_inl/inr` for exactly these computations.",
+   "line": 383
+  },
+  {
+   "evidence": "grep for `IsCycleOn (.* \u207b\u00b9' {` finds no such helper in TauCeti; lines 102, 182 and 212 duplicate the `refine \u27e8\u27e8?_, _.injective.injOn, ?_\u27e9, ?_\u27e9` skeleton.",
+   "file": "TauCeti/KnotTheory/Foam/ClosedWeb/RotationSystem.lean",
+   "fix": "Factor out a generic lemma `isCycleOn_fibre_of (hf : \u2200 x, f (\u03c3 x) = f x) (h : \u2200 x y, f x = f y \u2192 \u03c3.SameCycle x y) : \u03c3.IsCycleOn (f \u207b\u00b9' {b})` and one lemma for SameCycle under `prodCongr (refl _) boolNot`. Then derive all instances from these.",
+   "issue": "`isCycleOn_rotation`, `isCycleOn_ribbonRotB` and `isCycleOn_ribbonRotW` repeat the same three-part argument: `MapsTo` from fibre invariance, `SurjOn` via `symm`, and `SameCycle` within fibres. The three private `sameCycle_ribbonRot*` helpers are also identical proofs about a Bool-swap factor.",
+   "line": 181
+  }
+ ],
+ "head_sha": "5504453117899d1e355fd8a6a65487182a20a06e",
+ "merge_base_sha": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42296,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e0b6b5139a00bab0c147198d317dda52e729fd89104bdb173c26bb6d7f0b5d33",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T181357Z-42296-proof-quality-6e75af",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T18:13:57Z",
+ "submitted_by": "kim-em",
+ "summary": "Several proofs rely on undocumented definitional unfolding or brittle rewrite chains, and the same fibre-cycle argument is copied three times (plus three identical private helpers) instead of being factored into a lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "80e1d74d8ab5e692a498d432b7ee85ab906946a32a59b52c0ce8be7c2481956a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 6319
+  },
+  "cache_creation_input_tokens": 6319,
+  "cache_read_input_tokens": 75853,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 326
+    },
+    "cache_creation_input_tokens": 326,
+    "cache_read_input_tokens": 28924,
+    "input_tokens": 2,
+    "output_tokens": 2336,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3334,
+  "output_tokens_details": {
+   "thinking_tokens": 709
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
