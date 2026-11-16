@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.233641,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 51.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 18584
+    },
+    "cache_creation_input_tokens": 18584,
+    "cache_read_input_tokens": 139125,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 7769
+      },
+      "cache_creation_input_tokens": 7769,
+      "cache_read_input_tokens": 74970,
+      "input_tokens": 2,
+      "output_tokens": 3421,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5644,
+    "output_tokens_details": {
+     "thinking_tokens": 2945
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "086028a6d8d186715b52fac7f3e7b23175ed2dc9",
+ "cli_dirty": false,
+ "cli_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "cost_usd": 0.233641,
+ "dedupe_key": "TauCetiProject/TauCeti|43299|992e3f829b2c56f0f1ac0fce22a0cf1942426283|naming|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "ca0912fdb1375d39865a8d40285423b6234db4f01d86ae884c5020ff382c78e7",
+ "diff_sha256": "ca0912fdb1375d39865a8d40285423b6234db4f01d86ae884c5020ff382c78e7",
+ "duration_s": 51.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/AlgebraicGeometry/Morphisms/Etale.lean:151 `protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale \u22a4 X`; code/TauCeti/AlgebraicGeometry/Sites/EtaleSepClosed.lean:170 `noncomputable def Etale.mkIdTerminal`.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Move the `U : S.Etale` accessors into `AlgebraicGeometry.Scheme.Etale` (e.g. `U.obj`/`U.hom`, `Scheme.Etale.Hom.ext`), as the repo already does with `Scheme.Etale.mkIdTerminal`. Put `etaleComp`, `etaleOverEquiv`, `restrictSheaf*` and `isIso_of_forall_isIso_restrictSheaf` in a small-\u00e9tale-site namespace rather than `FiniteEtaleScheme`.",
+   "issue": "`etaleObj`, `etaleHom`, `etaleMap`, `etaleMap_w`, `etale_hom_ext`, `etaleHomMk`, `etaleIsoMk`, `etaleMk`, `etaleComp`, `etaleOverEquiv`, `restrictSheaf`, `restrictSheafEqIso`, `restrictSheafCompIso`, `ofArrows_mem_smallEtaleTopology_iff_etale` and `isIso_of_forall_isIso_restrictSheaf` (Descent.lean) concern `S.Etale` (the Mathlib type `AlgebraicGeometry.Scheme.Etale`) and its sheaves, not finite \u00e9tale schemes. `FiniteEtaleScheme.restrictSheaf` misleadingly suggests a finite-\u00e9tale notion, and declarations whose first explicit argument is `U : S.Etale` get no dot notation.",
+   "line": 124
+  },
+  {
+   "evidence": "grep shows `CoxeterSystem.subsingleton_of_isEmpty`, `OrthonormalBasis.subsingleton_of_isEmpty` and `Preconnected.subsingleton_of_isEmpty`, each concluding `Subsingleton` of the namespace's own carrier.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Rename to describe the conclusion, e.g. `Sheaf.subsingleton_obj_of_isEmpty` (or `subsingleton_sections_of_isEmpty_etaleObj`), in the small-\u00e9tale namespace.",
+   "issue": "`subsingleton_of_isEmpty` proves that sections `F.obj.obj (op Z)` of an \u00e9tale sheaf over an empty object form a subsingleton. The name says nothing about sheaves or sections, and it reuses a generic name already taken in many other namespaces in the repo.",
+   "line": 741
+  },
+  {
+   "evidence": "Statement: `(\u22c3 i, Set.range ((eX i).hom \u226b f i \u226b eY.hom) = .univ) \u2194 (\u22c3 i, Set.range (f i) = .univ)`.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Rename to `iUnion_range_iso_comp_eq_univ_iff`.",
+   "issue": "The statement of `iUnion_range_iso_comp_eq_univ` is an `Iff` between two `= univ` statements, but the name advertises a plain equality.",
+   "line": 263
+  },
+  {
+   "evidence": "Definitions at Descent.lean `noncomputable abbrev toBaseX ... := (etaleComp p).obj ((toEtale S').obj X)` and `def tautIso ... : etaleObj (toBaseX p X) \u2245 X.obj.left`.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/Descent.lean",
+   "fix": "Name both after their content (e.g. `etaleCompToEtale` and `etaleObjEtaleCompToEtaleIso`), or make them private if they are only proof scaffolding, and rename the derived lemmas to match.",
+   "issue": "The public `toBaseX` puts a bound-variable name (`X`) in a declaration name, and `tautIso` does not say what it identifies. Neither name describes its value: `(etaleComp p).obj ((toEtale S').obj X)` and `etaleObj (toBaseX p X) \u2245 X.obj.left`. The same applies to the derived lemmas `tautIso_hom`, `tautIso_inv`, `tautIso_hom_comp` and `tautIso_inv_comp`.",
+   "line": 246
+  },
+  {
+   "evidence": "Statement: `{\u03c6 \u03c8 : (toSheaf S).obj X \u27f6 F} (h : \u03c6.hom.app _ (\ud835\udfd9 _) = \u03c8.hom.app _ (\ud835\udfd9 _)) : \u03c6 = \u03c8`.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/Descent.lean",
+   "fix": "Rename to `toSheaf_hom_ext` (or `toSheaf_obj_hom_ext`).",
+   "issue": "`yoneda_hom_ext` is an ext lemma for morphisms out of `(toSheaf S).obj X`. `yoneda` is not a declaration involved in the statement.",
+   "line": 92
+  },
+  {
+   "evidence": "Body is `Scheme.ofArrows_mem_smallEtaleTopology_iff f`; RHS is `\u22c3 i, Set.range (etaleMap (f i)) = .univ`.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Rename to `ofArrows_mem_smallEtaleTopology_iff_iUnion_range_etaleMap`, or use the Mathlib lemma directly.",
+   "issue": "In `ofArrows_mem_smallEtaleTopology_iff_etale`, the trailing `_etale` names neither a hypothesis nor part of the conclusion. The lemma restates `Scheme.ofArrows_mem_smallEtaleTopology_iff` with `etaleMap` on the right-hand side.",
+   "line": 249
+  }
+ ],
+ "head_sha": "992e3f829b2c56f0f1ac0fce22a0cf1942426283",
+ "merge_base_sha": "086028a6d8d186715b52fac7f3e7b23175ed2dc9",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 43299,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e04558b36613348e8ce770133b804de2cfe577e372f0b0f66f59f991bdf1505a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "naming",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T203049Z-43299-naming-e82a92",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T20:30:49Z",
+ "submitted_by": "kim-em",
+ "summary": "General small-\u00e9tale-site API is filed under `TauCeti.FiniteEtaleScheme` even though none of it takes a `FiniteEtaleScheme`, and several public names are opaque (`toBaseX`, `tautIso`, `subsingleton_of_isEmpty`) or carry the wrong suffix (`iUnion_range_iso_comp_eq_univ` is an iff).",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6992e883bd1f1148349b80cd8637ea16b6d8d4ee99796530ad668758c2b227bc",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 18584
+  },
+  "cache_creation_input_tokens": 18584,
+  "cache_read_input_tokens": 139125,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7769
+    },
+    "cache_creation_input_tokens": 7769,
+    "cache_read_input_tokens": 74970,
+    "input_tokens": 2,
+    "output_tokens": 3421,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5644,
+  "output_tokens_details": {
+   "thinking_tokens": 2945
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

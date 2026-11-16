@@ -1,0 +1,258 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.4825468,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 87.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 30405
+    },
+    "cache_creation_input_tokens": 30405,
+    "cache_read_input_tokens": 772569,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 22,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1315
+      },
+      "cache_creation_input_tokens": 1315,
+      "cache_read_input_tokens": 93245,
+      "input_tokens": 2,
+      "output_tokens": 4047,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 8796,
+    "output_tokens_details": {
+     "thinking_tokens": 2476
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "086028a6d8d186715b52fac7f3e7b23175ed2dc9",
+ "cli_dirty": false,
+ "cli_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "cost_usd": 0.482547,
+ "dedupe_key": "TauCetiProject/TauCeti|43299|992e3f829b2c56f0f1ac0fce22a0cf1942426283|reuse|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "ca0912fdb1375d39865a8d40285423b6234db4f01d86ae884c5020ff382c78e7",
+ "diff_sha256": "ca0912fdb1375d39865a8d40285423b6234db4f01d86ae884c5020ff382c78e7",
+ "duration_s": 87.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/AlgebraicGeometry/Morphisms/Etale.lean:156 `instance (Y : X.Etale) : dsimp% Etale Y.hom := Y.prop`, :181 `abbrev Etale.mk`, :190 `Etale.forget_obj_left ... = Y.left := rfl`, :194 `forget_obj_hom`. Each wrapper's body is the corresponding Mathlib term, and `etaleMkObjIso`/`toEtaleObjIso`/`pullbackObjIso` are `Iso.refl _`.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Delete them and use `Scheme.Etale.mk f`, `U.left`, `U.hom`, `f.left`, `Over.w`, `MorphismProperty.Over.homMk`, `MorphismProperty.Over.isoMk`, `MorphismProperty.Over.Hom.ext` and the existing instance `Etale U.hom`. Where a `.left` mismatch remains, rewrite with `Scheme.Etale.forget_obj_left` or `forget_obj_hom` instead of keeping a refl-iso API.",
+   "issue": "`etaleMk`, `etaleObj`, `etaleHom`, `etaleMap`, `etaleMap_w`/`_assoc`, `etaleMap_id`, `etaleMap_comp`, `etaleHomMk`, `etaleIsoMk`, `etale_hom_ext` and `instEtaleEtaleHom` are public thin wrappers around existing API. The `Iso.refl` identifications `etaleMkObjIso`, `toEtaleObjIso` and `pullbackObjIso`, with their `_comp` lemmas, are wrappers too.",
+   "line": 125
+  },
+  {
+   "evidence": "Mathlib/CategoryTheory/MorphismProperty/OverAdjunction.lean:40-42 `@[simps! obj_left obj_hom map_left] def Over.map {f : X \u27f6 Y} (hPf : P f) : P.Over Q X \u2964 P.Over Q Y`, applicable because `Scheme.Etale X := MorphismProperty.Over @Etale \u22a4 X` (Etale.lean:151).",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Define `restrictSheaf p` as `(MorphismProperty.Over.map \u22a4 (inferInstance : Etale p)).sheafPushforwardContinuous ...` and drop `etaleComp` and `etaleMap_etaleComp_map`.",
+   "issue": "`etaleComp p : T.Etale \u2964 S.Etale` (post-composition with `p`, with hand-proved `map_id`/`map_comp`) re-implements `MorphismProperty.Over.map`. Its simp lemma `etaleMap_etaleComp_map` duplicates `Over.map_map_left`.",
+   "line": 290
+  },
+  {
+   "evidence": "OverAdjunction.lean:57 `def Over.mapCongr [Q.RespectsIso] {f g : X \u27f6 Y} (hfg : f = g) (hf : P f) : Over.map Q hf \u2245 Over.map (f := g) Q _`, :75 `def Over.mapComp ... : map Q _ \u2245 map Q hf \u22d9 map Q hg`.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Replace `etaleEqIso` with `(MorphismProperty.Over.mapCongr \u22a4 h _).app V` and `etaleCompIso` with `(MorphismProperty.Over.mapComp \u22a4 hf hg).app V`. Derive the sheaf-level isos from them via `Functor.sheafPushforwardContinuousIso`/`sheafPushforwardContinuousComp`, or `isoWhiskerLeft` on the presheaf, instead of re-proving naturality.",
+   "issue": "`etaleEqIso` and `restrictSheafEqIso` restate the natural iso of composition functors for equal morphisms. `etaleCompIso` and `restrictSheafCompIso` restate the composition iso. Both are proved by hand naturality arguments.",
+   "line": 575
+  },
+  {
+   "evidence": "Proof body is `Scheme.ofArrows_mem_smallEtaleTopology_iff f`; Mathlib/AlgebraicGeometry/Sites/Etale.lean:58.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Delete it and use `Scheme.ofArrows_mem_smallEtaleTopology_iff` directly, together with `f.left`.",
+   "issue": "`ofArrows_mem_smallEtaleTopology_iff_etale` is Mathlib's lemma with its RHS rewritten through the `etaleMap` wrapper. Its proof term is that lemma verbatim.",
+   "line": 256
+  },
+  {
+   "evidence": "Body of `etaleIdTerminal` is `Scheme.Etale.mkIdTerminal S`; `isTerminalOfHomId` is at code/TauCeti/AlgebraicGeometry/FiniteEtale/Basic.lean:106.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/RestrictSheaf.lean",
+   "fix": "Use `Scheme.Etale.mkIdTerminal S` directly. Obtain the other terminal object from `TauCeti.FiniteEtaleScheme.isTerminalOfHomId` (FiniteEtale/Basic.lean:106) via `IsTerminal.isTerminalObj`, or by transport along `mkIdTerminal`.",
+   "issue": "`etaleIdTerminal` is `Scheme.Etale.mkIdTerminal S` behind a new name. The private `isTerminalToEtaleOfHomId` rebuilds terminality of `(toEtale S).obj (ofHom (\ud835\udfd9 S))`, which `(isTerminalOfHomId S).isTerminalObj (toEtale S)` or `mkIdTerminal` already supplies.",
+   "line": 263
+  },
+  {
+   "evidence": "Mathlib/CategoryTheory/Sites/Sieves/Presieve.lean:286 `theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit.{w + 1} => f) = singleton f`.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/Descent.lean",
+   "fix": "Rewrite with `\u2190 Presieve.ofArrows_pUnit` (as `Sieve.generate (Presieve.ofArrows _ _)`, which is `Sieve.ofArrows`), then apply `Scheme.ofArrows_mem_smallEtaleTopology_iff`.",
+   "issue": "In `isSheafFor_singleton_of_surjective`, the 10-line `heq` proof that `Sieve.generate (.singleton f) = Sieve.ofArrows (fun _ : Unit \u21a6 U) (fun _ \u21a6 f)` re-derives a Mathlib lemma.",
+   "line": 114
+  },
+  {
+   "evidence": "Identical `let Z`/`let f` blocks at Descent.lean lines ~156-162 and ~193-200, matching the statement at ~131-137.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/Descent.lean",
+   "fix": "Introduce one private `def` for the family (or use `(etaleComp (p i)).obj (pullback ...)` and `restrictSheaf_map_app`), plus one helper lemma giving bijectivity of `\u03c6.hom.app (op (Z i))`, and reuse both at all three sites.",
+   "issue": "The pulled-back cover `Z i := etaleMk (etaleHom (etaleMk (pullback.snd (etaleHom U) (p i))) \u226b p i)` and its arrow `f i` (with the same `rw` proof) are spelled out three times: in the statement of `pullback_ofArrows_mem_smallEtaleTopology`, in `app_injective_of_forall_isIso_restrictSheaf`, and in `isIso_of_forall_isIso_restrictSheaf`. The `IsIso (\u03c6.hom.app (op (Z i)))` extraction is also duplicated.",
+   "line": 131
+  },
+  {
+   "evidence": "Verbatim `have hinj` blocks in both private lemmas.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/Descent.lean",
+   "fix": "Extract it once, e.g. a private lemma `iso_app_injective (e : G \u2245 F) (U) : Function.Injective (e.hom.hom.app U)`, proved from `(e.app ...)`/`(sheafToPresheaf _ _).mapIso e` with `Iso.app` and `(isIso_iff_bijective _).mp`.",
+   "issue": "The block deriving injectivity of `e.hom.hom.app _` from `IsIso e.hom` via `inferInstanceAs`, `NatTrans.isIso_iff_isIso_app` and `isIso_iff_bijective` is cloned in `descentDatumOfIso_lift_act` and `descentDatumOfIso_act_assoc`.",
+   "line": 344
+  }
+ ],
+ "head_sha": "992e3f829b2c56f0f1ac0fce22a0cf1942426283",
+ "merge_base_sha": "086028a6d8d186715b52fac7f3e7b23175ed2dc9",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 43299,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "2e951525e7bfae85ab26e39f46e7301673d56b39d2b06f85fa982ca0a6b90469",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T202609Z-43299-reuse-a6fa80",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T20:26:09Z",
+ "submitted_by": "kim-em",
+ "summary": "The descent and restriction results are new, but `RestrictSheaf.lean` adds a public layer of thin wrappers that copy Mathlib's `Scheme.Etale` and `MorphismProperty.Over` API, including `Over.map`, `Over.mapCongr` and `Over.mapComp`. Delete the copies, use the canonical API, and factor the pullback-family construction that is cloned three times in `Descent.lean`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/MorphismProperty/OverAdjunction.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "<not-found>",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry/FiniteEtale/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/MorphismProperty",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry/Morphisms/Etale.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/MorphismProperty/OverAdjunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/MorphismProperty",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicGeometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Sites/LocallyConstant.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Sites/ConstantSheaf.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/Sites",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry/Sites",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 15,
+  "total_calls": 16,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f902757d610715ff4212f61ccf962926aa4b0e880705fa5d74719ec181584a51",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 30405
+  },
+  "cache_creation_input_tokens": 30405,
+  "cache_read_input_tokens": 772569,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 22,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1315
+    },
+    "cache_creation_input_tokens": 1315,
+    "cache_read_input_tokens": 93245,
+    "input_tokens": 2,
+    "output_tokens": 4047,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 8796,
+  "output_tokens_details": {
+   "thinking_tokens": 2476
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
