@@ -1,0 +1,152 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.11031540000000001,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8042
+    },
+    "cache_creation_input_tokens": 8042,
+    "cache_read_input_tokens": 69107,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 482
+      },
+      "cache_creation_input_tokens": 482,
+      "cache_read_input_tokens": 27528,
+      "input_tokens": 2,
+      "output_tokens": 1530,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2813,
+    "output_tokens_details": {
+     "thinking_tokens": 1347
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0afcaa7ea7c9debf20bad5dcaf790bcff851afb",
+ "cli_dirty": false,
+ "cli_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "cost_usd": 0.110315,
+ "dedupe_key": "TauCetiProject/TauCeti|42385|b0adb1439827ef88d3b9bfcca079dfdc0b4b0f6a|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "00a141b4da8236200ee884d29c8d17d71bd983eaedef3784e9672fc157db4129",
+ "diff_sha256": "00a141b4da8236200ee884d29c8d17d71bd983eaedef3784e9672fc157db4129",
+ "duration_s": 25.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Line 39 reads `@[expose] public section`. `mathlib/Mathlib/CategoryTheory/Monoidal/Widesubcategory.lean:26` reads `public section`, with no expose, for the parallel construction.",
+   "file": "TauCeti/CategoryTheory/Monoidal/Core.lean",
+   "fix": "Use plain `public section`, as Mathlib's `Monoidal/Widesubcategory.lean` does. Prove the characterizing lemmas with `(rfl)` so they stay usable downstream. If a specific body really must stay unfoldable, mark only that declaration `@[expose]`. At minimum, `skeletonMulEquiv` must not be exposed.",
+   "issue": "`@[expose] public section` publishes every body, including the instance bodies and the noncomputable `skeletonMulEquiv`, which is built by `MulEquiv.ofBijective` with a tactic proof. The rfl simp lemmas (`tensorObj_of`, `whiskerLeft_iso`, `associator_hom_iso`, `inclusion_\u03bc`, `core_\u03bc_iso`, `skeletonMulEquiv_toSkeleton`, \u2026) already characterize this structure, so no consumer needs to unfold these bodies.",
+   "line": 39
+  },
+  {
+   "evidence": "The only lemmas about `skeletonMulEquiv` are `skeletonMulEquiv_toSkeleton` and `skeletonMulEquiv_monoidHom_core`. Neither one mentions `.symm`.",
+   "file": "TauCeti/CategoryTheory/Monoidal/Core.lean",
+   "fix": "Add `@[simp] lemma skeletonMulEquiv_symm_toSkeleton (X : C) : skeletonMulEquiv.symm (toSkeleton X) = toSkeleton (\u27e8X\u27e9 : Core C)`. It follows from `skeletonMulEquiv_toSkeleton` by `MulEquiv.symm_apply_eq`.",
+   "issue": "`skeletonMulEquiv` has an evaluation lemma only in the forward direction (`skeletonMulEquiv_toSkeleton`). Nothing evaluates `skeletonMulEquiv.symm` on a class, so a consumer moving from `Skeleton C` to `Skeleton (Core C)` has to unfold `MulEquiv.ofBijective`.",
+   "line": 236
+  }
+ ],
+ "head_sha": "b0adb1439827ef88d3b9bfcca079dfdc0b4b0f6a",
+ "merge_base_sha": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42385,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "e581f0882c6c238d19d9ac8d6c3456b7669c902e9d7c892a70da3e77f64ad8eb",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "be5ac95ca0e30c8f59c5ea74dec429ca0a0be10d",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T062715Z-42385-api-design-1bf4c0",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T06:27:15Z",
+ "submitted_by": "kim-em",
+ "summary": "The API surface is mostly complete and correctly simp-annotated, but `@[expose] public section` publishes every body in the file, including the proof-built `skeletonMulEquiv`, and the inverse of `skeletonMulEquiv` has no evaluation lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/Monoidal/Widesubcategory.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/Monoidal/Widesubcategory.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "eca6d2545d2a9cc73d8121eb8b8eb7e4440432c50342339b6d2b266c181c95b5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 8042
+  },
+  "cache_creation_input_tokens": 8042,
+  "cache_read_input_tokens": 69107,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 482
+    },
+    "cache_creation_input_tokens": 482,
+    "cache_read_input_tokens": 27528,
+    "input_tokens": 2,
+    "output_tokens": 1530,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2813,
+  "output_tokens_details": {
+   "thinking_tokens": 1347
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
