@@ -1,0 +1,208 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.27194820000000003,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 47.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 22924
+    },
+    "cache_creation_input_tokens": 22924,
+    "cache_read_input_tokens": 359181,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5453
+      },
+      "cache_creation_input_tokens": 5453,
+      "cache_read_input_tokens": 101035,
+      "input_tokens": 2,
+      "output_tokens": 3039,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4273,
+    "output_tokens_details": {
+     "thinking_tokens": 815
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b0afcaa7ea7c9debf20bad5dcaf790bcff851afb",
+ "cli_dirty": false,
+ "cli_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "cost_usd": 0.271948,
+ "dedupe_key": "TauCetiProject/TauCeti|42416|7435c93be28c2e11708f25f7e4bac0a7de6be51e|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "92aa5b31aacfc57be07004683f32b5b5206e46ef6251ebebbdf43999d612d1b3",
+ "diff_prompt_sha256": "42c8581dc5c4b6f15538f561e85111f29e0ede7a2e702460daef027211590ecb",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "92aa5b31aacfc57be07004683f32b5b5206e46ef6251ebebbdf43999d612d1b3",
+ "duration_s": 47.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "diff.txt lines 1098, 1150, 1171, 1199, 1226, 1296, 1336.",
+   "file": "TauCeti/NoncommutativeGeometry/FredholmModule/Index.lean",
+   "fix": "Add `private theorem evenIndex_eq_compressionIndex : M.evenIndex e = compressionIndex (M.evenProjPos e) (M.evenProjNeg e) M.operator := rfl` and an analogous unfolding lemma for `evenParametrix`. Rewrite with these instead of using `change`.",
+   "issue": "`evenIndex` is unfolded to the private `compressionIndex` by uncommented `change` in six places: `evenIndex_flipGrading` (followed by a bare `rfl`), `evenIndex_eq_of_isCompactOperator_sub_mul_rep` (two `change` calls), `evenIndex_conj`, `evenIndex_prod`, `evenIndex_unitize`, and `evenIndex_pointCycle`. Each relies on `evenCompression` being definitionally the `compressionIndex` operator.",
+   "line": 0
+  },
+  {
+   "evidence": "diff.txt lines 712, 731, 879, 1753.",
+   "file": "TauCeti/NoncommutativeGeometry/FredholmModule/Index.lean",
+   "fix": "Use `simp`/`rw` with the corresponding `_apply` or `coe` lemmas (for example `gradingPos` with `smul_apply` and `add_apply`, and `conjStarAlgEquiv_apply`), or add a comment explaining why `change` is needed.",
+   "issue": "Other uncommented `change` steps unfold coercions and definitions: `rangeConjEquiv` (`change p (e.symm u) = e.symm w`), `compressionIndex_conj` (`change e (q (e.symm ...)))`), `range_gradingPos` (`change (2 : \u2102)\u207b\u00b9 \u2022 (x + M.grading x) = x`), and `oddIndex_conj` (`change ... = U.conjStarAlgEquiv ...`).",
+   "line": 0
+  },
+  {
+   "evidence": "diff.txt lines 2547, 2854, 2888, 2908.",
+   "file": "TauCeti/NoncommutativeGeometry/FredholmModule/Normalization.lean",
+   "fix": "Add a `@[simp] unitize_rep_apply : (M.unitize hM).rep x = Unitization.starLift M.rep x` lemma and a `halfSmulZeroRep_operator` simp lemma, then rewrite with them.",
+   "issue": "More uncommented `change` steps unfold `unitize`'s `rep` and `double_operator`: `unitize.isCompactOperator_commutator`, `unitize_rep_algebraMap`, `EvenFredholmModule.unitize.commute_grading_rep`, and `double_halfSmulZeroRep_check`.",
+   "line": 0
+  },
+  {
+   "evidence": "grep `CompleteSpace (M.evenProj(Pos|Neg) e).range :=` finds 6 occurrences.",
+   "file": "TauCeti/NoncommutativeGeometry/FredholmModule/Index.lean",
+   "fix": "Factor them into a lemma such as `completeSpace_range_of_isIdempotentElem`, or a local instance taking `IsIdempotentElem`, and use it at all three sites.",
+   "issue": "The same `CompleteSpace (M.evenProjPos e).range` / `(M.evenProjNeg e).range` `have` blocks are copied verbatim into `isFredholm_evenCompression`, `evenIndex_flipGrading`, and `evenIndex_eq_of_isCompactOperator_sub_mul_rep`.",
+   "line": 0
+  },
+  {
+   "evidence": "diff.txt lines 2722-2724, 2743-2745, 2781-2783, and the `M\u2080` definition in `evenIndex_doubleHomotopy`.",
+   "file": "TauCeti/NoncommutativeGeometry/FredholmModule/Normalization.lean",
+   "fix": "Define `EvenFredholmModule.negZeroRep M` (or `M.doubleBase`) once, with simp lemmas for its operator, grading, and rep, and reference it at every site.",
+   "issue": "The even `zeroRep A (-M.operator) (-M.grading) ...` together with its two inline side proofs (`by rw [neg_mul_neg, ...]`) is repeated in `doubleHomotopy`, `double`, `doubleHomotopy_zero`, and `Index.lean` `evenIndex_doubleHomotopy`.",
+   "line": 2722
+  },
+  {
+   "evidence": "Near-identical `(WithLp.prodContinuousLinearEquiv 2 \ud835\udd5c E F).symm.toContinuousLinearMap \u2218L inl \ud835\udd5c E F` chains appear in all three proofs.",
+   "file": "TauCeti/Analysis/InnerProductSpace/HermitianDilation/Continuous.lean",
+   "fix": "Extract helper lemmas for the coordinate maps, e.g. compactness of `inlL \u2218L f \u2218L fstL` and of `fstL \u2218L T \u2218L inlL` on `WithLp 2`, or a 2\u00d72 block-entry compactness lemma, and derive the three statements from them.",
+   "issue": "`isCompactOperator_withLpProdMap_iff`, `isCompactOperator_hermitianDilation_comp_withLpProdMap_zero_right`, and `isCompactOperator_hermitianDilation_iff` each repeat the same hand-written factorization through `prodContinuousLinearEquiv.symm \u2218L inl/inr` and `fstL/sndL`, each with several-line `comp_clm`/`clm_comp` chains.",
+   "line": 0
+  },
+  {
+   "evidence": "`have f0 := ...; have f1 := f0 hFred; have f2 := f1 h1; have f3 := f2 h2; ... exact f3`",
+   "file": "TauCeti/NoncommutativeGeometry/FredholmModule/Index.lean",
+   "fix": "Rewrite the goal, then close it with `exact index_one_add_mul_eq _ _ _ hFred h1 h2`.",
+   "issue": "`oddIndex_eq_of_isCompactOperator_sub_mul_rep` applies `index_one_add_mul_eq` one hypothesis at a time through the intermediate names `f0`, `f1`, `f2`, `f3`. This hides a one-line application.",
+   "line": 0
+  },
+  {
+   "evidence": "diff.txt lines 2469-2483 and 2507-2519.",
+   "file": "TauCeti/NoncommutativeGeometry/FredholmModule/Normalization.lean",
+   "fix": "Prove `1 - F*F = S*S` once and reuse it in both theorems. Get `0 \u2264 S` from an existing real-scalar nonnegativity lemma (e.g. `smul_nonneg` with `zero_le_one`) instead of building `T`.",
+   "issue": "`one_sub_half_smul_one_mul_self_nonneg` and `sqrt_one_sub_half_smul_one_mul_self` both recompute `hreal`/`hnum` (\u221a3/2 squared = 3/4) and the same `conv`/`one_smul`/`sub_smul` rewrite. Nonnegativity of `S` is also re-proved by hand through `\u221a(\u221a3/2)`.",
+   "line": 2469
+  },
+  {
+   "evidence": "diff.txt lines 2837-2838 and 2883.",
+   "file": "TauCeti/NoncommutativeGeometry/FredholmModule/Normalization.lean",
+   "fix": "Add a private `starLift_inr` lemma and use it in both places, or use Mathlib's `Unitization.starLift_inr` if it exists.",
+   "issue": "`starLift_rep_inl_add_inr` proves `hinr` inline, and `unitize_rep_inr` proves the same fact again with the identical `DFunLike.congr_fun (Unitization.starLift.symm_apply_apply ...)` term.",
+   "line": 2837
+  }
+ ],
+ "head_sha": "7435c93be28c2e11708f25f7e4bac0a7de6be51e",
+ "merge_base_sha": "0ae45cec5df3d83669e6a8403d229ddbf562d89c",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42416,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "b0e2ec55d71d58ea7e92d60d968cf843997646417babac20390b6358ba773c24",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "b242725b755cb8fa6669ee84359fa235b7d6bf8c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T032427Z-42416-proof-quality-cd3fc8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T03:24:27Z",
+ "submitted_by": "kim-em",
+ "summary": "Six even-index theorems use uncommented `change` to unfold `evenIndex` to the private `compressionIndex`, and other uncommented `change` steps rely on definitional unfolding. Repeated reasoning (CompleteSpace instances, the even `zeroRep` side proofs, block-operator compactness factorizations, scalar sqrt arithmetic) is copied instead of factored into lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a957a721f2668c8d1e2f2fabfc198efd0208101031e59e76e96afeff67a3e74c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 22924
+  },
+  "cache_creation_input_tokens": 22924,
+  "cache_read_input_tokens": 359181,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5453
+    },
+    "cache_creation_input_tokens": 5453,
+    "cache_read_input_tokens": 101035,
+    "input_tokens": 2,
+    "output_tokens": 3039,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4273,
+  "output_tokens_details": {
+   "thinking_tokens": 815
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
