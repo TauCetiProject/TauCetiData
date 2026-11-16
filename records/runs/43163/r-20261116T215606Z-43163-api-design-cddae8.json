@@ -1,0 +1,189 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3343116,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 71.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 32315
+    },
+    "cache_creation_input_tokens": 32315,
+    "cache_read_input_tokens": 206463,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5060
+      },
+      "cache_creation_input_tokens": 5060,
+      "cache_read_input_tokens": 42060,
+      "input_tokens": 4,
+      "output_tokens": 2776,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6569,
+    "output_tokens_details": {
+     "thinking_tokens": 2938
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "086028a6d8d186715b52fac7f3e7b23175ed2dc9",
+ "cli_dirty": false,
+ "cli_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "cost_usd": 0.334312,
+ "dedupe_key": "TauCetiProject/TauCeti|43163|ff91998fb03d4bef6ce4f188082bdf6429f669f6|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "e4be7038b10198ba62253efe2dab40bf935fac33ec271730eb81a88387c3ddef",
+ "diff_sha256": "e4be7038b10198ba62253efe2dab40bf935fac33ec271730eb81a88387c3ddef",
+ "duration_s": 71.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 46-51: the argument is the iso applied to `e`; the equivalence is `coloringCongr` along `lineGraphOfSimpleGraphIso`, so the free-argument form holds and is the usable normal form.",
+   "file": "TauCeti/Combinatorics/SimpleGraph/Matching/EdgeColoring.lean",
+   "fix": "State it at a free edge: `edgeColoringEquivOfSimpleGraph G C c f = c ((Graph.lineGraphOfSimpleGraphIso G).symm f)`, keeping `@[simp]`.",
+   "issue": "`edgeColoringEquivOfSimpleGraph_apply` has LHS `edgeColoringEquivOfSimpleGraph G C c (Graph.lineGraphOfSimpleGraphIso G e)`, so `simp` cannot evaluate the equivalence at a plain `f : G.edgeSet` (unifying `lineGraphOfSimpleGraphIso G ?e =?= f` fails).",
+   "line": 46
+  },
+  {
+   "evidence": "Lines 55-60.",
+   "file": "TauCeti/Combinatorics/SimpleGraph/Matching/EdgeColoring.lean",
+   "fix": "State `(edgeColoringEquivOfSimpleGraph G C).symm c e = c (Graph.lineGraphOfSimpleGraphIso G e)` for free `e : (Graph.ofSimpleGraph G).edgeSet`.",
+   "issue": "Same problem for `edgeColoringEquivOfSimpleGraph_symm_apply`: its LHS only matches arguments written as `(Graph.lineGraphOfSimpleGraphIso G).symm e`, so `simp` cannot evaluate the inverse at a plain multigraph edge.",
+   "line": 55
+  },
+  {
+   "evidence": "TauCeti/Combinatorics/SimpleGraph/Matching/Regular.lean:92,101 use `(hst : G.IsBipartiteWith s t)`; TauCeti/Combinatorics/Graph/Bipartition.lean:350 `isBipartition_ofSimpleGraph_iff` provides the conversion; TauCeti/Combinatorics/Graph/Matching/EdgeColoring.lean:117-119,133-135 carry the same multigraph hypothesis.",
+   "file": "TauCeti/Combinatorics/SimpleGraph/Matching/EdgeColoring.lean",
+   "fix": "Take `{s t : Set V} (hst : G.IsBipartiteWith s t)` and convert internally via `SimpleGraph.isBipartition_ofSimpleGraph_iff`. Align the two existing corollaries the same way.",
+   "issue": "The simple-graph corollary `lineGraph_colorable_iff_maxDegree_le` takes `hLR : (Graph.ofSimpleGraph G).IsBipartition L R` with `L R : Finset (Graph.ofSimpleGraph G).vertexSet`, so a simple-graph consumer has to build a multigraph bipartition first. The sibling simple-graph corollaries `SimpleGraph.nonempty_edgeColoring_ofSimpleGraph_iff_maxDegree_le` and `chromaticNumber_lineGraph_eq_maxDegree` have the same hypothesis.",
+   "line": 75
+  }
+ ],
+ "head_sha": "ff91998fb03d4bef6ce4f188082bdf6429f669f6",
+ "merge_base_sha": "086028a6d8d186715b52fac7f3e7b23175ed2dc9",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 43163,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "93a4d40d2d909813b18c7f047ba0eca6bca5a1decbc70c1580c71cde36e6c8fa",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T215606Z-43163-api-design-cddae8",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T21:56:06Z",
+ "submitted_by": "kim-em",
+ "summary": "The `@[simp]` evaluation lemmas only match arguments already written as an isomorphism image, so they do not evaluate the equivalence on arbitrary edges. The simple-graph K\u0151nig corollary asks for a multigraph Finset bipartition where a simple-graph `IsBipartiteWith` hypothesis is the usable interface.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/Graph",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/GraphConnectivityAndFlows",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap/TauCetiRoadmap/GraphConnectivityAndFlows/README.md",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Combinatorics/SimpleGraph",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Combinatorics/Graph/Matching/EdgeColoring.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 9,
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "84e30803be479dea0ccafcbda462eeb0cb5933a7d7c0c1affd6138158e1c0113",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 32315
+  },
+  "cache_creation_input_tokens": 32315,
+  "cache_read_input_tokens": 206463,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5060
+    },
+    "cache_creation_input_tokens": 5060,
+    "cache_read_input_tokens": 42060,
+    "input_tokens": 4,
+    "output_tokens": 2776,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6569,
+  "output_tokens_details": {
+   "thinking_tokens": 2938
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

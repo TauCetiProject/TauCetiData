@@ -1,0 +1,161 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.12909420000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8920
+    },
+    "cache_creation_input_tokens": 8920,
+    "cache_read_input_tokens": 79351,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 729
+      },
+      "cache_creation_input_tokens": 729,
+      "cache_read_input_tokens": 31556,
+      "input_tokens": 2,
+      "output_tokens": 2075,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3430,
+    "output_tokens_details": {
+     "thinking_tokens": 1005
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ca32605ff53921fa0689dd312618b7cfaafa7e43",
+ "cli_dirty": false,
+ "cli_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "cost_usd": 0.129094,
+ "dedupe_key": "TauCetiProject/TauCeti|41038|619c91d3c70e96fce79be8f0e7f4b7e9d5e60a7f|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "f916cf837204b7f074b486a4f1ef8dbe6ee1ba19186b3eff886bfdc39c09540d",
+ "diff_sha256": "f916cf837204b7f074b486a4f1ef8dbe6ee1ba19186b3eff886bfdc39c09540d",
+ "duration_s": 36.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 201, 453\u2013454 and 536 all derive `p y \u2208 s.source` (or the equal `baseSet e`) from `s.map_target` via the same simp set.",
+   "file": "TauCeti/Topology/Covering/AssociatedBundle.lean",
+   "fix": "Add one lemma (e.g. `apply_mem_localInverseAt_source_of_mem_target`) and use it in `deckChange_eq_one_of_mem_target`, `localTriv_associatedMk_of_mem_target` and `isLocalHomeomorph_associatedMk`.",
+   "issue": "The step `y \u2208 (localInverseAt e).target \u2192 p y \u2208 (localInverseAt e).source` is proved three times with the same `simpa only [..., IsLocalHomeomorph.localInverseAt_symm] using s.map_target h` (lines 201, 453, 536).",
+   "line": 536
+  },
+  {
+   "evidence": "Mathlib/Topology/VectorBundle/Basic.lean:685 `theorem mem_localTriv_source ... p \u2208 (Z.localTriv i).source \u2194 p.1 \u2208 Z.baseSet i`; the file's own `associatedCore_baseSet` (line 236) states the second step.",
+   "file": "TauCeti/Topology/Covering/AssociatedBundle.lean",
+   "fix": "Use `(VectorBundleCore.mem_localTriv_source _ _ _).2` with `associatedCore_baseSet \u25b8 hs` (or `rw [VectorBundleCore.mem_localTriv_source, associatedCore_baseSet]`), and obtain `hy'` via `OpenPartialHomeomorph.prod_source`/`symm_source` instead of a type ascription.",
+   "issue": "`hsrc` closes `associatedMk \u03c1 (y, v) \u2208 T.source` with `exact hs : p y \u2208 s.source`. This works only by unfolding `localTriv` source = proj\u207b\u00b9' baseSet and baseSet = localInverseAt source. Likewise `have hy' : y \u2208 s.target := hy` (line 533) silently unfolds membership in the product chart's source.",
+   "line": 537
+  },
+  {
+   "evidence": "Lines 516\u2013517: `rw [localTriv_associatedMk_self, associatedSectionEquiv_apply_coe]` then `rfl`.",
+   "file": "TauCeti/Topology/Covering/AssociatedBundle.lean",
+   "fix": "Finish with `Prod.ext (by simp [VectorBundleCore.localTriv_apply]) rfl` or rewrite with `VectorBundleCore.localTriv_apply`, so that the first-component equality is stated rather than computed.",
+   "issue": "`associatedMk_associatedSectionEquiv` ends with a bare `rfl` after `rw`. It closes `(p y, (localTriv y \u27e8p y, \u03c3 (p y)\u27e9).2) = localTriv y \u27e8p y, \u03c3 (p y)\u27e9` by definitional unfolding of `localTriv`'s first component and pair eta.",
+   "line": 517
+  },
+  {
+   "evidence": "Lines 481\u2013482 and 492\u2013493 contain the same chain, differing only in `inv_mul_cancel` vs `mul_inv_cancel`.",
+   "file": "TauCeti/Topology/Covering/AssociatedBundle.lean",
+   "fix": "Factor a lemma such as `\u03c1_apply_\u03c1_inv_apply : (\u03c1 g : F \u2192L[\ud835\udd5c] F) ((\u03c1 g\u207b\u00b9 : F \u2192L[\ud835\udd5c] F) v) = v` (and the `g\u207b\u00b9`/`g` variant), proved once, possibly by `simp [\u2190 ContinuousLinearMap.mul_apply, \u2190 Units.val_mul]`, and use it in both places.",
+   "issue": "The six-lemma rewrite chain `map_inv, \u2190 mul_apply_eq_comp, \u2190 Units.val_mul, inv_mul_cancel/mul_inv_cancel, Units.val_one, one_apply_eq_self` is repeated in `associatedMk_smul` (481\u2013482) and `associatedMk_eq_associatedMk_iff` (492\u2013493). It is a brittle chain that breaks on any Mathlib rename.",
+   "line": 481
+  }
+ ],
+ "head_sha": "619c91d3c70e96fce79be8f0e7f4b7e9d5e60a7f",
+ "merge_base_sha": "ca32605ff53921fa0689dd312618b7cfaafa7e43",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 41038,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "618208d10497137510acf8c126caa1f70f515c21839bcbc372dc4ecda33ecf5e",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T220708Z-41038-proof-quality-a1aab1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T22:07:08Z",
+ "submitted_by": "kim-em",
+ "summary": "The new proofs repeat the same local-section domain argument three times and the same unit-cancellation rewrite chain twice, and they rely on undocumented definitional equalities in `isLocalHomeomorph_associatedMk` and `associatedMk_associatedSectionEquiv`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Covering/AssociatedBundle.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/VectorBundle/Basic.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a425ec2801cd0e7001b6723b8af3553531b5b8504fc5b66f85642325b935300c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 8920
+  },
+  "cache_creation_input_tokens": 8920,
+  "cache_read_input_tokens": 79351,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 729
+    },
+    "cache_creation_input_tokens": 729,
+    "cache_read_input_tokens": 31556,
+    "input_tokens": 2,
+    "output_tokens": 2075,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3430,
+  "output_tokens_details": {
+   "thinking_tokens": 1005
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
