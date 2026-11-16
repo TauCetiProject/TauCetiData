@@ -1,0 +1,156 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.110807,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 31.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6032
+    },
+    "cache_creation_input_tokens": 6032,
+    "cache_read_input_tokens": 100455,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 4965
+      },
+      "cache_creation_input_tokens": 4965,
+      "cache_read_input_tokens": 50761,
+      "input_tokens": 2,
+      "output_tokens": 1965,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3027,
+    "output_tokens_details": {
+     "thinking_tokens": 927
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "130523811f55c80f533e6024e190b945755f93c5",
+ "cli_dirty": false,
+ "cli_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "cost_usd": 0.110807,
+ "dedupe_key": "TauCetiProject/TauCeti|40752|163377b0910b035a1dc5289b9b7e9d234597dc0d|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "f23671b413ebf01c89d29fc11083b1470c8fbd1796bb4942c715b01f683416d9",
+ "diff_sha256": "f23671b413ebf01c89d29fc11083b1470c8fbd1796bb4942c715b01f683416d9",
+ "duration_s": 31.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Both proofs contain the same `have h\u03b9`, the same `have hmap ... LinearMap.congr_fun ... (diagBasis _ _).ext fun _ => by simp only [...]; rw [diagBasis_comp_diagBasis ..., coeffLinearEquiv_apply, coeffLinearEquiv_apply, coeff_smul, coeff_diagBasis, coeff_diagBasis]; simp [\u03b9]`, and the same `Finsupp.mapDomain_injective` ending.",
+   "file": "TauCeti/Algebra/TemperleyLieb/Category.lean",
+   "fix": "Add standalone lemmas `coeff_comp_diagBasis_zero` and `coeff_diagBasis_zero_comp` saying `(f \u226b diagBasis (of 0) Y y).coeff = mapDomain (fun x => glueMiddle 0 (x.append y)) f.coeff`, plus the dual, and prove the two injectivity facts as lemmas. Each mono/epi proof then takes a few lines.",
+   "issue": "`mono_diagBasis_zero_left` and `epi_diagBasis_zero_right` are copies of each other (about 30 lines each). Each builds its own injective `\u03b9` and repeats the `hmap` proof that composing with a basis morphism through `of 0` acts on `coeff` by `Finsupp.mapDomain`. That reusable fact is buried inside the proofs.",
+   "line": 0
+  },
+  {
+   "evidence": "Both `calc` blocks are identical up to renaming `f\u2081/f\u2082, x` to `g\u2081/g\u2082, z`.",
+   "file": "TauCeti/Algebra/TemperleyLieb/Category.lean",
+   "fix": "Prove once that composing with `r \u2022 \ud835\udfd9 (of 0)` on either side is `r \u2022 \u00b7`, and that `r \u2022 f = r \u2022 g \u2192 f = g` whenever `r` is a non-zero-divisor (the hom-modules are free). Derive both iffs from that, so the `sub_mul`/`mul_comm` rewriting is not duplicated.",
+   "issue": "`mono_smul_id_zero_iff` and `epi_smul_id_zero_iff` repeat the same two-direction argument, including the same `calc (\u2026 - \u2026) * r = r * \u2026 - r * \u2026 := by rw [sub_mul, mul_comm, mul_comm _ r]`.",
+   "line": 0
+  },
+  {
+   "evidence": "`liftDiag_map_linearize_map`: `rw [..., \u2190 liftDiag_map_mk_circles F hF f.diagram.matching f.diagram.circles]` then `rfl`. `span_range_linearize_map`: `simp only [linearize_map, pow_zero, one_smul]` then `rfl`. `mapRingHom_map_linearize_map`: `rw [...]` then `rfl`.",
+   "file": "TauCeti/Algebra/TemperleyLieb/Category.lean",
+   "fix": "State the needed equalities as explicit lemmas (for example `TLDiagCat.Hom.mk_diagram` and `linearize_obj` as an equality to `of X.as`) and rewrite with them, or add a comment at each `rfl` naming the definitional equality it uses.",
+   "issue": "Three proofs end with an undocumented `rfl` that crosses wrappers. In `liftDiag_map_linearize_map` it relies on structure eta `TLDiagCat.Hom.mk \u27e8f.diagram.matching, f.diagram.circles\u27e9 = f` and on `of X.as` versus `X`. In `span_range_linearize_map` and `mapRingHom_map_linearize_map` it relies on `(linearize R \u03b4).obj X` / `(mapRingHom \u03c6 h\u03b4).obj` unfolding to `of X.as`.",
+   "line": 0
+  },
+  {
+   "evidence": "mathlib/Mathlib/Data/Finsupp/Single.lean:76 `single_eq_of_ne (h : a' \u2260 a)` and :80 `single_eq_of_ne' (h : a \u2260 a')`: the hypothesis direction differs between the two.",
+   "file": "TauCeti/Algebra/TemperleyLieb/Category.lean",
+   "fix": "Replace them with `simp [cap_comp_cup_eq_diagBasis, Finsupp.single_apply, hne] at hc` or similar.",
+   "issue": "Long rewrite chains where `simp` would do the same job. The nine-step chain in `cap_comp_cup_ne_smul_id` (`rw [cap_comp_cup_eq_diagBasis, coeff_diagBasis, coeff_smul, coeff_id, Finsupp.coe_smul, Pi.smul_apply, Finsupp.single_eq_same, Finsupp.single_eq_of_ne hne, smul_zero] at hc`) depends on the argument direction of `Finsupp.single_eq_of_ne` (Mathlib also has `single_eq_of_ne'`). The `rw` chains inside `hmap` in the mono/epi proofs have the same problem.",
+   "line": 0
+  }
+ ],
+ "head_sha": "163377b0910b035a1dc5289b9b7e9d234597dc0d",
+ "merge_base_sha": "130523811f55c80f533e6024e190b945755f93c5",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 40752,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f7f6861c63aa3407042ce2696a0136406a448d5a241a1bb784e3ea386ef48410",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "04517015e663937bbfbd67c1bc4030ab8a67cba0",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261116T205137Z-40752-proof-quality-519d83",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-16T20:51:37Z",
+ "submitted_by": "kim-em",
+ "summary": "The mono/epi proofs for basis morphisms and for scalar endomorphisms are copied in pairs instead of sharing a lemma. Several proofs close by undocumented `rfl` across the `linearize` object wrapper and the `TLDiagCat.Hom.mk` wrapper, or by long rewrite chains that break when Mathlib renames lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Finsupp",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6879f46eae1cb0ad58057b3ca86569c2fb74e046f3d53dfab972558948f0830b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 6032
+  },
+  "cache_creation_input_tokens": 6032,
+  "cache_read_input_tokens": 100455,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4965
+    },
+    "cache_creation_input_tokens": 4965,
+    "cache_read_input_tokens": 50761,
+    "input_tokens": 2,
+    "output_tokens": 1965,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3027,
+  "output_tokens_details": {
+   "thinking_tokens": 927
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
