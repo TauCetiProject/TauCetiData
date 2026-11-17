@@ -1,0 +1,170 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1434444,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 44.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3794
+    },
+    "cache_creation_input_tokens": 3794,
+    "cache_read_input_tokens": 176592,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1648
+      },
+      "cache_creation_input_tokens": 1648,
+      "cache_read_input_tokens": 89369,
+      "input_tokens": 2,
+      "output_tokens": 2971,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4457,
+    "output_tokens_details": {
+     "thinking_tokens": 1408
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "086028a6d8d186715b52fac7f3e7b23175ed2dc9",
+ "cli_dirty": false,
+ "cli_sha": "a85a2bbcd59a8177ee375d01dfd3394e0858c459",
+ "cost_usd": 0.143444,
+ "dedupe_key": "TauCetiProject/TauCeti|42972|57967b9a1f9c67d4a90464a0f26ddebc33216d30|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "66b23cae7b2c7b1abfbb6e748e376e59f73453f37846af37e99753233af0aedf",
+ "diff_sha256": "66b23cae7b2c7b1abfbb6e748e376e59f73453f37846af37e99753233af0aedf",
+ "duration_s": 44.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/LinearAlgebra/Pi.lean:527 `sumArrowLequivProdArrow_symm_apply_inl`, :532 `_inr` exist.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Neighbor/SignedUnitLattice.lean",
+   "fix": "Rewrite with the stated lemmas instead, e.g. `simp [LinearEquiv.sumArrowLequivProdArrow_symm_apply_inl, LinearEquiv.sumArrowLequivProdArrow_symm_apply_inr, signedUnitLattice_form_apply, Fintype.sum_sum_type, \u2026]`, and drop the `change`.",
+   "issue": "In `unitLatticeOrthogonalSumIsometrySignedUnitLattice` and `rankOneOrthogonalSumIsometrySignedUnitLattice`, `map_app'` opens with an uncommented `change \u2026 (Sum.elim p.1 p.2) \u2026`. This relies on `(LinearEquiv.sumArrowLequivProdArrow \u2026).symm` (and `funUnique.symm`) unfolding definitionally to `Sum.elim`.",
+   "line": 0
+  },
+  {
+   "evidence": "Lines `change ![x (.inl 0) + x (.inr 0), (x (.inl 0) - x (.inr 0)) / 2] \u2208 hyperbolicPlane.carrier \u2194 \u2026` and the duplicated `\u00b7 fin_cases i; exact \u27e8m + q, \u2026\u27e9 \u00b7 fin_cases j; exact \u27e8m - q, \u2026\u27e9` blocks.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Neighbor/SignedUnitLattice.lean",
+   "fix": "Define the linear equivalence as a named private def with a stated `_symm_apply` lemma and rewrite with it. Factor the shared coordinate-integrality argument into one helper used by both branches.",
+   "issue": "In `hyperbolicPlaneIsometryEvenSignedUnitNeighborOneOne.map_carrier`, an uncommented `change ![x (.inl 0) + x (.inr 0), \u2026] \u2208 hyperbolicPlane.carrier \u2194 \u2026` unfolds the anonymous `LinearEquiv` structure's `symm`. Its two `rcases` branches (`left`/`right`, `\u27e8hZ, m, hm\u27e9` \u00d72) also repeat nearly identical `fin_cases \u2026 push_cast; linarith` blocks.",
+   "line": 0
+  },
+  {
+   "evidence": "Lines `show (signedUnitSignFlipEquiv r s k).symm = signedUnitSignFlipEquiv r s k from rfl` and `dsimp only [signedUnitSignFlipEquiv, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]` (twice).",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Neighbor/SignedUnitLattice.lean",
+   "fix": "Add private lemmas `signedUnitSignFlipEquiv_apply : \u2026 x = Function.update x k (-x k)` and `signedUnitSignFlipEquiv_symm : (\u2026).symm = \u2026` (proved by `LinearEquiv.ext`), then rewrite with them.",
+   "issue": "`signedUnitHalfCharacteristicIsometryShifted.map_carrier` rewrites with `show (signedUnitSignFlipEquiv r s k).symm = signedUnitSignFlipEquiv r s k from rfl`, which relies on structure-eta defeq of a private equivalence. The `hdiff` and `hmul` proofs also unfold it with `dsimp only [signedUnitSignFlipEquiv, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]`.",
+   "line": 0
+  },
+  {
+   "evidence": "`change L.evenSublattice.discriminantQuadraticMap L.isEven_evenSublattice (L.halfCharacteristicClass hw + x) = _`; `show (Submodule.Quotient.mk y : L.evenSublattice.DiscriminantGroup) = L.oddVectorClass \u27e8y, hy\u27e9 from rfl`; `theorem oddVectorClass_def` is defined earlier in the same file.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Characteristic/ParityKernel.lean",
+   "fix": "Replace the `change` with `rw [AddSubgroup.coe_mk]` (or `obtain` on the coerced form), and use `(L.oddVectorClass_def \u27e8y, hy\u27e9).symm` in place of `show \u2026 from rfl`.",
+   "issue": "`discriminantQuadraticMap_halfCharacteristicClass_add` uses an uncommented `change \u2026 (L.halfCharacteristicClass hw + x) = _` to strip the subgroup coercion. It then uses `show (Submodule.Quotient.mk y : \u2026) = L.oddVectorClass \u27e8y, hy\u27e9 from rfl`, although the PR already provides the stated lemma `oddVectorClass_def`.",
+   "line": 0
+  },
+  {
+   "evidence": "Repeated `have hvv : L.integralForm v v = 0 := by rwa [\u2190 L.integralNorm_apply]` and `have huv \u2026 := (L.isSymm_integralForm.eq u v).trans hvu` / `huv\u2080`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Orthogonal/HyperbolicSplitting.lean",
+   "fix": "Make `exists_integralNorm_eq_zero_integralForm_eq_one` also return `L.integralForm v v = 0` and `L.integralForm u v = 1`, or add one small lemma for the norm-to-form translation, and reuse it.",
+   "issue": "Four proofs re-derive the same facts: `hvv : L.integralForm v v = 0 := by rwa [\u2190 L.integralNorm_apply]` and `huv : L.integralForm u v = 1 := (L.isSymm_integralForm.eq u v).trans hvu`. These appear in `isotropicPairSpanEquiv`, `exists_isometry_hyperbolicPlane_orthogonalSum`, `exists_odd_integralNorm_integralForm_eq_one` and `exists_orthogonal_unit_pm_vectors` (`huv` also in `gramMatrix_isotropicPairBasis`).",
+   "line": 0
+  },
+  {
+   "evidence": "`simpa [B, Matrix.toBilin'_apply', f, G\u2082, RingHom.mapMatrix_apply, dotProduct, Matrix.mulVec, Finset.sum_mul, mul_assoc] using (congrArg (Int.castRingHom (ZMod 2)) hxy).symm`.",
+   "file": "TauCeti/LinearAlgebra/IntegralLattice/Characteristic/ParityKernel.lean",
+   "fix": "Extract a lemma stating that `toBilin'` of the mod-2 Gram matrix evaluated on coordinate reductions equals the cast of `integralForm` (it is a reusable fact for any prime), and prove it with an explicit `Matrix.toBilin'_apply'` / `map_sum` chain.",
+   "issue": "`IsUnimodular.integralNorm_characteristicVector_modEq_finrank` closes `hf_form` with a heavy unfolding `simpa [B, Matrix.toBilin'_apply', f, G\u2082, RingHom.mapMatrix_apply, dotProduct, Matrix.mulVec, Finset.sum_mul, mul_assoc]`. That proves a non-obvious reduction-mod-2 compatibility through local `let` unfolding, which is fragile.",
+   "line": 0
+  }
+ ],
+ "head_sha": "57967b9a1f9c67d4a90464a0f26ddebc33216d30",
+ "merge_base_sha": "5751803d0d3f768fc94c2302ed16587b6965d347",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 42972,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "93ac1fba687038674003d16e753fc23aec296fc802b56bd091e47bbf1269d8ec",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "a85a2bbcd59a8177ee375d01dfd3394e0858c459",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261117T081117Z-42972-proof-quality-df9a39",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-17T08:11:17Z",
+ "submitted_by": "kim-em",
+ "summary": "Several proofs depend on undocumented definitional unfolding (`change`, `show \u2026 from rfl` inside `rw`) where stated simp lemmas or the declarations' own `_apply` lemmas are available. One small fact is also re-derived in four proofs.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "e10e514bd4493de313bb0d763454771eafd23eba6cba382cdd95c6e3207be590",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 3794
+  },
+  "cache_creation_input_tokens": 3794,
+  "cache_read_input_tokens": 176592,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1648
+    },
+    "cache_creation_input_tokens": 1648,
+    "cache_read_input_tokens": 89369,
+    "input_tokens": 2,
+    "output_tokens": 2971,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4457,
+  "output_tokens_details": {
+   "thinking_tokens": 1408
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
