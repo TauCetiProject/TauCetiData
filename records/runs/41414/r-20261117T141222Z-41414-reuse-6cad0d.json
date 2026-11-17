@@ -1,0 +1,245 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.6441754,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 91.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 55332
+    },
+    "cache_creation_input_tokens": 55332,
+    "cache_read_input_tokens": 888317,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 28,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 379
+      },
+      "cache_creation_input_tokens": 379,
+      "cache_read_input_tokens": 90312,
+      "input_tokens": 2,
+      "output_tokens": 3545,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 9487,
+    "output_tokens_details": {
+     "thinking_tokens": 3276
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "7b4d5f7042c90b82d76446b6c62c94bbda739af2",
+ "cli_dirty": true,
+ "cli_sha": "a85a2bbcd59a8177ee375d01dfd3394e0858c459",
+ "cost_usd": 0.644175,
+ "dedupe_key": "TauCetiProject/TauCeti|41414|0cec9f53d25eb2d889429e6671df0463383e861c|reuse|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "9b107fcb645478f7185dfd08381ee43feea688998401107bdcf93e8b6b7c2ec3",
+ "diff_sha256": "9b107fcb645478f7185dfd08381ee43feea688998401107bdcf93e8b6b7c2ec3",
+ "duration_s": 91.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Definite.lean:179 `theorem exists_linearEquiv_inner_eq_of_posDef ... \u2203 \u03c6 : W \u2243\u2097[\u211d] E, \u2200 x y, \u27ea\u03c6 x, \u03c6 y\u27eb_\u211d = B x y`; grep for `exists_linearEquiv_norm_sq_eq` finds only its own file.",
+   "file": "TauCeti/Analysis/InnerProductSpace/QuadraticForm/PosDef.lean",
+   "fix": "Delete the declaration and its new file, or keep it only if a caller in this PR uses it.",
+   "issue": "`QuadraticMap.PosDef.exists_linearEquiv_norm_sq_eq` is a three-line wrapper around `TauCeti.exists_linearEquiv_inner_eq_of_posDef` (applied to `associatedHom \u211d Q`), and nothing in TauCeti uses it.",
+   "line": 42
+  },
+  {
+   "evidence": "Riemannian/OrthonormalTrivialization.lean:90 `theorem isLocalFrameOn_of_orthonormalBasis`; Sphere/Frame.lean:221-231 hand-built `generating` via `tangentOrthonormalBasis`; grep for `toOrthonormalBasisAt`/`.of_orthonormal` finds no use outside Orthonormal.lean.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/LocalFrame/Orthonormal.lean",
+   "fix": "Delete `toOrthonormalBasisAt`/`coe_toOrthonormalBasisAt`. Then either delete `of_orthonormal`/`of_linearIndependent`, or have `isLocalFrameOn_tangentField` (Sphere/Frame.lean:221) use them: `IsLocalFrameOn.of_orthonormal (by simp) (fun x _ \u21a6 S.orthonormal_tangentField x) fun i \u21a6 (S.contMDiff_tangentField i).contMDiffOn`.",
+   "issue": "`IsLocalFrameOn.of_orthonormal`, `toOrthonormalBasisAt` and `coe_toOrthonormalBasisAt` have no callers. The last two only restate `OrthonormalBasis.mk`/`OrthonormalBasis.coe_mk`, and `of_orthonormal` overlaps `TauCeti.isLocalFrameOn_of_orthonormalBasis`. On main, `SkewAdjointCliffordSystem.isLocalFrameOn_tangentField` still builds the same frame by hand.",
+   "line": 70
+  },
+  {
+   "evidence": "Gradient.lean:138 `theorem contMDiff_sphereTangentEquiv_symm ... (hf) (hu_diff) (hu : \u2200 z, u z \u2208 (\u211d \u2219 (f z : E))\u15ee)`; VectorField.lean:195 `theorem contMDiff_sphereTangentField_iff`.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Sphere/TangentBundle.lean",
+   "fix": "Keep one: derive `contMDiff_sphereTangentField_iff` from the new lemma, or drop the new lemma and use `contMDiff_sphereTangentEquiv_symm hb hwm hw` in `sphereTangentSubbundleDiffeomorph`.",
+   "issue": "`contMDiff_sphereTangentEquiv_symm_along_iff` runs parallel to existing API. Its `mpr` direction is exactly `contMDiff_sphereTangentEquiv_symm`, and with `base = id` the whole statement is `contMDiff_sphereTangentField_iff`.",
+   "line": 139
+  },
+  {
+   "evidence": "The same three-rewrite chain appears at lines 82-84 and 128-130.",
+   "file": "TauCeti/Geometry/Manifold/Riemannian/Sphere/TangentBundle.lean",
+   "fix": "Replace the `hsub.congr` step with a rewrite by `coe_sphereTangentEquiv_sphereTangentProj` (or by a shared helper for the orthogonal-projection formula).",
+   "issue": "`contMDiff_sphereTangentProj` re-runs the rewrites `coe_orthogonalProjectionOnto_apply, starProjection_orthogonal_val, starProjection_unit_singleton`, which `coe_sphereTangentEquiv_sphereTangentProj` (lines 79-84) already uses to prove `u - \u27eax, u\u27eb \u2022 x`.",
+   "line": 128
+  }
+ ],
+ "head_sha": "0cec9f53d25eb2d889429e6671df0463383e861c",
+ "merge_base_sha": "7b4d5f7042c90b82d76446b6c62c94bbda739af2",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 41414,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "dee90881f7a96b1b55ee043baf072bdf53055119222b1164a099fce155f09012",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "a85a2bbcd59a8177ee375d01dfd3394e0858c459",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261117T141222Z-41414-reuse-6cad0d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-17T14:12:22Z",
+ "submitted_by": "kim-em",
+ "summary": "Three additions are unused wrappers or overlap TauCeti API that already exists (`exists_linearEquiv_inner_eq_of_posDef`, `isLocalFrameOn_of_orthonormalBasis`, `contMDiff_sphereTangentEquiv_symm`/`contMDiff_sphereTangentField_iff`), and one proof repeats a rewrite the PR proves just above it. None is a direct replacement, so request_changes, not block.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Glob"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Sphere/Frame.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Sphere/Parallelizable.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Sphere",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/VectorBundle",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Riemannian/OrthonormalTrivialization.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Sphere/VectorField.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Riemannian/Sphere",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/QuadraticForm/Real.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/InnerProductSpace/Positive/Definite.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Prod.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Trivial.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/LinearAlgebra/QuadraticForm",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 19,
+  "total_calls": 19,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7683617ab690df51eb3aa1490cb4ee8760a07c64ca85bd20d6d05c143a8d2d6d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 55332
+  },
+  "cache_creation_input_tokens": 55332,
+  "cache_read_input_tokens": 888317,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 28,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 379
+    },
+    "cache_creation_input_tokens": 379,
+    "cache_read_input_tokens": 90312,
+    "input_tokens": 2,
+    "output_tokens": 3545,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 9487,
+  "output_tokens_details": {
+   "thinking_tokens": 3276
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
