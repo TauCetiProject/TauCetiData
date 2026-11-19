@@ -1,0 +1,184 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.14332340000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 53.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1097
+    },
+    "cache_creation_input_tokens": 1097,
+    "cache_read_input_tokens": 50252,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 2,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1097
+      },
+      "cache_creation_input_tokens": 1097,
+      "cache_read_input_tokens": 50252,
+      "input_tokens": 2,
+      "output_tokens": 6389,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6389,
+    "output_tokens_details": {
+     "thinking_tokens": 1489
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.143323,
+ "dedupe_key": "TauCetiProject/TauCeti|44096|a60dc6361dba17a64e1657d9fb52cd8c81d58bc4|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "a98bbfccac10a926933266c38b7789d8b037168ed962f50a71476bd4b5ad2bc6",
+ "diff_sha256": "a98bbfccac10a926933266c38b7789d8b037168ed962f50a71476bd4b5ad2bc6",
+ "duration_s": 53.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Diff lines `change b _ = b (_ \u2022 b.symm 1)`, `change mvfderiv \ud835\udcd8(\u211d, \u2102) (H \u2218 \u03c6) y (L w) = _`, `change D (f \u2022 s) y (L (1 : \u2102)) = 0`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicFrame.lean",
+   "fix": "Replace them with explicit rewrites (`Function.comp_def`, `ContinuousLinearEquiv.coe_toLinearEquiv`, `Basis.map_apply`) or document why `change` is needed.",
+   "issue": "Uncommented `change`s: `change b _ = b (_ \u2022 b.symm 1)` in `apply_localFrame_mfderivWithin_extChartAt_symm`, and `change mvfderiv \u2026 (H \u2218 \u03c6) \u2026`, `change D (f \u2022 s) y (L 1) = 0` and the `show \u2026 = L Complex.I` in `apply_exp_smul_localFrame_one_eq_zero`. Each relies on unfolding `set`/`Basis.map`/composition.",
+   "line": 0
+  },
+  {
+   "evidence": "`change e.continuousLinearMapAt \u211d x (Complex.basisOneI i.1 \u2022 \u03c3 x) = \u2026` and `change eR \u27e8x, \u2026\u27e9 = (x, \u2026) at hr`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicFrame/Trivialization.lean",
+   "fix": "Use `IsLocalFrameOn.toBasisAt_coe`/`Pi.smul_apply` rewrites, or add a short lemma for `realFrame` evaluation.",
+   "issue": "Two uncommented `change`s in `trivialization_mem_maximalAtlas` (one `at hr`) unfold the `Fin 2 \u00d7 Unit` frame and the `smulTower` value by defeq.",
+   "line": 0
+  },
+  {
+   "evidence": "`unfold Fiber instTopologicalSpaceFiber instAddCommGroupFiber instModuleComplexFiber; exact ContinuousLinearEquiv.refl \u2102 (V x)`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicBundle.lean",
+   "fix": "Define them term-mode with a type ascription (e.g. `ContinuousLinearEquiv.refl \u2102 (V x)`). State one explicit bridging lemma for `TotalSpace F A.Fiber` and for `Frame.trivialization` versus `IsNonvanishingHolomorphicOn.trivialization`.",
+   "issue": "`toOriginalFiberEquiv`, `toOriginalHomeomorph` and `instFiberBundle.totalSpaceMk_isInducing'` are built with `unfold Fiber inst\u2026; exact`, so every downstream `rfl` lemma depends on tactic-produced transparency.",
+   "line": 0
+  },
+  {
+   "evidence": "`convert hc.mdifferentiableOn (by simp) using 1; rfl`, `convert hA.1 using 1; rfl`, `\u2026 using 1 <;> rfl`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicBundle.lean",
+   "fix": "Rewrite with the bridging lemmas from the previous finding instead of relying on accidental defeq.",
+   "issue": "`convert \u2026 using 1; rfl` closes goals across the `Fiber`/`V` synonym in `contMDiffAt_toOriginalHomeomorph_iff` (trailing `rfl`), `contMDiffOn_of_toBundleSection`, `contMDiffOn_toBundleSection_iff` (`hold` and `h\u03c9`), `contMDiff_compare` (`hA.1`, `hA.2`) and `instContMDiffVectorBundleReal`.",
+   "line": 0
+  },
+  {
+   "evidence": "`convert LinearMap.apply_eq_re_smul_one_add_im_smul_I (\u03b7.comp L).toLinearMap w using 1 <;> rfl`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/Basic.lean",
+   "fix": "Rewrite with `ContinuousLinearMap.coe_comp'`/`coe_coe` or use `simpa`.",
+   "issue": "`hval` in `eq_zero_iff_apply_mfderivWithin_extChartAt_symm_one` is closed by `convert \u2026 using 1 <;> rfl` through `(\u03b7.comp L).toLinearMap` coercions.",
+   "line": 0
+  },
+  {
+   "evidence": "Identical `rw [Manifold.continuousLinearMapAt_localFrame _ hx, Basis.map_apply, Basis.singleton_apply]; rfl` blocks in HolomorphicFrame.lean (x2) and Smooth.lean.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicFrame.lean",
+   "fix": "Name the basis `(Basis.singleton Unit \u2102).map b.symm.toLinearEquiv`. Factor out `continuousLinearMapAt_localFrame_\u2026 = b.symm 1` and `contMDiffOn_localFrame_\u2026` lemmas and reuse them.",
+   "issue": "The constant local-frame coordinate `e.continuousLinearMapAt \u2102 x (s x) = b.symm 1` (rewrite chain then `rfl`) and the smoothness derived from it are proved three times: `hs1` in `exists_isNonvanishingHolomorphicOn`, `hs1` in `apply_exp_smul_localFrame_one_eq_zero`, and `hs` in `Smooth.lean`'s `eventually_contDiffAt_cauchyRiemannChartCoeff`. The basis expression is also restated as `modelBasis`.",
+   "line": 0
+  },
+  {
+   "evidence": "`hLI` in `apply_mfderivWithin_extChartAt_symm` and `eq_zero_iff_apply_mfderivWithin_extChartAt_symm_one`, and `hdI`'s `show`.",
+   "file": "TauCeti/Geometry/Manifold/Complex/AlmostComplexStructure.lean",
+   "fix": "Add a `_one` corollary, `ofComplexManifold \u2026 (L 1) = L Complex.I`, and use it in all three places.",
+   "issue": "Every caller specialises the new lemma to `v = 1` with the same `simpa only [smul_eq_mul, mul_one] using (\u2026 (v := 1) hz).symm`, repeated in two Basic.lean theorems and in `hdI`.",
+   "line": 92
+  },
+  {
+   "evidence": "`simp only [Function.comp_apply, \u2026, ContinuousLinearMap.inCoordinates, \u2026]; rw [TangentBundle.symmL_trivializationAt hy, \u2026]; rw [cauchyRiemannChartCoeff_apply, \u2026]; rfl`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicFrame/Smooth.lean",
+   "fix": "Factor out a lemma identifying the chart coefficient with `b` applied to the in-coordinates operator section at `1`, and comment the structure.",
+   "issue": "`hc` in `eventually_contDiffAt_cauchyRiemannChartCoeff` is a long `simp only` over `inCoordinates`/`hom_trivializationAt_apply`/`comp_apply`, plus three `rw`s and a closing `rfl`, with no comment explaining the identification. It is brittle under Mathlib renames.",
+   "line": 0
+  },
+  {
+   "evidence": "Identical `convert (A.isReal.contMDiffOn_coordChangeL_trivialization \u2026) using 1 <;> first | rfl | simp only [Frame.trivialization, \u2026]` in both instances.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicBundle.lean",
+   "fix": "Prove one `Frame.contMDiffOn_coordChangeL` lemma and derive both instances from it.",
+   "issue": "`instVectorBundleComplex.continuousOn_coordChange'` and `instContMDiffVectorBundleComplex` repeat the same `obtain`/`convert \u2026 using 1 <;> first | rfl | simp only \u2026` block.",
+   "line": 0
+  }
+ ],
+ "head_sha": "a60dc6361dba17a64e1657d9fb52cd8c81d58bc4",
+ "merge_base_sha": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44096,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "967dc751633acb4871898a5b02be3bcfa6d987a3128c16fa57680109fd48fbf6",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T125503Z-44096-proof-quality-a21049",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T12:55:03Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "Proofs rely heavily on undocumented `change`/`show`, `unfold`-built data definitions, and `convert \u2026 using 1; rfl` across the `Fiber`/`V` type synonym and coercion wrappers; the local-frame coordinate and inverse-chart `I` calculations are duplicated rather than factored into lemmas.",
+ "tool_trace_meta": {
+  "successful_calls": 0,
+  "total_calls": 0,
+  "trace_truncated": false
+ },
+ "transcript_blob": "02773784fd4a846ec49a58c28edf7cdf8c4be24cb6959b252a2c602eb233d99b",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 1097
+  },
+  "cache_creation_input_tokens": 1097,
+  "cache_read_input_tokens": 50252,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 2,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1097
+    },
+    "cache_creation_input_tokens": 1097,
+    "cache_read_input_tokens": 50252,
+    "input_tokens": 2,
+    "output_tokens": 6389,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6389,
+  "output_tokens_details": {
+   "thinking_tokens": 1489
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

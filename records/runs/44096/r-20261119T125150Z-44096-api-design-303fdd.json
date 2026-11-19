@@ -1,0 +1,152 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.20059200000000005,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 53.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 12270
+    },
+    "cache_creation_input_tokens": 12270,
+    "cache_read_input_tokens": 163590,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 579
+      },
+      "cache_creation_input_tokens": 579,
+      "cache_read_input_tokens": 61765,
+      "input_tokens": 2,
+      "output_tokens": 2330,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5325,
+    "output_tokens_details": {
+     "thinking_tokens": 3327
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.200592,
+ "dedupe_key": "TauCetiProject/TauCeti|44096|a60dc6361dba17a64e1657d9fb52cd8c81d58bc4|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "a98bbfccac10a926933266c38b7789d8b037168ed962f50a71476bd4b5ad2bc6",
+ "diff_sha256": "a98bbfccac10a926933266c38b7789d8b037168ed962f50a71476bd4b5ad2bc6",
+ "duration_s": 53.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "FrameTrivialization.lean:101-108: `coords x := if hx : x \u2208 U then \u2026 else 0` and `vec` likewise, so `Frame.trivialization` depends only on `sectionMap` restricted to `domain`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicBundle.lean",
+   "fix": "Store only data on the domain, e.g. a section over the subtype `\u21a5domain` extended by zero. Alternatively drop the public `Frame` structure: index the atlas by the nonvanishing-frame predicate and expose `MemTrivializationAtlas (h\u03c3.trivialization b hU)` for every `h\u03c3 : IsNonvanishingHolomorphicOn F D \u03c3 U` with open `U`.",
+   "issue": "`HolomorphicLineOperator.Frame` stores `sectionMap : \u03a0 x, V x` 'with arbitrary values outside its domain'. No law or operation reads those values, so two frames that agree on `domain` are distinct terms and no `@[ext]` holds.",
+   "line": 115
+  },
+  {
+   "evidence": "In the diff, the only API in `namespace HolomorphicLineOperator` about the new trivializations is `Frame.baseSet_trivialization` and the `Frame.memTrivializationAtlas` instance; `contMDiffAt_toOriginalHomeomorph_iff` and `contMDiff_compare` close their goals with `rfl`/`convert \u2026 using 1; rfl` across the type synonym.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/HolomorphicBundle.lean",
+   "fix": "Add `trivializationAt_eq` (with `(rfl)`), `mem_trivializationAtlas_iff` (the trivializations are exactly `s.trivialization A b` for frames `s` and bases `b`), and `@[simp]` `Frame.trivialization_apply_frame` and `Frame.trivialization_symm_apply`, stated via `toOriginalFiberEquiv` and transported from the `IsNonvanishingHolomorphicOn` lemmas.",
+   "issue": "The new `FiberBundle F A.Fiber` has no characteristic lemmas: none for `trivializationAt F A.Fiber x` (it equals `(frameAt A x).trivialization A A.modelBasis`), no `mem_trivializationAtlas_iff`, and no apply/symm-apply lemmas for `Frame.trivialization` in `A.Fiber` terms (e.g. it sends `\u27e8x, (A.toOriginalFiberEquiv x).symm (s.sectionMap x)\u27e9` to `(x, b ())`). Consumers must unfold `Fiber` or `trivializationAtlas'`, as this file itself does in its `rfl`/`convert \u2026 ; rfl` steps.",
+   "line": 146
+  }
+ ],
+ "head_sha": "a60dc6361dba17a64e1657d9fb52cd8c81d58bc4",
+ "merge_base_sha": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44096,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "74deb5d3e1f5b488f311be3fea5a99139e7996f7f7d4f887673c5689391ba387",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T125150Z-44096-api-design-303fdd",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T12:51:50Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The public `Frame` structure carries free data outside its domain that blocks extensionality. The new bundle's trivializations also lack characteristic API, so consumers must unfold the `Fiber` type synonym and the atlas definition.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/FrameTrivialization.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/FrameTrivialization.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9c3ce54d106b8d84f4b71e4ff3dbc676337c9289810139f5a365fbb350865816",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 12270
+  },
+  "cache_creation_input_tokens": 12270,
+  "cache_read_input_tokens": 163590,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 579
+    },
+    "cache_creation_input_tokens": 579,
+    "cache_read_input_tokens": 61765,
+    "input_tokens": 2,
+    "output_tokens": 2330,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5325,
+  "output_tokens_details": {
+   "thinking_tokens": 3327
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
