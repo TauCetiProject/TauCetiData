@@ -1,0 +1,185 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3733524,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 42.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 47701
+    },
+    "cache_creation_input_tokens": 47701,
+    "cache_read_input_tokens": 239617,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 3210
+      },
+      "cache_creation_input_tokens": 3210,
+      "cache_read_input_tokens": 49424,
+      "input_tokens": 2,
+      "output_tokens": 2070,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4343,
+    "output_tokens_details": {
+     "thinking_tokens": 1263
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.373352,
+ "dedupe_key": "TauCetiProject/TauCeti|38189|ee5461568a6ceb97f1b17d538cd3691150e96dac|reuse|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "9f0db851933a94049f33335d464fb76052212e41b15951e872ba3302431c7374",
+ "diff_sha256": "9f0db851933a94049f33335d464fb76052212e41b15951e872ba3302431c7374",
+ "duration_s": 42.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:131 `private theorem hasDerivAt_airy_hypergeometric_zero (b : \u2102) : HasDerivAt (fun z : \u2102 => regularizedHGFun 0 {b} (z ^ 3 / 9)) 0 0`; Equation.lean:56 `private theorem hasDerivAt_airy_hypergeometric (b z : \u2102) : HasDerivAt (fun z : \u2102 => regularizedHGFun 0 {b} (z ^ 3 / 9)) (z ^ 2 / 3 * regularizedHGFun 0 {b + 1} (z ^ 3 / 9)) z`.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Airy/Equation.lean",
+   "fix": "Move `hasDerivAt_airy_hypergeometric` into `Airy/Basic.lean`; `Complex.hasDerivAt_regularizedHGFun_zero_singleton` sits in RegularizedHypergeometric.lean, which Basic.lean already uses. Delete `hasDerivAt_airy_hypergeometric_zero`, or reprove it as `by simpa using hasDerivAt_airy_hypergeometric b 0`.",
+   "issue": "The private `hasDerivAt_airy_hypergeometric (b z)` covers every `z`. Its `z = 0` case is the existing private `hasDerivAt_airy_hypergeometric_zero (b)` at `Airy/Basic.lean:131` (derivative `0` at `0`), so two private lemmas now prove the same chain rule.",
+   "line": 56
+  },
+  {
+   "evidence": "Basic.lean:149-168 prove `deriv_airyAi_zero`/`deriv_airyBi_zero` through `hasDerivAt_airy_hypergeometric_zero` and `airy_derivative_coefficient`. The PR description says: 'deriv_airyAi at 0 agrees with main's deriv_airyAi_zero'.",
+   "file": "TauCeti/Analysis/SpecialFunctions/Airy/Equation.lean",
+   "fix": "Once the helper is in Basic.lean, move `hasDerivAt_airyAi`/`hasDerivAt_airyBi`/`deriv_airyAi`/`deriv_airyBi` there too. Then prove `deriv_airyAi_zero` and `deriv_airyBi_zero` from them, e.g. `by rw [deriv_airyAi]; simp [regularizedHGFun_zero, ...]`, and delete the private `hasDerivAt_airy_hypergeometric_zero` and `airy_derivative_coefficient` if nothing else uses them.",
+   "issue": "`deriv_airyAi` and `deriv_airyBi` at `z = 0` give the existing `deriv_airyAi_zero` and `deriv_airyBi_zero` (Basic.lean:149 and :161). Those two are still proved separately with their own scaffolding (`hasDerivAt_airy_hypergeometric_zero`, `airy_derivative_coefficient`), so there are two proofs of the same values. The PR description itself checks that they agree.",
+   "line": 106
+  }
+ ],
+ "head_sha": "ee5461568a6ceb97f1b17d538cd3691150e96dac",
+ "merge_base_sha": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 38189,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9e2dd2b32986a046730035f766088d373be77751a2532369d63c86767a99eb26",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T120924Z-38189-reuse-1384ef",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T12:09:24Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The PR adds new material (a complex `\u2080F\u2081` derivative, Airy ODE, Wronskian, uniqueness) and reuses Mathlib's contiguous relation and TauCeti's generalized Wronskian lemma. But its general chain-rule helper and full derivative formulas leave Basic.lean's special-case helper and separate proofs of the derivatives at 0 in place beside them.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/SpecialFunctions/Airy/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/RegularizedHypergeometric.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/SpecialFunctions/Bessel.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 10,
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "68a1a9799011999be7b939f12be0fd524c3988aeb5813cbefc9c07dc37560bd1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 47701
+  },
+  "cache_creation_input_tokens": 47701,
+  "cache_read_input_tokens": 239617,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3210
+    },
+    "cache_creation_input_tokens": 3210,
+    "cache_read_input_tokens": 49424,
+    "input_tokens": 2,
+    "output_tokens": 2070,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4343,
+  "output_tokens_details": {
+   "thinking_tokens": 1263
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
