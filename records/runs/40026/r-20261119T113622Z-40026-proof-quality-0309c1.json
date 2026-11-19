@@ -1,0 +1,156 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.112034,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6724
+    },
+    "cache_creation_input_tokens": 6724,
+    "cache_read_input_tokens": 76590,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5632
+      },
+      "cache_creation_input_tokens": 5632,
+      "cache_read_input_tokens": 38841,
+      "input_tokens": 2,
+      "output_tokens": 1865,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3154,
+    "output_tokens_details": {
+     "thinking_tokens": 1113
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.112034,
+ "dedupe_key": "TauCetiProject/TauCeti|40026|34a5f10310d70f41a5987120748414af864cc513|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "0417a4d96a3661f6a00ff5de789bc7b2432cab0eb310d5050cdbc95904b1d919",
+ "diff_sha256": "0417a4d96a3661f6a00ff5de789bc7b2432cab0eb310d5050cdbc95904b1d919",
+ "duration_s": 29.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "code/TauCeti/Probability/RandomMatrix/Wigner.lean:699-700: `push_cast` / `rfl`.",
+   "file": "TauCeti/Probability/RandomMatrix/Wigner.lean",
+   "fix": "Close the goal with explicit lemmas, e.g. `Complex.re_ofReal_mul` or `Complex.ofReal_inv`/`Complex.ofReal_natCast` followed by `simp`, or put the goal in a `show` with a comment explaining why the defeq holds.",
+   "issue": "`hn` in `integral_norm_wignerMatrix_sub_sq` ends `rw [\u2190 Complex.ofReal_re ...]; push_cast; rfl`. The bare `rfl` depends on whatever `push_cast` happens to leave, so it relies on undocumented definitional equality and breaks if the `push_cast` simp set changes.",
+   "line": 700
+  },
+  {
+   "evidence": "grep `Set.mem_ofPred_eq, id_eq` hits IdentDistrib.lean:41, CenteredTruncation.lean:195,215,227 and RandomMatrix/Truncation.lean:63, each in a `simpa only`/`simp only` that bridges `h.comp g` with the indicator form.",
+   "file": "TauCeti/Probability/Moments/CenteredTruncation.lean",
+   "fix": "Add `indicator_setOf_norm_le_eq_comp : {x | \u2016f x\u2016 \u2264 R}.indicator f = {z | \u2016z\u2016 \u2264 R}.indicator id \u2218 f` beside `Measurable.indicator_setOf_norm_le`. Derive `centeredTruncation_eq_comp` from it. Rewrite all five sites with `rw [...]; exact h.comp ...`.",
+   "issue": "Five proofs repeat the same step without stating it as a lemma: they show that `{\u03c9 | \u2016X \u03c9\u2016 \u2264 R}.indicator X` (and therefore `centeredTruncation X P R`) is `g \u2218 X` with `g z = {z | \u2016z\u2016 \u2264 R}.indicator id z - c`. Each one unfolds via `simpa only [Function.comp_def, Set.indicator_apply, Set.mem_ofPred_eq, id_eq] using h.comp ...`. The repeated reasoning is hidden, and each copy breaks separately if indicator/setOf simp normal forms change. Instances: IdentDistrib.lean:41, CenteredTruncation.lean:195, :215, :227, RandomMatrix/Truncation.lean:63.",
+   "line": 195
+  },
+  {
+   "evidence": "The diff's `hg` proof uses `convert (measurable_id.indicator hs).add_const ... using 1; ext z; by_cases hz ...`, but `T` is already `{z | \u2016z\u2016 \u2264 R}.indicator id`, whose measurability `Measurable.indicator_setOf_norm_le` provides.",
+   "file": "TauCeti/Probability/Moments/CenteredTruncation.lean",
+   "fix": "Use `measurable_id.sub ((measurable_id.indicator_setOf_norm_le R).sub_const _)` directly. Then drop `hs`, the `convert`, and the case split.",
+   "issue": "In `IdentDistrib.sub_centeredTruncation`, measurability of `z \u21a6 z - (T z - c)` is proved by a `convert` to a tail indicator plus a `by_cases` simp. This makes the proof longer and more fragile than it needs to be.",
+   "line": 205
+  },
+  {
+   "evidence": "Both proofs in the diff contain the same `((hd ij).symm.memLp_snd hX).sub (...memLp_centeredTruncation R)` term.",
+   "file": "TauCeti/Probability/RandomMatrix/Truncation.lean",
+   "fix": "Factor it into a single lemma, `MemLp.sub_centeredTruncation : MemLp X 2 P \u2192 MemLp (fun \u03c9 \u21a6 X \u03c9 - centeredTruncation X P R \u03c9) 2 P`, in CenteredTruncation.lean, and use it at both sites.",
+   "issue": "The same `MemLp` proof for the coordinate error, `((hd ij).symm.memLp_snd hX).sub (((hd ij).symm.memLp_snd hX).aestronglyMeasurable.memLp_centeredTruncation R)`, appears in `integrable_norm_wignerMatrix_sub_centeredTruncation_sq` and again as `hm` in `inv_mul_integral_norm_wignerMatrix_sub_centeredTruncation_sq_le`.",
+   "line": 78
+  }
+ ],
+ "head_sha": "34a5f10310d70f41a5987120748414af864cc513",
+ "merge_base_sha": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 40026,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "c597f6c7132deabb896c39a26d11135fe18776306cbd78af61f35c44f89828cd",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T113622Z-40026-proof-quality-0309c1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T11:36:22Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "Five proofs rebuild the same 'centered truncation is a measurable function of the coordinate' argument with one fragile unfolding `simpa`, and one Frobenius proof ends with an undocumented `push_cast; rfl`. A measurability proof also takes an unnecessary `convert`/case-split detour.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Probability",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3ae09eb0f0deac85c954a149e3402780d59110af3a4709f35d39bc4548fd8185",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 6724
+  },
+  "cache_creation_input_tokens": 6724,
+  "cache_read_input_tokens": 76590,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5632
+    },
+    "cache_creation_input_tokens": 5632,
+    "cache_read_input_tokens": 38841,
+    "input_tokens": 2,
+    "output_tokens": 1865,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3154,
+  "output_tokens_details": {
+   "thinking_tokens": 1113
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

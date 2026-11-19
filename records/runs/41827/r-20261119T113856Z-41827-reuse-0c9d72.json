@@ -1,0 +1,218 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.7630062,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 65.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 98546
+    },
+    "cache_creation_input_tokens": 98546,
+    "cache_read_input_tokens": 650161,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1411
+      },
+      "cache_creation_input_tokens": 1411,
+      "cache_read_input_tokens": 102874,
+      "input_tokens": 2,
+      "output_tokens": 2190,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7009,
+    "output_tokens_details": {
+     "thinking_tokens": 3071
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "7b4d5f7042c90b82d76446b6c62c94bbda739af2",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.763006,
+ "dedupe_key": "TauCetiProject/TauCeti|41827|1c40c9c933c2df0713f14e8d2d185290a569c951|reuse|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "ed2e75bce951ebde4c270e68d50b6e4f837e194e64839ea7c3322863fd0f4b68",
+ "diff_sha256": "ed2e75bce951ebde4c270e68d50b6e4f837e194e64839ea7c3322863fd0f4b68",
+ "duration_s": 65.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/IsTensorProduct.lean:442 `lemma IsBaseChange.comp_equiv (e : M \u2243\u2097[R] P) (f : P \u2192\u2097[R] N) (isb : IsBaseChange S f) : IsBaseChange S (f.comp e.toLinearMap)`",
+   "file": "TauCeti/RingTheory/TensorProduct/IsBaseChange.lean",
+   "fix": "Prove it as `(hf.comp_equiv (LinearEquiv.ofInjective f hinj).symm)` and rewrite with `f \u2218\u2097 e.symm = (range f).subtype` (by `LinearEquiv.ofInjective_apply`), or inline that call at its only use in `exists_submodule_isBaseChange_of_formalGlueing`.",
+   "issue": "`IsBaseChange.subtype_range` rebuilds `IsBaseChange.of_equiv` from `e.symm.baseChange \u226a\u226b hf.equiv` plus a `tmul` check. Mathlib's `IsBaseChange.comp_equiv` already does exactly this.",
+   "line": 127
+  },
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/IsTensorProduct.lean:442 `IsBaseChange.comp_equiv`",
+   "file": "TauCeti/RingTheory/FormalGlueing/Reconstruction.lean",
+   "fix": "Use `Algebra.isPushout_iff.mpr (hE_bc.comp_equiv bEquivE)`. The composite `E.subtype \u2218\u2097 bEquivE` is `B.val.toLinearMap` by `rfl` / `hbEquivE`.",
+   "issue": "The same re-derivation happens in `exists_subalgebra_isPushout_of_formalGlueing`: `hpush` assembles `IsBaseChange.of_equiv (bEquivE.baseChange R S B E \u226a\u226b\u2097 hE_bc.equiv)` with a `tmul` simp step.",
+   "line": 360
+  },
+  {
+   "evidence": "mathlib/Mathlib/RingTheory/LocalRing/RingHom/Basic.lean:78 `local_hom_TFAE`: `[IsLocalHom f, \u2026, (maximalIdeal R).map f \u2264 maximalIdeal S, \u2026]`",
+   "file": "TauCeti/RingTheory/LocalRing/Quotient.lean",
+   "fix": "Use `((IsLocalRing.local_hom_TFAE f).out 2 0).mp (map_maximalIdeal_of_bijective_quotientMap h).le`.",
+   "issue": "`isLocalHom_of_bijective_quotientMap` re-proves by hand that `(maximalIdeal R).map f \u2264 maximalIdeal S` implies `IsLocalHom f`. Mathlib's `local_hom_TFAE` already gives this.",
+   "line": 226
+  },
+  {
+   "evidence": "grep `surjective_localizedModuleMap_powers_baseChange` under code/TauCeti finds only its definition (Localization/Module.lean:234) and the module docstring. The only use of the general version is Pullback.lean:178.",
+   "file": "TauCeti/RingTheory/Localization/Module.lean",
+   "fix": "Delete the wrapper and its docstring bullet. Where needed, callers can write `rw [\u2190 Submonoid.map_powers]; exact f.surjective_localizedModuleMap_map_baseChange hf`.",
+   "issue": "`LinearMap.surjective_localizedModuleMap_powers_baseChange` is a thin `.powers` wrapper that nothing calls. Every caller uses `surjective_localizedModuleMap_map_baseChange` directly.",
+   "line": 234
+  },
+  {
+   "evidence": "Completion.lean:98-100 body is `isPushout_appTop_pullback_puncturedSpectrum_of_flat (maximalIdeal A).fg_of_isNoetherianRing h V.obj`. grep shows its only use at Completion.lean:124.",
+   "file": "TauCeti/AlgebraicGeometry/FiniteEtale/Completion.lean",
+   "fix": "Delete it and call `isPushout_appTop_pullback_puncturedSpectrum_of_flat (maximalIdeal A).fg_of_isNoetherianRing h V.obj` at Completion.lean:124.",
+   "issue": "`isPushout_appTop_pullback_of_flat` is now a one-line forwarder to the new general `isPushout_appTop_pullback_puncturedSpectrum_of_flat`. Its only consumer is `extends_iff_extends_pullback_of_flat`, so it is a parallel API.",
+   "line": 88
+  }
+ ],
+ "head_sha": "1c40c9c933c2df0713f14e8d2d185290a569c951",
+ "merge_base_sha": "7b4d5f7042c90b82d76446b6c62c94bbda739af2",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 41827,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "68e5ca223a2483ff64a7453a2641ae02f7a180997589f705ec7764b1a383308b",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T113856Z-41827-reuse-0c9d72",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T11:38:56Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "I found no declaration that an existing one directly replaces. Several proofs re-derive existing Mathlib combinators (`IsBaseChange.comp_equiv`, `local_hom_TFAE`), one new public wrapper has no consumer, and an old wrapper survives that should be inlined into its single caller.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/IsTensorProduct.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/Comma/Over/Pullback.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/AlgebraicGeometry/GammaSpecAdjunction.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/RingTheory/LocalRing",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 12,
+  "total_calls": 12,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6e3b7ec52a276c3f3652c6f8dbe0ba7ccea60f2265ad693590ec2dbdfaadd416",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 98546
+  },
+  "cache_creation_input_tokens": 98546,
+  "cache_read_input_tokens": 650161,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1411
+    },
+    "cache_creation_input_tokens": 1411,
+    "cache_read_input_tokens": 102874,
+    "input_tokens": 2,
+    "output_tokens": 2190,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7009,
+  "output_tokens_details": {
+   "thinking_tokens": 3071
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
