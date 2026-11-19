@@ -1,0 +1,149 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.09405179999999999,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6643
+    },
+    "cache_creation_input_tokens": 6643,
+    "cache_read_input_tokens": 51204,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5547
+      },
+      "cache_creation_input_tokens": 5547,
+      "cache_read_input_tokens": 26150,
+      "input_tokens": 2,
+      "output_tokens": 1277,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2529,
+    "output_tokens_details": {
+     "thinking_tokens": 1105
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8b9f13d9936343c962096355455995c9a128af39",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.094052,
+ "dedupe_key": "TauCetiProject/TauCeti|38345|026a9c6dcadce57f6540f249f24ca2ecdf19e79d|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "bda112b35c1c37d4a448b636790d89b99a5f5bacc57243d8cb0ee58626f7f605",
+ "diff_sha256": "bda112b35c1c37d4a448b636790d89b99a5f5bacc57243d8cb0ee58626f7f605",
+ "duration_s": 25.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `rw [liftFromSource_projectFromSource] at h` matches lines 744, 753, 762, 771, each followed by the identical `rw [h]; simp`.",
+   "file": "TauCeti/Combinatorics/Network/AuxiliaryTerminals.lean",
+   "fix": "State those two decomposition lemmas once. Derive the `map_*` lemmas from them with `simp [that_lemma]`, and the `mem_*` lemmas from the `map_*` ones or by `simp`.",
+   "issue": "The same `have h := vertices_/arrows_liftFromSource \u2026; rw [liftFromSource_projectFromSource] at h; rw [h]; simp` block is repeated in `mem_vertices_projectFromSource`, `map_vertices_projectFromSource`, `mem_arrows_projectFromSource` and `map_arrows_projectFromSource` (lines 744, 753, 762, 771). It hides the reusable equations `p.vertices = inr false :: (projectFromSource p).2.vertices.map inl` and `p.arrows = \u27e8_, _, source _\u27e9 :: (projectFromSource p).2.arrows.map originalArrow`.",
+   "line": 744
+  },
+  {
+   "evidence": "grep `rw [liftWalk_projectWalk] at h` matches lines 851, 860, 877.",
+   "file": "TauCeti/Combinatorics/Network/AuxiliaryTerminals.lean",
+   "fix": "Add `vertices_eq_liftWalk_projectWalk`-style decompositions (`p.vertices = inr false :: (projectWalk p).2.2.vertices.map inl ++ [inr true]`, and the same for arrows) and derive all four lemmas from them uniformly.",
+   "issue": "The same duplication appears for the two-terminal projection in `mem_vertices_projectWalk`, `map_vertices_projectWalk` and `map_arrows_projectWalk` (lines 851, 860, 877). Meanwhile `mem_arrows_projectWalk` uses a different route, so the four sibling proofs are inconsistent.",
+   "line": 851
+  },
+  {
+   "evidence": "Line 50: `simp only [projectWalk_liftWalk, Sigma.mk.inj_iff, heq_eq_eq, true_and] at hproj`. The same chain appears in the library proof of `liftWalk_injective`.",
+   "file": "TauCeti/Examples/Combinatorics/Network/AuxiliaryTerminals.lean",
+   "fix": "Replace the `hproj` derivation with `have hproj := liftWalk_injective _ _ h` (or `rw [Ne, liftWalk_inj]`), then compare arrows.",
+   "issue": "`parallel_loops_ne` re-proves injectivity of lifting by hand: it applies `congrArg projectWalk` and then runs `simp only [projectWalk_liftWalk, Sigma.mk.inj_iff, heq_eq_eq, true_and]`. This bypasses the exported `liftWalk_inj`/`liftWalk_injective` that the example is meant to exercise, and the hand-written `simp only` chain is brittle.",
+   "line": 50
+  }
+ ],
+ "head_sha": "026a9c6dcadce57f6540f249f24ca2ecdf19e79d",
+ "merge_base_sha": "8b9f13d9936343c962096355455995c9a128af39",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 38345,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d418379fa93c6879e57a1328537196ce3ba496e7a06c2ea76a1acf79d6a5f3dc",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T104023Z-38345-proof-quality-9479af",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T10:40:23Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "Proofs are robust and the single `change` is documented, but one four-line transport pattern is copy-pasted seven times instead of being stated once as the characteristic equation it encodes. One example also re-derives `liftWalk_injective` by hand.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0d3df8a94d41b29d9358f8e9fdbebb46cdb26afde7df25176974b470253f3b14",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 6643
+  },
+  "cache_creation_input_tokens": 6643,
+  "cache_read_input_tokens": 51204,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5547
+    },
+    "cache_creation_input_tokens": 5547,
+    "cache_read_input_tokens": 26150,
+    "input_tokens": 2,
+    "output_tokens": 1277,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2529,
+  "output_tokens_details": {
+   "thinking_tokens": 1105
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
