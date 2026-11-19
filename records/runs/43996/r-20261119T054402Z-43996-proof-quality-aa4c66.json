@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.16673700000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 27.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 19661
+    },
+    "cache_creation_input_tokens": 19661,
+    "cache_read_input_tokens": 44240,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 646
+      },
+      "cache_creation_input_tokens": 646,
+      "cache_read_input_tokens": 22238,
+      "input_tokens": 2,
+      "output_tokens": 1850,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2978,
+    "output_tokens_details": {
+     "thinking_tokens": 954
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "91942aa9ff8cea04d0d9905b80f75c07ce2379c4",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.166737,
+ "dedupe_key": "TauCetiProject/TauCeti|43996|7b177cfc30cb937ad0be1bd1d0372680d370485e|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|3",
+ "diff_blob": "8eb922438db7138891c84aba29a5fcfca8d38cb588ea3617b80a68078dc83f5a",
+ "diff_sha256": "8eb922438db7138891c84aba29a5fcfca8d38cb588ea3617b80a68078dc83f5a",
+ "duration_s": 27.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Algebra/MvPolynomial/Eval.lean:620 `map_aeval` concludes `eval\u2082Hom (\u03c6.comp (algebraMap R S\u2081)) \u2026`; :752 defines `aevalTower` as `{ eval\u2082Hom (\u2191f) X with \u2026 }`; none of the `aevalTower_*` lemmas there link the two.",
+   "file": "TauCeti/RingTheory/Extension/Presentation/Basic.lean",
+   "fix": "Rewrite with an explicit lemma relating `aevalTower` of a composed point to `x (aeval P.val p)`, as described in the next finding.",
+   "issue": "`exact (MvPolynomial.map_aeval P.val x.toRingHom (P.relation j)).symm.trans (by simp)` gives an `eval\u2082Hom (x.toRingHom.comp (algebraMap R S)) (fun i => x (P.val i))` statement but the goal is about `aevalTower (x.comp (IsScalarTower.toAlgHom k R S)) \u2026`. It closes only by unfolding `aevalTower`, `AlgHom.comp` and `toAlgHom`, with no comment.",
+   "line": 102
+  },
+  {
+   "evidence": "grep `map_aeval` in code/TauCeti/RingTheory/Extension/Presentation: hits at Basic.lean:102 and Submersive.lean:56, both with `P.val x.toRingHom`.",
+   "file": "TauCeti/RingTheory/Extension/Presentation/Submersive.lean",
+   "fix": "Add one lemma to `Basic.lean`, e.g. `Algebra.Presentation.aevalTower_comp_toAlgHom_val : aevalTower (x.comp (IsScalarTower.toAlgHom k R S)) (fun i \u21a6 x (P.val i)) p = x (aeval P.val p)`, proved once with the defeq documented or by `induction_on`/`simp`. Use it at Basic.lean:102 and here, after `RingHom.map_det`.",
+   "issue": "The same `map_aeval` + unfolding bridge is built again here (closing at line 56), so a reusable fact is duplicated inside two proofs.",
+   "line": 52
+  }
+ ],
+ "head_sha": "7b177cfc30cb937ad0be1bd1d0372680d370485e",
+ "merge_base_sha": "91942aa9ff8cea04d0d9905b80f75c07ce2379c4",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 43996,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "a18e71dc853de29ed182ac30fca267958bf4c3ee2d6e59b9514b46c7ab8b400e",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T054402Z-43996-proof-quality-aa4c66",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T05:44:02Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The Jacobian-minor proof now documents its definitional identifications, but the forward direction of `range_points_coordinates` makes the same undocumented `aevalTower`-to-`eval\u2082Hom` jump. This bridge is built twice in the PR and should be one named lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/MvPolynomial",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Extension/Presentation",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a0627e90a7abf972eb40f5bb7623b9d978f989a19cd904bfed0aa86c4f961c7d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 19661
+  },
+  "cache_creation_input_tokens": 19661,
+  "cache_read_input_tokens": 44240,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 646
+    },
+    "cache_creation_input_tokens": 646,
+    "cache_read_input_tokens": 22238,
+    "input_tokens": 2,
+    "output_tokens": 1850,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2978,
+  "output_tokens_details": {
+   "thinking_tokens": 954
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
