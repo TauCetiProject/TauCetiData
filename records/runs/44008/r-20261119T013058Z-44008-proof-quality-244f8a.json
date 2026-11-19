@@ -1,0 +1,154 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.0714836,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 21.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3868
+    },
+    "cache_creation_input_tokens": 3868,
+    "cache_read_input_tokens": 43498,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1879
+      },
+      "cache_creation_input_tokens": 1879,
+      "cache_read_input_tokens": 15465,
+      "input_tokens": 2,
+      "output_tokens": 1320,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2171,
+    "output_tokens_details": {
+     "thinking_tokens": 549
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "91942aa9ff8cea04d0d9905b80f75c07ce2379c4",
+ "cli_dirty": false,
+ "cli_sha": "364f02c4459627772a98be12f129664f564eab9a",
+ "cost_usd": 0.071484,
+ "dedupe_key": "TauCetiProject/TauCeti|44008|29fe4e4a8ca0220602225848cf0f7b27459e4374|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "f63f157b66a9485e3e00cbd625eec54edc1136ef7be3e781d93bbb4dd14fdecc",
+ "diff_sha256": "f63f157b66a9485e3e00cbd625eec54edc1136ef7be3e781d93bbb4dd14fdecc",
+ "duration_s": 21.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 89-93 run `rw [Units.val_mul, ord_mul v (v.ne_zero_iff.mpr t.ne_zero) (v.ne_zero_iff.mpr (u : F\u02e3).ne_zero), (v.mem_unitGroup_iff_ord_eq_zero _).mp u.2, add_zero]; exact ht` inside the type of `unitPart_mul_coe`.",
+   "file": "TauCeti/RingTheory/Valuation/Discrete/UnitPart.lean",
+   "fix": "Add a lemma such as `ord_mul_coe_unitGroup (f : F\u02e3) (u : v.valuationSubring.unitGroup) : v.ord ((f * u : F\u02e3) : F) = v.ord f`, then pass `((v.ord_mul_coe_unitGroup t u).trans ht)` as the witness.",
+   "issue": "The order-one proof for the new parameter `t * u` is a four-step `rw` chain written inside the statement of `unitPart_mul_coe`. That makes the statement fragile and hides a reusable fact: multiplying by a valuation-ring unit does not change the order.",
+   "line": 89
+  },
+  {
+   "evidence": "`Order.lean:140` `ord_mul` takes `hf : v f \u2260 0` and `hg : v g \u2260 0`, and Order.lean has no version for units; the PR supplies these arguments by hand at all three sites.",
+   "file": "TauCeti/RingTheory/Valuation/Discrete/UnitPart.lean",
+   "fix": "Add a `@[simp]` lemma `ord_units_mul (f g : F\u02e3) : v.ord ((f * g : F\u02e3) : F) = v.ord f + v.ord g` (and, if needed, a `zpow` version). Then use it at all three sites, which lets `simp` close the goals without spelling out the side conditions.",
+   "issue": "The same pattern, `ord_mul v (v.ne_zero_iff.mpr a.ne_zero) (v.ne_zero_iff.mpr b.ne_zero)`, appears three times: in the `unitPart` membership proof (lines 47-48), in `map_mul'` (lines 53-54), and in `unitPart_mul_coe` (lines 90-91). Each copy rebuilds the nonvanishing side conditions by hand.",
+   "line": 47
+  },
+  {
+   "evidence": "Lines 114-115. The sibling lemmas `unitPartUnits_coe` and `unitPartUnits_self` already close comparable goals with `simp [unitPartUnits_apply]`.",
+   "file": "TauCeti/RingTheory/Valuation/Discrete/UnitPart.lean",
+   "fix": "Replace it with `simp [unitPartUnits_apply]` (or `simp [unitPartUnits_apply, Units.val_zpow_eq_zpow_val]`).",
+   "issue": "`coe_unitPartUnits` is proved by a four-lemma `rw` chain (`unitPartUnits_apply`, `ValuationSubring.coe_unitGroupMulEquiv_apply`, `coe_unitPart`, `Units.val_mul`, `Units.val_zpow_eq_zpow_val`). This is a pure coercion simplification and breaks on any Mathlib rename.",
+   "line": 114
+  }
+ ],
+ "head_sha": "29fe4e4a8ca0220602225848cf0f7b27459e4374",
+ "merge_base_sha": "91942aa9ff8cea04d0d9905b80f75c07ce2379c4",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 44008,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "af683cf18cd24a96eadc011da2eb4edcaa47fcb8060316443328687bb280b1a0",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "364f02c4459627772a98be12f129664f564eab9a",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T013058Z-44008-proof-quality-244f8a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T01:30:58Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The proofs are short and their `(rfl)` steps unfold only the new definitions, but the fact that order is additive on field units is rebuilt by hand three times, once inside a theorem statement. One field-value proof also uses a brittle chain of named rewrites where `simp` would do.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/RingTheory/Valuation/Discrete/Order.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "d0f168e03722e2426a5402a7a2e5c83d9411f9e1a1f3b5a963f24837034e01a7",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 3868
+  },
+  "cache_creation_input_tokens": 3868,
+  "cache_read_input_tokens": 43498,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1879
+    },
+    "cache_creation_input_tokens": 1879,
+    "cache_read_input_tokens": 15465,
+    "input_tokens": 2,
+    "output_tokens": 1320,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2171,
+  "output_tokens_details": {
+   "thinking_tokens": 549
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
