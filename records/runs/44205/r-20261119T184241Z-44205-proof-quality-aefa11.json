@@ -1,0 +1,173 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2107498,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 51.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 16438
+    },
+    "cache_creation_input_tokens": 16438,
+    "cache_read_input_tokens": 118579,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2727
+      },
+      "cache_creation_input_tokens": 2727,
+      "cache_read_input_tokens": 48302,
+      "input_tokens": 2,
+      "output_tokens": 2168,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5241,
+    "output_tokens_details": {
+     "thinking_tokens": 2572
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d91980bdc255e6e50506be147ad9bcb88eb9fcc0",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.21075,
+ "dedupe_key": "TauCetiProject/TauCeti|44205|23f4ff64974f53eee3145ae167cdd13283d50d55|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "3da163671f2591f4fc46d5f46f826329dddfabe14c8c3856c0f4c5f6a05f061c",
+ "diff_sha256": "3da163671f2591f4fc46d5f46f826329dddfabe14c8c3856c0f4c5f6a05f061c",
+ "duration_s": 51.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `restrictScalars \u211d$` in SchottkyDouble.lean finds 595, 666, 799 and 953, each in the same `refine \u27e8Manifold.IsImmersionOfComplement.isImmersion ...\u27e9` block.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/SchottkyDouble.lean",
+   "fix": "Give the real `IsManifold \ud835\udcd8(\u211d, \u2102) \u221e (SchottkyDouble M)` structure its own named instance or theorem. Factor out one helper: an embedding whose `writtenInExtChartAt` agrees on the chart target with a fixed continuous linear equivalence is a smooth embedding of every order `n \u2264 \u221e`. Derive all four theorems from it.",
+   "issue": "Four smooth-embedding proofs build the same proof by hand: `isSmoothEmbedding_inl` (595), `_inr` (666), `_inl_euclideanHalfSpace` (799) and `_boundaryInl` (953). Each builds the same ad-hoc `IsManifold \ud835\udcd8(\u211d, \u2102) \u221e (SchottkyDouble M)` from `restrictScalars`, then runs `IsImmersionOfComplement.isImmersion`, `mk_of_continuousAt_of_extChartAt`, `simpa` and `of_le hn`.",
+   "line": 595
+  },
+  {
+   "evidence": "grep `convert hd using 1` / `convert hd.hasFDerivWithinAt` in SchottkyDouble.lean finds 623, 695, 830 and 911.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/SchottkyDouble.lean",
+   "fix": "Add one lemma: if `writtenInExtChartAt` is eventually equal to a continuous linear map `L` within the range of the source model, then `HasMFDerivAt ... f x L`. That lemma states the cast identity once; the four proofs then apply it.",
+   "issue": "Four derivative proofs end with `convert hd using 1; ext v; rfl`: `hasMFDerivAt_inl` (623), `_inr` (695), `_inl_euclideanHalfSpace` (830) and `hasMFDerivAt_boundaryInl` (911). Each relies on the model-to-tangent casts being definitionally the identity. A comment notes this, but the step is repeated each time instead of being stated once.",
+   "line": 623
+  },
+  {
+   "evidence": "grep `have hxim` finds SchottkyDouble.lean:723 and :742 with identical `simpa only [...] using (im_eq_zero_iff_notMem_borderedInterior ...).2 hx` bodies.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/SchottkyDouble.lean",
+   "fix": "Extract it as a named lemma, for example `im_extChartAt_eq_zero_of_notMem_borderedInterior`, and use it in both proofs.",
+   "issue": "The `hxim` block, which derives `(extChartAt closedUpperHalfPlaneModel x x).im = 0` from `x \u2209 borderedInterior M`, is copied verbatim into both inward-sign lemmas (723 and 742).",
+   "line": 723
+  },
+  {
+   "evidence": "SchottkyDouble.lean:772 `change (\ud835\udce1\u2202 (1 + 1)).symm v \u2208 Set.univ \u2227 ...`, :782 `change SchottkyDouble.doubleChart ...`, and Interior.lean:386 `change (ClosedUpperHalfPlane.euclideanHalfSpaceHomeomorph ...`.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/SchottkyDouble.lean",
+   "fix": "Next to `ClosedUpperHalfPlane.chartAt_euclideanHalfSpace`, add lemmas for the apply, symm-apply and target membership of the composite chart. Rewrite with them instead of using `change`.",
+   "issue": "`writtenInExtChartAt_inl_euclideanHalfSpace_eqOn` (772, 782) and `mem_boundary_euclideanHalfSpace_iff_notMem_borderedInterior` (Interior.lean:386) both use `change` to unfold `ChartedSpace.comp` and `singletonChartedSpace`, exposing the composite chart's apply, symm and target. This depends on the definitional shape of `euclideanHalfSpaceChartedSpace` rather than on stated facts about it.",
+   "line": 772
+  },
+  {
+   "evidence": "Examples file line 108 found by grep `change .* at he$`. The other lines are visible in the diff of the `\u00ac PreconnectedSpace` example and of `range_closedUpperHalfPlaneCoordinates_symm_boundaryParam`.",
+   "file": "TauCeti/Examples/Geometry/Manifold/Complex/BorderedHolomorphic/SchottkyDouble.lean",
+   "fix": "Use `simp`/`norm_num` with the set definition, or `LinearMap.mem_ker` / `Set.mem_setOf_eq` rewrites. Where `change` must stay, add a comment explaining why.",
+   "issue": "Several steps use `change` or a defeq coercion with no comment: `change e \u2208 (\u2205 : Set _) at he` (108), the two `by change (\u00b12 : \u2102).re < -1 \u2228 ...` membership proofs (133 and 135), and `have hx' : ((x.val : \u2102).re) = 0 := hx` (142). The same happens in ClosedUpperHalfPlane.lean, where `have hz' : z.im = 0 := hz` reads `Complex.imCLM.ker` membership by defeq.",
+   "line": 108
+  }
+ ],
+ "head_sha": "23f4ff64974f53eee3145ae167cdd13283d50d55",
+ "merge_base_sha": "d91980bdc255e6e50506be147ad9bcb88eb9fcc0",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44205,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f0115f80cd327670f6fd0ea95d7fa31324108355fad9480b10296303f9cb66e1",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T184241Z-44205-proof-quality-aefa11",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T18:42:41Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The proofs copy the same immersion and derivative scaffolding into several theorems and depend on definitional unfolding of the composite half-space chart instead of explicit chart lemmas. The examples file uses `change` and defeq coercions without comments.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Complex",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b75e5d7ba97de57a3a716a6d67456dcfbf96fb18ef382a9c49e9a6152ffc5cf3",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 16438
+  },
+  "cache_creation_input_tokens": 16438,
+  "cache_read_input_tokens": 118579,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2727
+    },
+    "cache_creation_input_tokens": 2727,
+    "cache_read_input_tokens": 48302,
+    "input_tokens": 2,
+    "output_tokens": 2168,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5241,
+  "output_tokens_details": {
+   "thinking_tokens": 2572
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
