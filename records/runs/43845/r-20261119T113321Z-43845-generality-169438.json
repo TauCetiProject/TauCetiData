@@ -1,0 +1,166 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.20088499999999998,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 31.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 24070
+    },
+    "cache_creation_input_tokens": 24070,
+    "cache_read_input_tokens": 59755,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 729
+      },
+      "cache_creation_input_tokens": 729,
+      "cache_read_input_tokens": 29080,
+      "input_tokens": 2,
+      "output_tokens": 2078,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3428,
+    "output_tokens_details": {
+     "thinking_tokens": 865
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "91942aa9ff8cea04d0d9905b80f75c07ce2379c4",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.200885,
+ "dedupe_key": "TauCetiProject/TauCeti|43845|55be36a06ed34cf51b0c89563b769b97cb51c301|generality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "df4476d5a0925071b3320c89b798250b768879cd9b5ec046f31991ff83a9b5ac",
+ "diff_sha256": "df4476d5a0925071b3320c89b798250b768879cd9b5ec046f31991ff83a9b5ac",
+ "duration_s": 31.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib Gaussian/Real.lean:263-268 `rnDeriv_gaussianReal (\u03bc) (v : \u211d\u22650)` has no hypothesis and uses exactly this proof; mathlib Dirac/Basic.lean:231 `mutuallySingular_dirac`; WrappedNormal/Angle.lean:69 `wrappedNormalAngleMeasure_zero_var`.",
+   "file": "TauCeti/Probability/Distributions/WrappedNormal/Angle.lean",
+   "fix": "State it as `theorem rnDeriv_wrappedNormalAngleMeasure (m) (v : \u211d\u22650) : (wrappedNormalAngleMeasure m v).rnDeriv volume =\u1d50[volume] wrappedNormalAnglePDF m v`. Prove the `v = 0` case with `wrappedNormalAngleMeasure_zero_var`, `Measure.eq_rnDeriv measurable_zero (mutuallySingular_dirac _ volume)` and `withDensity_zero`.",
+   "issue": "`rnDeriv_wrappedNormalAngleMeasure` assumes `hv : v \u2260 0`, but the statement also holds at `v = 0`: the law is `dirac _`, which is singular to `volume`, so its rnDeriv is 0 a.e., and `wrappedNormalAnglePDF m 0 = 0`.",
+   "line": 168
+  },
+  {
+   "evidence": "mathlib Probability/Density.lean:122-124 `def pdf ... := (map X \u2119).rnDeriv \u03bc`.",
+   "file": "TauCeti/Probability/Distributions/WrappedNormal/Angle.lean",
+   "fix": "Remove `hv` and derive this theorem from the unconditional rnDeriv theorem: `hX.map_eq \u25b8 rnDeriv_wrappedNormalAngleMeasure m v`.",
+   "issue": "`pdf_eq_wrappedNormalAnglePDF_of_hasLaw_wrappedNormalAngleMeasure` assumes `hv : v \u2260 0` without needing it. `pdf X P` is defined as `(map X P).rnDeriv volume`, and the law gives `map X P = wrappedNormalAngleMeasure m v`.",
+   "line": 158
+  },
+  {
+   "evidence": "WrappedCauchy/Angle.lean:66 `wrappedCauchyAngleMeasure_zero_scale`; mathlib Gaussian/Real.lean:263-268.",
+   "file": "TauCeti/Probability/Distributions/WrappedCauchy/Angle.lean",
+   "fix": "Take `(\u03b3 : \u211d\u22650)` with no hypothesis. Handle `\u03b3 = 0` with `wrappedCauchyAngleMeasure_zero_scale` and `mutuallySingular_dirac`, as in `rnDeriv_gaussianReal`.",
+   "issue": "`rnDeriv_wrappedCauchyAngleMeasure` assumes `h\u03b3 : 0 < \u03b3`, but at `\u03b3 = 0` the law is a Dirac mass and `wrappedCauchyAnglePDF m 0 = 0`, so the statement still holds.",
+   "line": 165
+  },
+  {
+   "evidence": "mathlib Probability/Density.lean:122-124.",
+   "file": "TauCeti/Probability/Distributions/WrappedCauchy/Angle.lean",
+   "fix": "Remove `h\u03b3` and derive it from the unconditional rnDeriv theorem through `hX.map_eq`. Update the module docstring (lines 22-24) so only `HasPDF` is stated as needing positive scale. Make the matching docstring edit in WrappedNormal/Angle.lean (lines 23-25).",
+   "issue": "`pdf_eq_wrappedCauchyAnglePDF_of_hasLaw_wrappedCauchyAngleMeasure` assumes `h\u03b3 : 0 < \u03b3` without needing it, because `pdf` is defined as the rnDeriv of the law.",
+   "line": 155
+  }
+ ],
+ "head_sha": "55be36a06ed34cf51b0c89563b769b97cb51c301",
+ "merge_base_sha": "91942aa9ff8cea04d0d9905b80f75c07ce2379c4",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 43845,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ae902acb693e7c1bf7a029376745b8f1795c5dc5664d7be662d17e73b85cb35a",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "generality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T113321Z-43845-generality-169438",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T11:33:21Z",
+ "submitted_by": "kim-em",
+ "summary": "The wrapped normal and wrapped Cauchy Radon\u2013Nikodym and canonical-pdf theorems assume a nonzero variance or scale they don't need: both hold at the Dirac boundary, where the named density is defined as zero. Drop the hypothesis there, as Mathlib's `rnDeriv_gaussianReal` does; keep it only for `*_eq_withDensity` and `hasPDF_of_hasLaw_*`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Probability/Distributions/Gaussian/Real.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "1eede4a31ec778b711fdf4fef0b2db774a12f558a151b636bb2ea2bc277dc09d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 24070
+  },
+  "cache_creation_input_tokens": 24070,
+  "cache_read_input_tokens": 59755,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 729
+    },
+    "cache_creation_input_tokens": 729,
+    "cache_read_input_tokens": 29080,
+    "input_tokens": 2,
+    "output_tokens": 2078,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3428,
+  "output_tokens_details": {
+   "thinking_tokens": 865
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
