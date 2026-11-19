@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.16092099999999998,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 28.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 16110
+    },
+    "cache_creation_input_tokens": 16110,
+    "cache_read_input_tokens": 102435,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 856
+      },
+      "cache_creation_input_tokens": 856,
+      "cache_read_input_tokens": 43755,
+      "input_tokens": 2,
+      "output_tokens": 1657,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2993,
+    "output_tokens_details": {
+     "thinking_tokens": 1395
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.160921,
+ "dedupe_key": "TauCetiProject/TauCeti|44094|fdd4aa73a869bfff55d60c22f91f8a7033a970b0|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "5e2cfe38933650f7edded1b1b40419f32026f334d54ade1f539fa9a883dc03b8",
+ "diff_sha256": "5e2cfe38933650f7edded1b1b40419f32026f334d54ade1f539fa9a883dc03b8",
+ "duration_s": 28.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`grep skewProd|shear code/TauCeti/LinearAlgebra/Orientation` gives no hits, so no public form exists. `Orientation.prod` and `map_prod` live in `TauCeti/LinearAlgebra/Orientation/Prod.lean:83,260`, and `kerOfExact`/`map_ofExact` in `Orientation/Exact/Basic.lean:220,336`, so every dependency is linear algebra.",
+   "file": "TauCeti/Geometry/Manifold/SmoothEmbedding/NormalSpace/Diagonal/Orientation.lean",
+   "fix": "Move it into `TauCeti/LinearAlgebra/Orientation/Prod.lean` as a public lemma, e.g. `Orientation.map_skewProd_refl_prod`. Ideally generalize it to `e\u2081.skewProd e\u2082 f` acting on `o.prod p` for any `f`, and use it from here.",
+   "issue": "`map_shear_orientation` is general infrastructure hidden as `private`. Its statement mentions only linear-algebra objects (`Orientation.map`, `LinearEquiv.skewProd`, `Orientation.prod`), and its proof does not depend on manifolds or the diagonal. It states that the shear `(a, b) \u21a6 (a, a + b)` preserves the product orientation.",
+   "line": 37
+  },
+  {
+   "evidence": "Line 42 `abbrev diagonal : SmoothEmbedding I (I.prod I) \u221e M (M \u00d7 M) where ...`. Lines 48\u201355 already provide the simp characterization `diagonal_apply` / `coe_diagonal`.",
+   "file": "TauCeti/Geometry/Manifold/SmoothEmbedding/NormalSpace/Diagonal.lean",
+   "fix": "Make it a plain `def`, without `@[expose]`, and keep `diagonal_apply`/`coe_diagonal` as the interface (proved with `(rfl)`). Add a lemma for any other unfolding a consumer needs.",
+   "issue": "`diagonal` is declared as an `abbrev` in a public section. That exposes its body and makes it reducible, so downstream code can depend on its definitional unfolding even though `diagonal_apply` and `coe_diagonal` already characterize it.",
+   "line": 42
+  }
+ ],
+ "head_sha": "fdd4aa73a869bfff55d60c22f91f8a7033a970b0",
+ "merge_base_sha": "b2350004c40546f72a9ed4f47921b94b9517174e",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44094,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "ad584dec17b66118f72abc4d8968187c892052280d04f3e83e443630d90c2561",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T111847Z-44094-api-design-c609f1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T11:18:47Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "A general linear-algebra orientation lemma is hidden as `private` in a manifold file instead of being made public in its canonical home. `diagonal` is an `abbrev`, which exposes and reduces its body downstream even though apply lemmas already characterize it.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "roadmap",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Orientation",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/SmoothEmbedding",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "3003a2be53aa0f3a08221f5ea47ed838e2a67ad5a40a5da9fc71d79ccd48ae17",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 16110
+  },
+  "cache_creation_input_tokens": 16110,
+  "cache_read_input_tokens": 102435,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 856
+    },
+    "cache_creation_input_tokens": 856,
+    "cache_read_input_tokens": 43755,
+    "input_tokens": 2,
+    "output_tokens": 1657,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2993,
+  "output_tokens_details": {
+   "thinking_tokens": 1395
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
