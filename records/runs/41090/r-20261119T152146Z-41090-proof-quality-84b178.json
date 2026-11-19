@@ -1,0 +1,156 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1313316,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 38.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9934
+    },
+    "cache_creation_input_tokens": 9934,
+    "cache_read_input_tokens": 36128,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 8826
+      },
+      "cache_creation_input_tokens": 8826,
+      "cache_read_input_tokens": 18618,
+      "input_tokens": 2,
+      "output_tokens": 2126,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3721,
+    "output_tokens_details": {
+     "thinking_tokens": 1457
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "ca32605ff53921fa0689dd312618b7cfaafa7e43",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.131332,
+ "dedupe_key": "TauCetiProject/TauCeti|41090|8068872495d13b01feb787956b0eb1986a6b5e12|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "d262248942c5414a43fd38b09d76ece79b65b287eafa00ae616b6d6c2bfaa41b",
+ "diff_sha256": "d262248942c5414a43fd38b09d76ece79b65b287eafa00ae616b6d6c2bfaa41b",
+ "duration_s": 38.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Identical `have h\u2081 \u2026 := by decide` / `have h\u2082 \u2026 := by decide` blocks at lines 77-78 and 177-178; sign variant at 161-162.",
+   "file": "TauCeti/RepresentationTheory/CharacterTable/TensorGeneration/SymmetricThree.lean",
+   "fix": "State them once as private `simp` lemmas, or better as `char_standardRepresentation_fin_three` evaluated at `swap 0 1` and `finRotate 3` (values `0` and `-1`), and use those in every caller.",
+   "issue": "The same `decide` facts `swap (0 : Fin 3) 1 \u2260 1 \u2227 sign (swap 0 1) = -1` and `finRotate 3 \u2260 1 \u2227 sign (finRotate 3) \u2260 -1` are re-proved locally in `characterValues_standardRepresentation_fin_three` (l.77-78), `finrank_hom_sign_\u2026` (l.161-162, `= -1` / `= 1` variant) and `finrank_hom_standardRepresentation_fin_three_tensorPower` (l.177-178).",
+   "line": 77
+  },
+  {
+   "evidence": "grep `linear_combination 2 \\* h` in the file hits lines 93 and 176 with the same preceding `h\u2086` line.",
+   "file": "TauCeti/RepresentationTheory/CharacterTable/TensorGeneration/SymmetricThree.lean",
+   "fix": "Add private lemmas `two_ne_zero_of_six`/`three_ne_zero_of_six` (or local `NeZero (2 : k)`/`NeZero (3 : k)` instances) under the `NeZero` section and reuse them.",
+   "issue": "The derivation `h\u2086 : (6 : k) \u2260 0` followed by `h\u2083 : (3 : k) \u2260 0 := \u2026 linear_combination 2 * h` is duplicated in `characterValueCount_\u2026` (l.91-93) and `finrank_hom_standardRepresentation_fin_three_tensorPower` (l.175-176). The `Invertible` construction at l.115-117 re-derives `6 \u2260 0` a third way.",
+   "line": 91
+  },
+  {
+   "evidence": "Lines 131-138: `have h\u2082 : ((Finset.univ.filter fun \u03c3 \u2026 \u00ac\u03c3 = 1).filter fun \u03c3 \u21a6 Perm.sign \u03c3 = -1).card = 3 := by decide` and `rw [hsum, Finset.sum_ite, Finset.sum_ite, Finset.sum_const, Finset.sum_const, Finset.sum_const, h\u2081, h\u2082, h\u2083, Nat.card_perm, Nat.card_eq_fintype_card, Fintype.card_fin]`.",
+   "file": "TauCeti/RepresentationTheory/CharacterTable/TensorGeneration/SymmetricThree.lean",
+   "fix": "Evaluate the sum over `Perm (Fin 3)` directly, e.g. by rewriting the summand with `hX`/`char_standardRepresentation_fin_three` and closing with `simp [Fintype.sum_perm \u2026]`/`decide` on an explicit class-count lemma, or factor a reusable lemma `\u2211 \u03c3 : Perm (Fin 3), f (class \u03c3) = f id + 3 f trans + 2 f cycle`.",
+   "issue": "The general formula's proof hard-codes the nested-filter shape that `Finset.sum_ite` happens to produce (`h\u2082`, `h\u2083` at l.131-134, e.g. `(univ.filter (\u00ac\u03c3 = 1)).filter (\u00acsign \u03c3 = -1)`) and then runs a 12-step `rw` chain (l.137-138) that must match it exactly. Any change to `sum_ite`'s output or its filter normal form breaks it, and it hides the simple reason: one identity, three transpositions, two 3-cycles.",
+   "line": 131
+  },
+  {
+   "evidence": "Lines 194-196 of the new file.",
+   "file": "TauCeti/RepresentationTheory/CharacterTable/TensorGeneration/SymmetricThree.lean",
+   "fix": "Replace with a single `simp only [FDRep.char_tensorPower, FDRep.char_biprod, Pi.add_apply, FDRep.char_ofLinearCharacter, coe_signLinearCharacter_apply, FDRep.character_of, char_standardRepresentation_fin_three]`.",
+   "issue": "`nonempty_iso_tensorPower_two_standardRepresentation_fin_three` uses an 11-lemma `rw` chain (`char_tensorPower, char_biprod, char_biprod, Pi.add_apply, Pi.add_apply, char_ofLinearCharacter, char_ofLinearCharacter, \u2026`) where repeated rewrites with the same lemmas break if any one is renamed or its form changes.",
+   "line": 194
+  }
+ ],
+ "head_sha": "8068872495d13b01feb787956b0eb1986a6b5e12",
+ "merge_base_sha": "ca32605ff53921fa0689dd312618b7cfaafa7e43",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 41090,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bdd2ee6fa74750ae74603d3abd1b9ed551ee4179e45f1923718c1c3d903fec5f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T152146Z-41090-proof-quality-84b178",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T15:21:46Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs are mostly clean, but the facts about the class representatives and the `6 \u2260 0` side facts are re-proved in several proofs. The general Hom-dimension formula also rests on a brittle `Finset.sum_ite` rewrite chain whose filter-card side goals copy that lemma's internal output shape.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2de8b5a968b7e30553c0f3527873be37bb18698444d8e1b735400abb7b4009c1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 9934
+  },
+  "cache_creation_input_tokens": 9934,
+  "cache_read_input_tokens": 36128,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8826
+    },
+    "cache_creation_input_tokens": 8826,
+    "cache_read_input_tokens": 18618,
+    "input_tokens": 2,
+    "output_tokens": 2126,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3721,
+  "output_tokens_details": {
+   "thinking_tokens": 1457
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
