@@ -1,0 +1,156 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.15133960000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 33.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 15492
+    },
+    "cache_creation_input_tokens": 15492,
+    "cache_read_input_tokens": 46818,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 14398
+      },
+      "cache_creation_input_tokens": 14398,
+      "cache_read_input_tokens": 23956,
+      "input_tokens": 2,
+      "output_tokens": 2014,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3225,
+    "output_tokens_details": {
+     "thinking_tokens": 1265
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "aa3cfad1274c06cff25f2b58848498b3c3f68d0f",
+ "cli_dirty": false,
+ "cli_sha": "60472b78568d274587971787276e9009f957217c",
+ "cost_usd": 0.15134,
+ "dedupe_key": "TauCetiProject/TauCeti|44496|6fdf78d2ea5b162d94f31b7cffcd363633e45661|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "4aec3ca507b88a0a524396d9404a40ea948048820bc98c234c1b1a258aba15cf",
+ "diff_sha256": "4aec3ca507b88a0a524396d9404a40ea948048820bc98c234c1b1a258aba15cf",
+ "duration_s": 33.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Logic/Equiv/Basic.lean:846 `def piCongrLeft := (piCongrLeft' P e.symm).symm`; Mathlib/Data/Finset/Image.lean:258 `equivMap := .ofBijective (fun x \u21a6 \u27e8f x, _\u27e9) _`.",
+   "file": "TauCeti/Algebra/Group/Pi/Finset.lean",
+   "fix": "Prove bijectivity against the stated function explicitly, e.g. `by convert (Equiv.piCongrLeft ..).symm.bijective` followed by `funext` and `simp [Equiv.piCongrLeft_symm_apply, Finset.equivMap]`, or build the equivalence as `{ (Equiv.piCongrLeft ..).symm with map_mul' := .. }` and prove `mulEquivMap_apply` by `simp`.",
+   "issue": "`MulEquiv.ofBijective` is given `(Equiv.piCongrLeft _ (I.equivMap f)).symm.bijective`, which proves bijectivity of a different function. It is accepted only because `piCongrLeft.symm` unfolds to `piCongrLeft' _ e.symm` and `(I.equivMap f).symm.symm` unfolds to `fun \u03b2 \u21a6 \u27e8f \u03b2, _\u27e9`. This defeq crosses the `Equiv.piCongrLeft`, `Equiv.symm` and `Equiv.ofBijective` wrappers and has no comment.",
+   "line": 105
+  },
+  {
+   "evidence": "Lines 252-256: `simp only [regLocus_reindex, baseHomeomorph_reindex]` then `rfl`; `footprintMap_reindex` is at lines 233-242.",
+   "file": "TauCeti/Topology/ImplicitAtlas/Subatlas.lean",
+   "fix": "Rewrite with `footprintMap_reindex` and `coe_reindexZeroHomeomorph` instead of closing with `rfl`.",
+   "issue": "`footprint_reindex` ends with `simp only [...]; rfl`. The `rfl` relies on the reindexed `footprintMap` being definitionally `\ud835\udc9c.footprintMap _ \u2218 reindexZeroHomeomorph`, even though `footprintMap_reindex` states exactly that equation a few lines earlier.",
+   "line": 256
+  },
+  {
+   "evidence": "Lines 158-159, 161-162 and 168-170 contain `reindexZeroHomeomorph, Homeomorph.setCongr_apply`; lines 129-131 and 141-143 use `coe_reindexZeroHomeomorph` instead.",
+   "file": "TauCeti/Topology/ImplicitAtlas/Subatlas.lean",
+   "fix": "Replace `reindexZeroHomeomorph, Homeomorph.setCongr_apply` with `coe_reindexZeroHomeomorph` (plus `Subtype.ext` where needed) in all three blocks (lines ~158, ~161, ~168).",
+   "issue": "The `footprintMap_act`, `footprintMap_self` and `footprintMap_footprintMap` blocks close with `simpa only [F, Function.comp_apply, reindexZeroHomeomorph, Homeomorph.setCongr_apply, ...]`. They unfold the private definition and the `setCongr` internals, while the sibling fields (`kuranishi_footprintMap`, `mem_regLocus_of_footprintMap_mem`) use the stable `coe_reindexZeroHomeomorph`. These are unfolding-heavy terse proofs that break if `Homeomorph.setCongr` changes.",
+   "line": 158
+  },
+  {
+   "evidence": "Lines 104-201 hold ten `?_` placeholders, each discharged by an unlabeled bullet.",
+   "file": "TauCeti/Topology/ImplicitAtlas/Subatlas.lean",
+   "fix": "Put a short comment naming the field before each bullet (e.g. `-- kuranishi_act`, `-- footprintMap_act`), or move the longer blocks (`footprintMap_eq_footprintMap_iff`, `range_footprintMap_inter`, `exists_footprintMap_eq`) into private lemmas, as was already done for `reindex_exists_openPartialHomeomorph`.",
+   "issue": "The `reindex` body is about 95 lines. After the big `refine`, ten anonymous `\u00b7` bullets discharge the `?_` fields, and their order is the only link back to the field names. Apart from two local comments there is nothing explaining the structure.",
+   "line": 104
+  }
+ ],
+ "head_sha": "6fdf78d2ea5b162d94f31b7cffcd363633e45661",
+ "merge_base_sha": "aa3cfad1274c06cff25f2b58848498b3c3f68d0f",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 44496,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "de56a81a11c1672ed36c2a17b2f1fc4930810dc659087dd45b333fd23f9e7d00",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "60472b78568d274587971787276e9009f957217c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261120T110919Z-44496-proof-quality-30a6ce",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T11:09:19Z",
+ "submitted_by": "kim-em",
+ "summary": "The proofs build their results correctly but depend on undocumented definitional equality in `mulEquivMap` and at the end of `footprint_reindex`, and several `simpa` calls in `reindex` unfold the private `reindexZeroHomeomorph` and `Homeomorph.setCongr` where the existing `coe_reindexZeroHomeomorph` lemma would do. The `reindex` body is about 95 lines of unlabeled `?_` bullets.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "a2ac950591cd5dca5a80f1b6ae31eca28f3c31f7ca043c99229c896b58504ada",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 15492
+  },
+  "cache_creation_input_tokens": 15492,
+  "cache_read_input_tokens": 46818,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 14398
+    },
+    "cache_creation_input_tokens": 14398,
+    "cache_read_input_tokens": 23956,
+    "input_tokens": 2,
+    "output_tokens": 2014,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3225,
+  "output_tokens_details": {
+   "thinking_tokens": 1265
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
