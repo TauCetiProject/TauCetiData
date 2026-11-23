@@ -1,0 +1,180 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1715876,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 38.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 8745
+    },
+    "cache_creation_input_tokens": 8745,
+    "cache_read_input_tokens": 188993,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 846
+      },
+      "cache_creation_input_tokens": 846,
+      "cache_read_input_tokens": 67898,
+      "input_tokens": 2,
+      "output_tokens": 2705,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4502,
+    "output_tokens_details": {
+     "thinking_tokens": 1028
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8794ab329bb60340fa690a2902cf995f0571721b",
+ "cli_dirty": false,
+ "cli_sha": "60472b78568d274587971787276e9009f957217c",
+ "cost_usd": 0.171588,
+ "dedupe_key": "TauCetiProject/TauCeti|44545|befae20ecd394c26b6bf4881f415b42803aea8be|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "b6b9914176a5afd2a3a197f5a043814b0faf3c5acf41404a912c865d9c8d49e7",
+ "diff_sha256": "b6b9914176a5afd2a3a197f5a043814b0faf3c5acf41404a912c865d9c8d49e7",
+ "duration_s": 38.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: Reindex.lean:34-37 and Cech/Homeomorph.lean:130-133 both read `private def cechTermIso \u2026 := Iso.refl _`. Reindex.lean:113-114 unfolds it again with `dsimp only [cechTermIso, Iso.refl_hom] at h`.",
+   "file": "TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Reindex.lean",
+   "fix": "Use the existing public `cechComplexFunctor_obj_d_comp_\u03c0`, `cechComplexFunctor_map_f_\u03c0` and `cechComplexMap_f_\u03c0` directly. If a product-reading form is needed, add one public lemma in Cech/Basic and drop both private copies.",
+   "issue": "Private `cechTermIso := Iso.refl _` exists only to restate a definitional unfolding of the \u010cech term as a product. It is duplicated verbatim at TauCeti/Topology/Sheaves/Cech/Homeomorph.lean:130, together with parallel `*_comp_term_\u03c0` wrappers, and proofs undo it again with `dsimp only [cechTermIso, Iso.refl_hom]`.",
+   "line": 34
+  },
+  {
+   "evidence": "grep `^\\s*change`: Reindex.lean lines 75, 92, 127 and 196.",
+   "file": "TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Reindex.lean",
+   "fix": "Rewrite with an `@[simp]`/unfolding lemma `cechReindexXIso_hom` and with `Equiv.piCongrRight_apply`/`Equiv.coe_trans` instead of `change`. Otherwise add a comment at each site.",
+   "issue": "`change` steps with no comment explaining why the goal cannot be reached otherwise. Line 75 unfolds `cechReindexXIso` by defeq. Lines 92, 127 and 196 re-express `Pi.\u03c0` indices up to `Equiv.piCongrRight` and `Equiv.coe_trans` defeq.",
+   "line": 75
+  },
+  {
+   "evidence": "grep: Cech/Homeomorph.lean:101 `change h.opensCongr (U.opens (h.symm y)) \u2264`, :111 `unfold mapHomeomorphHom`, :352 `change ((cechCohomologyDiagram A \u2026`.",
+   "file": "TauCeti/Topology/Sheaves/Cech/Homeomorph.lean",
+   "fix": "Use `dsimp only [Functor.flip_obj_map, \u2026]` or `simp only` with the relevant `_obj`/`_map` lemmas. Prove `mapHomeomorphHom_f` with `rfl` directly or by marking the def `@[simps f]`.",
+   "issue": "A large uncommented `change` restates the naturality goal of `cechHomeomorphDiagramIso` through the `flip`/`equivalence.functor` wrappers. Line 101 (`mapHomeomorphHom`) also uses an uncommented `change`, and line 111 proves `mapHomeomorphHom_f` by `unfold; rfl`. All three rely on accidental defeq.",
+   "line": 352
+  },
+  {
+   "evidence": "In Cech/Homeomorph.lean:558ff the proof ends with `exact (Category.assoc _ _ _).symm.trans ((hsource =\u226b _).trans ((Category.assoc _ _ _).trans ((_ \u226b= hq\u2081).trans \u2026))))))))`. LongExactSequence.lean:199ff ends with a similar 8-level chain.",
+   "file": "TauCeti/Topology/Sheaves/Cech/Homeomorph.lean",
+   "fix": "Restructure each proof as `simp only [Category.assoc]` / `rw [reassoc_of% hsource, hq\u2081, reassoc_of% hlocal, \u2026]` (or a `calc` with one named step per square). This makes the diagram chase readable and robust to reassociation.",
+   "issue": "Brittle hand-built associativity chains obscure the diagram chase. The pattern is a 10-deep `(Category.assoc _ _ _).trans ((_ \u226b= hq\u2081).trans \u2026)` term. The same pattern appears in `cechAugmentation_comp_cechComplexHomeomorphIso` (:234), `cechAugmentation_comp_homeomorph_map` (:262), `cechCohomologyZeroIso_hom_comp_homeomorphIso` (:462) and `cechCohomology\u03b4_comp_homeomorphIso` (LongExactSequence.lean:199).",
+   "line": 558
+  },
+  {
+   "evidence": "Homeomorph.lean:110-121: `simp only [flip_obj_obj, ObjectProperty.\u03b9_obj, \u2026 NatIso.cancel_natIso_hom_left]` followed by `exact congrArg\u2082 (fun f g \u21a6 f \u226b g) ((Functor.mapIso_hom F.obj \u2026).trans \u2026)`.",
+   "file": "TauCeti/Topology/Sheaves/Homeomorph.lean",
+   "fix": "Add `@[simps]` (or a dedicated `globalSectionsIso_hom_app` lemma) and close with `simp`. Comment why `sheafCongrForgetIso` and the additivity are definitional, or prove them from the Mathlib `sheafCongr` API lemmas.",
+   "issue": "`globalSectionsIso_hom_app_comp_\u0393NatIsoSheafSections_hom` uses a 20-lemma `simp only` that unfolds every wrapper. It then closes with `congrArg\u2082` over manually spelled `Functor.mapIso_hom`/`Iso.op_hom`/`eqToIso.hom` terms, which is brittle against simp-normal-form changes. Line 63 (`sheafCongrForgetIso := Iso.refl _`) and the `ext U; rfl` at line 66 (`sheafCongr_additive`) also rest on undocumented defeq of `Equivalence.sheafCongr`.",
+   "line": 97
+  },
+  {
+   "evidence": "Examples file line 306: `change (((2 : \u2115) \u2022 \ud835\udfd9 coefficient.{v}).hom (ULift.up 1)) = ULift.up 2`. `disconnectedSection_right_zero`: `exact (ite_eq_right (by simp [rightOpen])).symm.ndrec terminalIsTerminal`.",
+   "file": "TauCeti/Examples/Topology/Sheaves/Cech/Homeomorph.lean",
+   "fix": "Use `ModuleCat.hom_smul`/`ModuleCat.comp_apply` rewrites instead of `change`. Use the Mathlib skyscraper lemma (`skyscraperPresheaf_isTerminal_of_not_mem` or `skyscraperSheaf_obj_obj` + `rw`) instead of `ndrec` on the `ite`.",
+   "issue": "There is an uncommented `change` to `ModuleCat` `.hom` application. In the same file, `disconnectedSection_right_zero` transports `terminalIsTerminal` along the skyscraper's internal `ite` (`(ite_eq_right \u2026).symm.ndrec`), relying on the defeq unfolding of `skyscraperSheaf`.",
+   "line": 306
+  }
+ ],
+ "head_sha": "befae20ecd394c26b6bf4881f415b42803aea8be",
+ "merge_base_sha": "8794ab329bb60340fa690a2902cf995f0571721b",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44545,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "4c6b0082486a4e0b0055efcefba701b3d1f2b3ea40fd4ed1f87d6611b164b4cb",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "60472b78568d274587971787276e9009f957217c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261120T145245Z-44545-proof-quality-7f35d6",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T14:52:45Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The proofs rely on undocumented definitional equality: a duplicated private `cechTermIso := Iso.refl _` and seven uncommented `change` steps. Several key proofs are hand-written `(Category.assoc _ _ _).trans (_ \u226b= \u2026)` term chains rather than `simp`/`reassoc_of%` rewriting.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "584ea1c24f0f243d9a755ab506bbb148a63b04df27b3beb58c31d2db4107c571",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 8745
+  },
+  "cache_creation_input_tokens": 8745,
+  "cache_read_input_tokens": 188993,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 846
+    },
+    "cache_creation_input_tokens": 846,
+    "cache_read_input_tokens": 67898,
+    "input_tokens": 2,
+    "output_tokens": 2705,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4502,
+  "output_tokens_details": {
+   "thinking_tokens": 1028
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.19915720000000003,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 45.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 10122
+    },
+    "cache_creation_input_tokens": 10122,
+    "cache_read_input_tokens": 325776,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1212
+      },
+      "cache_creation_input_tokens": 1212,
+      "cache_read_input_tokens": 85413,
+      "input_tokens": 2,
+      "output_tokens": 1518,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4168,
+    "output_tokens_details": {
+     "thinking_tokens": 2238
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "8794ab329bb60340fa690a2902cf995f0571721b",
+ "cli_dirty": false,
+ "cli_sha": "60472b78568d274587971787276e9009f957217c",
+ "cost_usd": 0.199157,
+ "dedupe_key": "TauCetiProject/TauCeti|44527|90d9b594f58db63925ba22171c73c6175e3a531d|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|3",
+ "diff_blob": "35ccae28c132f703ad7e31efd1455dd0fa93656bcf2dd3d35ad6c936e0c2d5fd",
+ "diff_sha256": "35ccae28c132f703ad7e31efd1455dd0fa93656bcf2dd3d35ad6c936e0c2d5fd",
+ "duration_s": 45.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Grep for `isCompact_preimage'` returns 12 hits in this file, at lines 96, 106, 113, 138, 175, 181, 273, 280, 284, 288, 294 and 379; line 96 contains two copies. `mathlib/Mathlib/Topology/Sets/Compacts.lean` builds the preimage only inline, inside `range_map` (line 232), not as a named definition.",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/Cap/MayerVietoris.lean",
+   "fix": "Add one private `def preimageCompacts (W : Opens M\u209c) (K : Compacts M\u209c) (hKW : (K : Set M\u209c) \u2286 W) : Compacts ((Opens.toTopCat M\u209c).obj W)`. Use `(preimageCompacts W K hKW).isCompact` at every occurrence above. This is a local helper; Mathlib has no `Compacts` preimage constructor to reuse.",
+   "issue": "The term `W.isOpenEmbedding.isInducing.isCompact_preimage' K.isCompact (by rwa [Opens.set_range_inclusion'])` is pasted 13 times: lines 96, 106, 113, 138, 175, 181, 273, 280, 284, 288, 294 and 379 (with `(K \u2293 N)`). The `Compacts` structure `\u27e8Opens.inclusion' W \u207b\u00b9' K, \u2026\u27e9` is also rebuilt in three statement signatures and two `let NW` blocks. Proof bodies and statements are bloated, and any change to this reasoning has to be made in every copy.",
+   "line": 96
+  },
+  {
+   "evidence": "Line 381: `have hN := (Set.image_preimage_eq_of_subset (f := Opens.inclusion' W) (s := ((K \u2293 N : Compacts M\u209c) : Set M\u209c)) (by rwa [Opens.set_range_inclusion'])).symm.subset`, which only needs the subset fact `hKW`. `fundamentalClassOn_open_preimage` builds the same term as `hKI`.",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/Cap/MayerVietoris.lean",
+   "fix": "Remove the `hN` parameter. Derive it once, next to the factored `preimageCompacts`, as a private lemma `subset_map_preimageCompacts`, and use that lemma in the two statements and at both rebuild sites.",
+   "issue": "`support_excision_preimage` (line 173) and `duality_excision_preimage` (line 271) take `hN : K \u2286 (NW.map \u2026)` as a hypothesis, but it follows from `hKW`. The caller rebuilds it at line 381 with `(Set.image_preimage_eq_of_subset \u2026).symm.subset`, and `fundamentalClassOn_open_preimage` rebuilds the same term as `hKI`.",
+   "line": 173
+  }
+ ],
+ "head_sha": "90d9b594f58db63925ba22171c73c6175e3a531d",
+ "merge_base_sha": "8794ab329bb60340fa690a2902cf995f0571721b",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44527,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "430dbe83b50424e6659bb079a9c037644db13e48284aebbf2d39647c52e63cee",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 3,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "60472b78568d274587971787276e9009f957217c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261120T152913Z-44527-proof-quality-ce1295",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T15:29:13Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The earlier convert-built data and the uncommented rfl/convert closures are fixed. Cap/MayerVietoris.lean still pastes the same compact-preimage proof term 13 times, and two lemmas take an `hN` hypothesis that follows from `hKW`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Sets/Compacts.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Sets/Compacts.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/Cohomology/Cap/MayerVietoris.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "dbcd0f9bf452fa58767f1a4705564f1fefb833386636552e75c752ff1a489910",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 10122
+  },
+  "cache_creation_input_tokens": 10122,
+  "cache_read_input_tokens": 325776,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1212
+    },
+    "cache_creation_input_tokens": 1212,
+    "cache_read_input_tokens": 85413,
+    "input_tokens": 2,
+    "output_tokens": 1518,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4168,
+  "output_tokens_details": {
+   "thinking_tokens": 2238
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,178 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.17250880000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 41.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 13492
+    },
+    "cache_creation_input_tokens": 13492,
+    "cache_read_input_tokens": 122284,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 760
+      },
+      "cache_creation_input_tokens": 760,
+      "cache_read_input_tokens": 37266,
+      "input_tokens": 2,
+      "output_tokens": 2552,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4028,
+    "output_tokens_details": {
+     "thinking_tokens": 1141
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "911e17d69371df48f7bfddb0d0d2ebf3923b0c26",
+ "cli_dirty": false,
+ "cli_sha": "60472b78568d274587971787276e9009f957217c",
+ "cost_usd": 0.172509,
+ "dedupe_key": "TauCetiProject/TauCeti|44545|6a734b038523b0ecb57441ce693c67228f1f7eb6|reuse|claude-opus-5-5|4dc810aa37eb7443|production|4",
+ "diff_blob": "c61fd50ad72e8cdf1cd575bd14ad05089c7321447d25b17718536363fb155d3b",
+ "diff_sha256": "c61fd50ad72e8cdf1cd575bd14ad05089c7321447d25b17718536363fb155d3b",
+ "duration_s": 41.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Searching `./code` for `cechComplexMap_f_comp_cechXIso_hom_\u03c0` finds only its definition at Basic.lean:349; its proof is `cechComplexMap_f_\u03c0 P \u03c6 n a` wrapped in `Category.id_comp`.",
+   "file": "TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Basic.lean",
+   "fix": "Delete it; callers use `cechComplexMap_f_\u03c0` directly.",
+   "issue": "`cechComplexMap_f_comp_cechXIso_hom_\u03c0` is the existing public `cechComplexMap_f_\u03c0` with the identity `(cechXIso \u2026).hom` inserted on both sides, and nothing uses it.",
+   "line": 349
+  },
+  {
+   "evidence": "Searching `./code` finds only the definition at Basic.lean:792; its proof is `(_ \u226b= Category.id_comp _).trans (cechAugmentation_f_zero_comp_\u03c0 U hT P a)`.",
+   "file": "TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Basic.lean",
+   "fix": "Delete it; use `cechAugmentation_f_zero_comp_\u03c0`.",
+   "issue": "`cechAugmentation_f_zero_comp_cechXIso_hom_\u03c0` is `cechAugmentation_f_zero_comp_\u03c0` with the identity `cechXIso` inserted, and nothing uses it.",
+   "line": 792
+  },
+  {
+   "evidence": "Functor.lean:147 is its only use, inside the proof of `cechComplexCompIso_hom_f_\u03c0`.",
+   "file": "TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Functor.lean",
+   "fix": "Delete it and restore the direct proof `(_ \u226b= (Category.id_comp _).symm).trans <| (compXIso_hom_\u03c0 G U Q hG n a).trans (Category.id_comp _)`.",
+   "issue": "The new public `cechComplexCompIso_hom_f_comp_cechXIso_hom_\u03c0` is the same statement as the existing `cechComplexCompIso_hom_f_\u03c0`, since `cechXIso` is `Iso.refl`. Its only use is to reprove that lemma, which was previously a one-line proof from `compXIso_hom_\u03c0`.",
+   "line": 132
+  },
+  {
+   "evidence": "Searching `./code` for `cechXIso_comp_\u03c0_eq_iff` finds exactly two call sites, both rewriting existing lemmas; the deleted lines in the diff show the original one-line proofs.",
+   "file": "TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Basic.lean",
+   "fix": "Delete it and restore the direct proofs of `cechComplexCompIso_hom_f_\u03c0` and `cechComplexFunctorMapIso_hom_app_f_\u03c0` from main.",
+   "issue": "`cechXIso_comp_\u03c0_eq_iff` is just `cechXIso_hom_\u03c0` followed by `rfl`. Its only uses (Functor.lean:149, Coefficients.lean:133) replace earlier one-line `Category.id_comp` proofs with three-line detours.",
+   "line": 142
+  },
+  {
+   "evidence": "Searching for `Iso.refl _$` finds Exact.lean:92 and Flat.lean:66, both with the same type as `cechXIso` at Basic.lean:130.",
+   "file": "TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Exact.lean",
+   "fix": "Replace both local `let e` with `cechXIso U P n`.",
+   "issue": "A local `let e : ((cechComplexFunctor U).obj P).X n \u2245 \u220f\u1d9c \u2026 := Iso.refl _` rebuilds the identification that is now public as `cechXIso`; the same local copy is at Flat.lean:66. The PR is meant to leave a single product-coordinate API.",
+   "line": 92
+  }
+ ],
+ "head_sha": "6a734b038523b0ecb57441ce693c67228f1f7eb6",
+ "merge_base_sha": "911e17d69371df48f7bfddb0d0d2ebf3923b0c26",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44545,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "e30ef07483c949ca112e4714878484f52aab9a78de37eb0faf6996278095be47",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 4,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "60472b78568d274587971787276e9009f957217c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261120T212920Z-44545-reuse-e1fb6a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T21:29:20Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "Moving `cechXIso` to `Cech/Basic` and `sectionsIsoCechZero` to `Cech/Colimit` removes real duplicates, but the PR adds public `*_comp_cechXIso_hom_\u03c0` restatements of existing public lemmas (two unused) and an `_eq_iff` helper whose only job is to reprove lemmas that had direct one-line proofs. Two local `Iso.refl` copies of the same identification are also left in `Exact` and `Flat`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Sites/SheafCohomology/Cech",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "966a27204ba91d31b6feb45f0416deefbd5bb1cc3d202eeee7841ed8d85001a5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 13492
+  },
+  "cache_creation_input_tokens": 13492,
+  "cache_read_input_tokens": 122284,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 760
+    },
+    "cache_creation_input_tokens": 760,
+    "cache_read_input_tokens": 37266,
+    "input_tokens": 2,
+    "output_tokens": 2552,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4028,
+  "output_tokens_details": {
+   "thinking_tokens": 1141
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

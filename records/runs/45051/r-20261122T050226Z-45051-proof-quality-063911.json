@@ -1,0 +1,183 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.49802920000000006,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 50.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 68731
+    },
+    "cache_creation_input_tokens": 68731,
+    "cache_read_input_tokens": 289171,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 556
+      },
+      "cache_creation_input_tokens": 556,
+      "cache_read_input_tokens": 73107,
+      "input_tokens": 2,
+      "output_tokens": 2478,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4825,
+    "output_tokens_details": {
+     "thinking_tokens": 1693
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "b7121f4d7408c1a323335f3547e857b0b547369a",
+ "cli_dirty": false,
+ "cli_sha": "60472b78568d274587971787276e9009f957217c",
+ "cost_usd": 0.498029,
+ "dedupe_key": "TauCetiProject/TauCeti|45051|290676c83aaf99bbd7d1a8e3c1c3531e74ab5f18|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "80b195dfcb228cb507bb9cbc44d23e3d3479e393efe1c29d275090ae97ff9dce",
+ "diff_sha256": "80b195dfcb228cb507bb9cbc44d23e3d3479e393efe1c29d275090ae97ff9dce",
+ "duration_s": 50.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 380, 384, 386: `erw [cechCohomologyHomeomorphIso, Iso.trans_hom, Iso.trans_hom, Iso.trans_hom, NatTrans.comp_app, ...]`, `erw [cechCohomology\u03b9_app, \u03b9_colimMap_assoc, isoWhiskerLeft_hom, whiskerLeft_app, isoWhiskerLeft_hom, whiskerLeft_app, hf]`, `erw [Category.id_comp, Functor.Final.\u03b9_colimitIso_hom]`.",
+   "file": "TauCeti/Topology/Sheaves/Cech/Homeomorph.lean",
+   "fix": "State a private unfolding lemma: `(cechCohomologyHomeomorphIso h n).hom.app P = colimMap ((cechHomeomorphDiagramIso h P n).hom) \u226b (Functor.Final.colimitIso _ _).hom`, proved once by `simp`/`rfl` with a comment. Then derive `_\u03b9` from `\u03b9_colimMap_assoc` and `Final.\u03b9_colimitIso_hom` with plain `rw`/`simp`.",
+   "issue": "`cechCohomologyHomeomorphIso_hom_app_\u03b9` uses three `erw` chains to unfold the definition `cechCohomologyHomeomorphIso`. The chains run over `Iso.trans_hom` \u00d73, `NatTrans.comp_app` \u00d73, `isoWhiskerLeft_hom`/`whiskerLeft_app` \u00d72 and `Category.id_comp`. This is a brittle named-lemma chain that relies on unification up to defeq through associators. The `by` also sits on its own line after `:=`.",
+   "line": 380
+  },
+  {
+   "evidence": "Homeomorph.lean:470 (`... at hz`); Examples/.../Homeomorph.lean:124 (`... at h`) and :699 (`... at ht`), all the same four-lemma `erw` chain. Homeomorph.lean:604 has the shorter `erw [Functor.map_id, Category.comp_id] at hs ht`.",
+   "file": "TauCeti/Topology/Sheaves/Cech/Homeomorph.lean",
+   "fix": "Add a public lemma for the case `F' := sheafCongr.functor.obj F`: `(cechCohomologyZeroIso F).hom \u226b (cechCohomologyHomeomorphIso h 0).hom.app F.obj = F.obj.map (eqToHom _).op \u226b (cechCohomologyZeroIso F').hom`. Prove it once, with a comment on the defeq, and use it at all four sites.",
+   "issue": "The same `\u03c6 = \ud835\udfd9` specialisation of `cechCohomologyZeroIso_hom_comp_cechCohomologyHomeomorphIso` is re-derived four times. Each copy uses the same `erw [Functor.map_id, Category.comp_id, NatTrans.id_app, Category.comp_id]`, which relies on the sheafCongr functor's presheaf being defeq to `inverse.op \u22d9 F.obj`. That reusable fact is hidden.",
+   "line": 470
+  },
+  {
+   "evidence": "Line 616: `_ = _ := (Category.assoc _ _ _).symm.trans (hs.symm =\u226b _)`; line 617: `_ = _ := hd`; line 682: `_ = _ := (Category.assoc _ _ _).trans (_ \u226b= hc)`; line 728: `_ = _ := hr`.",
+   "file": "TauCeti/Topology/Sheaves/Cech/Homeomorph.lean",
+   "fix": "Write out the intermediate morphism in each calc step. Alternatively, replace the associativity glue with `simp only [Category.assoc]` followed by `rw [hs, hd, ht, hc]`.",
+   "issue": "Three calc proofs write steps as `_ = _ :=` with only term glue, so no intermediate goal is visible. Affected: the sheaf \u03b4 transport proof (615\u2013619), `cechComplexHomeomorphIso_hom_comp_cechComplexPullback` (679\u2013683) and `cechCohomologyHomeomorphIso_inv_app_eq_pullback` (728\u2013729). The reason each proof works is hidden in `=\u226b`/`\u226b=` plumbing.",
+   "line": 615
+  },
+  {
+   "evidence": "Lines 131\u2013134: `erw [Category.assoc, cechComplexReindexIso_hom_app_f_\u03c0, cechAugmentation_f_zero_comp_\u03c0, cechAugmentation_f_zero_comp_\u03c0]` then `rfl`. `Equiv.piCongrRight_apply` is used in Mathlib, e.g. mathlib/Mathlib/Logic/Equiv/Basic.lean:910.",
+   "file": "TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Reindex.lean",
+   "fix": "Use `simp only [Equiv.piCongrRight_apply]` (or `rw`) to turn the index into `e \u2218 a`, then rewrite with `cechComplexReindexIso_hom_app_f_\u03c0` without `erw`/`rfl`.",
+   "issue": "`cechAugmentation_comp_cechComplexReindexIso` ends with `erw [...]` then `rfl`. It relies on `Equiv.piCongrRight`'s `toFun` being defeq to composition with `e`, which is an accidental defeq through the Equiv wrapper. An explicit simp lemma exists for this.",
+   "line": 131
+  },
+  {
+   "evidence": "Line 210: `erw [\u2190 Category.assoc, cechAugmentation_comp_cechComplexHomeomorphIso, Category.assoc, hn, \u2190 Category.assoc, \u2190 Functor.map_comp]`.",
+   "file": "TauCeti/Topology/Sheaves/Cech/Homeomorph.lean",
+   "fix": "Rewrite with `Category.assoc`, `cechAugmentation_comp_cechComplexHomeomorphIso`, `hn` and `Functor.map_comp` in a `simp only`/`rw` sequence. If the defeq is truly needed, use a single documented `Functor.comp_obj` step.",
+   "issue": "`cechAugmentation_comp_homeomorph_map` closes its goal with an `erw` chain. The chain only goes through because the top-open object of `inverse.op \u22d9 P` is defeq to `P.obj (op (inverse.obj \u22a4))`. The comment names this defeq but the proof still depends on it rather than on a rewrite.",
+   "line": 210
+  }
+ ],
+ "head_sha": "290676c83aaf99bbd7d1a8e3c1c3531e74ab5f18",
+ "merge_base_sha": "b7121f4d7408c1a323335f3547e857b0b547369a",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 45051,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "f362de65c907eff15f5f5e98285b6c87baa7ebed3fdf3c6ef5a1d793042ae09b",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "60472b78568d274587971787276e9009f957217c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261122T050226Z-45051-proof-quality-063911",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-22T05:02:26Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The main insertion lemma and the degree-zero comparisons get through by `erw` unfolding definitions and associators, and the same `\u03c6 = \ud835\udfd9` specialisation is repeated four times instead of being stated once as a lemma. Several calc proofs write every step as `_ = _`, so no intermediate goal is visible.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Sheaves/Cech/Homeomorph.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Examples/Topology/Sheaves/Cech/Homeomorph.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Sites/SheafCohomology/Cech/Reindex.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Logic/Equiv",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "787ebcc7f65299d3b91ba1099a8db144060e4be07758af5f623451f3cb695ee5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 68731
+  },
+  "cache_creation_input_tokens": 68731,
+  "cache_read_input_tokens": 289171,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 556
+    },
+    "cache_creation_input_tokens": 556,
+    "cache_read_input_tokens": 73107,
+    "input_tokens": 2,
+    "output_tokens": 2478,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4825,
+  "output_tokens_details": {
+   "thinking_tokens": 1693
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,202 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.24443079999999998,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 53.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 11307
+    },
+    "cache_creation_input_tokens": 11307,
+    "cache_read_input_tokens": 380179,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2240
+      },
+      "cache_creation_input_tokens": 2240,
+      "cache_read_input_tokens": 79821,
+      "input_tokens": 2,
+      "output_tokens": 3560,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5591,
+    "output_tokens_details": {
+     "thinking_tokens": 1806
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "aa3cfad1274c06cff25f2b58848498b3c3f68d0f",
+ "cli_dirty": false,
+ "cli_sha": "60472b78568d274587971787276e9009f957217c",
+ "cost_usd": 0.244431,
+ "dedupe_key": "TauCetiProject/TauCeti|44527|5972ae4690e90cdc85d93e3383b29f3cec1c80ee|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "03112f7756e87c04b743dc4de19d857838fc6670deb0f5eb93ec36eb62df1144",
+ "diff_sha256": "03112f7756e87c04b743dc4de19d857838fc6670deb0f5eb93ec36eb62df1144",
+ "duration_s": 53.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `ChartedSpace .*((Opens.toTopCat` finds only this PR's file; no existing public instance.",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/Cap/MayerVietoris.lean",
+   "fix": "Add a public instance `ChartedSpace E ((Opens.toTopCat M).obj W)` in a manifold/opens file, drop the `letI`s from the statements (lines 440, 451, 500, 510 and the example), and delete `chartedOpenTopCat`.",
+   "issue": "`HomologicalOrientation.dualityMap_mayerVietoris\u03b4` states its result under an inline `letI : ChartedSpace E ((Opens.toTopCat M\u209c).obj (U \u2293 V)) := inferInstanceAs \u2026`. Every consumer must reproduce this exact term (the example file does so at line 128), and the matching private `chartedOpenTopCat` (line 127) is not exported.",
+   "line": 497
+  },
+  {
+   "evidence": "`private lemma \u03b9_capInto` (l.81) and `private lemma capInto_inclusion` (l.96); grep shows no use of `capInto` outside Support.lean.",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/Cap/Support.lean",
+   "fix": "Make `capInto` private, or export `\u03b9_capInto` and `capInto_inclusion` as its API.",
+   "issue": "`capInto` is a public def, but its defining property `\u03b9_capInto` and its inclusion law `capInto_inclusion` are private, and nothing outside this file uses it.",
+   "line": 55
+  },
+  {
+   "evidence": "`@[reassoc] private lemma \u03c0_relativeCapInto` (l.209); `private lemma relativeCapInto_inclusion` (l.220).",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/Cap/Support.lean",
+   "fix": "Make `\u03c0_relativeCapInto` (as `@[simp, reassoc]`) and `relativeCapInto_inclusion` public.",
+   "issue": "Public `relativeCapInto` has its characteristic lemmas private: the cokernel law `\u03c0_relativeCapInto` and the ambient comparison `relativeCapInto_inclusion`. Consumers must unfold the colimit to use it.",
+   "line": 197
+  },
+  {
+   "evidence": "`private lemma changeSupport_right` (l.588), `private lemma \u03c0_changeSupport` (l.596), `private lemma changeSupport_comp` (l.699).",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/Cap/Support.lean",
+   "fix": "Export these three, with `changeSupport_comp` as `@[simp, reassoc]`.",
+   "issue": "Public `changeSupport` has its basic API private: `changeSupport_right`, `\u03c0_changeSupport` and the composition law `changeSupport_comp`.",
+   "line": 580
+  },
+  {
+   "evidence": "Their statements mention only SSet, CommSq/IsPushout, chainComplex and `SSet.mayerVietoris\u03b4`; `mayerVietoris\u03b4_def` is at SimplicialSet/Homology/MayerVietoris.lean:229.",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/Cap/MayerVietoris/Local.lean",
+   "fix": "Move both, public, to `TauCeti/AlgebraicTopology/SimplicialSet/Homology/MayerVietoris.lean` beside `mayerVietoris\u03b4_def`.",
+   "issue": "`exists_twoLiftCycle` and `delta_from_two_lifts` are general facts about `SSet.mayerVietoris\u03b4` for any pushout square, with nothing specific to cap products, yet they are private here.",
+   "line": 29
+  },
+  {
+   "evidence": "Their statements involve only `Opens.inclusion'` and `Compacts`; their proofs use `Opens.exists_compacts_map_inclusion'_eq` (Opens.lean:81).",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/Cap/MayerVietoris.lean",
+   "fix": "Move them, public, to `TauCeti/Topology/Category/TopCat/Opens.lean` next to `exists_compacts_map_inclusion'_eq`.",
+   "issue": "`compact_preimage_open` and `image_preimage_open` are general Opens/Compacts facts, hidden as private here.",
+   "line": 110
+  },
+  {
+   "evidence": "Its statement mentions only arbitrary cochain complexes, `biprod.lift` and `biprod.desc`; it makes no reference to complements or Mayer\u2013Vietoris.",
+   "file": "TauCeti/AlgebraicTopology/Cohomology/MayerVietoris/Compl.lean",
+   "fix": "Move it, public, to `TauCeti/Algebra/Homology/ModuleCat/Basic.lean`.",
+   "issue": "`cochain_components` is a general biproduct-splitting lemma for `CochainComplex (ModuleCat \u2124) \u2115`, hidden as private in the Mayer\u2013Vietoris complement file.",
+   "line": 516
+  }
+ ],
+ "head_sha": "5972ae4690e90cdc85d93e3383b29f3cec1c80ee",
+ "merge_base_sha": "aa3cfad1274c06cff25f2b58848498b3c3f68d0f",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44527,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "8feb6bd752e83d5c67ee2c2be24528e2918bed7e7b8d8342a841b6b3cc4ac09f",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "60472b78568d274587971787276e9009f957217c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261120T131614Z-44527-api-design-ccfc42",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T13:16:14Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The headline theorem bakes an ad-hoc `letI` ChartedSpace instance into its statement, and the new public definitions (`capInto`, `relativeCapInto`, `changeSupport`) have their characterizing lemmas hidden as private. Several general SSet/topology/cochain helpers are private here instead of exported from their canonical homes.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Category/ModuleCat",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/Singular/MayerVietoris",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 6,
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "669fa22801330b47b475eaeede0954ace8c649a697026fda07a1c6fa2655e49d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 11307
+  },
+  "cache_creation_input_tokens": 11307,
+  "cache_read_input_tokens": 380179,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2240
+    },
+    "cache_creation_input_tokens": 2240,
+    "cache_read_input_tokens": 79821,
+    "input_tokens": 2,
+    "output_tokens": 3560,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5591,
+  "output_tokens_details": {
+   "thinking_tokens": 1806
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

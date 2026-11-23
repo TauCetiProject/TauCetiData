@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1958818,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 21.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 30172
+    },
+    "cache_creation_input_tokens": 30172,
+    "cache_read_input_tokens": 34729,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5317
+      },
+      "cache_creation_input_tokens": 5317,
+      "cache_read_input_tokens": 29792,
+      "input_tokens": 2,
+      "output_tokens": 1336,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 1903,
+    "output_tokens_details": {
+     "thinking_tokens": 638
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "d91980bdc255e6e50506be147ad9bcb88eb9fcc0",
+ "cli_dirty": false,
+ "cli_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "cost_usd": 0.195882,
+ "dedupe_key": "TauCetiProject/TauCeti|44220|226dac71a85e1fa7525eaf6e7d340ac21867cfca|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "7dfc06fbafb8becfac63ff755cd7e6d9acac0e255abf38d4017d8009e93bb4d3",
+ "diff_sha256": "7dfc06fbafb8becfac63ff755cd7e6d9acac0e255abf38d4017d8009e93bb4d3",
+ "duration_s": 21.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 73-85, 111-123 and 150-160 differ only in the constant (`reCLM`, `imCLM`, `ofRealLI`) and the final coordinate rewrite. The same `continuous_clmApplyLinearMap A).comp` pattern also appears in FrameCover.lean:47 and :99, ChartLocalization.lean:223 and CompactSupportTopology.lean:278.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Section/Complexification.lean",
+   "fix": "Prove one lemma: a section linear map whose frame coordinates are a fixed model continuous linear map applied pointwise is continuous for the frame topologies. Derive the three maps from it, so each only has to prove its own pointwise coordinate identity, ideally by `simp`.",
+   "issue": "`realPartCLM` (61-85), `imaginaryPartCLM` (99-123) and `oneTmulCLM` (137-160) use the same proof: build `ContMDiffMap.const L`, compose `continuous_clmApplyLinearMap` with `continuous_frameCoordinates`, then `congr` through a 4-5 step `rw` chain of named `Trivialization.complexification_apply_re/im` and `frameCoordinates_apply` lemmas. Writing it out three times hides the reusable fact and repeats a chain that breaks on lemma renames.",
+   "line": 61
+  },
+  {
+   "evidence": "`grep baseSet_complexification` gives 29 hits in Section/Complexification.lean and 3 in the examples file, nearly all the same `simpa only ... using hU`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Section/Complexification.lean",
+   "fix": "Add one named lemma, e.g. `complexification_domains_subset hU : \u2200 i, (U i : Set M) \u2286 ((e i).complexification).baseSet`, or a `complexifiedFrameTopology e U hU` abbreviation, and use it everywhere.",
+   "issue": "The proof that complexified frames have the same domains, `(by simpa only [Trivialization.baseSet_complexification] using hU)`, is pasted inline in every `letI := frameTopology ... (fun i \u21a6 (e i).complexification) ...` signature and body. The same pasted proof appears in 3 places in the examples file.",
+   "line": 62
+  }
+ ],
+ "head_sha": "226dac71a85e1fa7525eaf6e7d340ac21867cfca",
+ "merge_base_sha": "d91980bdc255e6e50506be147ad9bcb88eb9fcc0",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44220,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1b57fbb82cf41d3e36c4776dd459d435116fc4d0416eeca40658738696058689",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "3e817b7f5cdb509d979465afef0f70882aa82806",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261119T200421Z-44220-proof-quality-b41c82",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-19T20:04:21Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The continuity proofs for `realPartCLM`, `imaginaryPartCLM` and `oneTmulCLM` repeat the same ~20-line argument (a constant model map applied to frame coordinates) instead of proving it once as a lemma. The complexified-domain side condition is also re-proved inline about 26 times.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Section",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f5043dd0645476683e64ba44bdc99075e921e242f2be92c9dcd2182610a4301c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 30172
+  },
+  "cache_creation_input_tokens": 30172,
+  "cache_read_input_tokens": 34729,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5317
+    },
+    "cache_creation_input_tokens": 5317,
+    "cache_read_input_tokens": 29792,
+    "input_tokens": 2,
+    "output_tokens": 1336,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 1903,
+  "output_tokens_details": {
+   "thinking_tokens": 638
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

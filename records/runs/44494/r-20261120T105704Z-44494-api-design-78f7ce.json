@@ -1,0 +1,204 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2766058,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 62.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 16840
+    },
+    "cache_creation_input_tokens": 16840,
+    "cache_read_input_tokens": 339389,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5613
+      },
+      "cache_creation_input_tokens": 5613,
+      "cache_read_input_tokens": 72819,
+      "input_tokens": 4,
+      "output_tokens": 3599,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6224,
+    "output_tokens_details": {
+     "thinking_tokens": 2740
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "aa3cfad1274c06cff25f2b58848498b3c3f68d0f",
+ "cli_dirty": false,
+ "cli_sha": "60472b78568d274587971787276e9009f957217c",
+ "cost_usd": 0.276606,
+ "dedupe_key": "TauCetiProject/TauCeti|44494|ad6bd0efeb715ed3dc1ce0a600c679b18d9e7c35|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "a6cd9e4227ae222b5079fbb2c5bfe1a8e20c3a2a7bf73d050dabf9184562b852",
+ "diff_sha256": "a6cd9e4227ae222b5079fbb2c5bfe1a8e20c3a2a7bf73d050dabf9184562b852",
+ "duration_s": 62.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "ChainComplex.lean:73-84 gives the normalized complex these lemmas. Triangulation/Chains.lean `orderedTriangulationChainMap` unfolds `rawCubicalChainComplexObj`.",
+   "file": "TauCeti/AlgebraicTopology/Singular/Cubical/ChainComplex.lean",
+   "fix": "Make it a `def` (in the file's existing universe/namespace block, not a second trailing `namespace TauCeti`). Add `@[simp] rawCubicalChainComplexObj_X := (rfl)` and `@[simp] rawCubicalChainComplexObj_d_apply` (with value `boundaryWithCoefficients`), and prove `comm'` from them.",
+   "issue": "`rawCubicalChainComplexObj` is an `abbrev`, which exposes its `ChainComplex.of` body instead of providing API. It has none of the `_X` / `_d_apply` simp lemmas that the parallel `normalizedCubicalChainComplexObj` has (lines 74\u201384), and `orderedTriangulationChainMap.comm'` has to unfold it (`simp only [rawCubicalChainComplexObj, ChainComplex.of_d]`).",
+   "line": 173
+  },
+  {
+   "evidence": "In `iteratedIntegralShuffle_eq_orderedChain`, the succ case opens with `change integralShuffleStep n (iteratedIntegralShuffle n) = _`.",
+   "file": "TauCeti/AlgebraicTopology/Singular/Cubical/Triangulation/Shuffle.lean",
+   "fix": "Add `@[simp] iteratedIntegralShuffle_zero` and `@[simp] iteratedIntegralShuffle_succ : iteratedIntegralShuffle (n+1) = integralShuffleStep n (iteratedIntegralShuffle n)`, or define it by pattern matching, and use them in `iteratedIntegralShuffle_eq_orderedChain`.",
+   "issue": "`iteratedIntegralShuffle` is defined by `Nat.rec` but has no `_zero` / `_succ` equations. Its own main theorem has to use `change integralShuffleStep n (iteratedIntegralShuffle n) = _`.",
+   "line": 0
+  },
+  {
+   "evidence": "`private lemma integralShuffleStep_apply_\u03b9 ... := by rfl`.",
+   "file": "TauCeti/AlgebraicTopology/Singular/Cubical/Triangulation/Shuffle.lean",
+   "fix": "Make `integralShuffleStep_apply_\u03b9` public, or add a public `integralShuffleStep_apply` lemma.",
+   "issue": "`integralShuffleStep` has no public evaluation lemma. The only characterization, `integralShuffleStep_apply_\u03b9` (the composite morphism form), is `private` and proved by `rfl`, so downstream users can only work with it by unfolding.",
+   "line": 0
+  },
+  {
+   "evidence": "`private def insertAffine {n} (j : Fin (n+1)) (a : \u211d) : ConvexSpace.AffineMap \u211d (Fin n \u2192 \u211d) (Fin (n+1) \u2192 \u211d)`; `private def coordinateAffine`.",
+   "file": "TauCeti/AlgebraicTopology/Singular/Cubical/Triangulation/Geometry.lean",
+   "fix": "Move them to the ConvexSpace affine-map file (e.g. `TauCeti/Geometry/Convex/ConvexSpace/...`), make them public, and add `_apply` simp lemmas.",
+   "issue": "`insertAffine` (coordinate insertion `Fin.insertNth` as a `ConvexSpace.AffineMap`) and `coordinateAffine` (precomposition by a permutation) are general infrastructure over Mathlib types only, but they are hidden as `private`.",
+   "line": 0
+  },
+  {
+   "evidence": "`private def simplexFace ... s.comp \u27e8StdSimplex.map j.succAbove, by fun_prop\u27e9`. No existing public equivalent turned up in TauCeti (grep for `succAbove, by fun_prop`).",
+   "file": "TauCeti/AlgebraicTopology/Singular/Cubical/Triangulation/Chains.lean",
+   "fix": "Move them to the singular-simplex / `TopCat.toSSet` file as public declarations, together with a general lemma `\u03b4 j ((X.toSSetObjEquiv _).symm s) = (X.toSSetObjEquiv _).symm (simplexFace s j)`.",
+   "issue": "`simplexFace` / `simplexFace_apply` (restricting a continuous map on `StdSimplex` to a facet via `StdSimplex.map j.succAbove`) are general and independent of cubes, but `private`. The private `delta_staircaseSimplex` proves the `\u03b4`-compatibility only for staircase simplices.",
+   "line": 47
+  },
+  {
+   "evidence": "`private lemma singularProduct_apply {X Y : TopCat.{0}}`; `private lemma classified_apply {X : TopCat.{0}}`.",
+   "file": "TauCeti/AlgebraicTopology/Singular/Cubical/Triangulation/Shuffle.lean",
+   "fix": "Make both public in the `TopCat.toSSet` / singular-monoidal file, universe-polymorphic, with `@[simp]` where they are normal forms.",
+   "issue": "`singularProduct_apply` (pointwise evaluation of `\u03bc TopCat.toSSet`) and `classified_apply` (evaluation of a `yonedaEquiv.symm`-classified singular simplex) are general `TopCat.toSSet` facts, but they are `private` and also restricted to `TopCat.{0}`.",
+   "line": 0
+  },
+  {
+   "evidence": "Each is used only by the next lemma in the chain that ends at `iteratedIntegralShuffle_eq_orderedChain`.",
+   "file": "TauCeti/AlgebraicTopology/Singular/Cubical/Triangulation/Shuffle.lean",
+   "fix": "Make these `private`, or give them names scoped to the prism comparison if a named roadmap consumer needs them.",
+   "issue": "Over-exposure: `classified_prism`, `shuffle_prism`, `integralShuffleStep_simplex` and `integralCubeChain_eq_sum` are single-use steps of the iterated-shuffle proof. They are public with generic top-level names in `TauCeti`. The same applies to `staircaseVertex_prismPermutation_castSucc`, `staircaseVertex_prismPermutation_last` and `staircaseSimplex_prism_castSucc` in Geometry.lean.",
+   "line": 0
+  },
+  {
+   "evidence": "`sign_prismIndex` uses `simp [sign_snocFin, ...]`. `staircaseSimplex_single` and `staircaseSimplex_one` unfold `staircaseSimplex`.",
+   "file": "TauCeti/GroupTheory/Perm/Fin.lean",
+   "fix": "Tag `sign_consFin`, `sign_snocFin` and `staircaseSimplex_coe_apply` with `@[simp]`.",
+   "issue": "The sign lemmas `sign_consFin` and `sign_snocFin` are not `@[simp]`, although Mathlib's analogue `Perm.decomposeFin.symm_sign` is. `staircaseSimplex_coe_apply` is also not `@[simp]`, which forces call sites to unfold (`simp [staircaseSimplex, affineStaircaseSimplex]`).",
+   "line": 0
+  }
+ ],
+ "head_sha": "ad6bd0efeb715ed3dc1ce0a600c679b18d9e7c35",
+ "merge_base_sha": "aa3cfad1274c06cff25f2b58848498b3c3f68d0f",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 44494,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "0571a172c5152b337dc0cac61ec9ecb9be189a701944b8eab3d3d74b45affc87",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "60472b78568d274587971787276e9009f957217c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261120T105704Z-44494-api-design-78f7ce",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-20T10:57:04Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The raw cubical complex, `integralShuffleStep` and `iteratedIntegralShuffle` are missing their characterizing lemmas, so consumers have to unfold them. General affine and singular-simplex helpers are hidden as `private` while one-off steps of the shuffle comparison are public.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/Singular/Cubical/ChainComplex.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/AlgebraicTopology/Singular/Cubical/ChainComplex.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "0327bfbbad3a4179a2b36327950147db942c96baaf23a9b7e6165868b1072603",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 16840
+  },
+  "cache_creation_input_tokens": 16840,
+  "cache_read_input_tokens": 339389,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5613
+    },
+    "cache_creation_input_tokens": 5613,
+    "cache_read_input_tokens": 72819,
+    "input_tokens": 4,
+    "output_tokens": 3599,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6224,
+  "output_tokens_details": {
+   "thinking_tokens": 2740
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
