@@ -1,0 +1,205 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2872794,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 51.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 15119
+    },
+    "cache_creation_input_tokens": 15119,
+    "cache_read_input_tokens": 577502,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 4377
+      },
+      "cache_creation_input_tokens": 4377,
+      "cache_read_input_tokens": 87024,
+      "input_tokens": 4,
+      "output_tokens": 2730,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4806,
+    "output_tokens_details": {
+     "thinking_tokens": 804
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "subscription",
+ "base_ref_oid": "1d440956ee37b2b8f52fb6fcfa25fb33ee04d640",
+ "cli_dirty": false,
+ "cli_sha": "60472b78568d274587971787276e9009f957217c",
+ "cost_usd": 0.287279,
+ "dedupe_key": "TauCetiProject/TauCeti|45372|d6d8e181753b62b3de88a425229a6def84e7496e|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "5fa908f49031b7b591e554c00a06831a648dc8cb6035283abc5f157b634c8a5f",
+ "diff_prompt_sha256": "dcc94a90d0e393dca830b85d77eef408820e839858d291f6b1925a7e09560f32",
+ "diff_prompt_truncated": true,
+ "diff_sha256": "5fa908f49031b7b591e554c00a06831a648dc8cb6035283abc5f157b634c8a5f",
+ "duration_s": 51.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "rg '^\\+\\s*(change|erw|show)\\b' diff.txt \u2192 94 hits; rg '^\\+\\s*--' diff.txt \u2192 0 hits.",
+   "file": "",
+   "fix": "Replace the defeq jumps with named `_app`/`_f`/`_hom` simp lemmas for the composite isos (e.g. `moduleForgetChainIso_hom_f`-style lemmas, used everywhere). Add a comment to each remaining `change` saying why no rewrite reaches the goal.",
+   "issue": "The PR adds 94 `change`/`show`/`erw` lines and no inline comments. Instances include RightDerived.lean `chosenResolutionComponent` and `rightDerivedCompIso_app_injectiveResolution` (397, 401); HomologicalComplex/Basic.lean `cyclesComparison_iCycles`; Ext/AcyclicResolution.lean `mapped_toCycles` and `mappedSuccExtClass_naturality`; Forget.lean `moduleCohomologyForgetComparison_hom_app_injectiveResolution` and `moduleCohomologyForgetIsoOfInjectiveResolution_restriction`; Restriction.lean `rightDerived\u0393RestrictionComplexMap_f_\u0393Res`, `relativeGammaIso_hom_app_\u0393Res` and `rightDerived\u0393Restriction_nested`. These steps unfold `mapHomologicalComplex`, `mapCyclesIso`, `\u0393NatIsoSheafSections` and `sheafCongr` silently.",
+   "line": 0
+  },
+  {
+   "evidence": "Lines 397\u2013413: `change _ = (_ \u226b (G.map _ \u226b _ \u226b _ \u226b fac.inv)) \u226b fac.hom at ht` \u2026 `convert ht using 1` / `\u00b7 rfl` / `\u00b7 rfl` / `\u00b7 exact heq_of_eq (Category.assoc _ _ _)`.",
+   "file": "TauCeti/CategoryTheory/Abelian/RightDerived.lean",
+   "fix": "Normalise both sides with `simp only [Category.assoc]` / `reassoc` lemmas and close with `exact`. Alternatively, state the intermediate equation as a lemma so `convert` is unnecessary.",
+   "issue": "`rightDerivedCompIso_app_injectiveResolution` ends with `convert ht using 1` followed by `\u00b7 rfl`, `\u00b7 rfl` and `\u00b7 exact heq_of_eq (Category.assoc _ _ _)`. Here `convert` is closing defeq/HEq gaps after a chain of `change \u2026 at ht` (397, 401). This is brittle and hides why the proof works.",
+   "line": 410
+  },
+  {
+   "evidence": "Restriction.lean:554 `convert Functor.rightDerivedPrecompIso_app_hom _ _ _ (relativeGammaIso h) I n using 1` followed by `rfl`.",
+   "file": "TauCeti/Topology/Sheaves/Cohomology/Restriction.lean",
+   "fix": "Unfold the two private definitions by `rw`/`simp only` lemmas and then `exact` the general theorem, or state the private definitions as abbreviations of the general shape.",
+   "issue": "`relativeDerivedGammaIso_app` is proved by `convert Functor.rightDerivedPrecompIso_app_hom \u2026 using 1; rfl`. That relies on undocumented defeq between `transportedInjectiveResolution`/`relativeGammaComplexMap` and the general statement.",
+   "line": 554
+  },
+  {
+   "evidence": "rg 'Iso.inv_hom_id_app' Topology/Sheaves/Cohomology \u2192 Forget.lean:336, Restriction.lean:381, Restriction.lean:504, each preceded by a matching `change`.",
+   "file": "TauCeti/Topology/Sheaves/Cohomology/Restriction.lean",
+   "fix": "Add one lemma next to `\u0393NatIsoSheafSections_hom_app_eq_\u0393Res` in Terminal.lean, e.g. `(\u0393NatIsoSheafSections J A hT).inv.app F \u226b F.\u0393Res (op T) = \ud835\udfd9 _`, and rewrite with it in all three places.",
+   "issue": "The same argument is proved inline three times: `change` the goal to `\u2026 \u226b (\u0393NatIsoSheafSections _ _ isTerminalTop).inv.app _ \u226b (\u0393NatIsoSheafSections \u2026).hom.app _`, then `Iso.inv_hom_id_app`, then `comp_id`. It appears in `moduleComplexForget_chain_component` (Forget.lean:336), `rightDerived\u0393RestrictionComplexMap_f_\u0393Res` (Restriction.lean:381) and `relativeGammaIso_hom_app_\u0393Res` (Restriction.lean:504).",
+   "line": 504
+  },
+  {
+   "evidence": "Restriction.lean:508\u2013511 `local instance gamma_module_additive \u2026 exact Functor.additive_of_preserves_binary_products _`; Examples file `private local instance \u2026 (Sheaf.\u0393 \u2026).Additive` with the same proof.",
+   "file": "TauCeti/Topology/Sheaves/Cohomology/Restriction.lean",
+   "fix": "Make `gamma_module_additive` a public global instance, drop the `[\u2026 .Additive]` binders from the new API, and delete the duplicate instance in the Examples file.",
+   "issue": "Hypothesis `[(Sheaf.\u0393 (Opens.grothendieckTopology X) (ModuleCat.{u} R)).Additive]` (and its `U`/`\u22a4` copies) appears on `rightDerived\u0393Restriction`, `rightDerived\u0393Restriction_top`, `moduleCohomologyForgetComparison_restriction`, etc. It is redundant: `local instance gamma_module_additive` here and the private local instance in Examples/\u2026/Restriction.lean prove it for every space in three lines.",
+   "line": 508
+  }
+ ],
+ "head_sha": "d6d8e181753b62b3de88a425229a6def84e7496e",
+ "merge_base_sha": "1d440956ee37b2b8f52fb6fcfa25fb33ee04d640",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 45372,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "57bd07f3b3d95c6221e4491f0dd770a5e3d15c34b2e9623d9b8f4f7676fca225",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "60472b78568d274587971787276e9009f957217c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261123T055758Z-45372-proof-quality-6dc717",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-23T05:57:58Z",
+ "submitted_by": "tauceti-ai-for-science",
+ "summary": "The new proofs rely on 94 undocumented `change`/`show`/`erw` steps that depend on accidental definitional unfolding, and one proof ends in a fragile `convert \u2026 rfl/heq` tail. One reusable fact is re-derived inline three times, and a provable \u0393-additivity instance is threaded through the public API as a hypothesis.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "diff.txt",
+   "tool": "Grep"
+  },
+  {
+   "ok": false,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Sheaves/Cohomology",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/CategoryTheory/Abelian/RightDerived.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Sheaves/Cohomology/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 8,
+  "total_calls": 9,
+  "trace_truncated": false
+ },
+ "transcript_blob": "7a7747738f5b6eb4974852f7d2c35bf3f3b36dcfb06953f87f039cb41e4acf0d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 15119
+  },
+  "cache_creation_input_tokens": 15119,
+  "cache_read_input_tokens": 577502,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4377
+    },
+    "cache_creation_input_tokens": 4377,
+    "cache_read_input_tokens": 87024,
+    "input_tokens": 4,
+    "output_tokens": 2730,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4806,
+  "output_tokens_details": {
+   "thinking_tokens": 804
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
