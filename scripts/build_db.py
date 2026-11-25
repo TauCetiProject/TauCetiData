@@ -8,7 +8,8 @@ findings (one row per finding), posts, pairs, judgments, resolutions, human_deci
   ab_pairs     candidate A/B comparisons — two runs of the same (pr, head_sha, rubric) with
                matching prompt_policy but a different model, rubrics version, or arm
   pr_outcomes  the latest round per PR
-  outcomes     one row per registered pair with AI consensus, human decision, and final label
+  outcomes     one row per registered pair with AI consensus (the final label) and any archived
+               human decision kept for calibration
 """
 import json
 import pathlib
@@ -78,7 +79,7 @@ def main():
       "order" TEXT, rationale TEXT, rubric TEXT, pr INTEGER
     );
     CREATE TABLE resolutions (
-      pair_id TEXT, policy TEXT, status TEXT, consensus TEXT, audit INTEGER,
+      pair_id TEXT, policy TEXT, status TEXT, consensus TEXT,
       judgment_ids TEXT, reason TEXT, ts TEXT, PRIMARY KEY (pair_id, policy)
     );
     CREATE TABLE human_decisions (
@@ -147,9 +148,9 @@ def main():
                             r.get("confidence"), r.get("order"), r.get("rationale"),
                             r.get("rubric"), r.get("pr")))
             elif table == "resolutions":
-                db.execute("INSERT OR REPLACE INTO resolutions VALUES (?,?,?,?,?,?,?,?)",
+                db.execute("INSERT OR REPLACE INTO resolutions VALUES (?,?,?,?,?,?,?)",
                            (r["pair_id"], r.get("policy"), r.get("status"), r.get("consensus"),
-                            r.get("audit"), j(r.get("judgment_ids")), r.get("reason"),
+                            j(r.get("judgment_ids")), r.get("reason"),
                             r.get("ts")))
             else:
                 db.execute("INSERT OR REPLACE INTO human_decisions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -186,9 +187,9 @@ def main():
     CREATE VIEW outcomes AS
       SELECT p.pair_id, p.pr, p.rubric, p.model_a, p.model_b,
              p.rubrics_sha_a, p.rubrics_sha_b,
-             res.consensus AS ai_consensus, res.status, res.audit,
+             res.consensus AS ai_consensus, res.status,
              hd.winner_arm AS human_decision, hd.labeller AS human_login,
-             COALESCE(hd.winner_arm, res.consensus) AS final_label
+             CASE WHEN res.status = 'ai_decided' THEN res.consensus END AS final_label
       FROM pairs p
       LEFT JOIN resolutions res ON res.pair_id = p.pair_id
       LEFT JOIN (SELECT pair_id, winner_arm, labeller,

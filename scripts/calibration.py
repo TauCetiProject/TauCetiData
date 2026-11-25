@@ -3,8 +3,9 @@
 Joins eval/decisions (human) with eval/judgments (AI order-stable consensus, using the latest
 prompt version each pair was judged under).
 
-Part of the eval pipeline (make_pairs -> judge -> label -> calibration/power). Keep the README's
-"Labelling and analysis" section in sync when these scripts' flags or behaviour change."""
+Part of the eval pipeline (make_pairs -> judge; calibration reads the archived human labels).
+Keep the README's "Evaluation so far" and "Analysis" sections in sync when these scripts' flags or
+behaviour change."""
 import collections, glob, json, itertools
 import tcdata
 

@@ -4,7 +4,7 @@ The durable record of AI code reviews in the Tau Ceti project: every review
 execution on [TauCetiProject/TauCeti](https://github.com/TauCetiProject/TauCeti)
 PRs, archived with full provenance (exact rubric version, model, exact diff,
 runtime, tokens, cost), plus the evaluation data built on top of it (pairwise
-judgments by AI judges and human meta-reviewers).
+judgments by AI judges).
 
 Reviews are produced by
 [TauCetiProject/TauCetiReview](https://github.com/TauCetiProject/TauCetiReview);
@@ -81,30 +81,22 @@ pair up the next time `make_pairs.py` runs.
 
 The pipeline on top of the run archive: `make_pairs.py` registers A/B pairs; `judge.py` runs
 AI judges over them (both presentation orders, a cross-family panel, grounded in the
-checked-out code) into `eval/judgments/`; `label.py` records human meta-review decisions in
-`eval/decisions/`; `calibration.py` compares judge consensus against the human labels.
+checked-out code) into `eval/judgments/`. The judges decide; there is no human meta-review
+step. `eval/decisions/` keeps an earlier round of human labels, used only for preliminary judge
+calibration (`calibration.py`); no new ones are recorded.
 
 The archive currently holds several thousand review runs (with their reviewed-diff and
 transcript blobs), a few hundred A/B pairs, over a thousand AI judgments — across five judge
-models and three judge-prompt versions — and a first round of human decisions. Resolutions and
-presentation bundles (see `docs/eval-design.md` and `docs/labelling-design.md`) are still being
-wired up.
+models and three judge-prompt versions — and that earlier round of human decisions. Resolutions
+(see `docs/eval-design.md`) are still being wired up.
 
-### Labelling and analysis
+### Analysis
 
 ```
-gh auth status                                      # label.py records your gh login as the labeller
-python3 scripts/label.py                            # human meta-review: pick the better review per pair
-python3 scripts/label.py --models minimax,deepseek  # focus one matchup (or --pr / --rubric)
-python3 scripts/calibration.py                      # do the AI judges agree with the human labels?
-python3 scripts/power.py                            # labels needed to decide a matchup; AI-boost savings
+python3 scripts/calibration.py   # did the AI judges agree with the earlier human labels?
 ```
 
-`label.py` shows the reviewed diff and two anonymized, order-randomized reviews and asks which
-leads to the better PR (the AI verdicts are hidden; they only stratify the queue). It writes one
-durable `eval/decisions/<id>.json` per (pair, labeller), committed and pushed as you go. The
-queue round-robins across PRs so topics interleave; `--models`/`--pr`/`--rubric` narrow it.
-`calibration.py` and `power.py` read the live decisions, so their numbers sharpen as you label.
+`calibration.py` reads the archived decisions in `eval/decisions/`.
 
 ## Rebuilding the database
 
