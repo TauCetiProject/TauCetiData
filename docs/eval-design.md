@@ -4,15 +4,16 @@
 this repo, not TauCetiReview as an earlier draft of this doc said) produce the pairs and AI
 judgments today — `eval/pairs/` and `eval/judgments/` already hold hundreds of pairs and over a
 thousand judgments across several judge models and prompt versions. Still unbuilt: the
-resolver, the `escalation-v1` policy, and `eval/resolutions/` below. Schemas are committed
+resolver, the `panel-v1` policy, and `eval/resolutions/` below. Schemas are committed
 (`schema/pair.v1.json`, `schema/judgment.v1.json`, `schema/resolution.v1.json`).*
 
 ## Goal
 
 Given two review executions for the same `(pr, head_sha, rubric)` — e.g. a production run
 and a shadow arm with a different model or rubric version — decide which review is better.
-First pass: AI judges. Hard cases: human meta-reviewers (see `labelling-design.md`).
-Outputs feed win-rates per model / rubric version and judge–human agreement metrics.
+The AI judges decide; there is no human meta-review step. Outputs feed win-rates per model /
+rubric version. An earlier round of human labels in `eval/decisions/` is kept only for
+preliminary judge calibration.
 
 ## Pair identity
 
@@ -61,7 +62,7 @@ Per (pair, judge model, sample):
    the decision, confidence = min of the two. Disagree → `decision: "inconsistent"`.
 7. **Record** `eval/judgments/<judgment_id>.json` and account spend.
 
-## Escalation policy `escalation-v1`
+## Resolution policy `panel-v1`
 
 Panel: 2 judge models from **different families** (claude + codex by default — cross-family
 dilutes self-preference bias), 1 sample each. After both judgments exist, the resolver
@@ -69,32 +70,28 @@ writes `eval/resolutions/<pair_id>-<policy>.json`:
 
 - **ai_decided** iff both judgments are internally consistent, agree on the decision
   (including an agreed tie), and at least one has confidence ≥ medium.
-- **escalated** otherwise — any `inconsistent` judgment, panel disagreement, unanimous-low
-  confidence, or provider failure after retry (never silently dropped).
-- **audit**: a deterministic ~10% of ai_decided pairs
-  (`int(sha256(pair_id + "|audit-v1"), 16) % 10 == 0`) are *also* queued for human review.
-  Without this, judge–human agreement would be measured only on hard cases — a biased
-  validation set. The human decision still wins for the pair's final label.
+- **undecided** otherwise — any `inconsistent` judgment, panel disagreement, unanimous-low
+  confidence, or provider failure after retry (never silently dropped). The resolver may
+  widen the panel with more judges or samples under a new policy version; a pair that stays
+  undecided carries no label and is left out of win-rates.
 
 State machine (derived; materialized by `build_db.py`'s `outcomes` view):
 
 ```
-registered → judging → ai_decided —(10% sample)→ audit_pending → audited
-                     ↘ escalated → human_decided
+registered → judging → ai_decided
+                     ↘ undecided
 ```
 
-Where human and AI disagree, the **human decision is the final label**; the AI consensus
-is retained for agreement metrics.
+The AI consensus is the final label.
 
 ## Metrics the schema supports
 
 - Win-rates per model / rubric version: each non-tie `outcomes` row is a Bradley-Terry
   comparison; binomial CIs for fixed head-to-heads. (Tie handling — drop vs Davidson —
   decide before publishing numbers.)
-- Judge–human agreement, split by context (`audit` rows estimate agreement on the typical
-  distribution, `escalated` rows on the hard one); per-judge via the judgments table.
+- Undecided rate per judge pair and rubric; per-judge consistency via the judgments table.
 - Self-preference: judge agreement conditioned on whether the judge's family authored an arm.
-- Confidence calibration: judge confidence vs human-overturn rate.
+- Confidence calibration: judge confidence vs panel agreement.
 
 ## Open questions (decide during build)
 
