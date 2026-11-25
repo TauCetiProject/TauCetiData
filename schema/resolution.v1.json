@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tauceti.resolution/v1",
   "title": "Judge-panel resolution",
-  "description": "The outcome of applying a named resolution policy to a pair's judgments. Explicit events (not derived on the fly) so a later policy change cannot silently re-label history. Idempotency key: (pair_id, policy).",
+  "description": "The outcome of applying a named resolution policy to a pair's judgments. consensus is null when status is undecided. Explicit events (not derived on the fly) so a later policy change cannot silently re-label history. Idempotency key: (pair_id, policy).",
   "type": "object",
   "required": ["schema", "pair_id", "status", "policy"],
   "properties": {
@@ -14,5 +14,7 @@
     "judgment_ids": {"type": "array", "items": {"type": "string"}},
     "reason": {"type": ["string", "null"]},
     "ts": {"type": ["string", "null"], "format": "date-time"}
-  }
+  },
+  "if": {"properties": {"status": {"const": "undecided"}}},
+  "then": {"properties": {"consensus": {"const": null}}}
 }

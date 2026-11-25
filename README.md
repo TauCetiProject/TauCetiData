@@ -83,7 +83,7 @@ The pipeline on top of the run archive: `make_pairs.py` registers A/B pairs; `ju
 AI judges over them (both presentation orders, a cross-family panel, grounded in the
 checked-out code) into `eval/judgments/`. The judges decide; there is no human meta-review
 step. `eval/decisions/` keeps an earlier round of human labels, used only for preliminary judge
-calibration (`calibration.py`, `power.py`); no new ones are recorded.
+calibration (`calibration.py`); no new ones are recorded.
 
 The archive currently holds several thousand review runs (with their reviewed-diff and
 transcript blobs), a few hundred A/B pairs, over a thousand AI judgments — across five judge
@@ -93,11 +93,10 @@ models and three judge-prompt versions — and that earlier round of human decis
 ### Analysis
 
 ```
-python3 scripts/calibration.py                      # did the AI judges agree with the earlier human labels?
-python3 scripts/power.py                            # labels needed to decide a matchup
+python3 scripts/calibration.py   # did the AI judges agree with the earlier human labels?
 ```
 
-`calibration.py` and `power.py` read the archived decisions in `eval/decisions/`.
+`calibration.py` reads the archived decisions in `eval/decisions/`.
 
 ## Rebuilding the database
 

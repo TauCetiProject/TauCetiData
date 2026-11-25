@@ -189,7 +189,7 @@ def main():
              p.rubrics_sha_a, p.rubrics_sha_b,
              res.consensus AS ai_consensus, res.status,
              hd.winner_arm AS human_decision, hd.labeller AS human_login,
-             res.consensus AS final_label
+             CASE WHEN res.status = 'ai_decided' THEN res.consensus END AS final_label
       FROM pairs p
       LEFT JOIN resolutions res ON res.pair_id = p.pair_id
       LEFT JOIN (SELECT pair_id, winner_arm, labeller,
