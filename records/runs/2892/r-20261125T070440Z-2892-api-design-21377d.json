@@ -1,0 +1,168 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1514296,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 51.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5251
+    },
+    "cache_creation_input_tokens": 5251,
+    "cache_read_input_tokens": 65053,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 787
+      },
+      "cache_creation_input_tokens": 787,
+      "cache_read_input_tokens": 24107,
+      "input_tokens": 2,
+      "output_tokens": 2624,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5607,
+    "output_tokens_details": {
+     "thinking_tokens": 3292
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.15143,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|2892|9a8d55d33bb50001be4dd4cc0331d4243275f863|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "5091bf69c59759e87b8d7a1321d7488de817a227eedd6bc87cd4a00d42c6dec5",
+ "diff_sha256": "5091bf69c59759e87b8d7a1321d7488de817a227eedd6bc87cd4a00d42c6dec5",
+ "duration_s": 51.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "In-file uses rely on unfolding: `hF.some.hom_ext h` in `IsComplete.hom_ext` and `\u27e8h.isLimitOfIsIso _\u27e9` in `isComplete_of_step_eq_bot`.",
+   "file": "TauCeti/CategoryTheory/Filtration/Basic.lean",
+   "fix": "Add `lemma IsComplete.mk (h : IsLimit F.quotientCone) : F.IsComplete`, `noncomputable def IsComplete.isLimit (hF : F.IsComplete) : IsLimit F.quotientCone`, and/or `isComplete_iff : F.IsComplete \u2194 Nonempty (IsLimit F.quotientCone)`.",
+   "issue": "`IsComplete` (`Nonempty (IsLimit F.quotientCone)`, not exposed) has no stated intro or elim. Consumers cannot build it from an `IsLimit` or extract the limit cone. Only `hom_ext` and `isComplete_of_step_eq_bot` are offered.",
+   "line": 186
+  },
+  {
+   "evidence": "`isIso_of_isIso_gr` and the `IsFinite.is*` lemmas all `obtain`/`have \u27e8..\u27e9 := hF`, which unfolds the body inside this module.",
+   "file": "TauCeti/CategoryTheory/Filtration/Decreasing.lean",
+   "fix": "Add `isFinite_iff : F.IsFinite \u2194 \u2203 a b : \u2124, F.step (op a) = \u22a4 \u2227 F.step (op b) = \u22a5` and an intro `IsFinite.mk (ha : F.step (op a) = \u22a4) (hb : F.step (op b) = \u22a5)`.",
+   "issue": "`IsFinite` is an unexposed existential with no stated intro or elim. Downstream code (\u00a73.4 finite-filtration clauses) cannot build it or destructure it without unfolding.",
+   "line": 89
+  },
+  {
+   "evidence": "`rw [step, Subobject.mk_eq_bot_iff_zero, ...]` in `step_eq_bot_iff` and `isIso_cokernel_\u03c0_step\u03b9_of_step_eq_bot`.",
+   "file": "TauCeti/CategoryTheory/Filtration/Basic.lean",
+   "fix": "Add `lemma mk_step\u03b9 : Subobject.mk (F.step\u03b9 i) = F.step i := (rfl)`, and an iso `stepIso : (F.step i : C) \u2245 F.filtration.obj i` with `@[reassoc (attr := simp)] stepIso_hom_step\u03b9 : (F.stepIso i).hom \u226b F.step\u03b9 i = (F.step i).arrow` (via `Subobject.underlyingIso`/`underlyingIso_arrow`).",
+   "issue": "`step` is unexposed and nothing states its definition or relates its arrow to `step\u03b9`. `step_eq_bot_iff` and `isIso_cokernel_\u03c0_step\u03b9_of_step_eq_bot` prove things with `rw [step, ...]`, which consumers outside the module cannot do.",
+   "line": 101
+  },
+  {
+   "evidence": "Mathlib Filtration/Basic.lean:84 `abbrev filtrationDiagram`. The PR states `filtration_\u03b9_app` for `step\u03b9` but gives no counterpart for `stepMap`.",
+   "file": "TauCeti/CategoryTheory/Filtration/Basic.lean",
+   "fix": "Add `@[simp] lemma filtrationDiagram_map {i j : I} (f : i \u27f6 j) : F.filtrationDiagram.map f = F.stepMap f := (rfl)`, parallel to `filtration_\u03b9_app`.",
+   "issue": "`stepMap` is an unexposed def for `F.filtrationDiagram.map f`, with no lemma linking the two. `filtrationDiagram` is a Mathlib abbrev that appears whenever Mathlib API is used, so terms in that form cannot be rewritten to `stepMap`.",
+   "line": 73
+  },
+  {
+   "evidence": "Mathlib Filtration/Basic.lean:99 `attribute [reassoc (attr := simp)] Hom.comm` is stated with `filtration.\u03b9.app`.",
+   "file": "TauCeti/CategoryTheory/Filtration/Basic.lean",
+   "fix": "Mark `filtration_\u03b9_app` `@[simp]` so that `step\u03b9` is the normal form, which is the PR's stated reason for introducing it.",
+   "issue": "`filtration_\u03b9_app` is not `@[simp]`, so simp has two normal forms for the same map. Mathlib's simp lemma `Hom.comm` produces `F.filtration.\u03b9.app i`, while the new simp lemmas `stepMap_step\u03b9` and `Hom.natTrans_app_step\u03b9` are stated with `step\u03b9`.",
+   "line": 66
+  }
+ ],
+ "head_sha": "9a8d55d33bb50001be4dd4cc0331d4243275f863",
+ "merge_base_sha": "b7121f4d7408c1a323335f3547e857b0b547369a",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 2892,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "1be328bf0659743f7040f18d31a1fbab80c042df717cf75760b0761e2218c1e8",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T070440Z-2892-api-design-21377d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T07:04:40Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "IsComplete and IsFinite have no stated introduction or elimination lemmas, and step and stepMap have no lemmas linking them back to their Mathlib definitions, so downstream users must unfold them. The new step\u03b9 is not made the simp normal form, so simp ends up with two forms of the same inclusion.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/Filtration/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "804e8c9cfbca42c1cc9c50bfdad47c5e1120a9c647dd07e3e6edca2bbe81cea5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 5251
+  },
+  "cache_creation_input_tokens": 5251,
+  "cache_read_input_tokens": 65053,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 787
+    },
+    "cache_creation_input_tokens": 787,
+    "cache_read_input_tokens": 24107,
+    "input_tokens": 2,
+    "output_tokens": 2624,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5607,
+  "output_tokens_details": {
+   "thinking_tokens": 3292
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

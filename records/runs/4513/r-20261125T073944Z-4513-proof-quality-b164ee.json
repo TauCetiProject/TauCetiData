@@ -1,0 +1,161 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.11175960000000001,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 34.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4469
+    },
+    "cache_creation_input_tokens": 4469,
+    "cache_read_input_tokens": 73153,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2151
+      },
+      "cache_creation_input_tokens": 2151,
+      "cache_read_input_tokens": 25571,
+      "input_tokens": 2,
+      "output_tokens": 2337,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3738,
+    "output_tokens_details": {
+     "thinking_tokens": 1220
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.11176,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4513|65c631741f05d6de6d94679f618657156b23b36e|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "016b97384f4483ccf2f356672c8627ea2fe73c353a937ca1dd08210d840beb57",
+ "diff_sha256": "016b97384f4483ccf2f356672c8627ea2fe73c353a937ca1dd08210d840beb57",
+ "duration_s": 34.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`discAtlas` is tagged `@[expose, simps n center dom]`, so `discAtlas_dom` and `discAtlas_center` exist but are never used.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered/Atlas/ClosedDisc.lean",
+   "fix": "After `subst hj`, rewrite with `fiveChartAtlas`, `discAtlas_center`, `discAtlas_dom`, `fiveCentre` and `Fin.cases_succ`, e.g. `simp only [fiveChartAtlas, discAtlas_dom, Fin.cases_succ]`. Better still, add `@[simp]` lemmas `fiveChartAtlas_dom_succ` and `fiveChartAtlas_center_succ`.",
+   "issue": "`image_fiveChartAtlas_of_ne` uses `change chartAt _ (fiveCentre k) = _ \u2026 rfl` and a long `change @Fin.cases 4 (fun _ \u21a6 Set CentredClosedDisc) \u2026 k = _ \u2026 rfl`. The comment only says the values are read off by cases, not why `change` is needed. Both rely on definitional equality through `fiveChartAtlas`/`discAtlas`.",
+   "line": 0
+  },
+  {
+   "evidence": "In `FiniteBundleAtlas/Basic.lean:201`, `abbrev chart (i) := chartAt E (A.center i)`. The proofs reach `center` and `dom` only by definitional unfolding, never through the simps lemmas.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered/Atlas/ClosedDisc.lean",
+   "fix": "Use `discAtlas_dom`, `discAtlas_center` and `Fin.cases_zero` rewrites, plus a `mem_innerDom` iff lemma (and a `mem_halfDiscDom` one), in place of `change`/`show`/`replace`. Where unfolding really is needed, add a one-line comment.",
+   "issue": "Same defeq pattern elsewhere. (1) `image_fiveChartAtlas_zero_subset`: `change chartAt _ (fiveCentre 0) = _`, plus `replace hz : \u2016(z : \u2102)\u2016 < 1 / 2 := hz`, which unfolds membership in `(fiveChartAtlas F).dom 0` through `Fin.cases` and `innerDom`; neither has a comment. (2) `image_eightChartAtlas`: `show (eightChartAtlas F).dom k = halfDiscDom (circlePt k) 2 from rfl`, and `hc := chartAt_circlePtDisc k`, which relies on `chart k` being defeq to `chartAt _ (circlePtDisc k)`. (3) The cover proof of `fiveChartAtlas`: `show z \u2208 innerDom from h0` and `replace hz : \u2016(z : \u2102)\u2016 \u2264 1 / 2 := hz`, without the comment that the matching `replace` in `closure_halfDiscDom_subset` has.",
+   "line": 0
+  },
+  {
+   "evidence": "Lines with `have hpos : 0 < \u2016\u03b6 + z\u2016 := norm_pos_iff.2 fun h0 \u21a6 hz (eq_neg_of_add_eq_zero_right h0)` and the following `rwa [norm_div, norm_mul, norm_I, one_mul, div_lt_iff\u2080 hpos]` appear in both directions of the iff.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc/Centred.lean",
+   "fix": "Add a lemma `norm_coe_cayleyChart_apply : \u2016(cayleyChart \u03b6 h\u03b6 z : \u2102)\u2016 = \u2016\u03b6 - z\u2016 / \u2016\u03b6 + z\u2016`, proved with `simp [norm_div, norm_mul]`, and a source-positivity lemma. Then rewrite each direction of the `ext` once.",
+   "issue": "In `cayleyChart_image_setOf_lt`, the identity `\u2016I (\u03b6 - z)/(\u03b6 + z)\u2016 = \u2016\u03b6 - z\u2016/\u2016\u03b6 + z\u2016` and the positivity step `hpos` are each proved twice by the same chain `rwa [norm_div, norm_mul, norm_I, one_mul, div_lt_iff\u2080 hpos]`. The module docstring presents this as the key fact, but it is never stated as a lemma.",
+   "line": 0
+  },
+  {
+   "evidence": "Rubric: prefer robust automation over long chains of named-lemma rewriting.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered/Atlas/ClosedDisc.lean",
+   "fix": "Replace each with something like `simp [hz\u03b6, \u2190 two_mul, h\u03b6] at hz` or `norm_num [hz\u03b6, h\u03b6, \u2190 two_mul] at hz`, letting automation do the arithmetic.",
+   "issue": "`closure_halfDiscDom_subset` closes with an 8-step named rewrite chain (`rw [hz\u03b6, sub_neg_eq_add, add_neg_cancel, norm_zero, mul_zero, \u2190 two_mul, norm_mul, h\u03b6] at hz; norm_num at hz`), which will break on Mathlib renames. A similar 5-step chain appears in `cayleyChart_image_setOf_lt` (`rw [hz, sub_neg_eq_add, add_neg_cancel, norm_zero, mul_zero] at h`).",
+   "line": 0
+  }
+ ],
+ "head_sha": "65c631741f05d6de6d94679f618657156b23b36e",
+ "merge_base_sha": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4513,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9e8d33deb31d7847c6ee8f2235de56e7782c476c73b7c2e2e115cc8e29985bdc",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T073944Z-4513-proof-quality-b164ee",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T07:39:44Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The chart-image proofs use `change`, `show \u2026 from rfl` and `replace \u2026 := h` to unfold `discAtlas`, `Fin.cases` and set membership, with no comment saying why, although `discAtlas` already generates `discAtlas_dom` and `discAtlas_center` via simps. The Cayley-norm computation is repeated as identical rewrite chains instead of being one lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "03e16b7c08954ba56a2b3c61a107937fab00744c6b49c2c290031f5b3163ce3c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 4469
+  },
+  "cache_creation_input_tokens": 4469,
+  "cache_read_input_tokens": 73153,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2151
+    },
+    "cache_creation_input_tokens": 2151,
+    "cache_read_input_tokens": 25571,
+    "input_tokens": 2,
+    "output_tokens": 2337,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3738,
+  "output_tokens_details": {
+   "thinking_tokens": 1220
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

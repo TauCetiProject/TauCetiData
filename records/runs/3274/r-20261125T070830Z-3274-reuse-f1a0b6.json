@@ -1,0 +1,170 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1613936,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.8,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 12612
+    },
+    "cache_creation_input_tokens": 12612,
+    "cache_read_input_tokens": 201488,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 388
+      },
+      "cache_creation_input_tokens": 388,
+      "cache_read_input_tokens": 40343,
+      "input_tokens": 2,
+      "output_tokens": 1309,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2899,
+    "output_tokens_details": {
+     "thinking_tokens": 716
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.161394,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|3274|2daf55cabc20534293f9fbb0f35df788a52ec438|reuse|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "96fc56718c90f394d3f4e43865e7590ae1b49128b236f2dfc45fdb49e4822af9",
+ "diff_sha256": "96fc56718c90f394d3f4e43865e7590ae1b49128b236f2dfc45fdb49e4822af9",
+ "duration_s": 29.8,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `Real.exp \\|` finds Lebesgue.lean:95 `\u2016coeff \u03b8 s v z\u2016 \u2264 Real.exp |s * Real.log \u2016v\u2016|`, ToLp.lean:189 `\u2016coeff \u03b8 \u03ba a z\u2016 \u2264 Real.exp |\u03ba * Real.log a|` and PiLp.lean:79 `\u2016(b : \u2102) ^ ((z - \u03b8) * s)\u2016 \u2264 Real.exp |s * Real.log b|`. All three proofs use `exp_le_exp`, then `le_abs_self`, then `abs_mul`, then `mul_le_of_le_one_left` with the same `linarith` bounds on `|re z - \u03b8|`.",
+   "file": "TauCeti/Analysis/Normed/Interpolation/ComplexMethod/PiLp.lean",
+   "fix": "Add one public lemma for the shared step, e.g. `norm_exp_sub_mul_le (h\u03b8 : \u03b8 \u2208 Icc 0 1) (a : \u211d) (hz : z \u2208 verticalClosedStrip 0 1) : \u2016exp ((z - \u03b8) * a)\u2016 \u2264 Real.exp |a|`, in `ComplexMethod/Basic.lean` or a shared helper file. Derive `norm_cpow_le` from it (for b > 0, `cpow_def_of_ne_zero` with `ofReal_log` rewrites b^((z-\u03b8)s) to exp((z-\u03b8)\u00b7(s log b))), and have the two existing `norm_coeff_le` call it instead of repeating the proof.",
+   "issue": "`norm_cpow_le` proves the same bound with the same proof as two existing private lemmas: `norm_coeff_le` in `ComplexMethod/Lebesgue.lean:94` and `norm_coeff_le` in `ComplexMethod/ToLp.lean:187`. The bound is \u2016exp((z-\u03b8)\u00b7a)\u2016 \u2264 exp|a| on the closed strip for \u03b8 \u2208 [0,1]. The PR removed the cloned `coeff` definition but kept this clone of the estimate.",
+   "line": 77
+  }
+ ],
+ "head_sha": "2daf55cabc20534293f9fbb0f35df788a52ec438",
+ "merge_base_sha": "3832571c64482365836c2744324ee16230608f7f",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 3274,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "bd90bfc0361b1fab2a3502342e9711ec655c9b87df5aa5637cdb79fee4ec8429",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T070830Z-3274-reuse-f1a0b6",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T07:08:30Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The private strip bound `norm_cpow_le` repeats, almost line for line, an estimate the library already proves privately in two places, so the library would now hold three copies. The other pieces (`piLp` couple, `sumSingle`/`sumProj`, `ofPiLp`, `piLpProj`) are new and reuse Mathlib's `PiLp` API and the TauCeti `PiLp` and `ComplexMethodSpace` APIs (`map`, `norm_map_le_of_norm_le`) properly.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Normed/Interpolation",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Normed/Lp/PiLp.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Normed/Interpolation/ComplexMethod/ToLp.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Normed/Interpolation/ComplexMethod/Lebesgue.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Normed/Interpolation/ComplexMethod/ToLp.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Normed/Lp/PiLp.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Normed/Interpolation",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 8,
+  "total_calls": 8,
+  "trace_truncated": false
+ },
+ "transcript_blob": "90b7bdcc64e0d50459c247d1250f90b93b24a782a0ad779cf9860903dfd54212",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 12612
+  },
+  "cache_creation_input_tokens": 12612,
+  "cache_read_input_tokens": 201488,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 388
+    },
+    "cache_creation_input_tokens": 388,
+    "cache_read_input_tokens": 40343,
+    "input_tokens": 2,
+    "output_tokens": 1309,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2899,
+  "output_tokens_details": {
+   "thinking_tokens": 716
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

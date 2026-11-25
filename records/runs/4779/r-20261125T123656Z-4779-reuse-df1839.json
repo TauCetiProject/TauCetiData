@@ -1,0 +1,187 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.34264839999999996,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 50.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 29717
+    },
+    "cache_creation_input_tokens": 29717,
+    "cache_read_input_tokens": 377837,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 14,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5655
+      },
+      "cache_creation_input_tokens": 5655,
+      "cache_read_input_tokens": 65623,
+      "input_tokens": 2,
+      "output_tokens": 2684,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5922,
+    "output_tokens_details": {
+     "thinking_tokens": 1721
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "55ade2273e72a09894be0cb4811ba35540634abf",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.342648,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4779|6466ef3c566562c849f9857cd6ed81d29730935d|reuse|claude-opus-5-5|4dc810aa37eb7443|production|2",
+ "diff_blob": "acdd1a493956da357d5da3c1681b99d90df4e32d4c61c30dd6eecf69d2195e83",
+ "diff_sha256": "acdd1a493956da357d5da3c1681b99d90df4e32d4c61c30dd6eecf69d2195e83",
+ "duration_s": 50.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib MFDeriv/Atlas.lean:220 `OpenPartialHomeomorph.mdifferentiableAt_extend (he : e \u2208 maximalAtlas I 1 M) (hx : x \u2208 e.source)`; MFDeriv/Atlas.lean:345 `mdifferentiableAt_extChartAt`; TauCeti MFDeriv/Chart/Basic.lean:335 `mdifferentiableAt_extend_symm_of_mem_interior`; ExtChartAt.lean:1418 `coe_extendTrans_refl`. Grep finds no use with a non-refl \u03a8. Mathlib VectorBundle/MDifferentiable.lean:736 `mdifferentiableAt_extend` is about `extend F \u03c3\u2080`, not charts.",
+   "file": "TauCeti/Geometry/Manifold/ContMDiff/Atlas.lean",
+   "fix": "Delete both. At the call sites, rewrite with `coe_extendTrans_refl` / `coe_symm_extendTrans_refl` and use `OpenPartialHomeomorph.mdifferentiableAt_extend hm hp` (or `mdifferentiableAt_extChartAt`) for the chart and `OpenPartialHomeomorph.mdifferentiableAt_extend_symm_of_mem_interior one_ne_zero hm (by rwa [I.range_eq_univ-based interior_eq/open target])` for its inverse.",
+   "issue": "`mdifferentiableAt_extendTrans` and `mdifferentiableAt_extendTrans_symm` are one-line `.mdifferentiableAt hn` wrappers, and their only uses (Pseudoholomorphic/Graph.lean:78,80,97) take `\u03a8 := .refl`. In that case existing chart lemmas already cover them. The PR text also names the wrong Mathlib lemma: the cited `mdifferentiableAt_extend` is the vector-bundle section lemma.",
+   "line": 205
+  },
+  {
+   "evidence": "Mathlib MFDeriv/Atlas.lean:391 `mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt'` and :363 `mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm`; TauCeti already uses them this way, e.g. VectorField/Chart/Basic.lean:110.",
+   "file": "TauCeti/Geometry/Manifold/Sobolev/Pseudoholomorphic/Graph.lean",
+   "fix": "Rewrite with `coe_extendTrans_refl` / `coe_symm_extendTrans_refl` and `mfderivWithin_univ` + `I.range_eq_univ`, then use `congr($(mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' hy) v)` and `congr($(mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm hw) v)`. Drop the helpers.",
+   "issue": "The private `mfderiv_chartAt_extendTrans` (left-inverse part) and `mfderiv_chartAt_extendTrans_symm` (line 88) re-derive, for the preferred chart, that the chart derivative and the inverse-chart derivative undo each other. Mathlib already proves both directions for `extChartAt`.",
+   "line": 66
+  }
+ ],
+ "head_sha": "6466ef3c566562c849f9857cd6ed81d29730935d",
+ "merge_base_sha": "553f7926aff08d70cd763eaf14b5e53bc335fa0a",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4779,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "8745e776493cd83aa5a221094e31e9fb19ec9eb340522530bf74ae4a32a2f36a",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 2,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T123656Z-4779-reuse-df1839",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T12:36:56Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The earlier finding is fixed: the graph weak derivative now comes from the generalised `hasWeakFDerivOn_graph_iff`. The new public `mdifferentiableAt_extendTrans(_symm)` lemmas are only used with `\u03a8 = refl`, and the private chart helpers in `Pseudoholomorphic/Graph.lean` re-derive Mathlib's `extChartAt` inverse-derivative identities.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold/MFDeriv/Atlas.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": ".",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/MFDeriv/Chart/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 10,
+  "total_calls": 10,
+  "trace_truncated": false
+ },
+ "transcript_blob": "96f1060f0881360fae69f36450839f195c092c9aa3a6f37bd014783286b5317a",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 29717
+  },
+  "cache_creation_input_tokens": 29717,
+  "cache_read_input_tokens": 377837,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 14,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5655
+    },
+    "cache_creation_input_tokens": 5655,
+    "cache_read_input_tokens": 65623,
+    "input_tokens": 2,
+    "output_tokens": 2684,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5922,
+  "output_tokens_details": {
+   "thinking_tokens": 1721
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

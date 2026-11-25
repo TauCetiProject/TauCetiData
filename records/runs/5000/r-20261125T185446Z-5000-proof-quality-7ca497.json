@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1257504,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 28.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9545
+    },
+    "cache_creation_input_tokens": 9545,
+    "cache_read_input_tokens": 63167,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 4782
+      },
+      "cache_creation_input_tokens": 4782,
+      "cache_read_input_tokens": 23872,
+      "input_tokens": 4,
+      "output_tokens": 2600,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3268,
+    "output_tokens_details": {
+     "thinking_tokens": 1150
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "91113fe317a9c7f98a52920a436a27848bd806d6",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.12575,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|5000|493b278cf8fa08331f3fcc7048dd4fde032d694f|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "f0cf09537e64053c4bb1b42a6b58c91bcb71e1c70ae7475b8adf140280e169c4",
+ "diff_sha256": "f0cf09537e64053c4bb1b42a6b58c91bcb71e1c70ae7475b8adf140280e169c4",
+ "duration_s": 28.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Pullback.lean defines `baseSet := fun x => f \u207b\u00b9' A.core.baseSet (f x)` (line 58) and has only `localTriv_baseSet_pullback` and `coordChange_pullback` as unfolding lemmas; grep finds no `baseSet_pullback` or `mem_baseSet_pullback` lemma.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/FiniteRank/PullbackComparison.lean",
+   "fix": "Add `@[simp] theorem baseSet_pullback (A) (f) (i) : (A.pullback f).core.baseSet i = f \u207b\u00b9' A.core.baseSet (f i) := (rfl)` (or a `mem_baseSet_pullback` iff) to Pullback.lean, and rewrite with it at all four sites in place of the unfolding and the `change`.",
+   "issue": "Membership in `(C.pullback f).core.baseSet i` is silently unfolded to `f x \u2208 C.core.baseSet (f i)` at four sites: `pullbackChartAverage` `compatible` (passing `hi`/`hi'` to `coordChange_comp_chartAverage`), `pullbackChartAverage` `operator` (domRestrict of `continuousOn_chartAverage` on a definitionally equal set), `contMDiffOn_inChartCoordinates_pullbackChartAverage` (passing `hx.1` to `contMDiffAt_chartAverage`), and `change f x \u2208 C.core.baseSet (f a)` in `exists_isOpen_isInvertible_fiberMap_pullbackChartAverage`, whose comment explains the maths, not the `change`.",
+   "line": 0
+  },
+  {
+   "evidence": "`operator_pullbackChartAverage ... : (pullbackChartAverage C f \u03c7 h\u03c7).operator i j x = chartAverage C f \u03c7 (f i) j x.val := (rfl)` is declared in the same file.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/FiniteRank/PullbackComparison.lean",
+   "fix": "Replace the `change` with `rw [operator_pullbackChartAverage, hfs a ha]` (then close with `exact hinv` or similar).",
+   "issue": "In `exists_isOpen_isInvertible_fiberMap_pullbackChartAverage`, `change (chartAverage C f \u03c7 (f a) a x).IsInvertible` unfolds the definition of `pullbackChartAverage`'s operator even though this PR adds `operator_pullbackChartAverage` for exactly that.",
+   "line": 0
+  }
+ ],
+ "head_sha": "493b278cf8fa08331f3fcc7048dd4fde032d694f",
+ "merge_base_sha": "91113fe317a9c7f98a52920a436a27848bd806d6",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 5000,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "9fddefbc42cded73a7c9c023fd80a4c55a43bf7bf0779f3189ba5c0d88ebc773",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T185446Z-5000-proof-quality-7ca497",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T18:54:46Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "Proofs are short and readable, but several steps rely on undocumented definitional unfolding of the pullback's chart domains and of `pullbackChartAverage`'s operator, including two `change` tactics. Both can be replaced by an explicit `rfl` lemma or by the existing `operator_pullbackChartAverage`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/VectorBundle/FiniteRank/Pullback.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/VectorBundle/FiniteRank/Pullback.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "28e6971ff0e59332be557601840a04be3210860eee1b4b74243435bafcf29293",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 9545
+  },
+  "cache_creation_input_tokens": 9545,
+  "cache_read_input_tokens": 63167,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4782
+    },
+    "cache_creation_input_tokens": 4782,
+    "cache_read_input_tokens": 23872,
+    "input_tokens": 4,
+    "output_tokens": 2600,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3268,
+  "output_tokens_details": {
+   "thinking_tokens": 1150
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

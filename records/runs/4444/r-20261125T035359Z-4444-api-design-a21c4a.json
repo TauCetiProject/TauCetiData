@@ -1,0 +1,171 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1654886,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 10253
+    },
+    "cache_creation_input_tokens": 10253,
+    "cache_read_input_tokens": 179978,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1419
+      },
+      "cache_creation_input_tokens": 1419,
+      "cache_read_input_tokens": 40467,
+      "input_tokens": 2,
+      "output_tokens": 2503,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3909,
+    "output_tokens_details": {
+     "thinking_tokens": 1056
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "99132078e53b2537807e50bd1835ab67c46ed3e4",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.165489,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4444|ef71699046912c6b14dd4ac74ba95cc9ed841899|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "6ff376da6847bb90604e9f9478d5f71d437846eaf63fd0a8d273952f370e7322",
+ "diff_sha256": "6ff376da6847bb90604e9f9478d5f71d437846eaf63fd0a8d273952f370e7322",
+ "duration_s": 36.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The base `twistedReflection` (LaplaceReflection.lean:99) is unexposed and has `twistedReflection_def \u2026 := (rfl)` at :128; the `_iff` proofs here run `unfold crReflectionCoeff` etc.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "Drop `@[expose]` and add `crReflectionCoeff_def`, `crReflectionDeriv_def` and `crReflectionZeroth_def` (each the `twistedReflection` form, `:= (rfl)`); rewrite the `_iff` proofs with them.",
+   "issue": "`crReflectionCoeff`, `crReflectionDeriv` and `crReflectionZeroth` are `@[expose]` with no `_def` lemma. The `memLpLoc_*_iff` proofs work only by `unfold`, and downstream gluing will need the same view, so the bodies are exposed for want of API.",
+   "line": 91
+  },
+  {
+   "evidence": "LaplaceReflection.lean:122 `@[simp] theorem twistedReflection_of_im_eq_zero`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "Add `@[simp]` lemmas `crReflectionCoeff_of_im_eq_zero`, `crReflectionDeriv_of_im_eq_zero` and `crReflectionZeroth_of_im_eq_zero`, each `= 0`, via `twistedReflection_of_im_eq_zero`.",
+   "issue": "Each coefficient reflection has evaluation lemmas for `im > 0` and `im < 0` but none for `im = 0`, so its value on the axis is unavailable without unfolding.",
+   "line": 113
+  },
+  {
+   "evidence": "Statements mention only `V \u2243\u2097\u1d62[\u211d] V` and inner products; grep for involutive in mathlib/Mathlib/Analysis/InnerProductSpace finds no such lemma.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "Move both to public `LinearIsometryEquiv` lemmas in a general inner-product or isometry file, stated with `Function.Involutive R`.",
+   "issue": "`private inner_map_left_eq_of_involutive` (an involutive linear isometry equivalence is self-adjoint) and `private symm_toContinuousLinearEquiv_apply_of_involutive` are general facts about Mathlib types that are hidden here.",
+   "line": 220
+  },
+  {
+   "evidence": "LaplaceReflection.lean:171 `theorem twistedReflection_conj (hR : Function.Involutive R)`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "State `hR : Function.Involutive R` in `isWeakCRSolution_crReflection` and `memWkpLoc_one`.",
+   "issue": "The involution hypothesis is `hR : \u2200 v, R (R v) = v`, while the existing `twistedReflection_conj` takes `Function.Involutive R`, so callers must restate it when chaining the two.",
+   "line": 211
+  }
+ ],
+ "head_sha": "ef71699046912c6b14dd4ac74ba95cc9ed841899",
+ "merge_base_sha": "10d58a22f706c2f8d9703c33a1441229c589dae5",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4444,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "5648e2abcea530a52c9a41ac60da11e2fecf37bb8134e2915e54d6305370a60c",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T035359Z-4444-api-design-a21c4a",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T03:53:59Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The three coefficient reflections expose their bodies with @[expose] but have no `_def` or on-axis lemmas, and a general self-adjointness lemma for involutive isometries is hidden as private.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/LaplaceReflection.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/LaplaceReflection.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/InnerProductSpace",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "2abe0b8604848205e8b1f187a3a77a69739e0a33c589a93a5c779c3413ce19d4",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 10253
+  },
+  "cache_creation_input_tokens": 10253,
+  "cache_read_input_tokens": 179978,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1419
+    },
+    "cache_creation_input_tokens": 1419,
+    "cache_read_input_tokens": 40467,
+    "input_tokens": 2,
+    "output_tokens": 2503,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3909,
+  "output_tokens_details": {
+   "thinking_tokens": 1056
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

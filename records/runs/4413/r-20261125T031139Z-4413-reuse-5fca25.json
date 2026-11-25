@@ -1,0 +1,164 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2053956,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 36.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 14664
+    },
+    "cache_creation_input_tokens": 14664,
+    "cache_read_input_tokens": 262238,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2219
+      },
+      "cache_creation_input_tokens": 2219,
+      "cache_read_input_tokens": 58610,
+      "input_tokens": 2,
+      "output_tokens": 2094,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3979,
+    "output_tokens_details": {
+     "thinking_tokens": 1716
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "99132078e53b2537807e50bd1835ab67c46ed3e4",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.205396,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4413|c030d059b19b0ae6a8a6ffe3efd9cd4de5b58e94|reuse|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "7c7580bea3950b7ef031aa8d3e658164a88954d27ad29d5667a097375314305a",
+ "diff_sha256": "7c7580bea3950b7ef031aa8d3e658164a88954d27ad29d5667a097375314305a",
+ "duration_s": 36.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "A grep for `halfCoord_ae_eq_of_halfCoord_ae_eq|ae_restrict_halfImage_symm_of_ae` finds only the definitions (`HalfPlane.lean:508,523,528`). Both proofs use the same `ae_all_iff`, `exists_mem_dom`, `left_inv`, `coord_eq_coord_iff` shape as `Measure.lean:91-105`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/FiniteBundleAtlas/HalfPlane.lean",
+   "fix": "Delete both lemmas. Where the result is needed, use `(A.readsFrom_halfSectionChartData A').coord_ae_eq`, moving between `halfCoord` and the chart-data readings with `halfSectionChartData_coord_ae_eq`.",
+   "issue": "`ae_restrict_halfImage_symm_of_ae` and `halfCoord_ae_eq_of_halfCoord_ae_eq` have no consumers. They copy `FiniteBundleAtlas.ae_restrict_image_symm_of_ae` and `coord_ae_eq_of_coord_ae_eq` (`Measure.lean:88-105`) line for line, and their content is already `SectionChartData.ReadsFrom.coord_ae_eq` applied to `A.readsFrom_halfSectionChartData A'`.",
+   "line": 508
+  },
+  {
+   "evidence": "A grep for `coord_ae_eq_of_coord_ae_eq` finds hits only in `Measure.lean` (lines 21-32 docstring, 98 and 101 definition). The diff removes the call from `Sobolev/Atlas/Equiv.lean`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/FiniteBundleAtlas/Measure.lean",
+   "fix": "Delete `coord_ae_eq_of_coord_ae_eq` and `ae_restrict_image_symm_of_ae`, and update the module docstring. Keep `ae_restrict_image_chart_symm`, which `readsFrom_sectionChartData` uses.",
+   "issue": "This PR moves the only use of `coord_ae_eq_of_coord_ae_eq` (the old `chartValueL_changeAtlasAux_ae`) to `SectionChartData.ReadsFrom.coord_ae_eq` through `readsFrom_sectionChartData`. That leaves `coord_ae_eq_of_coord_ae_eq` and its only helper, `ae_restrict_image_symm_of_ae`, as a parallel API that the canonical one replaces.",
+   "line": 98
+  },
+  {
+   "evidence": "A grep for these three names finds only their definitions (`Bordered/Basic.lean:405,423,438`). Unlike their boundaryless counterparts, which `Morrey.lean:333,343,579` and `Transfer.lean:143` use, the bordered versions have no callers.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered/Basic.lean",
+   "fix": "Delete them until a consumer exists. `changeAtlas` now goes through the generic `SectionChartData` lemmas and needs none of them.",
+   "issue": "`exists_ae_eq_halfCoord`, `chartValueL_add_ae_halfCoord` and `chartValueL_smul_ae_halfCoord` have no consumers. They are thin restatements of `exists_section_memWkpLoc`, `SectionChartData.chartValueL_add_ae_coord` and `SectionChartData.chartValueL_smul_ae_coord`, composed with `halfSectionChartData_coord_ae_eq`.",
+   "line": 405
+  }
+ ],
+ "head_sha": "c030d059b19b0ae6a8a6ffe3efd9cd4de5b58e94",
+ "merge_base_sha": "10d58a22f706c2f8d9703c33a1441229c589dae5",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4413,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "d3f17eae559188e84139c205b11b6b53f8b0b992b4a4200871d216b1c7a94334",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "reuse",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T031139Z-4413-reuse-5fca25",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T03:11:39Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The change of atlas is now proved once in `SectionChartData`, and the half-plane chart lemmas are shared, which fixes the earlier duplication. What remains is new null-set lemmas and bordered wrappers with no consumers that re-derive the generic `ReadsFrom.coord_ae_eq`, plus the boundaryless versions in `Measure.lean`, which this PR leaves with no users.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/FiniteBundleAtlas/Measure.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "065b010181d842c50f50fa0a6b96b05cceeecbd7212ecf2df446eebae04346bb",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 14664
+  },
+  "cache_creation_input_tokens": 14664,
+  "cache_read_input_tokens": 262238,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2219
+    },
+    "cache_creation_input_tokens": 2219,
+    "cache_read_input_tokens": 58610,
+    "input_tokens": 2,
+    "output_tokens": 2094,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3979,
+  "output_tokens_details": {
+   "thinking_tokens": 1716
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

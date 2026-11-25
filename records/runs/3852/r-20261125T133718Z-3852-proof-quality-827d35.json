@@ -1,0 +1,176 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.137048,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 35.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5477
+    },
+    "cache_creation_input_tokens": 5477,
+    "cache_read_input_tokens": 116615,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 562
+      },
+      "cache_creation_input_tokens": 562,
+      "cache_read_input_tokens": 25678,
+      "input_tokens": 2,
+      "output_tokens": 2372,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4315,
+    "output_tokens_details": {
+     "thinking_tokens": 1326
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "58174b5fcdf1ac017fecf4e3c64a05b1c92a4fe2",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.137048,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|3852|694b309174b9fcedbda423525af60605865cd119|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "f9dfe1805027af4b77f7ec2ff4f2dc0a0c88e27d59e6d59b03b183fe7f7451cb",
+ "diff_sha256": "f9dfe1805027af4b77f7ec2ff4f2dc0a0c88e27d59e6d59b03b183fe7f7451cb",
+ "duration_s": 35.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Data/Matrix/Basic.lean:844 `@[simps!] def prodEquiv` (so `prodEquiv_apply` exists); the PR has `have hx\u2081 : ((Matrix.prodEquiv \u03b9 \u03ba A B).symm (x\u2081, x\u2082)).map Prod.fst = x\u2081 := (rfl)` with no comment.",
+   "file": "TauCeti/LinearAlgebra/Matrix/Idempotent/Basic.lean",
+   "fix": "Derive them from `(Matrix.prodEquiv _ _ A B).apply_symm_apply (x\u2081, x\u2082)` and `Matrix.prodEquiv_apply`, e.g. `congrArg Prod.fst`. Better, add one private lemma `map_fst_prodEquiv_symm`/`map_snd_prodEquiv_symm` and reuse it here and in Prod.lean.",
+   "issue": "`hx\u2081`, `hx\u2082`, `hy\u2081`, `hy\u2082` are proved by bare `(rfl)` with no comment. Each unfolds how `Matrix.prodEquiv.symm` is built and how `Matrix.map` acts on it.",
+   "line": 289
+  },
+  {
+   "evidence": "`rw [AddMonoidHom.prod_apply, map_mk, map_mk]` followed by `rfl`.",
+   "file": "TauCeti/Algebra/Category/ModuleCat/FiniteProjective/KZero/Prod.lean",
+   "fix": "Rewrite with `NonUnitalRingHom.coe_fst`/`coe_snd`, then use the component lemma suggested above (or `Matrix.prodEquiv_apply` plus `Equiv.apply_symm_apply`).",
+   "issue": "`prodHom_mk_prodEquiv_symm` closes with `rfl`, which unfolds `(Matrix.prodEquiv ..).symm` and the `NonUnitalRingHom.fst`/`snd` coercions.",
+   "line": 84
+  },
+  {
+   "evidence": "Mathlib/Algebra/Ring/Prod.lean:124 and :128 `theorem coe_fst : \u21d1(fst R S) = Prod.fst` / `coe_snd`; `prodHom_injective` already uses them.",
+   "file": "TauCeti/Algebra/Category/ModuleCat/FiniteProjective/KZero/Prod.lean",
+   "fix": "Replace the `rfl` with `simp only [NonUnitalRingHom.coe_fst, NonUnitalRingHom.coe_snd]`, as `prodHom_injective` in the same file already does.",
+   "issue": "`prodEquiv_mk` uses `rfl` to show that `NonUnitalRingHom.fst A B` and `snd A B` act as `Prod.fst`/`Prod.snd`, although Mathlib has lemmas for exactly this.",
+   "line": 126
+  },
+  {
+   "evidence": "`rw [prodEquiv_kZeroEquiv_of_mk]` followed by `rfl` (comment: 'The components of the pair `(e\u2081, e\u2082)` are `e\u2081` and `e\u2082`').",
+   "file": "TauCeti/Algebra/Category/ModuleCat/FiniteProjective/KZero/Prod.lean",
+   "fix": "Rewrite with the shared component lemma (or `Matrix.prodEquiv_apply` plus `Equiv.apply_symm_apply`) instead of `rfl`.",
+   "issue": "`prodEquiv_symm_kZeroEquiv_of_mk` closes with `rfl`, which unfolds the components of `(Matrix.prodEquiv ..).symm (e\u2081, e\u2082)` under `map Prod.fst`/`map Prod.snd`. It is the same unfolding as the Basic.lean case.",
+   "line": 198
+  }
+ ],
+ "head_sha": "694b309174b9fcedbda423525af60605865cd119",
+ "merge_base_sha": "55ade2273e72a09894be0cb4811ba35540634abf",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 3852,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7193bf778f7dac38f639134ad639312de303809d92f402e3b3f0d32b1c9772da",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T133718Z-3852-proof-quality-827d35",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T13:37:18Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "Several proofs close goals by `rfl` across `Matrix.prodEquiv.symm` and the `NonUnitalRingHom.fst`/`snd` coercions, and two of those steps (`hx\u2081`\u2026`hy\u2082`) are uncommented, although Mathlib lemmas state these facts. Replace these `rfl` steps with the Mathlib lemmas, or with one shared component lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Matrix/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Equiv",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Group/Prod.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "40cbc2b1edf686b9494d61930873ca9b6808af19a8f7b55ba7d870383888c252",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 5477
+  },
+  "cache_creation_input_tokens": 5477,
+  "cache_read_input_tokens": 116615,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 562
+    },
+    "cache_creation_input_tokens": 562,
+    "cache_read_input_tokens": 25678,
+    "input_tokens": 2,
+    "output_tokens": 2372,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4315,
+  "output_tokens_details": {
+   "thinking_tokens": 1326
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

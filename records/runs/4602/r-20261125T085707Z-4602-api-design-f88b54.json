@@ -1,0 +1,183 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2388276,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 51.2,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 13721
+    },
+    "cache_creation_input_tokens": 13721,
+    "cache_read_input_tokens": 246473,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 12,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 937
+      },
+      "cache_creation_input_tokens": 937,
+      "cache_read_input_tokens": 55906,
+      "input_tokens": 2,
+      "output_tokens": 3657,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6044,
+    "output_tokens_details": {
+     "thinking_tokens": 2140
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "dd39011e209f95281e9464691862f9e298b7fe2c",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.238828,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4602|93e9b8d96868af7f363ccb030f487c64fdadecec|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "12816002644871bbc5225414db5243be7710954aa8139e047fcf0042700c7403",
+ "diff_sha256": "12816002644871bbc5225414db5243be7710954aa8139e047fcf0042700c7403",
+ "duration_s": 51.2,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep shows `zero_add (k + 1)).symm \u25b8` only in this file (lines 585, 595, 596, 613, 629); Basic.lean:656-709 has `lowerOrdersL` and `chartValuesL_eqRec` but no map that forgets all derivatives.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/HigherOrderEstimate.lean",
+   "fix": "Add a named map in Sobolev/Basic.lean that forgets all derivatives (`sobolevSections \u03bc p k \u2192L[\u211d] sobolevSections \u03bc p 0`), with a simp lemma for `chartValuesL` and a lemma relating it to `lowerOrderL`. Restate the theorem with it and delete the two private lemmas.",
+   "issue": "The public statement of `exists_norm_le_norm_sobolevSuccL_add_norm` contains `lowerOrdersL volume p 0 (k + 1) ((zero_add (k + 1)).symm \u25b8 w)`, so every consumer must handle the cast; the private lemmas `chartValuesL_lowerOrdersL_zero` (:583) and `lowerOrdersL_zero_lowerOrderL` (:593) exist only to undo it.",
+   "line": 613
+  },
+  {
+   "evidence": "Their statements mention only `SectionChartData`, `chartValueL`, `eLpNormWkp` and `Wkp`; no CR operator appears.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/HigherOrderEstimate.lean",
+   "fix": "Move them to Sobolev/Basic.lean (next to `lowerOrdersL_one`/`chartValuesL_lowerOrderL`) or to Sobolev/ContMDiffSection.lean.",
+   "issue": "`SectionChartData.norm_lowerOrderL_le`, `exists_eLpNormWkp_le_of_chartValueL_ae_eq` (:105) and `exists_ofReal_norm_le_eLpNormWkp_of_chartValueL_ae_eq` (:155) are general SectionChartData API placed in a Cauchy\u2013Riemann file.",
+   "line": 191
+  },
+  {
+   "evidence": "Regularity.lean:395 holds `exists_eLpNormWkp_le_of_hasWeakConjWirtingerDerivOn`, the base estimate these extend.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/HigherOrderEstimate.lean",
+   "fix": "Move both next to `exists_eLpNormWkp_le_of_hasWeakConjWirtingerDerivOn` in Analysis/Complex/Wirtinger/Regularity.lean (or a sibling file) and make the transport helper public.",
+   "issue": "The planar estimate `exists_eLpNormWkp_le_of_eqOn_complexAntilinearPartL_add` and its private helper `exists_eLpNormWkp_le_of_contDiffOn` (:213) are plane `\u2202bar` analysis placed in a bundle file; the helper is hidden as `private`.",
+   "line": 262
+  },
+  {
+   "evidence": "Their statements use only `iteratedFDeriv`, `ContinuousLinearMap`, `eLpNorm` and `volume.restrict`; Mathlib grep finds no equivalent (closest: `indicator_ae_eq_of_restrict_compl_ae_eq_zero`, Restrict.lean:1067).",
+   "file": "TauCeti/Analysis/Sobolev/Local/Norm/ContDiff.lean",
+   "fix": "Make them public and put them in general calculus and L\u1d56 files.",
+   "issue": "`norm_iteratedFDeriv_bilin_le` and `eLpNorm_restrict_eq_of_eqOn_zero` (:166) are general results about Mathlib types only, hidden as `private`.",
+   "line": 113
+  },
+  {
+   "evidence": "Their proofs use only `ContinuousOn.continuousOn_iteratedFDeriv`, `IsCompact.exists_bound_of_continuousOn` and the measurability of open sets, none of which needs `\u2102`; Mathlib/Analysis/Calculus/ContDiff/Basic.lean:652 is the sibling lemma.",
+   "file": "TauCeti/Analysis/Sobolev/Local/Norm/ContDiff.lean",
+   "fix": "Generalise the domain to a normed (finite-dimensional) real space and move both to a calculus file, the bound lemma next to Mathlib's `HasCompactSupport.exists_bound_iteratedFDeriv`.",
+   "issue": "`_root_.IsCompact.exists_bound_iteratedFDeriv` and `aestronglyMeasurable_iteratedFDeriv_of_contDiffOn` (:47) are general calculus lemmas restricted to domain `\u2102` and filed under Sobolev.",
+   "line": 93
+  }
+ ],
+ "head_sha": "93e9b8d96868af7f363ccb030f487c64fdadecec",
+ "merge_base_sha": "0253c4f16eb7629683572bfef8e6cc2571faac5c",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4602,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "866850bdcb505e0a838241550925e3d73c168a3f622a7911c286d11a53401a6f",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T085707Z-4602-api-design-f88b54",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T08:57:07Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The headline estimate's statement contains a `\u25b8` cast for lack of a named map that forgets all derivatives, and general SectionChartData, planar and calculus results are misplaced, hidden as `private`, or stated only over `\u2102`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "091e9749279d9857db0eae07988f034fa757b007991cd3939250956bd4ff506c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 13721
+  },
+  "cache_creation_input_tokens": 13721,
+  "cache_read_input_tokens": 246473,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 12,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 937
+    },
+    "cache_creation_input_tokens": 937,
+    "cache_read_input_tokens": 55906,
+    "input_tokens": 2,
+    "output_tokens": 3657,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6044,
+  "output_tokens_details": {
+   "thinking_tokens": 2140
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

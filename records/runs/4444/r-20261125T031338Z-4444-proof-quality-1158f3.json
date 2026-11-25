@@ -1,0 +1,168 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.0833422,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 26.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2237
+    },
+    "cache_creation_input_tokens": 2237,
+    "cache_read_input_tokens": 51506,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1157
+      },
+      "cache_creation_input_tokens": 1157,
+      "cache_read_input_tokens": 26293,
+      "input_tokens": 2,
+      "output_tokens": 2199,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3092,
+    "output_tokens_details": {
+     "thinking_tokens": 1009
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "99132078e53b2537807e50bd1835ab67c46ed3e4",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.083342,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4444|244b9e9db92c6e669715970e1f8cccd741ad69b0|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "fbe6baa0a0be523deb6619c16e6db0a069cde79cbe8202c4a95dcdfeb6f043dc",
+ "diff_sha256": "fbe6baa0a0be523deb6619c16e6db0a069cde79cbe8202c4a95dcdfeb6f043dc",
+ "duration_s": 26.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Analysis/Complex/Basic.lean:212 `theorem conjLIE_apply (z : \u2102) : conjLIE z = conj z`; the goal left after `hpre` compares `f (conjLIE z)` with `f (conj z)`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "Replace the final `rfl` with `simp only [conjLIE_apply]`, or rewrite with `conjLIE_apply` before closing.",
+   "issue": "`integral_eq_setIntegral_add_comp_conj` ends its `rw` chain with `rfl`, which silently relies on `conjLIE z` being definitionally equal to `conj z`.",
+   "line": 241
+  },
+  {
+   "evidence": "Mathlib/Analysis/Complex/Basic.lean:271 `conjCLE_apply`; the goal after `TestFunction.fderiv_compConj_apply` still contains the `\u2192L` coercion of `R.toContinuousLinearEquiv`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "Close with `simp [conjCLE_apply]`, or rewrite with the coercion lemmas for `LinearIsometryEquiv.coe_toContinuousLinearEquiv` and `conjCLE_apply`.",
+   "issue": "`fderiv_reflectTest` closes with `rfl`, which relies on the defeq of `((R.toContinuousLinearEquiv : V \u2192L[\u211d] V) x)` with `R x` and of `conjCLE v` with `conj v`. These coercions can change across Mathlib bumps.",
+   "line": 280
+  },
+  {
+   "evidence": "Line 337: `simpa using (show 0 < z.im from hz)`; line 339: `crReflection_of_im_nonneg (le_of_lt (show 0 < z.im from hz))`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "Bind once: `have hz0 : 0 < z.im := hz.out` (or `by simpa using hz`), then use `hz0` in both places.",
+   "issue": "`show 0 < z.im from hz` (lines 337 and 339) unfolds `z \u2208 {z | 0 < z.im}` by defeq, twice and with no comment.",
+   "line": 337
+  },
+  {
+   "evidence": "Lines ~385-398: `have := congrArg (fun M : V \u2192L[\u211d] V => M (R.symm v)) hJz; simp only [mul_apply_eq_comp, ...]` inside the `rcases` branch.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "Extract a public lemma such as `crReflectionCoeff_mul_self_of_im_neg (hz : z.im < 0) (h : J (conj z) * J (conj z) = -1) : crReflectionCoeff R J z * crReflectionCoeff R J z = -1`, and keep only the a.e. transfer in the main proof.",
+   "issue": "`hJJ` in `memWkpLoc_one` proves inline, through a `congrArg`/`simp` manipulation, the reusable pointwise fact that the reflected coefficient squares to `-1` when `J (conj z)` does.",
+   "line": 385
+  },
+  {
+   "evidence": "`have hDJ : crReflectionDeriv conjLIE (0 : ...) = 0 := by funext z; rcases le_or_gt 0 z.im ...` and the identically structured `have hS`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "fix": "Add lemmas `crReflectionDeriv_zero : crReflectionDeriv R 0 = 0` and `crReflectionZeroth_zero : crReflectionZeroth R 0 = 0` (plus `crReflection_zero` if useful), and use them here.",
+   "issue": "`memWkpLoc_one_of_I` proves inline that the reflections of zero data vanish (`hDJ`, `hS`). The `funext`/`rcases le_or_gt`/`ext; simp` case split is repeated here and in `crReflectionCoeff_conj_I` and `crReflection_conj_id`.",
+   "line": 446
+  }
+ ],
+ "head_sha": "244b9e9db92c6e669715970e1f8cccd741ad69b0",
+ "merge_base_sha": "10d58a22f706c2f8d9703c33a1441229c589dae5",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4444,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "614fa37cc95470fc63c240721c54d4496c78bd7737f79bb6b0f34aaa5e39c5fb",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T031338Z-4444-proof-quality-1158f3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T03:13:38Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "Two proofs finish with a bare `rfl` that relies on undocumented definitional equality between coercion wrappers, `show` is used to unfold set membership with no comment, and two reusable reflection facts are proved inline instead of as lemmas.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Analysis/Complex/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Reflection.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "f697f0079d0b9bf4393d6c7c159f20c69890245a513552ec803eed37079dd213",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 2237
+  },
+  "cache_creation_input_tokens": 2237,
+  "cache_read_input_tokens": 51506,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1157
+    },
+    "cache_creation_input_tokens": 1157,
+    "cache_read_input_tokens": 26293,
+    "input_tokens": 2,
+    "output_tokens": 2199,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3092,
+  "output_tokens_details": {
+   "thinking_tokens": 1009
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

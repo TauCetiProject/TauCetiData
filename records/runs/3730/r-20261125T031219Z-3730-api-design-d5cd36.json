@@ -1,0 +1,186 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3079482,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 64.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 19220
+    },
+    "cache_creation_input_tokens": 19220,
+    "cache_read_input_tokens": 348021,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 16,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2242
+      },
+      "cache_creation_input_tokens": 2242,
+      "cache_read_input_tokens": 56917,
+      "input_tokens": 2,
+      "output_tokens": 2487,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 7109,
+    "output_tokens_details": {
+     "thinking_tokens": 3877
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "99132078e53b2537807e50bd1835ab67c46ed3e4",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.307948,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|3730|cee815e81a3aa7e594fbbe913716d23fdb4d8d72|api-design|claude-opus-5-5|4dc810aa37eb7443|production|4",
+ "diff_blob": "59448dfb06f265d4e8b0d1a3caacb5c775e5c0c0a7e1cba5a899bf3de69c5f16",
+ "diff_sha256": "59448dfb06f265d4e8b0d1a3caacb5c775e5c0c0a7e1cba5a899bf3de69c5f16",
+ "duration_s": 64.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "In the same file, `extendByZeroLinearMap_apply` (l.182), `tsupport_extendByZero` (l.107), `restrict_extendByZero` (l.189) and `extendByZero_restrict` (l.228) are all `@[simp]`; `restrictLinearMap_apply` in Module.lean:279 is `@[simp] ... := (rfl)`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Section/ExtendByZero.lean",
+   "fix": "Tag these `@[simp]`. Where possible, state the `_val` lemmas with `:= (rfl)` like `extendByZeroLinearMap_apply`.",
+   "issue": "New algebraic laws are untagged: `extendByZeroToOpenLinearMap_val`, `tsupport_extendByZeroToOpenLinearMap`, `extendByZeroToOpenLinearMap_refl`, `extendByZero_extendByZeroToOpenLinearMap`, `extendByZeroToOpenLinearMap_comp`, `restrictUnivLinearMap_val`. Simp therefore cannot evaluate the new maps, although it can evaluate the existing ones.",
+   "line": 298
+  },
+  {
+   "evidence": "In this file, `@[simp]` appears only on the `_apply*` lemmas and `restrictDualCLM_apply`/`restrictDualToOpenCLM_apply`; all the laws listed above have no attribute.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Section/ExtendByZero/Topology.lean",
+   "fix": "Tag the identity, composition, support and delta normal-form laws `@[simp]`. Use `@[simp]` on the applied forms of `_comp` (e.g. `extendByZeroToOpenCLM h' (extendByZeroToOpenCLM h s) = ...`) so they fire under application.",
+   "issue": "Native rewrite laws are untagged: `tsupport_extendByZeroCLM`, `extendByZeroCLM_localizeCLM`, `restrictDualCLM_delta_of_notMem`/`_of_mem`, `extendByZeroToOpenCLM_refl`/`_comp`, `extendByZeroCLM_extendByZeroToOpenCLM`, `tsupport_extendByZeroToOpenCLM`, `restrictDualToOpenCLM_refl`/`_comp`/`_restrictDualCLM`, `univCLE_toContinuousLinearMap`. Simp cannot normalize the composites these lemmas describe.",
+   "line": 0
+  },
+  {
+   "evidence": "`extendByZeroCLM_apply_of_notMem` and `extendByZeroCLM_apply_of_mem` are both `@[simp]`; for `extendByZeroToOpenCLM`, only `extendByZeroToOpenCLM_apply_of_mem` is.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Section/ExtendByZero/Topology.lean",
+   "fix": "Add `@[simp] extendByZeroToOpenCLM_apply_of_notMem (x : D) (hx : (x : M) \u2209 U) : ... = 0`, or make `extendByZeroToOpenCLM_apply` the simp rule and drop the redundant `_of_mem` tag.",
+   "issue": "`extendByZeroToOpenCLM` has a simp rule only for points of the smaller open (`_apply_of_mem`). The general `extendByZeroToOpenCLM_apply` is not simp and there is no `_apply_of_notMem`, so simp cannot evaluate at points of `D \\ U`. `extendByZeroCLM` has both `_of_mem` and `_of_notMem`.",
+   "line": 627
+  },
+  {
+   "evidence": "`univCLE` sets `invFun := restrictUnivCLM`; the only identification lemma is `univCLE_toContinuousLinearMap` for the forward direction.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Section/ExtendByZero/Topology.lean",
+   "fix": "Add `univCLE_symm_toContinuousLinearMap : (univCLE).symm.toContinuousLinearMap = restrictUnivCLM` (proved by `(rfl)`), parallel to the forward lemma.",
+   "issue": "`restrictUnivCLM` and `univCLE.symm` are two public names for the same map. `univCLE_toContinuousLinearMap` identifies the forward map, but nothing identifies the inverse, so statements written with `restrictUnivCLM` and statements written with `univCLE.symm` cannot be rewritten into each other.",
+   "line": 796
+  }
+ ],
+ "head_sha": "cee815e81a3aa7e594fbbe913716d23fdb4d8d72",
+ "merge_base_sha": "10d58a22f706c2f8d9703c33a1441229c589dae5",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 3730,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "71e666ae475b238fbf81ba80ea67fc431e2fe7c2de5531c38c5631012bc9b342",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 4,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T031219Z-3730-api-design-d5cd36",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T03:12:19Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "Most new characteristic laws are untagged, unlike the existing extension-by-zero API where every such law is `@[simp]`. Intermediate extension has no simp rule for points outside the smaller open, and the inverse of `univCLE` is not linked to `restrictUnivCLM`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Section/ExtendByZero.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Section/Module.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Section/Module.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Section/Module.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Section/Module.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Section/ExtendByZero.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 7,
+  "total_calls": 7,
+  "trace_truncated": false
+ },
+ "transcript_blob": "26f05be9e9bea14b0bb05b0d9ef5b8fd187d10f89feb78250e265d7ebb461fef",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 19220
+  },
+  "cache_creation_input_tokens": 19220,
+  "cache_read_input_tokens": 348021,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 16,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2242
+    },
+    "cache_creation_input_tokens": 2242,
+    "cache_read_input_tokens": 56917,
+    "input_tokens": 2,
+    "output_tokens": 2487,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 7109,
+  "output_tokens_details": {
+   "thinking_tokens": 3877
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

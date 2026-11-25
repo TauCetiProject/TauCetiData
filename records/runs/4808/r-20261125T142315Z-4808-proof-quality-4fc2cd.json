@@ -1,0 +1,154 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.0994572,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 26.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4865
+    },
+    "cache_creation_input_tokens": 4865,
+    "cache_read_input_tokens": 99341,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1559
+      },
+      "cache_creation_input_tokens": 1559,
+      "cache_read_input_tokens": 34959,
+      "input_tokens": 2,
+      "output_tokens": 1679,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2762,
+    "output_tokens_details": {
+     "thinking_tokens": 891
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "58174b5fcdf1ac017fecf4e3c64a05b1c92a4fe2",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.099457,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4808|833a278177be6bed0750a2ed7167e864520ab51a|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "d21c81fbba2f1d1b414c2c8c12476240fd2b04e522de0525dafc0255642302a2",
+ "diff_sha256": "d21c81fbba2f1d1b414c2c8c12476240fd2b04e522de0525dafc0255642302a2",
+ "duration_s": 26.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Grep finds `have hpos : {z : \u2102 | 0 < z.im} \u2286 {z | 0 \u2264 z.im} := ofPred_subset_ofPred.2 fun _ => le_of_lt` at Green.lean:70, Green.lean:129 and InnerIntegrationByParts.lean:129, and `have hi {w ...}` / `have hd {w ...}` at Green.lean:71/73 and 130/132.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Green.lean",
+   "fix": "In `InnerIntegrationByParts.lean`, state two public lemmas, e.g. `TestFunction.integrableOn_im_pos_inner_of_memLpLoc` and `TestFunction.integrableOn_im_pos_inner_fderiv_of_memLpLoc`, and use them at all three sites. Write `fun _ => le_of_lt` as `fun _ h => h.le`, or use the lemma directly.",
+   "issue": "Lines 70-74 and 129-133 define the same local helpers `hpos`, `hi` and `hd` word for word: pairings of `\u03c6` and `\u2202_v \u03c6` with a field locally `L\u00b9` up to the axis are integrable on `{0 < im}`. `InnerIntegrationByParts.lean:129-133` repeats `hpos` and both integrability terms inline. This is a reusable fact hidden inside three proofs.",
+   "line": 70
+  },
+  {
+   "evidence": "Green.lean:143-146: `rw [integral_add _ i4, integral_sub _ i3, integral_sub _ i2, integral_neg, integral_add _ i4, integral_add i5 i6]` \u00b7 `linarith` then `exacts [...]`.",
+   "file": "TauCeti/Analysis/Complex/CauchyRiemann/RoughCoefficients/HalfPlane/Green.lean",
+   "fix": "Split the integrals with a single `integral_add`/`integral_sub` step on a stated `have` that matches the shape of `inner_crFormalAdjoint`. Alternatively, prove a pointwise identity and use `integral_congr` followed by one `integral_add`/`integral_sub` step, so the side goals no longer depend on rewrite order.",
+   "issue": "Green's formula ends with six named integral rewrites (`integral_add _ i4, integral_sub _ i3, integral_sub _ i2, integral_neg, integral_add _ i4, integral_add i5 i6`). Their integrability side goals are then closed by position in `exacts [i5.add i6, i1.neg, i1.neg.sub i2, (i1.neg.sub i2).sub i3]`. Changing the `simp only [inner_crFormalAdjoint]` normal form or the goal order breaks it, and it obscures why the proof works.",
+   "line": 143
+  },
+  {
+   "evidence": "InnerIntegrationByParts.lean:81 `h\u03c81 z \u27e8hzK, show (0 : \u211d) \u2264 z.im from le_of_lt hz\u27e9` and :86 `(h\u03c81 z \u27e8hzK, show (0 : \u211d) \u2264 z.im from le_of_lt hz\u27e9).self_of_nhds`.",
+   "file": "TauCeti/Analysis/Sobolev/Local/Reflection/InnerIntegrationByParts.lean",
+   "fix": "Use `mem_setOf_eq \u25b8 hz`, or write `(hz : 0 < z.im).le` after `rw [mem_setOf_eq] at hz`. Better, change the binder to `(hz : 0 < z.im)` and use `hz.le` at both sites.",
+   "issue": "`show (0 : \u211d) \u2264 z.im from le_of_lt hz` has no comment and relies on `z \u2208 {z | 0 < z.im}` unfolding by definition to `0 < z.im`. The same pattern appears at line 86.",
+   "line": 81
+  }
+ ],
+ "head_sha": "833a278177be6bed0750a2ed7167e864520ab51a",
+ "merge_base_sha": "58174b5fcdf1ac017fecf4e3c64a05b1c92a4fe2",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4808,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "27ac406afc89efc9a6ff4319c0df71dad8024c6cd5398b2d76fbcfcf2f6e58b7",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T142315Z-4808-proof-quality-4fc2cd",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T14:23:15Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The proofs build but repeat the same block of integrability facts three times instead of stating it once as a lemma, and Green's formula ends with a long chain of named rewrites. Two `show` steps without a comment rely on set membership unfolding by definition.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "280bbfdd9c2708726f63fc872893bd7724ae40bee41cb12c6e60236f706c8c01",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 4865
+  },
+  "cache_creation_input_tokens": 4865,
+  "cache_read_input_tokens": 99341,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1559
+    },
+    "cache_creation_input_tokens": 1559,
+    "cache_read_input_tokens": 34959,
+    "input_tokens": 2,
+    "output_tokens": 1679,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2762,
+  "output_tokens_details": {
+   "thinking_tokens": 891
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

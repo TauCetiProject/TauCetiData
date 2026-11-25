@@ -1,0 +1,142 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.0860756,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3480
+    },
+    "cache_creation_input_tokens": 3480,
+    "cache_read_input_tokens": 55498,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 2402
+      },
+      "cache_creation_input_tokens": 2402,
+      "cache_read_input_tokens": 28288,
+      "input_tokens": 2,
+      "output_tokens": 1357,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2878,
+    "output_tokens_details": {
+     "thinking_tokens": 1540
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.086076,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4501|52fa919f6a76c42ae3e3c404bea0f0ccea093015|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "7f3cc8c943e7f588ba0a49eed3891154c8bc15a4710c5cef072b0b43e2ff9773",
+ "diff_sha256": "7f3cc8c943e7f588ba0a49eed3891154c8bc15a4710c5cef072b0b43e2ff9773",
+ "duration_s": 25.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "mathlib/Mathlib/Geometry/Manifold/MFDeriv/Atlas.lean:106 `theorem mdifferentiableAt_atlas (h : e \u2208 atlas H M) {x : M} (hx : x \u2208 e.source) : MDiffAt e x`. The same proof term appears verbatim in `hh` and at the end of `exists_sheet_sign_function`.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/SchottkyDouble/DefiningFunction.lean",
+   "fix": "Use Mathlib's `mdifferentiableAt_atlas (chart_mem_atlas \u2102 p) hqp` for `hc`. Then factor one private lemma `mdifferentiableAt_im_chartAt (hqp : q \u2208 (chartAt \u2102 p).source) : MDifferentiableAt \ud835\udcd8(\u211d, \u2102) \ud835\udcd8(\u211d) (fun z \u21a6 (chartAt \u2102 p z).im) q` and use it at both remaining sites.",
+   "issue": "`hh` hand-derives that the chart at `p` is differentiable at `q` via `(contMDiffOn_chart (n := 1)).contMDiffAt (... mem_nhds hqp)).mdifferentiableAt one_ne_zero` composed with `imCLM`. The same derivation is repeated in `hc` (line ~148) and in the last step of `exists_sheet_sign_function` (line ~187).",
+   "line": 131
+  },
+  {
+   "evidence": "The `rfl` closes an undocumented defeq goal at line 58 (`\u00b7 rw [fderiv_zero_of_not_differentiableAt hd]\\n    rfl`) and again at line 67 inside `hd`.",
+   "file": "TauCeti/Analysis/Complex/FDerivSign.lean",
+   "fix": "Write `rw [fderiv_zero_of_not_differentiableAt hd, ContinuousLinearMap.zero_apply]` (or `simp [fderiv_zero_of_not_differentiableAt hd]`) at both sites.",
+   "issue": "After `rw [fderiv_zero_of_not_differentiableAt hd]`, the goal `(0 : \u2102 \u2192L[\u211d] \u211d) 1 = 0` is closed by a bare `rfl`, which depends on how the zero map is defined. The same pattern appears in `fderiv_apply_I_pos` (`exact hne (by rw [fderiv_zero_of_not_differentiableAt hnd]; rfl)`).",
+   "line": 58
+  }
+ ],
+ "head_sha": "52fa919f6a76c42ae3e3c404bea0f0ccea093015",
+ "merge_base_sha": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4501,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3bc70acbfbdd7078789cfd7e1c27bb5c24b2114448c17e4b0105341aebbd83c4",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T073159Z-4501-proof-quality-d74a21",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T07:31:59Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The chart-differentiability argument is rebuilt by hand three times in DefiningFunction.lean instead of using Mathlib's `mdifferentiableAt_atlas`. Two proofs also close a goal with a bare `rfl` that depends on the zero map's definition instead of using the named lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Geometry/Manifold",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "b541cacc3e99876afb79bab08fa4d4d5b55d50d45890ee6eabfbae0578bc34cb",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 3480
+  },
+  "cache_creation_input_tokens": 3480,
+  "cache_read_input_tokens": 55498,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2402
+    },
+    "cache_creation_input_tokens": 2402,
+    "cache_read_input_tokens": 28288,
+    "input_tokens": 2,
+    "output_tokens": 1357,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2878,
+  "output_tokens_details": {
+   "thinking_tokens": 1540
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

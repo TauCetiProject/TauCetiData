@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.16223160000000003,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 38.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 11903
+    },
+    "cache_creation_input_tokens": 11903,
+    "cache_read_input_tokens": 87423,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 5341
+      },
+      "cache_creation_input_tokens": 5341,
+      "cache_read_input_tokens": 32401,
+      "input_tokens": 4,
+      "output_tokens": 2145,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4260,
+    "output_tokens_details": {
+     "thinking_tokens": 2123
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "0253c4f16eb7629683572bfef8e6cc2571faac5c",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.162232,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4513|4df04ea54a3e93c6551394a891ae5738d299a007|api-design|claude-opus-5-5|4dc810aa37eb7443|production|2",
+ "diff_blob": "4d1ceb01a96738904635b4ada0868d93f6c36dcd441cf9ef6dce41eb9dda236c",
+ "diff_sha256": "4d1ceb01a96738904635b4ada0868d93f6c36dcd441cf9ef6dce41eb9dda236c",
+ "duration_s": 38.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep `@\\[expose\\]` in Sobolev/Bordered: only `halfSectionChartData` (Basic.lean:111) besides these two atlases. `fiveChartAtlas_center ... := (rfl)` and `eightChartAtlas_dom ... := (rfl)` already provide the access.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered/Atlas/ClosedDisc.lean",
+   "fix": "Remove `@[expose]` from `discAtlas`, `fiveChartAtlas` and `eightChartAtlas`, keeping the `(rfl)` characterisation lemmas.",
+   "issue": "`fiveChartAtlas`, `eightChartAtlas` (line 205) and `discAtlas` are `@[expose]` although `fiveChartAtlas_center/_dom`, `eightChartAtlas_center/_dom` and the `@[simps n center dom]` lemmas already describe them, and those lemmas are proved by `(rfl)` in proof scope, which doesn't need exposure. Exposing the bodies invites downstream code to unfold the atlas instead of using the API.",
+   "line": 162
+  },
+  {
+   "evidence": "ClosedDisc.lean:79 `def cayleyChart (\u03b6 : \u2102) (h\u03b6 : \u2016\u03b6\u2016 = 1) : OpenPartialHomeomorph \ud835\udd54\ud835\udd3b ClosedUpperHalfPlane where` has no `@[expose]`; Centered.lean `@[expose] def cayleyChart ... := Complex.UnitClosedDisc.cayleyChart \u03b6 h\u03b6` and `@[expose] def ofDisc : \ud835\udd54\ud835\udd3b \u2243 CenteredClosedDisc := Equiv.refl _`.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc/Centered.lean",
+   "fix": "Drop `@[expose]` on `cayleyChart` and `ofDisc`. If a consumer needs the link to the `\ud835\udd54\ud835\udd3b` chart, state it as a lemma proved by `(rfl)`.",
+   "issue": "`CenteredClosedDisc.cayleyChart` and `ofDisc` are `@[expose]`, but the parent `Complex.UnitClosedDisc.cayleyChart` is not exposed. The file already has `coe_cayleyChart_apply`, `cayleyChart_source`, `cayleyChart_target`, `im_cayleyChart_pos_iff`, `coe_ofDisc` and `coe_ofDisc_symm`, so exposure only lets consumers rely on defeq with the `\ud835\udd54\ud835\udd3b` chart instead of the API.",
+   "line": 0
+  }
+ ],
+ "head_sha": "4df04ea54a3e93c6551394a891ae5738d299a007",
+ "merge_base_sha": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4513,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "19f40072f84382e15ded3b1f9d80bb39377be09293c7be35e140c9e00f3436a7",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 2,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T075235Z-4513-api-design-5ab1c5",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T07:52:35Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The earlier missing-API findings are fixed (center_def, center_of_norm_ne_one, coe_ofDisc, mem_halfDiscDom, mem_innerDom, atlas center/dom lemmas, sq_norm_eq removed), but several definitions still expose their bodies although their characterising lemmas now exist. Drop the unneeded `@[expose]` attributes.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "58cd19103cb9276179437b904e629b4b5c02904860d8df7ecab7d9acc52744d9",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 11903
+  },
+  "cache_creation_input_tokens": 11903,
+  "cache_read_input_tokens": 87423,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5341
+    },
+    "cache_creation_input_tokens": 5341,
+    "cache_read_input_tokens": 32401,
+    "input_tokens": 4,
+    "output_tokens": 2145,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4260,
+  "output_tokens_details": {
+   "thinking_tokens": 2123
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

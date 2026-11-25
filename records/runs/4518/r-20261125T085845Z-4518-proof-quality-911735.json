@@ -1,0 +1,152 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.10100680000000001,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 32.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4131
+    },
+    "cache_creation_input_tokens": 4131,
+    "cache_read_input_tokens": 61139,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1164
+      },
+      "cache_creation_input_tokens": 1164,
+      "cache_read_input_tokens": 21999,
+      "input_tokens": 2,
+      "output_tokens": 1908,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3405,
+    "output_tokens_details": {
+     "thinking_tokens": 1593
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "dd39011e209f95281e9464691862f9e298b7fe2c",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.101007,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|4518|8b909dddb37084bebac5f25444670f4eafa8481b|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "3efcbea3b971e95c13dd41b0ae95eebf06eacd48afc9bb93612c3852b3eaeb5f",
+ "diff_sha256": "3efcbea3b971e95c13dd41b0ae95eebf06eacd48afc9bb93612c3852b3eaeb5f",
+ "duration_s": 32.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Rellich.lean:90-91 `Fin.cast rfl j`; `Sobolev/Rellich.lean:168` uses `fun j m \u21a6` without re-indexing; `halfSectionChartData` sets `n := A.n` (Bordered/Basic.lean:112) and has no `_n` lemma.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered/Rellich.lean",
+   "fix": "Use `j` directly, as the boundaryless proof does. If re-indexing is needed, cast along explicit equalities: the `enlarge_n` lemma that `@[simps n]` generates, plus a new `@[simp] halfSectionChartData_n` lemma. Otherwise add a comment explaining the definitional equality.",
+   "issue": "`let jA : Fin A.n := Fin.cast rfl j` and `let jB : Fin B.n := Fin.cast rfl j` typecheck only because Lean silently unfolds `A.halfSectionChartData.n`, `A.n` and `(A.enlarge \u2026).n` to the same value. `hx` (line 122) states its equation at `j`, but `component_eq_restrictL_changeAtlas` proves it at `jA`/`jB`, so that step relies on the same unfolding. No comment explains this.",
+   "line": 90
+  },
+  {
+   "evidence": "Rellich.lean:125-128.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Bordered/Rellich.lean",
+   "fix": "Replace the chain with a single `simp [T, hx, Wkp.lowerOrder_restrictL, Wkp.restrictL_restrictL]`, tagging the `Wkp` restriction lemmas `@[simp]` if they are not already.",
+   "issue": "`hfun` is closed by a hand-ordered chain: `rw [SectionChartData.lowerOrderL_apply, hx]`, `simp only [T, comp_apply, Wkp.restrictL_restrictL]`, `rw [Wkp.lowerOrderL_apply, Wkp.lowerOrder_restrictL, Wkp.restrictL_restrictL]`, then `exact Wkp.lowerOrder_restrictL \u2026`. Renaming any of these lemmas or changing its form breaks the proof.",
+   "line": 125
+  }
+ ],
+ "head_sha": "8b909dddb37084bebac5f25444670f4eafa8481b",
+ "merge_base_sha": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 4518,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "10328d04a98b211ef54778350ca98a74430a26a01f8bcf4136a945e3982c74dc",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T085845Z-4518-proof-quality-911735",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T08:58:45Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The main Rellich proof re-indexes charts with `Fin.cast rfl`, which relies on undocumented definitional equality between `A.halfSectionChartData.n`, `A.n` and `(A.enlarge \u2026).n`. It also closes `hfun` with a hand-ordered chain of named rewrites that breaks easily.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Rellich.lean",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "740482f717712ba6406d3ba4580f0dc47031d554be13882ad126cf63086edb17",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 4131
+  },
+  "cache_creation_input_tokens": 4131,
+  "cache_read_input_tokens": 61139,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1164
+    },
+    "cache_creation_input_tokens": 1164,
+    "cache_read_input_tokens": 21999,
+    "input_tokens": 2,
+    "output_tokens": 1908,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3405,
+  "output_tokens_details": {
+   "thinking_tokens": 1593
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

@@ -1,0 +1,157 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1166202,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 33.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5529
+    },
+    "cache_creation_input_tokens": 5529,
+    "cache_read_input_tokens": 87816,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 517
+      },
+      "cache_creation_input_tokens": 517,
+      "cache_read_input_tokens": 24655,
+      "input_tokens": 2,
+      "output_tokens": 1221,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3569,
+    "output_tokens_details": {
+     "thinking_tokens": 1949
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "5d7b2806e934a829dab114bb0fe9e6653b54fe66",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.11662,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|2892|9a8d55d33bb50001be4dd4cc0331d4243275f863|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "5091bf69c59759e87b8d7a1321d7488de817a227eedd6bc87cd4a00d42c6dec5",
+ "diff_sha256": "5091bf69c59759e87b8d7a1321d7488de817a227eedd6bc87cd4a00d42c6dec5",
+ "duration_s": 33.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`comp_natTrans` and `id_natTrans` are `simps` lemmas in mathlib/Mathlib/CategoryTheory/Filtration/Basic.lean:102, so `simp` can do these rewrites.",
+   "file": "TauCeti/CategoryTheory/Filtration/Basic.lean",
+   "fix": "Factor out `instance [IsIso f] (i : I) : IsIso (f.natTrans.app i)`, proved once with `\u27e8(inv f).natTrans.app i, by simp [\u2190 NatTrans.comp_app, \u2190 comp_natTrans], by simp [\u2190 NatTrans.comp_app, \u2190 comp_natTrans]\u27e9`. Then use it in `isIso_iff`.",
+   "issue": "Both inverse-law bullets repeat the chain `rw [\u2190 NatTrans.comp_app, \u2190 comp_natTrans, IsIso.hom_inv_id/inv_hom_id, id_natTrans, NatTrans.id_app]`. This duplicated chain hides a reusable fact: `IsIso f` implies `IsIso (f.natTrans.app i)`.",
+   "line": 50
+  },
+  {
+   "evidence": "mathlib/Mathlib/Data/Int/Init.lean:161 `protected def leInductionDown {m : \u2124} {motive : \u2200 n, n \u2264 m \u2192 Sort*} (base \u2026) (pred \u2026)`.",
+   "file": "TauCeti/CategoryTheory/Filtration/Decreasing.lean",
+   "fix": "Induct with `Int.leInductionDown` (base `q = b`, where both steps are zero; step `q \u2192 q - 1` via `isIso_natTrans_app_of_isIso_succ`). Close the base case with the explicit rewrites `hF`/`hG` instead of `simp_all`.",
+   "issue": "The descending induction is encoded as `\u2200 n : \u2115, \u2200 q, q + n = b \u2192 \u2026` and entered through `(b - p).toNat`. The base case is closed by two broad `simp_all` calls over a context full of `IsIso` hypotheses. This hides the plain integer induction downward from `b` and makes the base case fragile.",
+   "line": 135
+  }
+ ],
+ "head_sha": "9a8d55d33bb50001be4dd4cc0331d4243275f863",
+ "merge_base_sha": "b7121f4d7408c1a323335f3547e857b0b547369a",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 2892,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "7df2c9aa4b8e68dc2d60f2354b30fee4c9caa7297b9e5892850e144ff80fc4e5",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T070643Z-2892-proof-quality-d8803d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T07:06:43Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "`isIso_iff` repeats the same brittle five-step rewrite chain twice and buries a reusable instance. The five-lemma induction encodes descending integer induction through a hand-rolled \u2115 counter instead of Mathlib's `Int.leInductionDown`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/CategoryTheory/Filtration/Basic.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Data/Int",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "9748181d0bb620cf2fbb2020bf3e155764944ca1fc2cbe4cf28da36ce11c3856",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 5529
+  },
+  "cache_creation_input_tokens": 5529,
+  "cache_read_input_tokens": 87816,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 517
+    },
+    "cache_creation_input_tokens": 517,
+    "cache_read_input_tokens": 24655,
+    "input_tokens": 2,
+    "output_tokens": 1221,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3569,
+  "output_tokens_details": {
+   "thinking_tokens": 1949
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

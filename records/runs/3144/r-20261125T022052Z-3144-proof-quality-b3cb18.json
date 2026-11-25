@@ -1,0 +1,159 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.0996546,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.5,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4478
+    },
+    "cache_creation_input_tokens": 4478,
+    "cache_read_input_tokens": 51103,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 799
+      },
+      "cache_creation_input_tokens": 799,
+      "cache_read_input_tokens": 19128,
+      "input_tokens": 2,
+      "output_tokens": 1354,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3351,
+    "output_tokens_details": {
+     "thinking_tokens": 1542
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "10d58a22f706c2f8d9703c33a1441229c589dae5",
+ "cli_dirty": true,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.099655,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|3144|53fb1e781a79c23a7816a57b047cedf285058147|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "c86946371c99bf40614088cc5606b31d059247b6045c7fa09c3f9d18ad57dda8",
+ "diff_sha256": "c86946371c99bf40614088cc5606b31d059247b6045c7fa09c3f9d18ad57dda8",
+ "duration_s": 29.5,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Mathlib/Algebra/Order/Floor/Ring.lean:758 `theorem ceil_add_one (a : R) : \u2308a + 1\u2309 = \u2308a\u2309 + 1`, which handles `\u2308\u2191c + 1\u2309` directly.",
+   "file": "TauCeti/NumberTheory/ExponentialSum/Interval.lean",
+   "fix": "Normalize the endpoints with `simp only [intervalExpSum_def, Int.ceil_add_one, Int.ceil_intCast, Int.floor_intCast]`, then do the `sum_union`/`Ico_union_Ico_eq_Ico` step, instead of the cast-folding rewrites.",
+   "issue": "`intervalExpSum_add_adjacent` is a 13-step `rw` chain. It starts with `\u2190 Int.cast_one, \u2190 Int.cast_add` to turn `1` into an integer cast, plus three `\u2190 Ico_add_one_right_eq_Icc`; this breaks on any lemma rename or change in normal form.",
+   "line": 149
+  },
+  {
+   "evidence": "Same pattern as line 149; `Int.ceil_add_one` exists at Floor/Ring.lean:758.",
+   "file": "TauCeti/NumberTheory/ExponentialSum/Interval.lean",
+   "fix": "`rw [intervalExpSum_def, Int.ceil_add_one, Int.ceil_intCast, Icc_add_one_left_eq_Ioc]`, or the equivalent `simp`.",
+   "issue": "`intervalExpSum_floor_add_one` uses the same `\u2190 Int.cast_one, \u2190 Int.cast_add` trick to make `\u2308(\u230aX\u230b : \u211d) + 1\u2309` match `Int.ceil_intCast`.",
+   "line": 162
+  },
+  {
+   "evidence": "If `push_cast` had closed the goal, the trailing `rfl` would fail with 'no goals', so a goal remains that only `rfl` closes.",
+   "file": "TauCeti/NumberTheory/ExponentialSum/Interval.lean",
+   "fix": "Use `by push_cast; ring` or `by simp`, or add a comment explaining what `rfl` closes.",
+   "issue": "`\u27e8k * n, by push_cast; rfl\u27e9`: since CI passes, `push_cast` does not close the goal, so the final `rfl` relies on definitional equality (probably a beta-redex or cast form) that nothing explains.",
+   "line": 117
+  }
+ ],
+ "head_sha": "53fb1e781a79c23a7816a57b047cedf285058147",
+ "merge_base_sha": "aa1b4e9e2a25944efe7815c1898fb9fd5e879c11",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 3144,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "3ac502cd43b4ec57c1120ffc6127ac23076aeec261d1591d83bc2e89e53a9584",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261125T022052Z-3144-proof-quality-b3cb18",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-25T02:20:52Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "Two proofs depend on a fragile `\u2190 Int.cast_one, \u2190 Int.cast_add` rewrite trick inside long `rw` chains, and one closes its goal with an unexplained `rfl` after `push_cast`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Algebra/Order/Floor",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4e938de93f6ef156b100e1a409f8e8a3f6f05307750e5763f9916e309bad8c4f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 4478
+  },
+  "cache_creation_input_tokens": 4478,
+  "cache_read_input_tokens": 51103,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 799
+    },
+    "cache_creation_input_tokens": 799,
+    "cache_read_input_tokens": 19128,
+    "input_tokens": 2,
+    "output_tokens": 1354,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3351,
+  "output_tokens_details": {
+   "thinking_tokens": 1542
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
