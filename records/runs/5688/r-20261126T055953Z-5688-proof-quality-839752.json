@@ -1,0 +1,142 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1128228,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 22.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 10706
+    },
+    "cache_creation_input_tokens": 10706,
+    "cache_read_input_tokens": 55384,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 9624
+      },
+      "cache_creation_input_tokens": 9624,
+      "cache_read_input_tokens": 28233,
+      "input_tokens": 2,
+      "output_tokens": 1831,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2410,
+    "output_tokens_details": {
+     "thinking_tokens": 1012
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "01ef2fa22fc85dd69c8d7063fa166205dadb9d5c",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.112823,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|5688|e1b28048479424aa8338bac2e8793542c687952a|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "be00e4fb5394d1648ebd5be4ca720106812b5aff4215fdf9951c44a49ffb765f",
+ "diff_sha256": "be00e4fb5394d1648ebd5be4ca720106812b5aff4215fdf9951c44a49ffb765f",
+ "duration_s": 22.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "grep: `ChartQuantization.lean:89 private def cutoffPushforwardSchwartz ... HasCompactSupport.toSchwartzMap (f := e.complexCutoffPushforward he \u03c8 u)` vs `FormalAdjoint.lean:89 refine \u27e8HasCompactSupport.toSchwartzMap (f := e.complexCutoffPushforward he \u03c8 u)`.",
+   "file": "TauCeti/Analysis/Pseudodifferential/Manifold/FormalAdjoint.lean",
+   "fix": "Make `cutoffPushforwardSchwartz` and `cutoffPushforwardSchwartz_apply` public in `ChartQuantization.lean`, then use them for `w\u2081`/`w\u2082` here (`hw\u2081 := cutoffPushforwardSchwartz_apply he \u03c8 u`) and delete the private helper.",
+   "issue": "`exists_schwartzMap_eq_smul` re-proves `ChartQuantization.lean:89-103` (`HasCompactSupport.toSchwartzMap (f := e.complexCutoffPushforward he \u03c8 u)` with the same `funext (e.complexCutoffPushforward_apply ...)` support argument). The two copies will drift apart, and a merge conflict with #5501 is no reason to keep both.",
+   "line": 83
+  },
+  {
+   "evidence": "Lines 221-224 of the new file: `rw [ClassicalSymbol.coefficient_principal_smulLeft, ClassicalSymbol.principal_adjoint, HomogeneousSymbol.coefficient_adjoint, ClassicalSymbol.coefficient_principal_smulLeft] ... rw [map_smul\u209b\u2097, Complex.conj_ofReal, smul_smul, \u2190 Complex.ofReal_mul]; congr 2`.",
+   "file": "TauCeti/Analysis/Pseudodifferential/Manifold/FormalAdjoint.lean",
+   "fix": "Use a single `simp only [ClassicalSymbol.coefficient_principal_smulLeft, ClassicalSymbol.principal_adjoint, HomogeneousSymbol.coefficient_adjoint, map_smul\u209b\u2097, Complex.conj_ofReal, smul_smul, q, k]` (or `simp`), then the `by_cases`/`field_simp` close.",
+   "issue": "The principal-symbol branch is a ten-lemma `rw` chain (`coefficient_principal_smulLeft`, `principal_adjoint`, `HomogeneousSymbol.coefficient_adjoint`, `coefficient_principal_smulLeft`, then `map_smul\u209b\u2097, Complex.conj_ofReal, smul_smul, \u2190 Complex.ofReal_mul`) followed by `congr 2`. A rename or a change in lemma form breaks it.",
+   "line": 221
+  }
+ ],
+ "head_sha": "e1b28048479424aa8338bac2e8793542c687952a",
+ "merge_base_sha": "01ef2fa22fc85dd69c8d7063fa166205dadb9d5c",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 5688,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "59a7ae4c10fc11bbeace829471b2ef938a3e5c3c358eaa9b5fa858aa78a111a0",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261126T055953Z-5688-proof-quality-839752",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T05:59:53Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The private `exists_schwartzMap_eq_smul` repeats, almost line for line, the proof of main's private `cutoffPushforwardSchwartz`/`cutoffPushforwardSchwartz_apply`, so a reusable fact stays duplicated and hidden. The principal-symbol branch of the main proof is also a brittle chain of named-lemma rewrites.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "4a5dbd23b07b868c33120cb245fd7a5f005781ceb9f805fb3de92159fc1682e1",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 10706
+  },
+  "cache_creation_input_tokens": 10706,
+  "cache_read_input_tokens": 55384,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9624
+    },
+    "cache_creation_input_tokens": 9624,
+    "cache_read_input_tokens": 28233,
+    "input_tokens": 2,
+    "output_tokens": 1831,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2410,
+  "output_tokens_details": {
+   "thinking_tokens": 1012
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
