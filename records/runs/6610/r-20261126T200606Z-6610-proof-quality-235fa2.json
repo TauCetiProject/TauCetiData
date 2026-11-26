@@ -1,0 +1,149 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.07311300000000001,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 23.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 2762
+    },
+    "cache_creation_input_tokens": 2762,
+    "cache_read_input_tokens": 42135,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1683
+      },
+      "cache_creation_input_tokens": 1683,
+      "cache_read_input_tokens": 21607,
+      "input_tokens": 2,
+      "output_tokens": 1408,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2543,
+    "output_tokens_details": {
+     "thinking_tokens": 964
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "656ded174088660623ea049e74e99da5d637a376",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.073113,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|6610|8e23bad305f02c4f4956978bd8b20e48d5cb26c1|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "0371a9877fddcdd764275426e570e3e92ef36c518769c260f91d829592e5a2d1",
+ "diff_sha256": "0371a9877fddcdd764275426e570e3e92ef36c518769c260f91d829592e5a2d1",
+ "duration_s": 23.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Lines 143-144 contain the `replace ... := h` lines; the hypotheses come from `rintro \u27e8x, hx\u27e9 h\u03b9x` after `rw [\u2190 LinearMap.ker_eq_bot, eq_bot_iff]`.",
+   "file": "TauCeti/Analysis/Normed/Operator/LinearPMap/CommonDomain/Perturbation.lean",
+   "fix": "Get the equations explicitly, e.g. `have hx : B x = 0 := LinearMap.mem_ker.1 hx` and `have h\u03b9x : \u03b9 x = 0 := by simpa using LinearMap.mem_ker.1 h\u03b9x`.",
+   "issue": "`replace hx : B x = 0 := hx` and `replace h\u03b9x : \u03b9 x = 0 := h\u03b9x` act as undocumented `change`s: they turn membership in `LinearMap.ker` and in the kernel of `\u03b9 \u2218\u2097 B.ker.subtype` on a subtype into equations by unfolding definitions.",
+   "line": 143
+  },
+  {
+   "evidence": "Line 147.",
+   "file": "TauCeti/Analysis/Normed/Operator/LinearPMap/CommonDomain/Perturbation.lean",
+   "fix": "Replace it with `simpa [h\u03b9x, hx] using hBA x` or an equivalent single `simp` call.",
+   "issue": "Brittle chain of eight named-lemma rewrites to derive `A x = 0`: `rw [h\u03b9x, norm_zero, mul_zero, norm_le_zero_iff, sub_apply, hx, zero_sub, neg_eq_zero] at this`.",
+   "line": 147
+  },
+  {
+   "evidence": "Line 304: `exact (hA\u2082.add (hs.smul (hA'\u2082.sub hA\u2082))).congr fun _ _ \u21a6 rfl`.",
+   "file": "TauCeti/Analysis/Fredholm/Spectral/CommonDomain/Homotopy.lean",
+   "fix": "Rewrite with `Function.uncurry_def`/`simp only [G, Function.uncurry]` before `exact`, or comment on why the `rfl` holds.",
+   "issue": "`.congr fun _ _ \u21a6 rfl` relies on `Function.uncurry G` unfolding to the explicit sum by definition through the `set` abbreviation and the coercion `ofReal`, with no comment.",
+   "line": 304
+  }
+ ],
+ "head_sha": "8e23bad305f02c4f4956978bd8b20e48d5cb26c1",
+ "merge_base_sha": "656ded174088660623ea049e74e99da5d637a376",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 6610,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "51b7b3f3d272473eb86b63bce68d8b8b6edeeb2c4182add96953fcccddb3cebd",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261126T200606Z-6610-proof-quality-235fa2",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T20:06:06Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "Proofs are short and structured, but the kernel-injectivity step in Perturbation.lean rests on undocumented defeq `replace`s and a brittle eight-lemma rewrite chain. The homotopy continuity proof also uses an unexplained `rfl` congruence.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 1,
+  "total_calls": 1,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5a2bb369a5921cbc891d5a319552f2bac66a3ba64d9c1427889eac4536245a2d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 2762
+  },
+  "cache_creation_input_tokens": 2762,
+  "cache_read_input_tokens": 42135,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1683
+    },
+    "cache_creation_input_tokens": 1683,
+    "cache_read_input_tokens": 21607,
+    "input_tokens": 2,
+    "output_tokens": 1408,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2543,
+  "output_tokens_details": {
+   "thinking_tokens": 964
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

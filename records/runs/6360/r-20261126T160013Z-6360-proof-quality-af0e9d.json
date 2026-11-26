@@ -1,0 +1,152 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.12501079999999998,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 25.0,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 10708
+    },
+    "cache_creation_input_tokens": 10708,
+    "cache_read_input_tokens": 99754,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 798
+      },
+      "cache_creation_input_tokens": 798,
+      "cache_read_input_tokens": 31296,
+      "input_tokens": 2,
+      "output_tokens": 1349,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2574,
+    "output_tokens_details": {
+     "thinking_tokens": 1066
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "7ff6709183647c204f5c0fd6302a14f6eaf0c0ac",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.125011,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|6360|f67897039470816153ef793da65c1d51f2cf145f|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "2490d4763df5658dc6999caf7f6376d358f394fee8a1b8913035122c922f88a2",
+ "diff_sha256": "2490d4763df5658dc6999caf7f6376d358f394fee8a1b8913035122c922f88a2",
+ "duration_s": 25.0,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Basic.lean:628 has `@[simp] theorem chartValuesL_apply ... := (rfl)`. Basic.lean:691 and 718 use `simpa only [chartValuesL_apply] using congrFun ... i`. No heterogeneous-order version exists on main (a grep for `chartValueL_eq_of` found only this PR).",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/HigherOrder/Regularity.lean",
+   "fix": "Move it to `Sobolev/Basic.lean` as a public lemma about an arbitrary `C` at orders k and k'. Prove it with `by simpa only [chartValuesL_apply] using congrFun h i`, the pattern of `chartValueL_lowerOrdersL` and `chartValueL_eqRec`.",
+   "issue": "`chartValueL_eq_of_chartValuesL_eq` is a general fact about any `SectionChartData` (equal `chartValuesL` at orders k and k' give equal `chartValueL` in each chart). It is private, specialized to `A.tangentHom`, and proved by a chain of `chartValuesL_apply`, `.symm`, `.trans` and `congrFun`.",
+   "line": 82
+  },
+  {
+   "evidence": "Lines 142-143 of the new file; `chartValuesL_apply` is a `@[simp]` lemma proved by rfl (Basic.lean:627-630).",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/HigherOrder/Regularity.lean",
+   "fix": "Prove it with `funext fun i \u21a6 by simpa only [chartValuesL_apply] using h\u03b6\u03be i`. Better, state both directions as one `iff` lemma in `Sobolev/Basic.lean` next to `chartValuesL_injective`.",
+   "issue": "The global theorem proves the reverse direction (equal `chartValueL` in every chart gives equal `chartValuesL` at different orders) inline as `funext fun i \u21a6 ((chartValuesL_apply ..).trans (h\u03b6\u03be i)).trans (chartValuesL_apply ..).symm`. This is the same brittle chain, run the other way.",
+   "line": 142
+  }
+ ],
+ "head_sha": "f67897039470816153ef793da65c1d51f2cf145f",
+ "merge_base_sha": "7ff6709183647c204f5c0fd6302a14f6eaf0c0ac",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 6360,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "766dcc3a499aefa0fd3f1744565646e429bfd714f75684598a1735f79090c27d",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261126T160013Z-6360-proof-quality-af0e9d",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T16:00:13Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The proofs are short and readable, but a general fact about chart data across Sobolev orders is hidden in a private, `A.tangentHom`-specific helper. That helper and its reverse direction, proved inline in the global theorem, are long `.trans` chains instead of the `simpa only [chartValuesL_apply]` pattern `Sobolev/Basic.lean` already uses.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Sobolev/Basic.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "97173b90ab09606a0f3c905c0dd429fb914c407605919eab21323214501b8b1d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 10708
+  },
+  "cache_creation_input_tokens": 10708,
+  "cache_read_input_tokens": 99754,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 798
+    },
+    "cache_creation_input_tokens": 798,
+    "cache_read_input_tokens": 31296,
+    "input_tokens": 2,
+    "output_tokens": 1349,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2574,
+  "output_tokens_details": {
+   "thinking_tokens": 1066
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

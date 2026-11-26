@@ -1,0 +1,195 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.3148478,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 53.4,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 30555
+    },
+    "cache_creation_input_tokens": 30555,
+    "cache_read_input_tokens": 203564,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 6408
+      },
+      "cache_creation_input_tokens": 6408,
+      "cache_read_input_tokens": 64446,
+      "input_tokens": 2,
+      "output_tokens": 3101,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 6066,
+    "output_tokens_details": {
+     "thinking_tokens": 2865
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "994bb2246b869d826bb90a6298bd0f9423b83104",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.314848,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|6444|a25f41978235beebe1127ba0f4cb172c3c9849e1|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "c79284b152fdf2870bfa8ae983c6d3ad0ef8f8c84c3f7c67975e7f18d4647ca9",
+ "diff_sha256": "c79284b152fdf2870bfa8ae983c6d3ad0ef8f8c84c3f7c67975e7f18d4647ca9",
+ "duration_s": 53.4,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "TauCeti/Topology/Algebra/Module/Equiv/RestrictScalars.lean:34 `def restrictScalars' (e : M \u2243L[S] N) : M \u2243L[R] N where toLinearEquiv := e.toLinearEquiv.restrictScalars R ...`",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/Transport.lean",
+   "fix": "Delete `realEquiv` and use `(\u03a6 x).restrictScalars' \u211d`. The coercion steps then follow from `coe_restrictScalars'`.",
+   "issue": "Private `realEquiv` repeats the existing public `ContinuousLinearEquiv.restrictScalars'` field for field, and it has the same coercion lemmas. The PR description's claim that only the endomorphism version exists is wrong.",
+   "line": 85
+  },
+  {
+   "evidence": "Hom.lean:518 `theorem ContMDiff.clm_bundle_inverse`; Hom.lean:675 `contMDiff_bundle_symm` uses the same proof (`clm_bundle_inverse` + `isInvertible_equiv`).",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/BundleMap.lean",
+   "fix": "Move it to TauCeti/Geometry/Manifold/VectorBundle/Hom.lean, next to `ContMDiff.clm_bundle_inverse` and `contMDiff_bundle_symm`.",
+   "issue": "`ContMDiff.clm_bundle_equiv_symm` is a general hom-bundle smoothness lemma with no Sobolev content, but it lives in a Sobolev file. Users of the hom-bundle API won't find it there.",
+   "line": 91
+  },
+  {
+   "evidence": "Constructions.lean:351 `def sectionTransport`; Constructions.lean:518 `theorem transport ... (h\u03a6 : \u2200 \u03c3 x, MDiffAt ... )`, whose hypothesis these lemmas discharge.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/Transport.lean",
+   "fix": "Move both to CauchyRiemann/Constructions.lean, next to `sectionTransport` and `IsRealCauchyRiemannOperator.transport`, or to a smoothness file that imports it. Also move the private `contMDiff_symm` helper with them.",
+   "issue": "`mdifferentiableAt_symm_apply_of_contMDiff` and `contMDiffCovariantDerivativeOn_sectionTransport` are about `sectionTransport` over a general model `I`. They have no Sobolev content but are only reachable by importing the Sobolev/Fredholm stack.",
+   "line": 103
+  },
+  {
+   "evidence": "`mapL_mapL` already proves equality only through `toFun` via `eq_of_ae_eq_coord`; the comment at line 452 (`(A.ofBaseSet h).ofBaseSet _ \u2026 has the fields of A`) shows the missing identification.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/BundleMap.lean",
+   "fix": "Make the witness a `Prop` (e.g. `IsCoeffMap C C' toFun := \u2203 chart coeff domain, \u2026`) so `mapL` takes just `toFun` and a proof. Otherwise add `mapL_congr : \u03a8.toFun = \u03a8'.toFun \u2192 \u03a8.mapL \u03bc p k = \u03a8'.mapL \u03bc p k`, provable from `chartValueL_mapL_ae_coord` and `eq_of_ae_eq_coord`.",
+   "issue": "`CoeffMap` carries free data (`chart`, `domain`, and the values of `coeff` off `C'.image i`) that `mapL` never depends on. `mapL` is determined by `toFun`, but no lemma says so. As a result `bundleEquivL.symm` cannot be identified with `bundleMapL` for `\u03a6\u207b\u00b9`, because the atlases `(A.ofBaseSet h).ofBaseSet _` and `A` differ. The PR works around this with chart-reading lemmas instead.",
+   "line": 114
+  },
+  {
+   "evidence": "Only `coe_zeroOneTransportEquivL_apply` (line 251) is provided; the inverse is the second argument of `.ofContinuousLinearMap` at lines 233\u2013238.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/Transport.lean",
+   "fix": "Add a `@[simp]` lemma `coe_zeroOneTransportEquivL_symm_apply` that states the inverse via `tangentHomEquivL \u2026 (\u03a6 := fun x \u21a6 (\u03a6 x).restrictScalars' \u211d)`. Also add a chart-reading lemma giving one-form `\u03a6\u207b\u00b9 \u2218 \u03b8`, matching `chartValueL_tangentHomEquivL_symm_ae_coord`.",
+   "issue": "`zeroOneTransportEquivL` has a lemma for the forward map (`coe_zeroOneTransportEquivL_apply`) but none for its inverse. The inverse is built from `tangentHomEquivL` at the private `realEquiv`, so downstream users cannot compute it without unfolding.",
+   "line": 227
+  },
+  {
+   "evidence": "`chartValueL_dataL_ae_coord` is used only by `mapL` and `chartValueL_mapL_ae_coord` (lines 189, 199); no other file imports BundleMap.lean.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/BundleMap.lean",
+   "fix": "Make these four declarations `private`. The public interface is `mapL`, `chartValueL_mapL_ae_coord`, `mapL_mapL` and `mapEquivL`.",
+   "issue": "`CoeffMap.dataL`, `dataL_apply`, `chartValueL_dataL_ae` and `chartValueL_dataL_ae_coord` exist only to build `mapL`, and `chartValueL_mapL_ae_coord` already covers them. Exposing them adds surface on raw `SobolevData` tuples.",
+   "line": 135
+  }
+ ],
+ "head_sha": "a25f41978235beebe1127ba0f4cb172c3c9849e1",
+ "merge_base_sha": "994bb2246b869d826bb90a6298bd0f9423b83104",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 6444,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "05e399333d231023f1e3ba31fcd258488d87aad24f4d3b0766744cfa45e32aa9",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261126T174521Z-6444-api-design-4ffdb1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-26T17:45:21Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "`realEquiv` is a private copy of the existing public `ContinuousLinearEquiv.restrictScalars'`, two groups of general lemmas sit in the wrong files, and `CoeffMap` carries free data with no congruence lemma. `zeroOneTransportEquivL` has no characterization of its inverse, and the `dataL` helpers are exposed.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib/Mathlib/Topology/Algebra/Module",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Topology/Algebra/Module/Equiv/RestrictScalars.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/Hom.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 6,
+  "total_calls": 6,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c9ff77a59ea4161d2d83f3f2a0967cc5e03e2226237ba8fd063aa825978f1d5d",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 30555
+  },
+  "cache_creation_input_tokens": 30555,
+  "cache_read_input_tokens": 203564,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 6408
+    },
+    "cache_creation_input_tokens": 6408,
+    "cache_read_input_tokens": 64446,
+    "input_tokens": 2,
+    "output_tokens": 3101,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 6066,
+  "output_tokens_details": {
+   "thinking_tokens": 2865
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
