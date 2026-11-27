@@ -1,0 +1,175 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1332252,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 44.9,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 5081
+    },
+    "cache_creation_input_tokens": 5081,
+    "cache_read_input_tokens": 42121,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 4,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 3422
+      },
+      "cache_creation_input_tokens": 3422,
+      "cache_read_input_tokens": 21890,
+      "input_tokens": 2,
+      "output_tokens": 2490,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4969,
+    "output_tokens_details": {
+     "thinking_tokens": 2347
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "a9994620b1c6c083d616dc42c107572342428dfc",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.133225,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|7236|31bf369e355b66891da9167b9941c3acd2575cae|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "c80b0f0ecf9a7cd88107902677b387e64e73f09652ae63df438d0f2043cb8f85",
+ "diff_sha256": "c80b0f0ecf9a7cd88107902677b387e64e73f09652ae63df438d0f2043cb8f85",
+ "duration_s": 44.9,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "`def halfTwistFrames (k : \u2124) : LocalFrames \u2102 \ud835\udd54\ud835\udd3b 1 where domain := halfTwistDomain`, with no `@[expose]` and no domain lemma in the file.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc/HalfTwist.lean",
+   "fix": "Add `@[simp] theorem halfTwistFrames_domain (k) : (halfTwistFrames k).domain = halfTwistDomain := (rfl)`.",
+   "issue": "`halfTwistFrames` is not exposed and has no lemma for its `domain` field. Downstream code (e.g. the k \u2260 0 follow-up) can't turn `a \u2208 (halfTwistFrames k).domain i` into `a \u2208 halfTwistDomain i`, which it needs to use `isRealAlong_core_iff`/`localTriv_baseSet_core`. `isRealAlong_halfTwistCore` only gets this through in-module defeq (`hc hi`).",
+   "line": 117
+  },
+  {
+   "evidence": "The proofs reach into the definitions with `simp only [halfTwistDomain, h, \u2193reduceIte, ...]` and `simp only [halfTwistExponent, hi, \u2193reduceIte]`, which downstream code cannot do.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc/HalfTwist.lean",
+   "fix": "Add `mem_halfTwistDomain_of_norm_lt_one`/`mem_halfTwistDomain_of_norm_eq_one` (iff forms) and `halfTwistExponent_of_norm_lt_one`/`halfTwistExponent_of_norm_eq_one` simp lemmas.",
+   "issue": "`halfTwistDomain` and `halfTwistExponent` are unexposed `if`-definitions with no case lemmas. Nothing characterizes the domain as a membership predicate (`mem_halfTwistDomain_iff`), and nothing says the interior-centre exponent is `0` or the circle-centre exponent is `(k/2)(log i + log (z/i))`.",
+   "line": 55
+  },
+  {
+   "evidence": "The file has only `fiberMap_halfTwistIso_hom_of_norm_eq_one`, and `halfTwistIso` is an unexposed `def`.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc/HalfTwist.lean",
+   "fix": "Add `fiberMap_halfTwistIso_hom (k z) : (halfTwistIso k).hom.fiberMap z = exp (halfTwistExponent k z z) \u2022 id`, plus the `_inv` analogue and the interior case `= id` when `\u2016z\u2016 < 1`.",
+   "issue": "`halfTwistIso` is characterized only over the circle. There is no general `fiberMap` lemma, and nothing says it is the identity over interior points, so the iso is under-specified for computing the double.",
+   "line": 176
+  },
+  {
+   "evidence": "The lemmas are listed by hand in `simp only [halfTwistFrames_frame_apply, halfTwistFrames_frame_symm_apply, smul_smul]` in `isRealAlong_halfTwistCore`.",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc/HalfTwist.lean",
+   "fix": "Mark all three `@[simp]`.",
+   "issue": "The normal-form lemmas `halfTwistFrames_frame_apply` and `halfTwistFrames_frame_symm_apply` lack `@[simp]`. `LocalFrames.coordChange_core_apply` (LocalFrames.lean) also lacks `@[simp]`, though it is the rewrite that turns a transition into frames.",
+   "line": 134
+  },
+  {
+   "evidence": "`notMem_borderedInterior_iff : z \u2209 borderedInterior \ud835\udd54\ud835\udd3b \u2194 \u2016(z : \u2102)\u2016 = 1` (ClosedDisc.lean:286).",
+   "file": "TauCeti/Geometry/Manifold/Complex/BorderedHolomorphic/ClosedDisc/HalfTwist.lean",
+   "fix": "State the public lemmas with `\u2016(i : \u2102)\u2016 = 1`. Keep the `\u00ac <` form only inside proofs.",
+   "issue": "The circle hypothesis takes two forms: `sq_exp_halfTwistExponent`/`exp_halfTwistExponent_self` take `\u00ac\u2016i\u2016 < 1`, while `fiberMap_halfTwistIso_hom_of_norm_eq_one` takes `\u2016z\u2016 = 1`. `notMem_borderedInterior_iff` produces the latter, so callers must convert by hand (see `hz.symm \u25b8 lt_irrefl 1`).",
+   "line": 95
+  },
+  {
+   "evidence": "`frame` is documented as \"meaningful for `x \u2208 domain i`\", and `continuousOn_frame` constrains it only on `domain i`.",
+   "file": "TauCeti/Topology/VectorBundle/FiniteRank/LocalFrames.lean",
+   "fix": "Store the frame on the domain (`frame : \u2200 i, domain i \u2192 \u2026` with `ContinuousOn` replaced by `Continuous`) and extend by `id` inside `core`. Then add `@[ext]` on `domain` plus `frame` restricted to the domain.",
+   "issue": "The field `frame : B \u2192 B \u2192 \u2026` is free for `x \u2209 domain i`. No law or derived operation depends on those values in a meaningful way, yet they enter `core.coordChange`, so two `LocalFrames` that agree on their domains are different terms with different cores. No `@[ext]` can hold.",
+   "line": 52
+  }
+ ],
+ "head_sha": "31bf369e355b66891da9167b9941c3acd2575cae",
+ "merge_base_sha": "d395922ff828cf4f882727fb92c05161ac48f521",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 7236,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "d848b1d5a40ec3d35ebb7d83d5d06901e9fc74a83a6fac5c8d3d82e8d41efe89",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261127T124905Z-7236-api-design-23bfb0",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T12:49:05Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The new LocalFrames/half-twist surface lacks characteristic lemmas that downstream code needs, because `halfTwistFrames`, `halfTwistIso` and the disc defs are unexposed with no lemmas for their domains or interior values. `LocalFrames.frame` also carries data that no law constrains, so it cannot have an `@[ext]` lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "6f474db8d435ff9ac718db4e80a0ac3a3c8228902585dcd7d4f14168cf0b624f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 5081
+  },
+  "cache_creation_input_tokens": 5081,
+  "cache_read_input_tokens": 42121,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 4,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3422
+    },
+    "cache_creation_input_tokens": 3422,
+    "cache_read_input_tokens": 21890,
+    "input_tokens": 2,
+    "output_tokens": 2490,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4969,
+  "output_tokens_details": {
+   "thinking_tokens": 2347
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}

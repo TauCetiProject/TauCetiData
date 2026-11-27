@@ -1,0 +1,176 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.20444720000000002,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 54.3,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 9207
+    },
+    "cache_creation_input_tokens": 9207,
+    "cache_read_input_tokens": 204361,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1539
+      },
+      "cache_creation_input_tokens": 1539,
+      "cache_read_input_tokens": 44658,
+      "input_tokens": 2,
+      "output_tokens": 2702,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 5875,
+    "output_tokens_details": {
+     "thinking_tokens": 2423
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "0be4294580a29a23dc04f8d6dc5c80ba83a11ea5",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.204447,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|7520|893c239642ab1f0572f27672486394aafca7ae82|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "d3848080401fdba86278c8c9040dfb78b653b3fad0333ac1470c4c303364d3a7",
+ "diff_sha256": "d3848080401fdba86278c8c9040dfb78b653b3fad0333ac1470c4c303364d3a7",
+ "duration_s": 54.3,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The statement uses only `mvfderiv`, `fderiv`, `chartAt` and `trivializationAt` for the tangent space. The proof uses only Mathlib's `mvfderiv_comp_apply`, `mvfderiv_eq_fderiv` and `TangentBundle.continuousLinearMapAt_trivializationAt`, and nothing about Cauchy\u2013Riemann operators.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/ZeroOne/Adjoint.lean",
+   "fix": "Make it public in `TauCeti/Geometry/Manifold/MFDeriv/NormedSpace.lean`, next to `mvfderiv_comp_apply_of_differentiableAt`, for a general model `E` where it holds.",
+   "issue": "`mvfderiv_comp_chartAt_apply` is the chain rule through a chart. It is general manifold infrastructure, stated only with Mathlib terms, but it is hidden as `private`.",
+   "line": 119
+  },
+  {
+   "evidence": "Its proof only specializes `inTangentCoordinates_ofComplexManifold` (`AlmostComplexStructure.lean:171`) to a point. It does not depend on adjoints.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/ZeroOne/Adjoint.lean",
+   "fix": "Make it public in `TauCeti/Geometry/Manifold/Complex/AlmostComplexStructure.lean`, next to `inTangentCoordinates_ofComplexManifold`, for a general model `E`.",
+   "issue": "`tangent_continuousLinearMapAt_ofComplexManifold` (the tangent trivialization of a chart turns `j` into multiplication by `i`) is general complex-manifold API hidden as `private`.",
+   "line": 101
+  },
+  {
+   "evidence": "The proofs use `rw [zeroOneFrame, ...]` at lines 178 and 188. The existing convention is `FiniteBundleAtlas.coord_def` (`FiniteBundleAtlas/Basic.lean:292`).",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/ZeroOne/Adjoint.lean",
+   "fix": "Add `zeroOneFrame_def` (equal to `(A.tangentHom.triv i).symmL \u211d x (antilinearOfOneL F (finBasis \u211d F k))`) and `zeroOneFrame_of_notMem` (equal to `0` off `(A.tangentHom.triv i).baseSet`).",
+   "issue": "`zeroOneFrame` has an unexposed body and no defining lemma. The file's own `contMDiffOn_zeroOneFrame` and `isZeroOneForm_zeroOneFrame` work by unfolding it, which downstream files cannot do, and there is no lemma that the frame form vanishes off the base set.",
+   "line": 145
+  },
+  {
+   "evidence": "The only public facts are `chartConformalFactor_pos` and `contDiffOn_chartConformalFactor`, and both unfold the definition internally (`simp only [chartConformalFactor, ...]` in `contDiffOn_chartConformalFactor`).",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/ZeroOne/Adjoint.lean",
+   "fix": "Add `chartConformalFactor_def`, plus a lemma stating that on the chart target the inner product of tangent vectors equals `\u03bb\u1d62 z` times the flat inner product of their readings, for `i`-orthogonal metrics.",
+   "issue": "`chartConformalFactor` has an unexposed body and no `_def` lemma. The docstring claim that the metric reads as `\u03bb\u1d62 |dz|\u00b2` is not stated as a lemma, so downstream (for example the planned Green's formula) cannot relate the factor to the metric.",
+   "line": 242
+  }
+ ],
+ "head_sha": "893c239642ab1f0572f27672486394aafca7ae82",
+ "merge_base_sha": "9f9b83d89310ef42af5e39909d921db244f24e9b",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 7520,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "16bf3b0eec5ee62cfa742530c2f8064d016ef464819d8a4350d555c0581b8a83",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261127T145123Z-7520-api-design-0469e1",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T14:51:23Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "Two general helper lemmas are hidden as `private` instead of being made public in their canonical homes, and the new definitions `zeroOneFrame` and `chartConformalFactor` have no `_def` lemmas even though downstream files cannot unfold their unexposed bodies.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "mathlib",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/Chart.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/CauchyRiemann/ZeroOne/Adjoint.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 5,
+  "total_calls": 5,
+  "trace_truncated": false
+ },
+ "transcript_blob": "07745cfe92e0d2bac6fef28608bcbbe84c3ef1bb21e9cb72b9b0938f5b49b7c5",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 9207
+  },
+  "cache_creation_input_tokens": 9207,
+  "cache_read_input_tokens": 204361,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1539
+    },
+    "cache_creation_input_tokens": 1539,
+    "cache_read_input_tokens": 44658,
+    "input_tokens": 2,
+    "output_tokens": 2702,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 5875,
+  "output_tokens_details": {
+   "thinking_tokens": 2423
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
