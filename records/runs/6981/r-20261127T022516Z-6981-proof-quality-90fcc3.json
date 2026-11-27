@@ -1,0 +1,159 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.1100842,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 29.7,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 3956
+    },
+    "cache_creation_input_tokens": 3956,
+    "cache_read_input_tokens": 128701,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 6,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 452
+      },
+      "cache_creation_input_tokens": 452,
+      "cache_read_input_tokens": 44876,
+      "input_tokens": 2,
+      "output_tokens": 1612,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 3227,
+    "output_tokens_details": {
+     "thinking_tokens": 1198
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "ac8801f612041ee3dcb3fa3f950f01318206737c",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.110084,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|6981|76d8c774a27af0de837caa3bf78199d6d41fc13a|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "4056462f675390b75cb2b780a847bcd4dfb35a7d593bad75cd3ce3676de188d9",
+ "diff_sha256": "4056462f675390b75cb2b780a847bcd4dfb35a7d593bad75cd3ce3676de188d9",
+ "duration_s": 29.7,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "Hom.lean:290 has `image_tangentHom := (image_hom (A := A.tangent) i).trans (image_ofBaseSet i)`. A grep finds no matching chart lemma; the only use of `chart_hom.*chart_ofBaseSet` is Duality.lean:152.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/Duality.lean",
+   "fix": "Add a `@[simp]` lemma `FiniteBundleAtlas.chart_tangentHom` in `FiniteBundleAtlas/Hom.lean` next to `image_tangentHom`. Then simplify `hco` and the other `hchart` rewrites with it.",
+   "issue": "`hchart : A.tangentHom.chart i = A.chart i` is a reusable fact proved inline as `(chart_hom (A := A.tangent) i).trans (chart_ofBaseSet i)`. Because it is not a lemma, the proof needs `rw [hchart] at h\u2082`, `hchart \u25b8 (himage hzi).2` followed by `rwa [hchart]` in `hco`, and a `rw [mem_preimage, hchart, ...]`.",
+   "line": 151
+  },
+  {
+   "evidence": "See the `rw [h\u03b8z, h\u2081, h\u2082, h\u2083, map_smul, ...]` block before `field_simp [h\u03c1 z hz]`. The PR description gives this proof as 50 lines.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Sobolev/CauchyRiemann/Duality.lean",
+   "fix": "Factor out the pointwise identity `\u03c1 z \u2022 \u27ea\u03b6 x, s x\u27eb = \u03b8 z (coord s z 1)` at the point read at `z` as its own lemma, combining `hco` with `hRg`. Close the remaining goal with `simp [...]` or `grind` instead of an ordered rewrite list.",
+   "issue": "The final step of `exists_zeroOneForm_chart` is a 12-step `rw` chain (`h\u03b8z, h\u2081, h\u2082, h\u2083, map_smul, complexAntilinearPartL_eq_self_iff.2 hw, hilbertSchmidtInner_smul_left, \u2190 hco \u03b7, \u2190 hco s, h\u03b7 z hzi, hRg z hz _ hw`) followed by `field_simp`. It depends on exact term shapes, so it will break if a Mathlib or Tau Ceti lemma is renamed. The proof is also at the 50-line limit.",
+   "line": 199
+  },
+  {
+   "evidence": "The same term appears in all three diff hunks (ChartSection.lean and Density.lean twice). A grep of FiniteBundleAtlas/ for an existing lemma of this kind finds no matches.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/FiniteBundleAtlas/ChartSection.lean",
+   "fix": "Add `FiniteBundleAtlas.dom_subset_dom_inter_preimage_image : A.dom i \u2286 A.dom i \u2229 A.chart i \u207b\u00b9' A.image i` in Basic.lean. At all three call sites, pass `h\u03c8i.trans (A.dom_subset_dom_inter_preimage_image i)`.",
+   "issue": "The generalized `contMDiff_smul_chartSection` makes every old-style caller re-prove `tsupport \u03c8 \u2286 A.dom i \u2229 A.chart i \u207b\u00b9' A.image i` with the same term `fun x hx \u21a6 \u27e8h\u03c8i hx, A.mem_image.2 \u27e8x, h\u03c8i hx, rfl\u27e9\u27e9`. This copy is at ChartSection.lean:63; the same proof appears at Sobolev/Density.lean:148 and Sobolev/Density.lean:415.",
+   "line": 63
+  }
+ ],
+ "head_sha": "76d8c774a27af0de837caa3bf78199d6d41fc13a",
+ "merge_base_sha": "ac8801f612041ee3dcb3fa3f950f01318206737c",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 6981,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "eabdaabb4eb425220e0c2870ea374cc5547ba3ae6cdead4b89b19b1a4928706e",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 1,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261127T022516Z-6981-proof-quality-90fcc3",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T02:25:16Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The PR proves the one-form chart identification inline instead of as a lemma next to `image_tangentHom`, which forces `\u25b8`/`rwa` workarounds and a long rewrite chain in `exists_zeroOneForm_chart`. The generalized `contMDiff_smul_chartSection` makes three call sites repeat the same subset proof.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/FiniteBundleAtlas",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 3,
+  "total_calls": 3,
+  "trace_truncated": false
+ },
+ "transcript_blob": "5ab95e9569d11c4bee638cb639a935c20dfb7aa107010b89641864d1dc43947f",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 3956
+  },
+  "cache_creation_input_tokens": 3956,
+  "cache_read_input_tokens": 128701,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 6,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 452
+    },
+    "cache_creation_input_tokens": 452,
+    "cache_read_input_tokens": 44876,
+    "input_tokens": 2,
+    "output_tokens": 1612,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 3227,
+  "output_tokens_details": {
+   "thinking_tokens": 1198
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
