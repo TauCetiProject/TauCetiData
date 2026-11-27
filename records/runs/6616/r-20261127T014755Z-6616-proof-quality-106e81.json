@@ -1,0 +1,147 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.10698679999999999,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 23.6,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 7962
+    },
+    "cache_creation_input_tokens": 7962,
+    "cache_read_input_tokens": 95024,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 8,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 4974
+      },
+      "cache_creation_input_tokens": 4974,
+      "cache_read_input_tokens": 33225,
+      "input_tokens": 4,
+      "output_tokens": 1724,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 2407,
+    "output_tokens_details": {
+     "thinking_tokens": 933
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "ac8801f612041ee3dcb3fa3f950f01318206737c",
+ "cli_dirty": false,
+ "cli_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "cost_usd": 0.106987,
+ "dedupe_key": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti|6616|1149e6565876ab4ef2aa9c081c325364367823a3|proof-quality|claude-opus-5-5|4dc810aa37eb7443|production|6",
+ "diff_blob": "d8bdafd10b022c761793ca12c059926ae1c6335740c5e60530aa95cb8407b2b8",
+ "diff_sha256": "d8bdafd10b022c761793ca12c059926ae1c6335740c5e60530aa95cb8407b2b8",
+ "duration_s": 23.6,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "The three proofs at the start of the Measure section are identical apart from `map_add`/`map_smul`/`map_zero`. FirstJet/Basic.lean:595-622 has only neighbourhood (`=\u1da0[\ud835\udcdd _]`) versions of these facts.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Section/Distribution/OfSection.lean",
+   "fix": "Factor out a lemma for the measurability of that domain set, or pointwise `localRep_add`/`localRep_smul`/`localRep_zero` lemmas on it, alongside the existing `localRep_*_eventuallyEq` in FirstJet/Basic.lean. Then derive the three closure lemmas from it in one line each.",
+   "issue": "`LocallyIntegrableSection.add`, `.smul` and `.zero` each repeat the same `ae_restrict_iff' ((isChartMeasurable_def _).1 ((trivializationAt G W \u03b1).open_baseSet.isChartMeasurable (I := I)) \u03b1)` / `ae_of_all` / `apply_eq_prod_continuousLinearEquivAt` block. This hides the reusable fact that the reading domain `(extChartAt I \u03b1).target \u2229 (extChartAt I \u03b1).symm \u207b\u00b9' baseSet` is measurable and that `localRep` is linear on it.",
+   "line": 160
+  },
+  {
+   "evidence": "The duplicated `mono_set` expression appears in both the `hi` binding and the final `exact` of `integrableDensity_and_integralDensity_eq_sum`, and again in the `hloc` binding of `chartDistributionCLM_ofSection_apply_apply`.",
+   "file": "TauCeti/Geometry/Manifold/VectorBundle/Section/Distribution/OfSection.lean",
+   "fix": "Add a private lemma `LocallyIntegrableSection.locallyIntegrableOn_target (hu) (c) (hct) (hc\u03b1) : LocallyIntegrableOn (localRep I G u \u03b1) c.target _` and use it at all three sites.",
+   "issue": "In `integrableDensity_and_integralDensity_eq_sum`, the term `(hu.locallyIntegrableOn \u03b1).mono_set (target_subset_inter_preimage_baseSet (A.chart \u03b1) (hA \u03b1) (hA\u03b1 \u03b1))` is written out twice, once in `hi` and once in the final `Finset.sum_congr`. The same restriction is rebuilt as `hloc` in `chartDistributionCLM_ofSection_apply_apply`.",
+   "line": 0
+  }
+ ],
+ "head_sha": "1149e6565876ab4ef2aa9c081c325364367823a3",
+ "merge_base_sha": "ac8801f612041ee3dcb3fa3f950f01318206737c",
+ "mode": "manual",
+ "model": "claude-opus-5-5",
+ "pr": 6616,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "reactivation",
+ "prompt_sha256": "048c03f71807e583904b519713cd3d4280ec939076126ba4bf1a81a35a354e93",
+ "provider": "claude",
+ "repo": "forgejo:https://git.taucetiproject.org/taucetiproject/tauceti",
+ "round": 6,
+ "rubric": "proof-quality",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "08d0ee3158f683d01b8d78a1971a4d77b2671535",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261127T014755Z-6616-proof-quality-106e81",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T01:47:55Z",
+ "submitted_by": "forgejo:https://git.taucetiproject.org/users/3",
+ "summary": "The proofs are short and every defeq `rfl` is commented, but the same ae-restriction and measurability argument appears three times in `LocallyIntegrableSection.add`/`.smul`/`.zero`, and that duplication hides a reusable fact. The same mono_set argument is also written out twice inside `integrableDensity_and_integralDensity_eq_sum`.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/FirstJet",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Geometry/Manifold/VectorBundle/FirstJet/Basic.lean",
+   "tool": "Read"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 2,
+  "total_calls": 2,
+  "trace_truncated": false
+ },
+ "transcript_blob": "c60204e9fe6bc87fa8073ba800312a9b0eef15aebdf717b1ec3bff10093c244c",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 7962
+  },
+  "cache_creation_input_tokens": 7962,
+  "cache_read_input_tokens": 95024,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 8,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 4974
+    },
+    "cache_creation_input_tokens": 4974,
+    "cache_read_input_tokens": 33225,
+    "input_tokens": 4,
+    "output_tokens": 1724,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 2407,
+  "output_tokens_details": {
+   "thinking_tokens": 933
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
