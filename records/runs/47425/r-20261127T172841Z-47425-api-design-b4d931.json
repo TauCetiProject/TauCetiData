@@ -1,0 +1,185 @@
+{
+ "arm": "production",
+ "attempts": [
+  {
+   "cost_usd": 0.2221436,
+   "model": "claude-opus-5-5",
+   "returncode": 0,
+   "secs": 37.1,
+   "usage": {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 20220
+    },
+    "cache_creation_input_tokens": 20220,
+    "cache_read_input_tokens": 176618,
+    "fallback_credit": null,
+    "inference_geo": "global",
+    "input_tokens": 10,
+    "iterations": [
+     {
+      "cache_creation": {
+       "ephemeral_1h_input_tokens": 0,
+       "ephemeral_5m_input_tokens": 1252
+      },
+      "cache_creation_input_tokens": 1252,
+      "cache_read_input_tokens": 54862,
+      "input_tokens": 2,
+      "output_tokens": 2430,
+      "type": "message"
+     }
+    ],
+    "output_tokens": 4284,
+    "output_tokens_details": {
+     "thinking_tokens": 1195
+    },
+    "server_tool_use": {
+     "web_fetch_requests": 0,
+     "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "speed": "standard"
+   }
+  }
+ ],
+ "auth": "api",
+ "base_ref_oid": "3019e07725c1007bf005838d1141d68daa03ccdd",
+ "cli_dirty": false,
+ "cli_sha": "1238e3a3a83668308d8160d2513b1bde73417a7c",
+ "cost_usd": 0.222144,
+ "dedupe_key": "TauCetiProject/TauCeti|47425|8f096feedfb5344970ebc72d7ab24163a42d7b0f|api-design|claude-opus-5-5|4dc810aa37eb7443|production|1",
+ "diff_blob": "64a74ab4e0aa0cad0316082fcb06fc595704da35bedbd9caa3a66d24b65d1ebb",
+ "diff_sha256": "64a74ab4e0aa0cad0316082fcb06fc595704da35bedbd9caa3a66d24b65d1ebb",
+ "duration_s": 37.1,
+ "fidelity": "exact",
+ "findings": [
+  {
+   "evidence": "MulLeftMulRight.lean:46 `theorem det_mulLeft_comp_mulRight`; the private lemma is its real restriction of scalars.",
+   "file": "TauCeti/Analysis/Matrix/IndefiniteUnitaryGroup/GramPolar.lean",
+   "fix": "Make it public and move it next to `Matrix.det_mulLeft_comp_mulRight` in `TauCeti/LinearAlgebra/Matrix/Kronecker/MulLeftMulRight.lean`.",
+   "issue": "`det_mulLeft_real` (real determinant of `LinearMap.mulLeft \u211d P` on `Matrix n n \u2102` is `normSq P.det ^ card n`) mentions only Mathlib types and does not depend on the Gram map, yet it is private.",
+   "line": 199
+  },
+  {
+   "evidence": "Complex.lean:56 has only the `\u03b9 \u2192 \u03ba \u2192 \u2102` instance; SkewAdjoint.lean:81 already sets the public pattern for the skew-adjoint case.",
+   "file": "TauCeti/Analysis/Matrix/IndefiniteUnitaryGroup/GramPolar.lean",
+   "fix": "Make it a public instance in `TauCeti/MeasureTheory/Measure/Haar/Matrix/Complex.lean`, next to `isAddHaarMeasure_volume_pi_pi_complex`. Expose the Frobenius change-of-variables lemma there, mirroring `lintegral_image_eq_lintegral_abs_det_fderiv_mul_skewAdjoint` in SkewAdjoint.lean.",
+   "issue": "`isAddHaarMeasure_volume` (Lebesgue measure on `Matrix m m \u2102` is an additive Haar measure) is general infrastructure hidden as private. The private wrapper `lintegral_image_eq_lintegral_abs_det_fderiv_mul_matrix` (l.422) exists only to work around its absence under the Frobenius topology.",
+   "line": 411
+  },
+  {
+   "evidence": "Its statement involves only `unitaryGroupOf A` and `volume`; its proof uses only `det_mem_unitary_of_mem_unitaryGroupOf` and `lintegral_eq_enorm_det_pow_mul_...`.",
+   "file": "TauCeti/Analysis/Matrix/IndefiniteUnitaryGroup/GramPolar.lean",
+   "fix": "Make it public in `IndefiniteUnitaryGroup/Haar.lean` under a qualified name such as `Matrix.unitaryGroupOf.measurePreserving_mul_left`.",
+   "issue": "`measurePreserving_mul_left` (left multiplication by `g \u2208 unitaryGroupOf A` preserves Lebesgue measure on matrices) is a reusable fact about `U(A)`, unrelated to Gram sections, and is private.",
+   "line": 441
+  },
+  {
+   "evidence": "Its statement mentions only `cayleyMeasure` and `unitaryGroupOf`; its proof uses only `cayleyMeasure_def` and `isUnit_one_add_cayleyChart` (Cayley.lean:398).",
+   "file": "TauCeti/Analysis/Matrix/IndefiniteUnitaryGroup/GramPolar.lean",
+   "fix": "Make it public in `IndefiniteUnitaryGroup/Haar.lean` as `Matrix.unitaryGroupOf.ae_isUnit_one_add_cayleyMeasure`.",
+   "issue": "`ae_isUnit_one_add` (almost every `h` for `cayleyMeasure A \u03bc` has `1 + h` invertible) characterises where the Cayley measure lives. It is a characteristic lemma of `cayleyMeasure`, yet it is private.",
+   "line": 457
+  },
+  {
+   "evidence": "grep for `measurable_coe|continuous_coe` in IndefiniteUnitaryGroup finds only this private one.",
+   "file": "TauCeti/Analysis/Matrix/IndefiniteUnitaryGroup/GramPolar.lean",
+   "fix": "Make it public next to the `unitaryGroupOf` definitions or in Haar.lean, preferably with a `continuous_coe` lemma from which this follows.",
+   "issue": "`measurable_coe_unitaryGroupOf` is general API for the coercion `unitaryGroupOf A \u2192 Matrix`, private here, and has no public counterpart anywhere.",
+   "line": 571
+  },
+  {
+   "evidence": "Module.lean:295 `def negISMulEquiv : skewAdjoint A \u2243\u2097[\u211d] selfAdjoint A` with `coe_negISMulEquiv_symm_apply : ... = I \u2022 a`; SkewHermitian.lean provides only `coe_iSMulHermitian_apply`.",
+   "file": "TauCeti/MeasureTheory/Measure/HermitianMatrix/SkewHermitian.lean",
+   "fix": "Build it from `skewAdjoint.negISMulEquiv.symm` (via `toContinuousLinearEquiv`), or generalise it to any finite index type. Add a `@[simp] coe_iSMulHermitian_symm_apply : ((iSMulHermitian p).symm S : _) = -I \u2022 S`.",
+   "issue": "`iSMulHermitian` repeats `skewAdjoint.negISMulEquiv.symm` (multiplication by `I`), restricted to `Fin p` matrices and upgraded to a continuous map. It also has no lemma for its inverse, so consumers must unfold the definition to compute `(iSMulHermitian p).symm`.",
+   "line": 44
+  }
+ ],
+ "head_sha": "8f096feedfb5344970ebc72d7ab24163a42d7b0f",
+ "merge_base_sha": "3019e07725c1007bf005838d1141d68daa03ccdd",
+ "mode": "commit",
+ "model": "claude-opus-5-5",
+ "pr": 47425,
+ "prices_sha": "1fa7aab6f919",
+ "prompt_policy": "fresh",
+ "prompt_sha256": "fdab7d517da2f55365eb24ee157b0cd479d690bd160e78ad072bcc62c7e2c4ac",
+ "provider": "claude",
+ "repo": "TauCetiProject/TauCeti",
+ "round": 1,
+ "rubric": "api-design",
+ "rubrics_drift": false,
+ "rubrics_published": true,
+ "rubrics_repo": "TauCetiProject/TauCetiReview",
+ "rubrics_sha": "1238e3a3a83668308d8160d2513b1bde73417a7c",
+ "rubrics_version": "4dc810aa37eb7443",
+ "run_id": "r-20261127T172841Z-47425-api-design-b4d931",
+ "schema": "tauceti.run/v1",
+ "source": "live",
+ "started_at": "2026-11-27T17:28:41Z",
+ "submitted_by": "kim-em",
+ "summary": "Several general lemmas (real determinant of left multiplication, Haar property of Lebesgue measure on complex matrices, U(A) preserving Lebesgue measure, Cayley measure a.e. in the chart image, measurability of the U(A) coercion) are private in GramPolar.lean instead of public in their canonical homes. The new public iSMulHermitian repeats skewAdjoint.negISMulEquiv.symm and lacks an inverse coercion lemma.",
+ "tool_trace": [
+  {
+   "ok": true,
+   "target": "code/TauCeti",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/LinearAlgebra/Complex/Module.lean",
+   "tool": "Read"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/MeasureTheory/Measure/Haar/Matrix/Complex.lean",
+   "tool": "Grep"
+  },
+  {
+   "ok": true,
+   "target": "code/TauCeti/Analysis/Matrix/IndefiniteUnitaryGroup",
+   "tool": "Grep"
+  }
+ ],
+ "tool_trace_meta": {
+  "successful_calls": 4,
+  "total_calls": 4,
+  "trace_truncated": false
+ },
+ "transcript_blob": "ee7cf02e09ba7c7952ee923b2096890d5af7103e447d89812ed346495c2a4c44",
+ "usage": {
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 0,
+   "ephemeral_5m_input_tokens": 20220
+  },
+  "cache_creation_input_tokens": 20220,
+  "cache_read_input_tokens": 176618,
+  "fallback_credit": null,
+  "inference_geo": "global",
+  "input_tokens": 10,
+  "iterations": [
+   {
+    "cache_creation": {
+     "ephemeral_1h_input_tokens": 0,
+     "ephemeral_5m_input_tokens": 1252
+    },
+    "cache_creation_input_tokens": 1252,
+    "cache_read_input_tokens": 54862,
+    "input_tokens": 2,
+    "output_tokens": 2430,
+    "type": "message"
+   }
+  ],
+  "output_tokens": 4284,
+  "output_tokens_details": {
+   "thinking_tokens": 1195
+  },
+  "server_tool_use": {
+   "web_fetch_requests": 0,
+   "web_search_requests": 0
+  },
+  "service_tier": "standard",
+  "speed": "standard"
+ },
+ "verdict": "request_changes"
+}
